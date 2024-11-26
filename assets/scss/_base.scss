@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;700&family=PT+Mono&family=PT+Serif&display=swap');
+
+@import './variables';
+@import './animations';
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+
+  border-color: currentColor;
+  border-style: solid;
+  border-width: 0;
+  box-sizing: inherit;
+}
+
+html {
+  // this defines what 1rem is
+  font-size: 62.5%;
+  font-family: $serif;
+  overflow-y: scroll;
+}
+
+body {
+  box-sizing: border-box;
+  background-color: $secondary;
+}
+
+a {
+  text-decoration: none;
+  color: currentColor;
+}

@@ -1,2 +1,3 @@
 # phillipharrington.com
-My personal home page
+
+The personal home page of Phillip Harrington.
