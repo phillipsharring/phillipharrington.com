@@ -1,0 +1,16 @@
+.hidden {
+  display: none;
+}
+
+.very-hidden {
+  display: none !important;
+}
+
+.block {
+  display: block;
+}
+
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}

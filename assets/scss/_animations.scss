@@ -1,0 +1,281 @@
+@-webkit-keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+@-moz-keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+@-o-keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@-webkit-keyframes stopColorGradient1 {
+  0% {
+    stop-color: $green;
+  }
+  34% {
+    stop-color: $blue;
+  }
+  67% {
+    stop-color: $pink;
+  }
+  100% {
+    stop-color: $green;
+  }
+}
+@-moz-keyframes stopColorGradient1 {
+  0% {
+    stop-color: $green;
+  }
+  34% {
+    stop-color: $blue;
+  }
+  67% {
+    stop-color: $pink;
+  }
+  100% {
+    stop-color: $green;
+  }
+}
+@-o-keyframes stopColorGradient1 {
+  0% {
+    stop-color: $green;
+  }
+  34% {
+    stop-color: $blue;
+  }
+  67% {
+    stop-color: $pink;
+  }
+  100% {
+    stop-color: $green;
+  }
+}
+@keyframes stopColorGradient1 {
+  0% {
+    stop-color: $green;
+  }
+  34% {
+    stop-color: $blue;
+  }
+  67% {
+    stop-color: $pink;
+  }
+  100% {
+    stop-color: $green;
+  }
+}
+
+@-webkit-keyframes stopColorGradient2 {
+  0% {
+    stop-color: $pink;
+  }
+  34% {
+    stop-color: $green;
+  }
+  67% {
+    stop-color: $blue;
+  }
+  100% {
+    stop-color: $pink;
+  }
+}
+@-moz-keyframes stopColorGradient2 {
+  0% {
+    stop-color: $pink;
+  }
+  34% {
+    stop-color: $green;
+  }
+  67% {
+    stop-color: $blue;
+  }
+  100% {
+    stop-color: $pink;
+  }
+}
+@-o-keyframes stopColorGradient2 {
+  0% {
+    stop-color: $pink;
+  }
+  34% {
+    stop-color: $green;
+  }
+  67% {
+    stop-color: $blue;
+  }
+  100% {
+    stop-color: $pink;
+  }
+}
+@keyframes stopColorGradient2 {
+  0% {
+    stop-color: $pink;
+  }
+  34% {
+    stop-color: $green;
+  }
+  67% {
+    stop-color: $blue;
+  }
+  100% {
+    stop-color: $pink;
+  }
+}
+
+@-webkit-keyframes stopColorGradient3 {
+  0% {
+    stop-color: $blue;
+  }
+  34% {
+    stop-color: $pink;
+  }
+  67% {
+    stop-color: $green;
+  }
+  100% {
+    stop-color: $blue;
+  }
+}
+@-moz-keyframes stopColorGradient3 {
+  0% {
+    stop-color: $blue;
+  }
+  34% {
+    stop-color: $pink;
+  }
+  67% {
+    stop-color: $green;
+  }
+  100% {
+    stop-color: $blue;
+  }
+}
+@-o-keyframes stopColorGradient3 {
+  0% {
+    stop-color: $blue;
+  }
+  34% {
+    stop-color: $pink;
+  }
+  67% {
+    stop-color: $green;
+  }
+  100% {
+    stop-color: $blue;
+  }
+}
+@keyframes stopColorGradient3 {
+  0% {
+    stop-color: $blue;
+  }
+  34% {
+    stop-color: $pink;
+  }
+  67% {
+    stop-color: $green;
+  }
+  100% {
+    stop-color: $blue;
+  }
+}
+
+@-webkit-keyframes backgroundGradient {
+  0% {
+    background-position: 0% 51%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 51%;
+  }
+}
+@-moz-keyframes backgroundGradient {
+  0% {
+    background-position: 0% 51%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 51%;
+  }
+}
+@-o-keyframes backgroundGradient {
+  0% {
+    background-position: 0% 51%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 51%;
+  }
+}
+@keyframes backgroundGradient {
+  0% {
+    background-position: 0% 51%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 51%;
+  }
+}
+
+@-webkit-keyframes backgroundPositionGradient {
+  0% {
+    background-position: 0% bottom;
+  }
+  50% {
+    background-position: 100% bottom;
+  }
+  100% {
+    background-position: 0% bottom;
+  }
+}
+@-moz-keyframes backgroundPositionGradient {
+  0% {
+    background-position: 0% bottom;
+  }
+  50% {
+    background-position: 100% bottom;
+  }
+  100% {
+    background-position: 0% bottom;
+  }
+}
+@-o-keyframes backgroundPositionGradient {
+  0% {
+    background-position: 0% bottom;
+  }
+  50% {
+    background-position: 100% bottom;
+  }
+  100% {
+    background-position: 0% bottom;
+  }
+}
+@keyframes backgroundPositionGradient {
+  0% {
+    background-position: 0% bottom;
+  }
+  50% {
+    background-position: 100% bottom;
+  }
+  100% {
+    background-position: 0% bottom;
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "phillipharrington",
+  "version": "1.0.0",
+  "private": true,
+  "license": "proprietary",
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "forestry-preview": "nuxt -p 3000 -H 0.0.0.0"
+  },
+  "dependencies": {
+    "@nuxt/content": "^2.12.0",
+    "core-js": "^3.22.5",
+    "nuxt": "^2.15.8"
+  },
+  "devDependencies": {
+    "@nuxtjs/style-resources": "^1.0.0",
+    "@vue/runtime-dom": "^3.2.47",
+    "fibers": "^5.0.0",
+    "sass": "^1.32.8",
+    "sass-loader": "10",
+    "vue-remove-attributes": "^1.0.3"
+  }
+}
