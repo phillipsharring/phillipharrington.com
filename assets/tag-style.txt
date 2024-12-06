@@ -1,0 +1,49 @@
+1 5xl black
+2 4xl extrabold
+3 3xl bold
+4 2xl semibold
+
+<main class="container mx-auto w-3/4 px-16 text-xl text-mine-shaft-900">
+
+<h1 class="mb-2 text-5xl font-black">
+<h2 class="text-4xl font-extrabold">
+<h3 class="text-3xl font-bold">
+<h4 class="text-2xl font-semibold">
+<h5 class="text-xl font-medium">
+
+<a class="font-normal text-blue-600 underline">
+
+<p class="m-0 font-serif text-lg text-mine-shaft-600">
+    <span class="italic">Phillip Harrington</span>
+    <span class="mx-1">|</span>
+    <span class="italic">Nov 2024</span>
+</p>
+
+<section class="space-y-5">
+
+<blockquote class="inline-block space-y-4 bg-yinmn-blue-100 p-4 pr-20 font-serif text-2xl italic">
+
+<p class="font-semibold italic">
+
+<ul class="space-y-1">
+
+<figure class="float-right mb-12 ml-12">
+<img
+src="/img/architect.jpg"
+al="Upset Architect"
+class="border border-4 border-blue-950"
+/>
+<figcaption class="mt-2 text-center font-serif italic">
+Upset Architect
+</figcaption>
+</figure>
+
+
+
+<div class="mb-12 flex justify-center">
+<div class="float-right mb-12 ml-12">
+<picture class="mx-auto my-0 inline-block border-4 border-blue-950"
+>
+
+</picture>
+</div>

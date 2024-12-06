@@ -1,4 +1,0 @@
-This is a Brave Rewards publisher verification file.
-
-Domain: phillipharrington.com
-Token: b3b5d023633b532a1be92857d80c88c91a61c05d2377ce6b21ca583fd427fedc
