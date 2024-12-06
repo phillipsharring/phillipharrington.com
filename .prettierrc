@@ -1,6 +1,7 @@
 {
-  trailingComma: es5,
-  tabWidth: 2,
-  semi: false,
-  singleQuote: true
+  "singleQuote": true,
+  "trailingComma": "all",
+  "useTabs": false,
+  "tabWidth": 2,
+  "plugins": ["prettier-plugin-ejs", "prettier-plugin-tailwindcss"]
 }
