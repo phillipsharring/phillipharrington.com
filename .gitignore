@@ -2,9 +2,7 @@
 public/*
 
 # Re-include subdirectories
-!public/css/
 !public/img/
-!public/js/
 
 # Include specific file types
 !public/*.png
@@ -12,12 +10,10 @@ public/*
 !public/*.ico
 !public/*.json
 !public/*.txt
-!public/css/**/*.css
 !public/img/**/*.svg
 !public/img/**/*.png
 !public/img/**/*.jpg
 !public/img/**/*.gif
-!public/js/**/*.js
 
 # Ignore VSCode settings
 .vscode
