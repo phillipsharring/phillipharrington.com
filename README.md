@@ -1,3 +1,5 @@
 # phillipharrington.com
 
 The personal home page of Phillip Harrington.
+
+![Build Badge](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVXBEREFFbytrYUFTWG9UTVpoWXFKQzFxd1RaemppdFAvWGxWWi80Ty9MV2R6dHhxWUJGK1RLUERNVmhPbHB3MUNVMHlGY1ZWaU5teXMyaFVodEFOK3hZPSIsIml2UGFyYW1ldGVyU3BlYyI6IldsZWFtaTUyTUhXa0hBcWMiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
