@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+
+/* Custom styles go here, before utilities */
+::-moz-selection {
+  background-color: #7bc61c;
+  color: #000;
+}
+
+::selection {
+  background-color: #7bc61c;
+  color: #000;
+}
+
+.bg-left-quote {
+  background-image: url(/img/left-quotes.png);
+  background-repeat: no-repeat;
+  background-size: 80px;
+  background-position: -10px -10px;
+}
+
+@tailwind utilities;
