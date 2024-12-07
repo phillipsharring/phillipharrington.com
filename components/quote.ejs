@@ -1,0 +1,11 @@
+<% with (locals || { citation: '' }) { %>
+<blockquote
+  class="bg-left-quote relative inline-block w-full overflow-hidden rounded-2xl bg-gray-100 px-12 py-8 font-serif text-lg italic md:w-3/4"
+>
+  <%- locals.content %> <% if (locals.citation) { %>
+  <footer>
+    <cite class="float-right mt-4 text-sm">&mdash; <%= locals.citation %></cite>
+  </footer>
+  <% } %>
+</blockquote>
+<% } %>
