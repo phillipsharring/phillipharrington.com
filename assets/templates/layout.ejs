@@ -1,0 +1,39 @@
+<% with(locals || { metaDescription: '', metaKeywords: '', ogTitle: '',
+ogDescription: '', ogImage: '', path: '', yield: '' }) { %>
+<!doctype html>
+<html lang="en" class="m-0 h-[100.09%] p-0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= locals.title %></title>
+    <% if (locals.metaDescription) { %>
+    <meta name="description" content="<%= locals.metaDescription %>" />
+    <% } %> <% if (locals.metaKeywords) { %>
+    <meta name="keywords" content="<%= locals.metaKeywords %>" />
+    <% } %> <% if (locals.ogTitle) { %>
+    <meta property="og:title" content="<%= locals.ogTitle %>" />
+    <% } %> <% if (locals.ogDescription) { %>
+    <meta property="og:description" content="<%= locals.ogDescription %>" />
+    <% } %> <% if (locals.ogImage) { %>
+    <meta property="og:image" content="<%= locals.ogImage %>" />
+    <% } %>
+    <meta
+      property="og:url"
+      content="https://phillipharrington.com/<%= locals.path %>"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body id="body" class="relative m-0 flex h-full flex-col overflow-auto p-0">
+    <a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>
+    <layout-header></layout-header>
+    <main
+      id="main"
+      class="mx-auto flex min-h-max w-full flex-grow flex-col items-stretch justify-stretch px-3 text-xl text-mint-900 md:container sm:px-4 md:w-4/5 md:px-6 lg:w-3/4 lg:px-16"
+    >
+      <%- locals.yield %>
+    </main>
+    <layout-footer></layout-footer>
+    <script src="/js/script.js"></script>
+  </body>
+</html>
+<% } %>

@@ -1,0 +1,26 @@
+<% with (locals || { level: 1, id: '' }) { %><% let anchor = `<a
+  href="#${locals.id}"
+  aria-hidden="true"
+  tabindex="-1"
+  ><span class="icon icon-link"></span></a
+>`;%> <% if (locals.level == 1) { %>
+<h1 id="<%= locals.id %>" class="mb-2 text-5xl font-black">
+  <%- anchor %> <%- content %>
+</h1>
+<% } if (locals.level == 2) { %>
+<h2 id="<%= locals.id %>" class="text-4xl font-extrabold">
+  <%- anchor %> <%- content %>
+</h2>
+<% } if (locals.level == 3) { %>
+<h3 id="<%= locals.id %>" class="mb-2 text-5xl font-black">
+  <%- anchor %> <%- content %>
+</h3>
+<% } if (locals.level == 4) { %>
+<h4 id="<%= locals.id %>" class="text-2xl font-semibold">
+  <%- anchor %> <%- content %>
+</h4>
+<% } if (locals.level == 5) { %>
+<h5 id="<%= locals.id %>" class="mb-2 text-5xl font-black">
+  <%- anchor %> <%- content %>
+</h5>
+<% } %> <% } %>
