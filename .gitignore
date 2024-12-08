@@ -10,10 +10,6 @@ public/*
 !public/*.ico
 !public/*.json
 !public/*.txt
-!public/img/**/*.svg
-!public/img/**/*.png
-!public/img/**/*.jpg
-!public/img/**/*.gif
 
 # Ignore VSCode settings
 .vscode
