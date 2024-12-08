@@ -7,15 +7,13 @@
     "start": "npm-run-all --parallel server:dev watch:html watch:tailwind watch:js watch:components-build",
     "build": "npm-run-all build:components build:tailwind compress:js",
     "server:dev": "node ./browsersync-config.js",
-    "watch:html": "nodemon --watch ./content --watch ./components --watch ./assets/templates/layout.ejs -e html,ejs,js -x \"npm run build:components\"",
+    "watch:html": "nodemon --watch ./content --watch ./components -e html,ejs -x \"npm run build:components\"",
     "watch:tailwind": "tailwindcss -i ./assets/css/style.css -o ./public/css/style.css --watch --minify",
     "watch:js": "nodemon --watch ./assets/js -e js -x \"npm run compress:js\"",
     "watch:components-build": "nodemon --watch ./src/components-build.js -e js -x \"npm run build:components\"",
     "build:components": "node ./src/components-build.js",
     "build:tailwind": "tailwindcss -i ./assets/css/style.css -o ./public/css/style.css --minify",
-    "compress:js": "node ./src/js-compress.js",
-    "node-server:dev": "node src/dev-server.js",
-    "build:html": "node ./src/html-build.js"
+    "compress:js": "node ./src/js-compress.js"
   },
   "author": "Phillip Harrington <phillip@phillipharrington.com>",
   "license": "MIT",
