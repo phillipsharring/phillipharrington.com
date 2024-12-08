@@ -1,0 +1,13 @@
+<% with (locals || { blank: false }) { %> <% if (blank) { %>
+<a
+  href="<%= to %>"
+  class="font-normal text-blue-600 underline"
+  rel="nofollow noopener noreferrer"
+  target="_blank"
+  ><%- content %></a
+>
+<% } else { %>
+<a href="<%= to %>" class="font-normal text-blue-600 underline"
+  ><%- content %></a
+>
+<% } %> <% } %>
