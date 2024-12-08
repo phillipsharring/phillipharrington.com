@@ -133,22 +133,19 @@ fs.readdirSync(CONTENT_DIR).forEach((file) => {
   });
 
   const layoutDom = new JSDOM(renderedLayout);
-  console.log(layoutDom.serialize());
 
   // Render nested components recursively
   renderComponents(layoutDom, components);
 
   // Minify and write output
-  // const minifiedHtml = minify(layoutDom.serialize(), {
-  //   removeAttributeQuotes: true,
-  //   collapseWhitespace: true,
-  //   removeComments: true,
-  //   removeRedundantAttributes: true,
-  //   removeScriptTypeAttributes: true,
-  //   removeTagWhitespace: true,
-  // });
-
-  const minifiedHtml = layoutDom.serialize();
+  const minifiedHtml = minify(layoutDom.serialize(), {
+    removeAttributeQuotes: true,
+    collapseWhitespace: true,
+    removeComments: true,
+    removeRedundantAttributes: true,
+    removeScriptTypeAttributes: true,
+    removeTagWhitespace: true,
+  });
 
   fs.writeFileSync(outputPath, minifiedHtml, 'utf8');
   console.log(`Processed: ${filePath} -> ${outputPath}`);
