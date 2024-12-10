@@ -1,5 +1,5 @@
 <% with(locals || { metaDescription: '', metaKeywords: '', ogTitle: '',
-ogDescription: '', ogImage: '', path: '', yield: '' }) { %>
+ogDescription: '', ogImage: '', url: '', yield: '' }) { %>
 <!doctype html>
 <html lang="en" class="m-0 h-[100.09%] p-0">
   <head>
@@ -7,17 +7,16 @@ ogDescription: '', ogImage: '', path: '', yield: '' }) { %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= title %></title>
     <%- meta %>
+    <meta
+      property="og:url"
+      content="https://phillipharrington.com/<%= url %>"
+    />
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body id="body" class="relative m-0 flex h-full flex-col overflow-auto p-0">
     <a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>
     <layout-header></layout-header>
-    <main
-      id="main"
-      class="mx-auto flex min-h-max w-full flex-grow flex-col items-stretch justify-stretch px-3 text-xl text-mint-900 md:container sm:px-4 md:w-4/5 md:px-6 lg:w-3/4 lg:px-16"
-    >
-      <%- yield %>
-    </main>
+    <layout-main> <%- yield %> </layout-main>
     <layout-footer></layout-footer>
     <script src="/js/script.js"></script>
   </body>

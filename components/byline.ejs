@@ -1,0 +1,15 @@
+<% with (locals || { date: '', location: '', updated: false}) { %>
+<p
+  class="m-0 mb-5 flex flex-col items-baseline justify-start font-serif text-sm text-stone-600 sm:flex-row sm:text-base"
+>
+  <span class="italic"> <%- yield %> </span>
+  <% if (locals.date || locals.location) { %>
+  <span class="mx-1 hidden sm:inline">|</span>
+  <span class="text-nowrap italic"
+    ><% if (locals.updated) { %><strong>Updated: </strong> <% } %><%=
+    locals.date %><% if (locals.location) { %><% if (locals.date &&
+    locals.location) { %>, <% } %> <%= locals.location %><% } %></span
+  >
+  <% } %>
+</p>
+<% } %>

@@ -1,0 +1,9 @@
+<% with (locals || { to: '', blank: false }) { %> <% if (locals.blank) { %><a
+  href="<%= to %>"
+  class="font-normal text-blue-600 underline"
+  rel="nofollow noopener noreferrer"
+  target="_blank"
+  ><%- yield %></a
+><% } else { %><a href="<%= to %>" class="font-normal text-blue-600 underline"
+  ><%- yield %></a
+><% } %><% } %>
