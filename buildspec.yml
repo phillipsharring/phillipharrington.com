@@ -14,37 +14,31 @@ phases:
       nodejs: 20
     commands:
       - echo "Installing dependencies..."
-      - npm install # Install all required npm packages
+      - npm install
 
   build:
     on-failure: ABORT
     commands:
       - echo "Building project..."
-      - npm run build:components # Process HTML with template and minification
-      - npx tailwindcss -i ./assets/css/style.css -o ./public/css/style.css --minify # Build Tailwind CSS
-      - npm run compress:js # Minify JavaScript
+      - npm run build:components
+      - npx tailwindcss -i ./assets/css/style.css -o ./public/css/style.css --minify
+      - npm run compress:js
 
   post_build:
     on-failure: ABORT
     commands:
       - echo "Build complete. Files ready for deployment."
 
-      - echo $S3_BUCKET_NAME
-
-      # Remove old files from S3 bucket
-      - echo "Emptying bucket:"
+      - echo "Emptying bucket $S3_BUCKET_NAME"
       - aws s3 rm s3://$S3_BUCKET_NAME --recursive
 
-      # Sync the public directory to S3
-      - echo "Syncing public/ directory to S3 bucket:"
+      - echo "Syncing public/ directory to S3 bucket $S3_BUCKET_NAME"
       - aws s3 sync public/ s3://$S3_BUCKET_NAME --exact-timestamps
 
-      # Apply metadata for files without extensions
+      # Set metadata on the extension-less files
       - echo "Applying metadata for abstract URLs"
       - ./src/apply-metadata.sh
 
-      - echo $CLOUDFRONT_DISTRIBUTION_ID
-
-      # Invalidate CloudFront cache
-      - echo "Invalidating CloudFront cache for distribution:"
+      # Invalidate cloudfront cache
+      - echo "Invalidating CloudFront cache for distribution $CLOUDFRONT_DISTRIBUTION_ID"
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"

@@ -4,7 +4,6 @@ const { JSDOM } = require('jsdom');
 const ejs = require('ejs');
 const minify = require('html-minifier').minify;
 
-// Directories
 const COMPONENTS_DIR = './components';
 const LAYOUTS_DIR = './layouts';
 const CONTENT_DIR = './content';
@@ -13,10 +12,8 @@ const PUBLIC_DIR = './public';
 const excludeStripExtension = ['index.html', '404.html'];
 const me = 'Phillip Harrington';
 
-// Ensure output directory exists
 fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 
-// Utility: Load components dynamically
 const loadComponents = () => {
   const components = {};
 
@@ -36,10 +33,8 @@ const loadComponents = () => {
   return components;
 };
 
-// Process component files
 const components = loadComponents();
 
-// Extract metadata and variables from <head>
 const extractHeadData = (dom) => {
   const head = dom.window.document.head;
 
@@ -51,13 +46,6 @@ const extractHeadData = (dom) => {
   return { title, metaTags };
 };
 
-// Utility: Render a single template
-const renderTemplate = (template, attributes, content) => {
-  const data = { ...attributes, content };
-  return ejs.render(template, data);
-};
-
-// Recursively render custom components
 const renderComponents = (dom, components, data = {}) => {
   let hasCustomTags = true;
 
@@ -69,7 +57,6 @@ const renderComponents = (dom, components, data = {}) => {
         dom.window.document.getElementsByTagName(tagName),
       );
 
-      //
       if (elements.length > 0) {
         hasCustomTags = true;
       }
@@ -92,7 +79,6 @@ const renderComponents = (dom, components, data = {}) => {
           yield,
         });
 
-        // Replace the element with rendered HTML
         const placeholder = dom.window.document.createElement('div');
         placeholder.innerHTML = rendered;
 
@@ -111,20 +97,17 @@ fs.readdirSync(CONTENT_DIR).forEach((file) => {
 
   let outputFile = file;
   if (!excludeStripExtension.includes(file)) {
-    // Remove .ejs extension
+    // Remove extension
     outputFile = file.replace(/\.html$/, '');
   }
 
   const outputPath = path.join(PUBLIC_DIR, outputFile);
 
-  // Read content file and create JSDOM
   const html = fs.readFileSync(filePath, 'utf8');
   const dom = new JSDOM(html);
 
-  // Extract metadata and variables
   const { title, metaTags } = extractHeadData(dom);
 
-  // Replace <layout> tag with the layout component
   const layoutElement = dom.window.document.querySelector('layout');
   if (!layoutElement) {
     console.error(`No <layout> tag found in ${filePath}`);
@@ -136,15 +119,14 @@ fs.readdirSync(CONTENT_DIR).forEach((file) => {
     title: title.startsWith(me) ? title : `${title} | ${me}`,
     meta: metaTags,
     yield: layoutElement.innerHTML.trim(),
+    // the og:url
     url: outputFile !== 'index.html' ? outputFile : '',
   });
 
   const layoutDom = new JSDOM(renderedLayout);
 
-  // Render nested components recursively
   renderComponents(layoutDom, components);
 
-  // Minify and write output
   const minifiedHtml = minify(layoutDom.serialize(), {
     removeAttributeQuotes: true,
     collapseWhitespace: true,
