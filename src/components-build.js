@@ -6,6 +6,7 @@ const minify = require('html-minifier').minify;
 
 // Directories
 const COMPONENTS_DIR = './components';
+const LAYOUTS_DIR = './layouts';
 const CONTENT_DIR = './content';
 const PUBLIC_DIR = './public';
 
@@ -18,13 +19,18 @@ fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 // Utility: Load components dynamically
 const loadComponents = () => {
   const components = {};
-  const files = fs.readdirSync(COMPONENTS_DIR);
 
-  files.forEach((file) => {
-    const tagName = path.basename(file, path.extname(file)); // e.g., "layout"
-    const templatePath = path.join(COMPONENTS_DIR, file);
-    const templateHtml = fs.readFileSync(templatePath, 'utf8');
-    components[tagName] = templateHtml.trim();
+  const files1 = fs.readdirSync(LAYOUTS_DIR);
+  const files2 = fs.readdirSync(COMPONENTS_DIR);
+  const allFiles = { layouts: files1, components: files2 };
+
+  Object.entries(allFiles).forEach(([dir, files]) => {
+    files.forEach((file) => {
+      const tagName = path.basename(file, path.extname(file));
+      const templatePath = path.join(dir, file);
+      const templateHtml = fs.readFileSync(templatePath, 'utf8');
+      components[tagName] = templateHtml.trim();
+    });
   });
 
   return components;
@@ -125,11 +131,12 @@ fs.readdirSync(CONTENT_DIR).forEach((file) => {
     return;
   }
 
-  const layoutTemplate = components['layout'];
+  const layoutTemplate = components['default'];
   const renderedLayout = ejs.render(layoutTemplate, {
     title: title.startsWith(me) ? title : `${title} | ${me}`,
     meta: metaTags,
     yield: layoutElement.innerHTML.trim(),
+    url: outputFile !== 'index.html' ? outputFile : '',
   });
 
   const layoutDom = new JSDOM(renderedLayout);

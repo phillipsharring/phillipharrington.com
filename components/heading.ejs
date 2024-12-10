@@ -4,23 +4,23 @@
   tabindex="-1"
   ><span class="icon icon-link"></span></a
 >`;%> <% if (locals.level == 1) { %>
-<h1 id="<%= locals.id %>" class="mb-2 text-5xl font-black">
+<h1 id="<%= locals.id %>" class="mb-2 text-4xl font-black">
   <%- anchor %> <%- yield %>
 </h1>
 <% } if (locals.level == 2) { %>
-<h2 id="<%= locals.id %>" class="text-4xl font-extrabold">
+<h2 id="<%= locals.id %>" class="text-3xl font-extrabold">
   <%- anchor %> <%- yield %>
 </h2>
 <% } if (locals.level == 3) { %>
-<h3 id="<%= locals.id %>" class="mb-2 text-5xl font-black">
+<h3 id="<%= locals.id %>" class="mb-2 text-2xl font-black">
   <%- anchor %> <%- yield %>
-</heading>
+</h3>
 <% } if (locals.level == 4) { %>
-<h4 id="<%= locals.id %>" class="text-2xl font-semibold">
+<h4 id="<%= locals.id %>" class="text-xl font-semibold">
   <%- anchor %> <%- yield %>
 </h4>
 <% } if (locals.level == 5) { %>
-<h5 id="<%= locals.id %>" class="mb-2 text-5xl font-black">
+<h5 id="<%= locals.id %>" class="mb-2 text-lg font-black">
   <%- anchor %> <%- yield %>
 </h5>
 <% } %> <% } %>

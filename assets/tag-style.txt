@@ -1,24 +1,8 @@
-<a class="font-normal text-blue-600 underline">
-
-<p class="m-0 font-serif text-lg text-mine-shaft-600">
-    <span class="italic">Phillip Harrington</span>
-    <span class="mx-1">|</span>
-    <span class="italic">Nov 2024</span>
-</p>
-
-<section class="space-y-5">
-
-<blockquote class="inline-block space-y-4 bg-yinmn-blue-100 p-4 pr-20 font-serif text-2xl italic">
-
-<p class="font-semibold italic">
-
-<ul class="space-y-1">
-
 <figure class="float-right mb-12 ml-12">
 <img
 src="/img/architect.jpg"
 al="Upset Architect"
-class="border border-4 border-blue-950"
+class="border border-4 border-gray-900"
 />
 <figcaption class="mt-2 text-center font-serif italic">
 Upset Architect
@@ -29,7 +13,7 @@ Upset Architect
 
 <div class="mb-12 flex justify-center">
 <div class="float-right mb-12 ml-12">
-<picture class="mx-auto my-0 inline-block border-4 border-blue-950"
+<picture class="mx-auto my-0 inline-block border-4 border-gray-900"
 >
 
 </picture>
