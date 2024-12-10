@@ -13,11 +13,16 @@ ogDescription: '', ogImage: '', url: '', yield: '' }) { %>
     />
     <link rel="stylesheet" href="/css/style.css" />
   </head>
-  <body id="body" class="relative m-0 flex h-full flex-col overflow-auto p-0">
+  <body id="body" class="relative m-0 h-full p-0 md:bg-slate-50">
     <a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>
-    <layout-header></layout-header>
-    <layout-main> <%- yield %> </layout-main>
-    <layout-footer></layout-footer>
+    <div
+      class="flex h-full flex-col overflow-auto lg:container md:mx-auto md:w-4/5 md:bg-white md:shadow-lg lg:w-3/4"
+      id="wrapper"
+    >
+      <layout-header></layout-header>
+      <layout-main> <%- yield %> </layout-main>
+      <layout-footer></layout-footer>
+    </div>
     <script src="/js/script.js"></script>
   </body>
 </html>

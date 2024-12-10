@@ -47,18 +47,20 @@ seo - pages are more important
   <body>
     <layout>
       <article>
-        <figure class="float-end m-0 mb-2 ml-2">
+        <figure
+          class="mb-10 w-full sm:float-right sm:m-0 sm:mb-4 sm:ml-4 sm:w-1/3"
+        >
           <img
             src="/img/phillip-harrington.png"
             alt="Phillip Harrington"
-            class="h-64 border-4 border-gray-900"
+            class="mx-auto w-full max-w-72 border-4 border-gray-900 sm:w-full"
           />
         </figure>
         <h1 class="mb-5 text-4xl font-black">Phillip Harrington</h1>
         <h2 class="mb-5 text-3xl font-extrabold">
           Lead Software Engineer &amp; Musician
         </h2>
-        <section class="mb-5 space-y-5">
+        <spaced>
           <p>
             I can help you modernize your code base get your collective
             technology stuff together. 25+ years development experience.
@@ -68,14 +70,10 @@ seo - pages are more important
             And I can drum my heart out in your band, do BVGs, write songs,
             arrange, etc.
           </p>
-        </section>
-        <section class="mb-12 space-y-5">
           <heading level="3">Recent Blog Posts</heading>
           <list>
             <lnk to="/did-you-run-this-code">Did You Run This Code?!</lnk>
           </list>
-        </section>
-        <section class="mb-12 space-y-5">
           <heading level="3">Selected Work History</heading>
           <div class="flex flex-row flex-wrap justify-center gap-8">
             <!-- flex flex-col flex-wrap items-center justify-center gap-8 lg:flex-row" -->
@@ -101,8 +99,6 @@ seo - pages are more important
               alt="Walt Disney World"
             />
           </div>
-        </section>
-        <section class="mb-12 space-y-5">
           <heading level="3">Technologies</heading>
           <div class="flex flex-row flex-wrap justify-center gap-8">
             <img src="/img/laravel.svg" class="h-14 sm:h-24" alt="Laravel" />
@@ -115,8 +111,6 @@ seo - pages are more important
               alt="JavaScript"
             />
           </div>
-        </section>
-        <section class="mb-12 space-y-5">
           <heading level="3">Appears On</heading>
           <div class="flex flex-row flex-wrap justify-center gap-8">
             <img
@@ -145,8 +139,6 @@ seo - pages are more important
               alt="Signals from Satellites Dotted Lines EP"
             />
           </div>
-        </section>
-        <section class="mb-12 space-y-5">
           <heading level="3">What people are saying</heading>
           <quote citation="Jay Letendre , CEO &amp; Co-founder at VeriChem">
             <p>
@@ -163,7 +155,7 @@ Kairios, Inc."
               hands-on technical proficiency."
             </p>
           </quote>
-        </section>
+        </spaced>
         <!-- </div> -->
       </article>
     </layout>
