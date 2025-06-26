@@ -24,21 +24,15 @@ const bars = [
   },
   {
     element: bar1,
-    classLists: [
-      '-translate-y-0.5 bg-stone-300',
-      'bg-stone-800 rotate-45 translate-y-1',
-    ],
+    classLists: ['-translate-y-0.5', 'rotate-45 translate-y-1'],
   },
   {
     element: bar2,
-    classLists: ['opacity-100 bg-stone-300', 'bg-stone-800 opacity-0'],
+    classLists: ['opacity-100', 'opacity-0'],
   },
   {
     element: bar3,
-    classLists: [
-      'translate-y-0.5 bg-stone-300',
-      'bg-stone-800 -rotate-45 -translate-y-1',
-    ],
+    classLists: ['translate-y-0.5', '-rotate-45 -translate-y-1'],
   },
 ];
 
