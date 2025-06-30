@@ -34,17 +34,20 @@
             during the build. Maybe I'll do a write-up on it one of these days.
           </p>
           <p>
-            I used to use Nuxt and Markdown and a bunch of stuff, but found that
-            it was cool but sometimes led to annoying dependency issues.
+            The code is
+            <lnk to="https://github.com/phillipsharring/phillipharrington.com"
+              >here</lnk
+            >, if you're curious.
           </p>
           <heading level="3" id="abstract-urls">Abstract URLs</heading>
           <p>
             The abstract URLs, e.g.
-            <cde>/about</cde> are simply files without an extension containing
-            the minified HTML output. I apply system metadata in the S3 bucket
-            so they have <cde>Content-type: text/html</cde> applied to them and
-            will render in the browser. No routing or anything. It's no SPA, but
-            the pages load so blindingly fast, it's just as good.
+            <cde>/about</cde> are simply HTML files without an extension
+            containing the minified output. During the build, I apply system
+            metadata in the S3 bucket so they have
+            <cde>Content-type: text/html</cde> applied to them and will render
+            in the browser. No SPA. No routing or anything. But the pages load
+            fast, it's just as good.
           </p>
           <p>
             Locally I develop with a Browsersync script that handles refreshing
@@ -54,24 +57,27 @@
             >A TailwindCSS Convert, Finally</heading
           >
           <p>
-            The site uses TailwindCSS, which I am only a recent convert to, but
-            the notion of using it with a team and having a common framework for
-            CSS is what sold me, so I'm using it here, too. It's honestly one
-            less thing to worry about.
+            The site uses TailwindCSS, which I finally converted to, but the
+            notion of using it with a team and having a common framework for CSS
+            is what sold me, so I'm using it here, too. It's honestly one less
+            thing to worry about.
           </p>
           <p>
             Other than that and the JS hamburger menu script, which I never
-            update, all I have to do is write. No node-sass or any other junk
-            just to slap together some HTML. It's refreshing.
+            update, all I have to do is write content, which I hardly ever get
+            around to doing. No node-sass or any other junk just to slap
+            together some HTML. It's refreshing.
           </p>
           <heading level="3" id="hosting-is-just-s3"
             >Hosting is Just S3</heading
           >
           <p>
             The site is served from an AWS S3 bucket with a CloudFront
-            distribution in front of it, which is why the pages load so
-            blindingly fast. I use AWS for the SSL certificate and domain name,
-            too. No server-side junk. No container.
+            distribution in front of it, which is why the pages load so fast.
+            (And even that seems like an extravagance, when I could just as
+            easily slap this mother onto GitHub pages and put Cloudflare in
+            front of it.) I also use AWS for the SSL certificate and domain
+            name, too. No database. No server-side junk. No container.
           </p>
         </spaced>
       </article>
