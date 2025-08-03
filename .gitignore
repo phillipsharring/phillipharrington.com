@@ -13,3 +13,4 @@ public/*
 
 # Ignore VSCode settings
 .vscode
+node_modules
