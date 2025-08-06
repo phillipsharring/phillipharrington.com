@@ -39,5 +39,16 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      const newUtilities = {
+        '.mbs-0': {
+          'margin-block-start': '0 !important',
+        },
+        // add other spacing values if needed
+      };
+
+      addUtilities(newUtilities, ['responsive', 'hover']);
+    },
+  ],
 };
