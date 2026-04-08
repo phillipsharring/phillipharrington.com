@@ -1,16 +1,4 @@
-# Exclude everything in the public directory
-public/*
-
-# Re-include subdirectories
-!public/img/
-
-# Include specific file types
-!public/*.png
-!public/*.xml
-!public/*.ico
-!public/*.json
-!public/*.txt
-
-# Ignore VSCode settings
-.vscode
 node_modules
+dist
+.DS_Store
+.vite

@@ -1,35 +1,20 @@
 {
-  "name": "phillipsharring-phillipharrington.com",
-  "version": "1.0.0",
-  "description": "Phillip Harrington dot com",
-  "main": "index.js",
-  "scripts": {
-    "start": "npm-run-all --parallel server:dev watch:html watch:tailwind watch:js watch:components-build",
-    "build": "npm-run-all build:components build:tailwind compress:js",
-    "server:dev": "node ./browsersync-config.js",
-    "watch:html": "nodemon --watch ./content --watch ./components --watch ./layouts -e html,ejs -x \"npm run build:components\"",
-    "watch:tailwind": "tailwindcss -i ./assets/css/style.css -o ./public/css/style.css --watch --minify",
-    "watch:js": "nodemon --watch ./assets/js -e js -x \"npm run compress:js\"",
-    "watch:components-build": "nodemon --watch ./src/components-build.js -e js -x \"npm run build:components\"",
-    "build:components": "node ./src/components-build.js",
-    "build:tailwind": "tailwindcss -i ./assets/css/style.css -o ./public/css/style.css --minify",
-    "compress:js": "node ./src/js-compress.js"
-  },
-  "author": "Phillip Harrington <phillip@phillipharrington.com>",
-  "license": "MIT",
-  "devDependencies": {
-    "browser-sync": "^3.0.3",
-    "ejs": "^3.1.10",
-    "eslint": "^8.57.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.29.1",
-    "html-minifier": "^4.0.0",
-    "jsdom": "^25.0.1",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.2.5",
-    "prettier-plugin-ejs": "^1.0.3",
-    "prettier-plugin-tailwindcss": "^0.5.14",
-    "tailwindcss": "^3.4.3",
-    "terser": "^5.36.0"
-  }
+    "name": "phillipharrington.com",
+    "version": "1.0.0",
+    "description": "phillipharrington.com",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build && graspr-build-pages",
+        "preview": "vite preview"
+    },
+    "author": "Phillip Harrington <phillip@phillipharrington.com> (https://phillipharrington.com/)",
+    "license": "MIT",
+    "devDependencies": {
+        "@phillipsharring/graspr-build": "^0.1.0",
+        "@tailwindcss/vite": "^4.1.18",
+        "tailwindcss": "^4.1.18",
+        "vite": "^7.3.0"
+    }
 }
