@@ -1,0 +1,4 @@
+<p class="m-0 mb-5 flex flex-col items-baseline justify-start font-serif text-sm text-stone-600 sm:flex-row sm:text-base">
+    <span class="italic">[[slot]]</span>
+    [[#if date]]<span class="mx-1 hidden sm:inline">|</span><span class="text-nowrap italic">[[#if updated]]<strong>Updated: </strong>[[/if]][[date]][[#if location]], [[location]][[/if]]</span>[[else]][[#if location]]<span class="mx-1 hidden sm:inline">|</span><span class="text-nowrap italic">[[location]]</span>[[/if]][[/if]]
+</p>
