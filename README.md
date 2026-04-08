@@ -45,6 +45,9 @@ scripts/
 ├── flatten-dist.mjs           rename dist/<route>/index.html → dist/<route> for abstract URLs
 └── apply-metadata.sh          re-upload extensionless files with Content-Type: text/html
 
+cloud/
+└── cloudfront-redirects.js    viewer-request function source — deployed manually
+
 site.config.js                 siteName, siteUrl, copyright — injected into layouts via [[propName]]
 vite.config.js                 vite + graspr-build plugin + tailwind plugin
 buildspec.yml                  AWS CodeBuild → S3 sync → CloudFront invalidate
@@ -79,9 +82,12 @@ Pages are served as extensionless files (`/about`, not `/about/` or `/about/inde
 
 Once flattened, `apply-metadata.sh` re-uploads each extensionless file to S3 with `--content-type text/html`, because S3 can't infer Content-Type without an extension and CloudFront would otherwise serve the raw bytes as plain text.
 
-A small CloudFront function (in the distribution, not in this repo) handles the redirects:
+A small CloudFront viewer-request function handles the redirects:
 - `/about/` → 301 → `/about`
+- `/about/index.html` → 301 → `/about`
 - `/index.html` → 301 → `/`
+
+The source is in [`cloud/cloudfront-redirects.js`](cloud/cloudfront-redirects.js). The deployed copy lives in the CloudFront distribution under the function name `PhdcRedirects` — CloudFront does **not** auto-deploy from this repo, so when the file changes the function has to be updated manually (AWS console or CLI) and re-published to the distribution.
 
 ## Tailwind v4 caveat
 
