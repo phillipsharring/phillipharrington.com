@@ -1,11 +1,11 @@
 <layout name="default" title="Colophon" />
 <page-head>
-<meta name="description" content="Learn about the minimalist, fast-loading architecture of phillipharrington.com, built with static HTML, TailwindCSS, npm scripts, and hosted on AWS S3 with CloudFront. Updated Dec 2024." />
-<meta name="keywords" content="Phillip Harrington, colophon, static HTML, AWS S3 hosting, CloudFront, TailwindCSS, minimal web design, fast-loading websites, npm scripts, abstract URLs, Browsersync, SSL certificate, AWS hosting, simple web development" />
+<meta name="description" content="Learn about the minimalist, fast-loading architecture of phillipharrington.com, built with Graspr, Vite, and Tailwind v4, hosted on AWS S3 with CloudFront. Updated Apr 2026." />
+<meta name="keywords" content="Phillip Harrington, colophon, static HTML, AWS S3 hosting, CloudFront, Tailwind v4, Graspr, Vite, minimal web design, fast-loading websites, abstract URLs, SSL certificate, AWS hosting, simple web development" />
 </page-head>
 <article>
     <heading h1 id="colophon">Colophon</heading>
-    <byline date="Dec, 2024" updated location="Smithfield, NC">
+    <byline date="Apr, 2026" updated location="Smithfield, NC">
         <span class="italic">
             for
             <cde>phillipharrington.com</cde>
@@ -15,11 +15,13 @@
         <img src="/img/html.svg" class="float-right h-48" />
         <heading h3 id="my-cms-is-just-html-kinda">My CMS is Just HTML... Kinda</heading>
         <p>
-            This website is static HTML built with a handful of npm scripts I
-            made for applying a global template, compiling the TailwindCSS, and
-            minification. The "Kinda" part is I'm experimenting with little EJS
-            "components" for frequently used bits of HTML. These get baked in
-            during the build. Maybe I'll do a write-up on it one of these days.
+            This website is static HTML built with Vite, Tailwind, and
+            <cde>graspr-build</cde> — a small build package I made that turns
+            custom HTML tags into plain HTML at build time. The "Kinda" part is
+            those custom tags: I write things like <cde>&lt;lnk&gt;</cde>,
+            <cde>&lt;heading&gt;</cde>, and <cde>&lt;spaced&gt;</cde> instead
+            of repeating the same markup on every page. Maybe I'll do a
+            write-up on it one of these days.
         </p>
         <p>
             To write an article, I typically dictate my thoughts into Notes on
@@ -37,15 +39,18 @@
         <p>
             The abstract URLs, e.g.
             <cde>/about</cde> are simply HTML files without an extension
-            containing the minified output. During the build, I apply system
+            containing the rendered output. During the build, I apply system
             metadata in the S3 bucket so they have
             <cde>Content-type: text/html</cde> applied to them and will render
             in the browser. No SPA. No routing or anything. But the pages load
             fast, it's just as good.
         </p>
         <p>
-            Locally I develop with a Browsersync script that handles refreshing
-            the browser and the abstract URLs, too, which is neat.
+            Locally I develop with the Vite dev server, which handles
+            live-reload and serves the abstract URLs the same way production
+            does — no extension, no trailing slash, no redirect. A small Vite
+            plugin from <cde>graspr-build</cde> renders each page on the fly
+            from the source files in <cde>content/pages</cde>.
         </p>
         <heading h3 id="a-tailwindcss-convert-finally">A TailwindCSS Convert, Finally</heading>
         <p>
