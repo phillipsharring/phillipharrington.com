@@ -1,0 +1,27 @@
+<!doctype html>
+[[gitSha]]
+<html lang="en" class="m-0 h-[100.09%] p-0">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>[[title]][[siteName]]</title>
+        <meta property="og:url" content="[[siteUrl]]" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/manifest.json" />
+        [[cssHref]]
+        [[jsSrc]]
+        [[pageHead]]
+    </head>
+    <body id="body" class="relative m-0 h-full overflow-auto p-0 md:bg-slate-100">
+        <a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>
+        <div id="wrapper" class="flex min-h-full flex-col sm:mx-auto sm:max-w-4xl md:bg-white md:shadow-lg">
+            <layout-header></layout-header>
+            <main id="main" class="mx-auto flex min-h-max w-full flex-grow flex-col items-stretch justify-stretch px-3 text-lg text-stone-900 sm:px-4 md:px-6 lg:px-16">
+                [[app]]
+            </main>
+            <layout-footer></layout-footer>
+        </div>
+    </body>
+</html>

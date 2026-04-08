@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+@source "../../content/**/*.html";
+@source "../**/*.js";
+
+@theme {
+    --color-atlantis-50: #f5faeb;
+    --color-atlantis-100: #e7f4d3;
+    --color-atlantis-200: #d2ebab;
+    --color-atlantis-300: #b3dc7a;
+    --color-atlantis-400: #8dc640;
+    --color-atlantis-500: #78b032;
+    --color-atlantis-600: #5c8c24;
+    --color-atlantis-700: #476b20;
+    --color-atlantis-800: #3a561e;
+    --color-atlantis-900: #33491e;
+    --color-atlantis-950: #19280b;
+
+    --color-deep-cove-50: #ecf3ff;
+    --color-deep-cove-100: #dce8ff;
+    --color-deep-cove-200: #c0d3ff;
+    --color-deep-cove-300: #9ab6ff;
+    --color-deep-cove-400: #728cff;
+    --color-deep-cove-500: #5164ff;
+    --color-deep-cove-600: #3238f9;
+    --color-deep-cove-700: #2629dc;
+    --color-deep-cove-800: #2226b1;
+    --color-deep-cove-900: #242a8b;
+    --color-deep-cove-950: #0f103a;
+}
+
+@utility mbs-0 {
+    margin-block-start: 0 !important;
+}
+
+::-moz-selection {
+    background-color: #7bc61c;
+    color: #000;
+}
+
+::selection {
+    background-color: #7bc61c;
+    color: #000;
+}
+
+.bg-left-quote {
+    background-image: url(/img/left-quotes.png);
+    background-repeat: no-repeat;
+    background-size: 80px;
+    background-position: -10px -10px;
+}
+
+/*
+ * Workaround for tailwindcss@4.2.2 bug: the generated `.space-y-N > :not(:last-child)`
+ * selector ships with an extra unmatched `)` (e.g. `:not(:last-child))`), so the entire
+ * rule is invalid CSS and gets dropped by every browser. The site uses space-y-1/3/5
+ * via the <spaced>, <list>, <band>, <drumset> components, and without these overrides
+ * everything wrapped in <spaced> renders with no inter-element margin at all.
+ *
+ * These are valid hand-written equivalents — same selector minus the broken paren,
+ * same margin values. Remove this block once Tailwind ships a fix and we upgrade.
+ */
+.space-y-1 > :not(:last-child) { margin-bottom: calc(var(--spacing) * 1); }
+.space-y-3 > :not(:last-child) { margin-bottom: calc(var(--spacing) * 3); }
+.space-y-5 > :not(:last-child) { margin-bottom: calc(var(--spacing) * 5); }
