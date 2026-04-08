@@ -1,12 +1,6 @@
 version: 0.2
 
 env:
-  # NOTE: $CLOUDFRONT_DISTRIBUTION_ID currently has a leading space in the
-  # CodeBuild project's environment variables config (AWS console → CodeBuild
-  # → project → Edit → Environment → Environment variables). When that's
-  # cleaned up, the cloudfront echo command below can go back to the normal
-  # double-quoted form. Until then the unquoted echo defensively swallows the
-  # leading space via shell word splitting.
   variables:
     S3_BUCKET_NAME: $S3_BUCKET_NAME
     CLOUDFRONT_DISTRIBUTION_ID: $CLOUDFRONT_DISTRIBUTION_ID
@@ -54,9 +48,6 @@ phases:
       - echo "Applying metadata for abstract URLs"
       - ./scripts/apply-metadata.sh
 
-      # Invalidate CloudFront cache. Echo is unquoted around the var so the
-      # shell collapses any incidental whitespace in $CLOUDFRONT_DISTRIBUTION_ID
-      # — see the comment in env.variables above for the CodeBuild env var fix
-      # that should remove the need for this defensive form.
-      - echo Invalidating CloudFront cache for distribution $CLOUDFRONT_DISTRIBUTION_ID
+      # Invalidate CloudFront cache
+      - echo "Invalidating CloudFront cache for distribution $CLOUDFRONT_DISTRIBUTION_ID"
       - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
