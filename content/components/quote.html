@@ -1,4 +1,9 @@
-<blockquote class="bg-left-quote relative block w-full overflow-hidden rounded-2xl bg-stone-100 px-10 py-6 font-serif text-lg italic sm:mx-auto sm:w-5/6">
-    [[slot]]
-    [[#if citation]]<footer><cite class="float-right mt-4 text-sm">&mdash; [[citation]]</cite></footer>[[/if]]
+<blockquote
+    class="border-th-accent-soft bg-th-tint text-th-sub relative block w-full overflow-hidden rounded-lg border-l-4 px-8 py-6 text-lg italic sm:mx-auto sm:w-5/6"
+>
+    [[slot]] [[#if citation]]
+    <footer>
+        <cite class="text-th-faint float-right mt-4 text-sm not-italic">&mdash; [[citation]]</cite>
+    </footer>
+    [[/if]]
 </blockquote>

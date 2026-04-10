@@ -7,13 +7,16 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build && graspr-build-pages",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "format": "prettier --write 'content/**/*.html' 'src/**/*.{js,css}' && bash scripts/fix-format.sh"
     },
     "author": "Phillip Harrington <phillip@phillipharrington.com> (https://phillipharrington.com/)",
     "license": "MIT",
     "devDependencies": {
         "@phillipsharring/graspr-build": "^0.2.1",
         "@tailwindcss/vite": "^4.1.18",
+        "prettier": "^3.8.2",
+        "prettier-plugin-tailwindcss": "^0.7.2",
         "tailwindcss": "^4.1.18",
         "vite": "^7.3.0"
     }

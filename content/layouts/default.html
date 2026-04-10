@@ -10,15 +10,31 @@
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/manifest.json" />
-        [[cssHref]]
-        [[jsSrc]]
-        [[pageHead]]
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Manrope:wght@300;400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script>
+            (function () {
+                var p = localStorage.getItem('theme') || 'system';
+                var d =
+                    p === 'dark' ||
+                    (p === 'system' && matchMedia('(prefers-color-scheme:dark)').matches);
+                document.documentElement.dataset.theme = d ? 'dark' : 'light';
+            })();
+        </script>
+        [[cssHref]] [[jsSrc]] [[pageHead]]
     </head>
-    <body id="body" class="relative m-0 h-full overflow-auto p-0 md:bg-slate-100">
+    <body id="body" class="bg-th-page font-body text-th-text relative m-0 h-full overflow-auto p-0">
         <a href="#main" class="sr-only focus:not-sr-only">Skip to content</a>
-        <div id="wrapper" class="flex min-h-full flex-col sm:mx-auto sm:max-w-4xl md:bg-white md:shadow-lg">
+        <div id="wrapper" class="flex min-h-full flex-col">
             <layout-header></layout-header>
-            <main id="main" class="mx-auto flex min-h-max w-full flex-grow flex-col items-stretch justify-stretch px-3 text-lg text-stone-900 sm:px-4 md:px-6 lg:px-16">
+            <main
+                id="main"
+                class="mx-auto flex min-h-max w-full max-w-5xl flex-grow flex-col items-stretch justify-stretch px-4 pt-8 text-lg sm:px-6 sm:pt-12 md:px-8 md:pt-16 lg:px-16"
+            >
                 [[app]]
             </main>
             <layout-footer></layout-footer>

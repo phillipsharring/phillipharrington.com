@@ -1,0 +1,9 @@
+dist
+node_modules
+
+# Inline component templates — prettier adds whitespace around [[slot]] inside
+# inline elements (<a>, <code>, <span>), which causes punctuation after the
+# expanded component to render with an unwanted space. These must stay compact.
+content/components/lnk.html
+content/components/cde.html
+content/components/abr.html
