@@ -1,123 +1,135 @@
 <layout name="default" title="HTML Is Fun Again" />
 <page-head>
-<meta name="description" content="How phillipharrington.com is built: Vite, Tailwind v4, and a tiny custom build package called graspr-build that turns custom HTML tags into plain HTML at build time." />
-<meta name="keywords" content="Phillip Harrington, graspr-build, static site, Vite, Tailwind v4, custom HTML tags, EJS, AWS S3, CloudFront, build tool, static HTML, no SPA" />
-<meta property="og:description" content="I made a tiny build package called graspr-build that turns custom HTML tags into plain HTML at build time. The site is just HTML again. And I love it." />
-<meta property="og:image" content="https://phillipharrington.com/img/html-is-fun-again.png" />
-<meta property="og:image:alt" content="HTML Is Fun Again" />
+    <meta
+        name="description"
+        content="How phillipharrington.com is built: Vite, Tailwind v4, and a tiny custom build package called graspr-build that turns custom HTML tags into plain HTML at build time."
+    />
+    <meta
+        name="keywords"
+        content="Phillip Harrington, graspr-build, static site, Vite, Tailwind v4, custom HTML tags, EJS, AWS S3, CloudFront, build tool, static HTML, no SPA"
+    />
+    <meta
+        property="og:description"
+        content="I made a tiny build package called graspr-build that turns custom HTML tags into plain HTML at build time. The site is just HTML again. And I love it."
+    />
+    <meta property="og:image" content="https://phillipharrington.com/img/html-is-fun-again.png" />
+    <meta property="og:image:alt" content="HTML Is Fun Again" />
 </page-head>
 <article>
     <spaced>
-        <fig src="/img/html-is-fun-again.png" alt="HTML Is Fun Again" caption="HTML, but with my favorite shortcuts."></fig>
+        <fig
+            src="/img/html-is-fun-again.png"
+            alt="HTML Is Fun Again"
+            caption="HTML, but with my favorite shortcuts."
+        ></fig>
         <heading h1 id="html-is-fun-again">HTML Is Fun Again</heading>
-        <byline date="Apr 2026"> Phillip Harrington </byline>
+        <byline date="Apr 2026">Phillip Harrington</byline>
         <p>
-            <strong>TL;DR:</strong> I made a tiny build package called
-            <cde>graspr-build</cde> that turns custom HTML tags into plain HTML
-            at build time. The site is just HTML again. And I love it.
+            <strong>TL;DR:</strong>
+            I made a tiny build package called
+            <cde>graspr-build</cde>
+            that turns custom HTML tags into plain HTML at build time. The site is just HTML again.
+            And I love it.
         </p>
         <hr />
         <p>
-            In the <lnk to="/colophon">colophon</lnk> I said,
+            In the
+            <lnk to="/colophon">colophon</lnk>
+            I said,
             <em>"Maybe I'll do a write-up on it one of these days."</em>
             Today is one of those days.
         </p>
         <heading h4>The previous version was fine</heading>
         <p>
-            Before this, the site was built with EJS templates and a little
-            Node script that stitched the partials together. It worked! It had
-            a header partial and a footer partial, I'd drop a new file in,
-            run the build, and away we went. But "fine" isn't fun.
+            Before this, the site was built with EJS templates and a little Node script that
+            stitched the partials together. It worked! It had a header partial and a footer partial,
+            I'd drop a new file in, run the build, and away we went. But "fine" isn't fun.
         </p>
         <p>
-            Every time I went to add a new page, I'd find myself copying the
-            same boilerplate from the last one I made, then forgetting to
-            update the title, then noticing six months later. The whole
-            experience was a notch fancier than writing raw HTML and a notch
-            clunkier than I wanted. Not the end of the world. But also...
-            not the dream.
+            Every time I went to add a new page, I'd find myself copying the same boilerplate from
+            the last one I made, then forgetting to update the title, then noticing six months
+            later. The whole experience was a notch fancier than writing raw HTML and a notch
+            clunkier than I wanted. Not the end of the world. But also... not the dream.
         </p>
         <heading h4>So I wrote graspr-build</heading>
         <p>
-            <cde>graspr-build</cde> is a tiny package I made that does one
-            thing: it turns custom HTML tags into plain HTML at build time.
-            That's it. That's the whole trick.
+            <cde>graspr-build</cde>
+            is a tiny package I made that does one thing: it turns custom HTML tags into plain HTML
+            at build time. That's it. That's the whole trick.
         </p>
         <p>
-            Instead of writing the same <cde>&lt;a&gt;</cde> tag with the same
-            five Tailwind classes every time I want a link, I write
-            <cde>&lt;lnk to="/colophon"&gt;colophon&lt;/lnk&gt;</cde> and let
-            <cde>graspr-build</cde> expand it. Same for headings, figures,
-            lists, code spans, bylines, the whole works. If I find myself
-            writing the same chunk of markup twice, I make a new tag for it
-            and never type the long form again.
+            Instead of writing the same
+            <cde>&lt;a&gt;</cde>
+            tag with the same five Tailwind classes every time I want a link, I write
+            <cde>&lt;lnk to="/colophon"&gt;colophon&lt;/lnk&gt;</cde>
+            and let
+            <cde>graspr-build</cde>
+            expand it. Same for headings, figures, lists, code spans, bylines, the whole works. If I
+            find myself writing the same chunk of markup twice, I make a new tag for it and never
+            type the long form again.
         </p>
         <p>
-            My pages don't look like a wall of div soup anymore. They look
-            like... HTML. Tiny, declarative HTML that says what the thing
-            <em>is</em> and gets out of the way.
+            My pages don't look like a wall of div soup anymore. They look like... HTML. Tiny,
+            declarative HTML that says what the thing
+            <em>is</em>
+            and gets out of the way.
         </p>
         <heading h4>Writing a page is just writing a page</heading>
         <p>
             To publish an article, I make one HTML file in
-            <cde>content/pages</cde>. The filename becomes the URL. The first
-            line picks the layout. After that I write the content using
-            whichever custom tags I feel like using. There's no front matter
-            to wrangle, no markdown plugin chain to debug, no "now go register
-            this in the index file" step. The build script handles the rest.
+            <cde>content/pages</cde>. The filename becomes the URL. The first line picks the layout.
+            After that I write the content using whichever custom tags I feel like using. There's no
+            front matter to wrangle, no markdown plugin chain to debug, no "now go register this in
+            the index file" step. The build script handles the rest.
         </p>
-        <p>
-            When it's that simple, you'd think I would publish more often. 😂
-        </p>
+        <p>When it's that simple, you'd think I would publish more often. 😂</p>
         <heading h4>The dev server matches prod</heading>
         <p>
-            The other thing <cde>graspr-build</cde> ships is a small Vite
-            plugin that serves the abstract URLs the same way prod does. So
-            <cde>/colophon</cde> in the dev server is the same
-            <cde>/colophon</cde> you get on the real site — no extension, no
-            trailing slash, no redirect. The plugin renders each page on the
-            fly from <cde>content/pages</cde> and Vite handles the live
-            reload.
+            The other thing
+            <cde>graspr-build</cde>
+            ships is a small Vite plugin that serves the abstract URLs the same way prod does. So
+            <cde>/colophon</cde>
+            in the dev server is the same
+            <cde>/colophon</cde>
+            you get on the real site — no extension, no trailing slash, no redirect. The plugin
+            renders each page on the fly from
+            <cde>content/pages</cde>
+            and Vite handles the live reload.
         </p>
         <p>
-            This sounds like a small thing but it's the part I'm proudest of.
-            Local dev matches prod. There is no "well, on the deployed
-            version it's different." It's just the same.
+            This sounds like a small thing, but it's the part I'm proudest of. Local dev matches
+            prod. There is no "well, on the deployed version it's different." It's just the same.
         </p>
         <heading h4>At build time</heading>
         <p>
-            <cde>npm run build</cde> runs Vite and then
-            <cde>graspr-build-pages</cde>, which walks
-            <cde>content/pages</cde>, expands all the custom tags, and writes
-            out the final HTML files into <cde>dist/</cde>. From there a CI
-            step on AWS CodeBuild syncs <cde>dist/</cde> to an S3 bucket and
-            invalidates the CloudFront cache. That's the whole pipeline.
+            <cde>npm run build</cde>
+            runs Vite and then
+            <cde>graspr-build-pages</cde>, which walks <cde>content/pages</cde>, expands all the
+            custom tags, and writes out the final HTML files into <cde>dist/</cde>. From there a CI
+            step on AWS CodeBuild syncs
+            <cde>dist/</cde>
+            to an S3 bucket and invalidates the CloudFront cache. That's the whole pipeline.
         </p>
         <p>
-            No SPA. No router. No database. No node-sass. No anything-else.
-            Just HTML files in a bucket and a CDN in front of them.
+            No SPA. No router. No database. No node-sass. No anything-else. Just HTML files in a
+            bucket and a CDN in front of them.
         </p>
         <heading h4>Why I'm hyped</heading>
         <p>
-            I love this setup. I love that I can publish a new article by
-            making a single HTML file. I love that the file mostly looks like
-            the thing I wrote, not like a template-engine puzzle. I love that
-            I built the build tool myself, so when I want a new tag, I just
-            add it. No ticket. No upstream. No "well, the framework doesn't
-            quite support that." It's <em>my</em> framework. It supports
-            whatever I want.
+            I love this setup. I love that I can publish a new article by making a single HTML file.
+            I love that the file mostly looks like the thing I wrote, not like a template-engine
+            puzzle. I love that I built the build tool myself, so when I want a new tag, I just add
+            it. No ticket. No upstream. No "well, the framework doesn't quite support that." It's
+            <em>my</em>
+            framework. It supports whatever I want.
         </p>
         <p>
             <lnk to="https://github.com/phillipsharring/graspr-build"><cde>graspr-build</cde></lnk>
-            is small on purpose.
-            It's not trying to be Next or Astro or Eleventy. It's not trying to
-            be anything but the thinnest possible layer between me and the HTML
-            I want to ship. And after years of fighting with bigger tools, that
-            thinness is the whole point.
+            is small on purpose. It's not trying to be Next or Astro or Eleventy. It's not trying to
+            be anything but the thinnest possible layer between me and the HTML I want to ship. And
+            after years of fighting with bigger tools, that thinness is the whole point.
         </p>
-        <p>
-            HTML is fun again. Who knew?
-        </p>
+        <p>HTML is fun again. Who knew?</p>
     </spaced>
 </article>
 <credits>

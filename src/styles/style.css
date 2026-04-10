@@ -1,7 +1,63 @@
 @import 'tailwindcss';
 
-@source "../../content/**/*.html";
-@source "../**/*.js";
+@source '../../content/**/*.html';
+@source '../**/*.js';
+
+/* ── Light theme (default) ────────────────────────────────── */
+:root {
+    --th-page: #f9f8f6;
+    --th-text: #1f2937;
+    --th-heading: #111827;
+    --th-sub: #374151;
+    --th-muted: #4b5563;
+    --th-faint: #6b7280;
+    --th-accent: #476b20;
+    --th-accent-text: #33491e;
+    --th-accent-faded: rgba(71, 107, 32, 0.35);
+    --th-accent-soft: rgba(71, 107, 32, 0.45);
+    --th-border: rgba(0, 0, 0, 0.15);
+    --th-border-subtle: rgba(0, 0, 0, 0.08);
+    --th-tint: rgba(0, 0, 0, 0.035);
+    --th-tint-hover: rgba(0, 0, 0, 0.06);
+    --th-tint-strong: rgba(0, 0, 0, 0.08);
+    --th-bar: #1f2937;
+    --th-header-bg: rgba(255, 255, 255, 0.82);
+    --th-glow-opacity: 0.2;
+    --th-glow-blur: 14px;
+    --th-glow-hover-opacity: 0.35;
+    --th-logo-filter: grayscale(100%);
+    --th-logo-hover-filter: grayscale(0%);
+    --th-logo-detail-filter: grayscale(40%);
+    --th-logo-detail-hover-filter: none;
+}
+
+/* ── Dark theme ───────────────────────────────────────────── */
+:root[data-theme='dark'] {
+    --th-page: #080d18;
+    --th-text: #d1d5db;
+    --th-heading: #f3f4f6;
+    --th-sub: #9ca3af;
+    --th-muted: #6b7280;
+    --th-faint: #4b5563;
+    --th-accent: #8dc640;
+    --th-accent-text: #b3dc7a;
+    --th-accent-faded: rgba(141, 198, 64, 0.3);
+    --th-accent-soft: rgba(120, 176, 50, 0.6);
+    --th-border: rgba(255, 255, 255, 0.1);
+    --th-border-subtle: rgba(255, 255, 255, 0.05);
+    --th-tint: rgba(255, 255, 255, 0.02);
+    --th-tint-hover: rgba(255, 255, 255, 0.04);
+    --th-tint-strong: rgba(255, 255, 255, 0.1);
+    --th-bar: #d1d5db;
+    --th-header-bg: rgba(22, 30, 50, 0.88);
+    --th-glow-opacity: 0.5;
+    --th-glow-blur: 10px;
+    --th-glow-hover-opacity: 0.75;
+    --th-logo-filter: brightness(0) invert(1);
+    --th-logo-hover-filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(141, 198, 64, 0.3));
+    --th-logo-detail-filter: brightness(1.15);
+    --th-logo-detail-hover-filter: brightness(1.3) drop-shadow(0 0 6px rgba(141, 198, 64, 0.2));
+}
 
 @theme {
     --color-atlantis-50: #f5faeb;
@@ -27,27 +83,122 @@
     --color-deep-cove-800: #2226b1;
     --color-deep-cove-900: #242a8b;
     --color-deep-cove-950: #0f103a;
+
+    /* Semantic theme tokens — resolved at runtime via CSS vars */
+    --color-th-page: var(--th-page);
+    --color-th-text: var(--th-text);
+    --color-th-heading: var(--th-heading);
+    --color-th-sub: var(--th-sub);
+    --color-th-muted: var(--th-muted);
+    --color-th-faint: var(--th-faint);
+    --color-th-accent: var(--th-accent);
+    --color-th-accent-text: var(--th-accent-text);
+    --color-th-accent-faded: var(--th-accent-faded);
+    --color-th-accent-soft: var(--th-accent-soft);
+    --color-th-border: var(--th-border);
+    --color-th-border-subtle: var(--th-border-subtle);
+    --color-th-tint: var(--th-tint);
+    --color-th-tint-hover: var(--th-tint-hover);
+    --color-th-tint-strong: var(--th-tint-strong);
+    --color-th-bar: var(--th-bar);
+
+    --font-family-display: 'Syne', system-ui, sans-serif;
+    --font-family-body: 'Manrope', system-ui, sans-serif;
 }
 
 @utility mbs-0 {
     margin-block-start: 0 !important;
 }
 
+html {
+    font-family: var(--font-family-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 ::-moz-selection {
-    background-color: #7bc61c;
-    color: #000;
+    background-color: #8dc640;
+    color: #080d18;
 }
 
 ::selection {
-    background-color: #7bc61c;
-    color: #000;
+    background-color: #8dc640;
+    color: #080d18;
 }
 
-.bg-left-quote {
-    background-image: url(/img/left-quotes.png);
-    background-repeat: no-repeat;
-    background-size: 80px;
-    background-position: -10px -10px;
+/* Photo glow effect */
+.photo-glow {
+    position: relative;
+    isolation: isolate;
+}
+.photo-glow::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #8dc640, #476b20, #8dc640);
+    z-index: 0;
+    opacity: var(--th-glow-opacity);
+    filter: blur(var(--th-glow-blur));
+    transition: opacity 0.4s ease;
+}
+.photo-glow:hover::after {
+    opacity: var(--th-glow-hover-opacity);
+}
+
+/* Logo filter for company logos */
+.logo-bright {
+    opacity: 0.4;
+    transition: all 0.3s ease;
+    filter: var(--th-logo-filter);
+}
+.logo-bright:hover {
+    opacity: 0.8;
+    filter: var(--th-logo-hover-filter);
+}
+
+/* Detailed logos — multi-color logos that lose detail with brightness(0) invert(1) */
+.logo-detail {
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    filter: var(--th-logo-detail-filter);
+}
+.logo-detail:hover {
+    opacity: 1;
+    filter: var(--th-logo-detail-hover-filter);
+}
+
+/* Album art hover */
+.album-art {
+    transition: all 0.3s ease;
+    border: 1px solid var(--th-border-subtle);
+    border-radius: 6px;
+}
+.album-art:hover {
+    transform: scale(1.05);
+    border-color: var(--th-accent-soft);
+    box-shadow: 0 8px 32px var(--th-accent-faded);
+}
+
+/* Link decoration theming */
+.link-themed {
+    text-decoration-color: var(--th-accent-faded);
+}
+.link-themed:hover {
+    text-decoration-color: var(--th-accent);
+}
+
+/* Scroll reveal animations */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 /*
@@ -60,6 +211,15 @@
  * These are valid hand-written equivalents — same selector minus the broken paren,
  * same margin values. Remove this block once Tailwind ships a fix and we upgrade.
  */
-.space-y-1 > :not(:last-child) { margin-bottom: calc(var(--spacing) * 1); }
-.space-y-3 > :not(:last-child) { margin-bottom: calc(var(--spacing) * 3); }
-.space-y-5 > :not(:last-child) { margin-bottom: calc(var(--spacing) * 5); }
+.space-y-1 > :not(:last-child) {
+    margin-bottom: calc(var(--spacing) * 1);
+}
+.space-y-3 > :not(:last-child) {
+    margin-bottom: calc(var(--spacing) * 3);
+}
+.space-y-5 > :not(:last-child) {
+    margin-bottom: calc(var(--spacing) * 5);
+}
+.space-y-6 > :not(:last-child) {
+    margin-bottom: calc(var(--spacing) * 6);
+}
