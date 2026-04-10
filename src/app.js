@@ -14,6 +14,7 @@ window.onReady(() => {
     const hamburger = document.getElementById('hamburger-menu');
     if (hamburger) {
         const body = document.getElementById('body');
+        const header = hamburger.closest('header');
         const mainNav = document.getElementById('main-nav');
         const navLinks = mainNav.querySelectorAll('a');
         const bar1 = document.getElementById('bar-1');
@@ -22,7 +23,8 @@ window.onReady(() => {
 
         const bars = [
             { element: body, classLists: ['overflow-auto', 'overflow-hidden'] },
-            { element: mainNav, classLists: ['hidden', 'flex flex-col'] },
+            { element: header, classLists: ['backdrop-blur-lg'] },
+            { element: mainNav, classLists: ['hidden', 'flex flex-col pt-16'] },
             { element: bar1, classLists: ['-translate-y-0.5', 'rotate-45 translate-y-1'] },
             { element: bar2, classLists: ['opacity-100', 'opacity-0'] },
             { element: bar3, classLists: ['translate-y-0.5', '-rotate-45 -translate-y-1'] },
