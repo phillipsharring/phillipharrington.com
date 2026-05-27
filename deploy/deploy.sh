@@ -44,6 +44,11 @@ echo "Region:       $REGION"
 echo ""
 
 # ── 1. Build ────────────────────────────────────────────────
+# Note: graspr-build bakes the current git HEAD (short sha) into each
+# rendered HTML page via [[gitSha]]. Commit BEFORE running this script
+# if you want the deployed site's sha to match the latest commit.
+# Deploying with uncommitted changes works fine; the baked sha just
+# points at the last committed HEAD, not the working tree.
 echo "→ Building..."
 cd "$PROJECT_DIR"
 npm run build
