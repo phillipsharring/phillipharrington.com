@@ -5,3 +5,7 @@ dist
 .idea
 
 deploy/.env.production
+
+# CloudFront log analysis (make cf-report)
+.cf-logs/
+cf-report.html

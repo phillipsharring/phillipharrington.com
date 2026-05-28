@@ -1,4 +1,4 @@
-.PHONY: clean dev build format deploy provision
+.PHONY: clean dev build format deploy provision cf-report cf-report-clean
 
 clean:
 	rm -rf node_modules/.vite src/.vite dist
@@ -21,3 +21,16 @@ deploy:
 # Ensure tags + CloudFront logging are set up. Idempotent.
 provision:
 	AWS_PROFILE=phillipharrington ./deploy/provision.sh
+
+# Sync CloudFront logs from S3 and open an HTML traffic report (GoAccess).
+cf-report:
+	@mkdir -p .cf-logs
+	@AWS_PROFILE=phillipharrington aws s3 sync s3://phillipharrington-cloudfront-logs/ .cf-logs/ --quiet
+	@if ! ls .cf-logs/*.gz >/dev/null 2>&1; then echo "No log files yet (CF logs may take ~1h to first appear)."; exit 0; fi
+	@gunzip -c .cf-logs/*.gz | goaccess --log-format=CLOUDFRONT --date-format=%Y-%m-%d --time-format=%H:%M:%S -o cf-report.html -
+	@open cf-report.html
+	@echo "Report: cf-report.html"
+
+# Delete cached log files and the report (will re-sync on next cf-report).
+cf-report-clean:
+	rm -rf .cf-logs cf-report.html
