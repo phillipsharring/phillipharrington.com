@@ -1,0 +1,18 @@
+services:
+  frontend:
+    container_name: phillipharrington-frontend
+    build: .
+    ports:
+      - "5177:5173"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    networks:
+      - shared
+
+volumes:
+  node_modules:
+
+networks:
+  shared:
+    external: true
