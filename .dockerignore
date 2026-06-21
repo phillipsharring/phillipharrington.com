@@ -1,0 +1,8 @@
+node_modules
+dist
+.git
+.vite
+.idea
+.cf-logs
+cf-report.html
+.DS_Store

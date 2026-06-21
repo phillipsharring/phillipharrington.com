@@ -6,6 +6,10 @@ import siteConfig from './site.config.js';
 export default defineConfig({
     root: 'src',
     publicDir: '../public',
+    server: {
+        host: true,
+        allowedHosts: ['phillipharrington.test'],
+    },
     plugins: [tailwindcss(), grasprBuild({ siteConfig })],
     build: {
         outDir: '../dist',

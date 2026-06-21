@@ -1,16 +1,15 @@
-.PHONY: clean dev build format deploy provision cf-report cf-report-clean
+.PHONY: start clean build deploy provision cf-report cf-report-clean
+
+# Start the frontend dev container. Served via the basic-services proxy at
+# https://phillipharrington.test (and directly at http://localhost:5177).
+start:
+	docker compose up -d
 
 clean:
 	rm -rf node_modules/.vite src/.vite dist
 
-dev: clean
-	npm run dev
-
 build:
 	npm run build
-
-format:
-	npm run format
 
 # Local deploy: build, sync to S3, fix metadata, invalidate CF.
 # Replaces the PR-merge -> CodeBuild round trip for routine deploys.
