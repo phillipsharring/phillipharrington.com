@@ -13,7 +13,7 @@
     "author": "Phillip Harrington <phillip@phillipharrington.com> (https://phillipharrington.com/)",
     "license": "MIT",
     "devDependencies": {
-        "@phillipsharring/graspr-build": "^0.5.0",
+        "@phillipsharring/graspr-build": "^0.6.0",
         "@tailwindcss/vite": "^4.1.18",
         "prettier": "^3.8.2",
         "prettier-plugin-tailwindcss": "^0.7.2",
