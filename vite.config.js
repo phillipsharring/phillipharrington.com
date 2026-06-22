@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import { grasprBuild } from '@phillipsharring/graspr-build/vite';
+import { handlrBuild } from '@phillipsharring/handlr-build/vite';
 import siteConfig from './site.config.js';
 
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
         host: true,
         allowedHosts: ['phillipharrington.test'],
     },
-    plugins: [tailwindcss(), grasprBuild({ siteConfig })],
+    plugins: [tailwindcss(), handlrBuild({ siteConfig })],
     build: {
         outDir: '../dist',
         assetsDir: 'assets',

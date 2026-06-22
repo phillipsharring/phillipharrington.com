@@ -2,15 +2,15 @@
 <page-head>
     <meta
         name="description"
-        content="How phillipharrington.com is built: Vite, Tailwind v4, and a tiny custom build package called graspr-build that turns custom HTML tags into plain HTML at build time."
+        content="How phillipharrington.com is built: Vite, Tailwind v4, and a tiny custom build package called handlr-build that turns custom HTML tags into plain HTML at build time."
     />
     <meta
         name="keywords"
-        content="Phillip Harrington, graspr-build, static site, Vite, Tailwind v4, custom HTML tags, EJS, AWS S3, CloudFront, build tool, static HTML, no SPA"
+        content="Phillip Harrington, handlr-build, static site, Vite, Tailwind v4, custom HTML tags, EJS, AWS S3, CloudFront, build tool, static HTML, no SPA"
     />
     <meta
         property="og:description"
-        content="I made a tiny build package called graspr-build that turns custom HTML tags into plain HTML at build time. The site is just HTML again. And I love it."
+        content="I made a tiny build package called handlr-build that turns custom HTML tags into plain HTML at build time. The site is just HTML again. And I love it."
     />
     <meta property="og:image" content="https://phillipharrington.com/img/html-is-fun-again.png" />
     <meta property="og:image:alt" content="HTML Is Fun Again" />
@@ -27,7 +27,7 @@
         <p>
             <strong>TL;DR:</strong>
             I made a tiny build package called
-            <cde>graspr-build</cde>
+            <cde>handlr-build</cde>
             that turns custom HTML tags into plain HTML at build time. The site is just HTML again.
             And I love it.
         </p>
@@ -51,9 +51,9 @@
             later. The whole experience was a notch fancier than writing raw HTML and a notch
             clunkier than I wanted. Not the end of the world. But also... not the dream.
         </p>
-        <heading h4>So I wrote graspr-build</heading>
+        <heading h4>So I wrote handlr-build</heading>
         <p>
-            <cde>graspr-build</cde>
+            <cde>handlr-build</cde>
             is a tiny package I made that does one thing: it turns custom HTML tags into plain HTML
             at build time. That's it. That's the whole trick.
         </p>
@@ -63,7 +63,7 @@
             tag with the same five Tailwind classes every time I want a link, I write
             <cde>&lt;lnk to="/colophon"&gt;colophon&lt;/lnk&gt;</cde>
             and let
-            <cde>graspr-build</cde>
+            <cde>handlr-build</cde>
             expand it. Same for headings, figures, lists, code spans, bylines, the whole works. If I
             find myself writing the same chunk of markup twice, I make a new tag for it and never
             type the long form again.
@@ -86,7 +86,7 @@
         <heading h4>The dev server matches prod</heading>
         <p>
             The other thing
-            <cde>graspr-build</cde>
+            <cde>handlr-build</cde>
             ships is a small Vite plugin that serves the abstract URLs the same way prod does. So
             <cde>/colophon</cde>
             in the dev server is the same
@@ -104,7 +104,7 @@
         <p>
             <cde>npm run build</cde>
             runs Vite and then
-            <cde>graspr-build-pages</cde>, which walks <cde>content/pages</cde>, expands all the
+            <cde>handlr-build-pages</cde>, which walks <cde>content/pages</cde>, expands all the
             custom tags, and writes out the final HTML files into <cde>dist/</cde>. From there a CI
             step on AWS CodeBuild syncs
             <cde>dist/</cde>
@@ -124,7 +124,7 @@
             framework. It supports whatever I want.
         </p>
         <p>
-            <lnk to="https://github.com/phillipsharring/graspr-build"><cde>graspr-build</cde></lnk>
+            <lnk to="https://github.com/phillipsharring/handlr-mono/tree/main/packages/build"><cde>handlr-build</cde></lnk>
             is small on purpose. It's not trying to be Next or Astro or Eleventy. It's not trying to
             be anything but the thinnest possible layer between me and the HTML I want to ship. And
             after years of fighting with bigger tools, that thinness is the whole point.

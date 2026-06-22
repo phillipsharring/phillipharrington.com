@@ -3,7 +3,7 @@
 #
 # 1. Split closing tags: </lnk\n  > → </lnk>
 #    Prettier puts the closing > on the next line for inline elements,
-#    which graspr-build can't parse.
+#    which handlr-build can't parse.
 #
 # 2. Punctuation after closing tags: </lnk>\n  . → </lnk>.
 #    Prettier wraps after the closing tag, pushing punctuation to the
