@@ -44,7 +44,7 @@ echo "Region:       $REGION"
 echo ""
 
 # ── 1. Build ────────────────────────────────────────────────
-# Note: graspr-build bakes the current git HEAD (short sha) into each
+# Note: handlr-build bakes the current git HEAD (short sha) into each
 # rendered HTML page via [[gitSha]]. Commit BEFORE running this script
 # if you want the deployed site's sha to match the latest commit.
 # Deploying with uncommitted changes works fine; the baked sha just
@@ -54,7 +54,7 @@ cd "$PROJECT_DIR"
 npm run build
 echo "  Build complete"
 
-# graspr-build emits dist/<route>/index.html. Flatten to extensionless
+# handlr-build emits dist/<route>/index.html. Flatten to extensionless
 # paths so the CloudFront function's URL rewrites resolve to real keys.
 # Same step CodeBuild runs.
 echo "→ Flattening dist/ for abstract URLs..."

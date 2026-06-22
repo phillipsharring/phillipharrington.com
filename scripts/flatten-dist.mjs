@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * Flatten graspr-build's dist/ output for abstract URLs.
+ * Flatten handlr-build's dist/ output for abstract URLs.
  *
- * graspr-build emits one directory per route:
+ * handlr-build emits one directory per route:
  *     dist/about/index.html
  *     dist/blog/index.html
  *     dist/say-it-once/index.html

@@ -2,11 +2,11 @@
 <page-head>
     <meta
         name="description"
-        content="Learn about the minimalist, fast-loading architecture of phillipharrington.com, built with Graspr, Vite, and Tailwind v4, hosted on AWS S3 with CloudFront. Updated Apr 2026."
+        content="Learn about the minimalist, fast-loading architecture of phillipharrington.com, built with Handlr, Vite, and Tailwind v4, hosted on AWS S3 with CloudFront. Updated Apr 2026."
     />
     <meta
         name="keywords"
-        content="Phillip Harrington, colophon, static HTML, AWS S3 hosting, CloudFront, Tailwind v4, Graspr, Vite, minimal web design, fast-loading websites, abstract URLs, SSL certificate, AWS hosting, simple web development"
+        content="Phillip Harrington, colophon, static HTML, AWS S3 hosting, CloudFront, Tailwind v4, Handlr, Vite, minimal web design, fast-loading websites, abstract URLs, SSL certificate, AWS hosting, simple web development"
     />
 </page-head>
 <article>
@@ -22,7 +22,7 @@
         <heading h3 id="my-cms-is-just-html-kinda">My CMS is Just HTML... Kinda</heading>
         <p>
             This website is static HTML built with Vite, Tailwind, and
-            <cde>graspr-build</cde>
+            <cde>handlr-build</cde>
             — a small build package I made that turns custom HTML tags into plain HTML at build
             time. The "Kinda" part is those custom tags: I write things like
             <cde>&lt;lnk&gt;</cde>, <cde>&lt;heading&gt;</cde>, and
@@ -42,8 +42,8 @@
         <p>
             The code is
             <lnk to="https://github.com/phillipsharring/phillipharrington.com">here</lnk>, and
-            <cde>graspr-build</cde> is
-            <lnk to="https://github.com/phillipsharring/graspr-build">here</lnk>, if you're curious.
+            <cde>handlr-build</cde> is
+            <lnk to="https://github.com/phillipsharring/handlr-mono/tree/main/packages/build">here</lnk>, if you're curious.
         </p>
         <heading h3 id="abstract-urls">Abstract URLs</heading>
         <p>
@@ -58,7 +58,7 @@
             Locally I develop with the Vite dev server, which handles live-reload and serves the
             abstract URLs the same way production does — no extension, no trailing slash, no
             redirect. A small Vite plugin from
-            <cde>graspr-build</cde>
+            <cde>handlr-build</cde>
             renders each page on the fly from the source files in
             <cde>content/pages</cde>.
         </p>
