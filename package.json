@@ -13,11 +13,15 @@
     "author": "Phillip Harrington <phillip@phillipharrington.com> (https://phillipharrington.com/)",
     "license": "MIT",
     "devDependencies": {
-        "@phillipsharring/handlr-build": "^0.7.0",
+        "@phillipsharring/handlr-build": "^0.10.2",
         "@tailwindcss/vite": "^4.1.18",
         "prettier": "^3.8.2",
         "prettier-plugin-tailwindcss": "^0.7.2",
         "tailwindcss": "^4.1.18",
         "vite": "^7.3.0"
+    },
+    "allowScripts": {
+        "fsevents@2.3.3": true,
+        "esbuild@0.28.1": true
     }
 }
