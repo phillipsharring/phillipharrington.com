@@ -149,8 +149,15 @@ find "$PROJECT_DIR/dist" -name '.DS_Store' -delete
 #
 # So compare content. An S3 ETag is the MD5 of the object for single-part
 # uploads, and one list-objects-v2 call returns every one for a few KB. On the
-# first run of this version, 161 of 163 objects were byte-identical to what was
-# already in the bucket: 13 MB of uploads became about 35 KB.
+# first run of this version, 162 of 162 objects were byte-identical to what was
+# already in the bucket and nothing uploaded at all.
+#
+# That run flattered it slightly, because HEAD had not moved. handlr-build
+# stamps the current git sha into every page, so **every commit changes every
+# page** and all of them re-upload. What skips is the rest, and that is where
+# the bytes are: 10.49 MB of images, fonts and assets against 0.26 MB of pages.
+# A typical commit ships roughly 2% of what it used to, and a rebuild at the
+# same commit ships nothing.
 #
 # Deliberately NOT `--size-only`, which is the tempting one-flag version of this
 # and would be actively dangerous. The two stale pages that motivated the change
