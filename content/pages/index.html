@@ -10,6 +10,15 @@
     />
 </page-head>
 <article>
+    <!-- The deployed commit, stamped by handlr-build.
+         Lives here and nowhere else on purpose. It used to sit in
+         layouts/default.html, which put it on all 17 pages, so every commit
+         changed every page and the deploy re-uploaded the lot however small the
+         edit. Now a one-page change ships that page plus this one, and a change
+         to this page ships one file. Check the deployed version by viewing
+         source on the home page. -->
+    [[gitSha]]
+
     <!-- Hero -->
     <section class="pb-16 sm:pb-24">
         <div class="flex flex-col-reverse gap-8 sm:flex-row sm:items-center sm:gap-12">
