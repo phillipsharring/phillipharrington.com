@@ -60,6 +60,7 @@
     --th-accent-faded: rgba(71, 107, 32, 0.35);
     --th-accent-soft: rgba(71, 107, 32, 0.45);
     --th-border: rgba(0, 0, 0, 0.15);
+    --th-border-strong: rgba(0, 0, 0, 0.3);
     --th-border-subtle: rgba(0, 0, 0, 0.08);
     --th-tint: rgba(0, 0, 0, 0.035);
     --th-tint-hover: rgba(0, 0, 0, 0.06);
@@ -88,6 +89,7 @@
     --th-accent-faded: rgba(141, 198, 64, 0.3);
     --th-accent-soft: rgba(120, 176, 50, 0.6);
     --th-border: rgba(255, 255, 255, 0.1);
+    --th-border-strong: rgba(255, 255, 255, 0.25);
     --th-border-subtle: rgba(255, 255, 255, 0.05);
     --th-tint: rgba(255, 255, 255, 0.02);
     --th-tint-hover: rgba(255, 255, 255, 0.04);
@@ -140,6 +142,7 @@
     --color-th-accent-faded: var(--th-accent-faded);
     --color-th-accent-soft: var(--th-accent-soft);
     --color-th-border: var(--th-border);
+    --color-th-border-strong: var(--th-border-strong);
     --color-th-border-subtle: var(--th-border-subtle);
     --color-th-tint: var(--th-tint);
     --color-th-tint-hover: var(--th-tint-hover);
@@ -156,8 +159,44 @@
 
 html {
     font-family: var(--font-family-body);
+    /* A touch heavier than Manrope's 400: thin strokes blur first, for
+       astigmatism especially. Headings and bold set their own weights. */
+    font-weight: 450;
+}
+
+/* Grayscale smoothing thins dark text on a light page, so only use it in dark
+   mode, where it keeps light-on-dark text from blooming. */
+:root[data-theme='dark'] {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reading measure and rhythm for long-form text. The page container stays
+   wide (the home page and work grids use it); only running text is held to a
+   comfortable line length. Manrope runs narrower than the "0" that `ch` measures,
+   so 60ch comes out around 70 to 75 characters a line. */
+@layer base {
+    article {
+        line-height: 1.7;
+    }
+    @media (min-width: 640px) {
+        article {
+            font-size: 1.1875rem; /* 19px */
+        }
+    }
+    article p,
+    article li {
+        max-width: 60ch;
+    }
+    /* A small indent, and the right edge lines up with the paragraphs. */
+    article blockquote {
+        max-width: 60ch;
+    }
+    @media (min-width: 640px) {
+        article blockquote {
+            max-width: calc(60ch - 1.5rem);
+        }
+    }
 }
 
 ::-moz-selection {
