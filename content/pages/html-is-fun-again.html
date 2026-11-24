@@ -39,7 +39,7 @@
             <em>"Maybe I'll do a write-up on it one of these days."</em>
             Today is one of those days.
         </p>
-        <heading h4>The previous version was fine</heading>
+        <heading h2 look="h4">The previous version was fine</heading>
         <p>
             Before this, the site was built with EJS templates and a little Node script that
             stitched the partials together. It worked! It had a header partial and a footer partial,
@@ -51,7 +51,7 @@
             later. The whole experience was a notch fancier than writing raw HTML and a notch
             clunkier than I wanted. Not the end of the world. But also... not the dream.
         </p>
-        <heading h4>So I wrote handlr-build</heading>
+        <heading h2 look="h4">So I wrote handlr-build</heading>
         <p>
             <cde>handlr-build</cde>
             is a tiny package I made that does one thing: it turns custom HTML tags into plain HTML
@@ -74,7 +74,7 @@
             <em>is</em>
             and gets out of the way.
         </p>
-        <heading h4>Writing a page is just writing a page</heading>
+        <heading h2 look="h4">Writing a page is just writing a page</heading>
         <p>
             To publish an article, I make one HTML file in
             <cde>content/pages</cde>. The filename becomes the URL. The first line picks the layout.
@@ -83,7 +83,7 @@
             the index file" step. The build script handles the rest.
         </p>
         <p>When it's that simple, you'd think I would publish more often. 😂</p>
-        <heading h4>The dev server matches prod</heading>
+        <heading h2 look="h4">The dev server matches prod</heading>
         <p>
             The other thing
             <cde>handlr-build</cde>
@@ -100,7 +100,7 @@
             This sounds like a small thing, but it's the part I'm proudest of. Local dev matches
             prod. There is no "well, on the deployed version it's different." It's just the same.
         </p>
-        <heading h4>At build time</heading>
+        <heading h2 look="h4">At build time</heading>
         <p>
             <cde>npm run build</cde>
             runs Vite and then
@@ -114,7 +114,7 @@
             No SPA. No router. No database. No node-sass. No anything-else. Just HTML files in a
             bucket and a CDN in front of them.
         </p>
-        <heading h4>Why I'm hyped</heading>
+        <heading h2 look="h4">Why I'm hyped</heading>
         <p>
             I love this setup. I love that I can publish a new article by making a single HTML file.
             I love that the file mostly looks like the thing I wrote, not like a template-engine

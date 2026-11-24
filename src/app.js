@@ -42,6 +42,8 @@ window.onReady(() => {
             });
 
             isOpen = !isOpen;
+            hamburger.setAttribute('aria-expanded', String(isOpen));
+            hamburger.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
 
             navLinks.forEach((navLink) => {
                 navLink.addEventListener(

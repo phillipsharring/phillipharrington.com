@@ -80,8 +80,8 @@
     --th-text: #d1d5db;
     --th-heading: #f3f4f6;
     --th-sub: #9ca3af;
-    --th-muted: #6b7280;
-    --th-faint: #4b5563;
+    --th-muted: #7c8493;
+    --th-faint: #767e8d;
     --th-accent: #8dc640;
     --th-accent-text: #b3dc7a;
     --th-accent-faded: rgba(141, 198, 64, 0.3);
@@ -153,6 +153,26 @@
 
 @utility mbs-0 {
     margin-block-start: 0 !important;
+}
+
+/* Heading sizes, apart from heading levels: <heading> picks the tag from the
+   outline and the size from `look`, so a section can be an h2 that reads like an h3. */
+@layer components {
+    .heading-h1 {
+        @apply text-th-heading mb-2 text-4xl font-extrabold;
+    }
+    .heading-h2 {
+        @apply text-th-heading text-3xl font-bold;
+    }
+    .heading-h3 {
+        @apply text-th-heading mb-2 text-2xl font-bold tracking-tight;
+    }
+    .heading-h4 {
+        @apply text-th-heading text-xl font-semibold;
+    }
+    .heading-h5 {
+        @apply text-th-text mb-2 text-lg font-bold;
+    }
 }
 
 html {
