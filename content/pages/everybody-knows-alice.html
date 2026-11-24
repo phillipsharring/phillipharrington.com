@@ -15,7 +15,10 @@
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://phillipharrington.com/everybody-knows-alice" />
     <meta property="og:title" content="Everybody Knows Alice" />
-    <meta property="og:image" content="https://phillipharrington.com/img/everybody-knows-alice-og.jpg" />
+    <meta
+        property="og:image"
+        content="https://phillipharrington.com/img/everybody-knows-alice-og.jpg"
+    />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="The Caterpillar asks Alice, “Who are YOU?”" />
@@ -32,9 +35,8 @@
         <p>
             <strong>TL;DR:</strong>
             Write your seed data as numbered scenarios with named, fake people. Then the same
-            scenarios become your dev data, your mockups, your acceptance criteria, your QA
-            scripts, your bug reports, your test fixtures, and your sales demo. One story, told
-            everywhere.
+            scenarios become your dev data, your mockups, your acceptance criteria, your QA scripts,
+            your bug reports, your test fixtures, and your sales demo. One story, told everywhere.
         </p>
         <hr />
         <heading h4>I didn’t invent this</heading>
@@ -45,20 +47,20 @@
         </p>
         <p>
             “Since,” because it isn’t my idea. I saw it done once, on the web app for the Next
-            Generation Experience project at a little-known company you’ve probably never heard
-            of: The Walt Disney Company. They had the scenarios, the named people, all of it. I’ve
-            been trying to steal it ever since. There’s nothing new under the sun. The least I can
-            do is say where I got it.
+            Generation Experience project at a little-known company you’ve probably never heard of:
+            The Walt Disney Company. They had the scenarios, the named people, all of it. I’ve been
+            trying to steal it ever since. There’s nothing new under the sun. The least I can do is
+            say where I got it.
         </p>
         <p>
-            And the best part: the known users were the cast of <em>Modern Family</em>. An ABC
-            show, so, a Disney show. Which was perfect, because the whole point of the app was
-            planning your friggin’ day at the parks: bookings, FastPasses, and every permutation
-            of who’s doing what, with whom, and when. A big, sprawling, complicated family gives
-            you all of those permutations for free. And everybody already knew who those people were.
-            Well, everybody except me. I’d never seen it, so I started watching, just to keep up
-            at work. Fantastic show, by the way. And after that, I never had to ask what kind of
-            user Phil was, either.
+            And the best part: the known users were the cast of <em>Modern Family</em>. An ABC show,
+            so, a Disney show. Which was perfect, because the whole point of the app was planning
+            your friggin’ day at the parks: bookings, FastPasses, and every permutation of who’s
+            doing what, with whom, and when. A big, sprawling, complicated family gives you all of
+            those permutations for free. And everybody already knew who those people were. Well,
+            everybody except me. I’d never seen it, so I started watching, just to keep up at work.
+            Fantastic show, by the way. And after that, I never had to ask what kind of user Phil
+            was, either.
         </p>
         <heading h4>Day one, the data is a mess</heading>
         <p>Here’s what local data usually looks like on day one at a new job:</p>
@@ -69,8 +71,8 @@
                 in a cab.
             </li>
             <li>
-                A pile of users named <em>test1</em>, <em>asdf</em> and <em>foo</em>, with
-                passwords nobody remembers, in states nobody can explain.
+                A pile of users named <em>test1</em>, <em>asdf</em> and <em>foo</em>, with passwords
+                nobody remembers, in states nobody can explain.
             </li>
             <li>
                 Or a thousand generated fake users, which is great until you realize your thousand
@@ -79,14 +81,14 @@
         </list>
         <p>
             <strong>And please, not production.</strong>
-            Not a copy of it, and not a copy where “we replaced all the names,” either. Yes, it’s
-            a security incident waiting to happen. Scrubbed data has a way of not being scrubbed:
-            an address in a notes field, a phone number in a comment. But that’s not even my real
+            Not a copy of it, and not a copy where “we replaced all the names,” either. Yes, it’s a
+            security incident waiting to happen. Scrubbed data has a way of not being scrubbed: an
+            address in a notes field, a phone number in a comment. But that’s not even my real
             objection. It’s lazy. Production data is a pile of whatever happened to happen. Nobody
-            knows what’s in it, it’s different every time somebody refreshes it, and you can’t
-            point at any of it and say “that’s scenario 12.” I’ve heard it pitched at a few
-            companies, and nobody has ever made it make sense. It skips the one part that
-            matters: deciding what the stories are.
+            knows what’s in it, it’s different every time somebody refreshes it, and you can’t point
+            at any of it and say “that’s scenario 12.” I’ve heard it pitched at a few companies, and
+            nobody has ever made it make sense. It skips the one part that matters: deciding what
+            the stories are.
         </p>
         <p>And then the conversations go like this:</p>
         <quote>
@@ -99,8 +101,8 @@
         <p>Half an hour gone, and nobody’s looked at the bug yet.</p>
         <heading h4>Give every scenario a number and a name</heading>
         <p>
-            Instead, seed your database with <em>scenarios</em>. Each one is a small, numbered
-            story with named people in it:
+            Instead, seed your database with <em>scenarios</em>. Each one is a small, numbered story
+            with named people in it:
         </p>
         <list>
             <li>
@@ -122,8 +124,8 @@
         </list>
         <p>
             Everybody logs in as
-            <em>alice@example.com</em>, and the password is always
-            <em>password</em>. Always. Nobody has to ask.
+            <em>alice@example.com</em>, and the password is always <em>password</em>. Always. Nobody
+            has to ask.
         </p>
         <p>Now the conversation goes like this:</p>
         <quote>“It breaks in 12, when Bob opens the link.”</quote>
@@ -133,33 +135,33 @@
         </p>
         <heading h4>Pick a cast everyone can picture</heading>
         <p>
-            Alice and Bob are fine. A TV show is better. Disney had the <em>Modern Family</em>
-            crew. When I lobbied for this at a K-12 software company, everybody loved the idea and
+            Alice and Bob are fine. A TV show is better. Disney had the <em>Modern Family</em> crew.
+            When I lobbied for this at a K-12 software company, everybody loved the idea and
             immediately voted for the cast of <em>Abbott Elementary</em>. Pick your favorite show.
             Or make people up. Doesn’t matter, as long as everybody can picture them.
         </p>
         <p>
             Give them personalities while you’re at it. One knows exactly what she’s doing. One is
-            always a little confused. One is trying to break it, on purpose. Carly is a
-            photographer and James is her assistant, so “Carly invites James as a collaborator”
-            tells you who, why, and what James is going to do next. Do it right and the company
-            falls in love with them. Good old Alice. Oh, Bob again.
+            always a little confused. One is trying to break it, on purpose. Carly is a photographer
+            and James is her assistant, so “Carly invites James as a collaborator” tells you who,
+            why, and what James is going to do next. Do it right and the company falls in love with
+            them. Good old Alice. Oh, Bob again.
         </p>
         <p>
             If this sounds familiar, it should. Product and UX folks have had
-            <em>personas</em> for decades: made-up people with names, goals and habits, so the
-            team designs for somebody instead of everybody. This is the same idea, carried all the
-            way into the database. A persona you can log in as.
+            <em>personas</em> for decades: made-up people with names, goals and habits, so the team
+            designs for somebody instead of everybody. This is the same idea, carried all the way
+            into the database. A persona you can log in as.
         </p>
         <heading h4>Then it pays off everywhere</heading>
         <p>The same scenarios, reused all the way down the line:</p>
         <list>
             <li>
                 <strong>Dev work.</strong>
-                New developers start on day one with a database that makes sense, and it’s the
-                same database on every laptop. Not a week of asking which account is safe to
-                break. Need a thousand random users for load testing? Generate them on top. The
-                scenarios stay put underneath.
+                New developers start on day one with a database that makes sense, and it’s the same
+                database on every laptop. Not a week of asking which account is safe to break. Need
+                a thousand random users for load testing? Generate them on top. The scenarios stay
+                put underneath.
             </li>
             <li>
                 <strong>Acceptance criteria.</strong>
@@ -171,9 +173,9 @@
                 <strong>Mockups.</strong>
                 “Alice’s invitations screen.” “Phil clicks <em>Cancel</em>.” The mockups are made
                 from the seed data, so the names and the stuff on screen match what devs see when
-                they log in. One mockup labeled “scenario 25, step 3” replaces the six screens
-                that used to lead up to it. A dev logs in as the right person, walks 25 to step 3,
-                and goes “ohhh, <em>that’s</em> where they want the icon.”
+                they log in. One mockup labeled “scenario 25, step 3” replaces the six screens that
+                used to lead up to it. A dev logs in as the right person, walks 25 to step 3, and
+                goes “ohhh, <em>that’s</em> where they want the icon.”
             </li>
             <li>
                 <strong>QA.</strong>
@@ -183,24 +185,24 @@
             <li>
                 <strong>Bug reports.</strong>
                 A ticket comes in: somebody did X, then Y, then Z, and it broke. Find the closest
-                scenario. If it’s exactly 12, you’re reproducing it in thirty seconds. If it’s
-                12, but Bob already had an account with a different email? That’s 12b, a new
-                scenario seeded right next to 12, with a test to go with it. The next time it
-                happens, it’s a number.
+                scenario. If it’s exactly 12, you’re reproducing it in thirty seconds. If it’s 12,
+                but Bob already had an account with a different email? That’s 12b, a new scenario
+                seeded right next to 12, with a test to go with it. The next time it happens, it’s a
+                number.
             </li>
             <li>
                 <strong>Automated tests.</strong>
                 The unit and feature tests build the same people with the same helpers. Fix a bug,
-                add a test, and if the bug needed a situation nobody had seeded yet, add a
-                scenario. The story grows with the code.
+                add a test, and if the bug needed a situation nobody had seeded yet, add a scenario.
+                The story grows with the code.
             </li>
             <li>
                 <strong>Sales demos.</strong>
                 Same seeds, or a polished set of their own. Picture
-                <em>sales-demo-3.yourapp.com</em> with a button that says
-                <em>Reset</em>. Sales can break things, delete things, and pile in the
-                prospect’s favorite stuff, right there in the room. Then click <em>Reset</em>, and Alice is
-                back at her limit and Bob is waiting on his invitation.
+                <em>sales-demo-3.yourapp.com</em> with a button that says <em>Reset</em>. Sales can
+                break things, delete things, and pile in the prospect’s favorite stuff, right there
+                in the room. Then click <em>Reset</em>, and Alice is back at her limit and Bob is
+                waiting on his invitation.
             </li>
         </list>
         <heading h4>More what you’d call guidelines</heading>
@@ -208,16 +210,16 @@
             “The code is more what you’d call ‘guidelines’ than actual rules.”
         </quote>
         <p>
-            Like Barbossa said about the pirate code, these aren’t really rules. But it works
-            best if you’re a little strict about them.
+            Like Barbossa said about the pirate code, these aren’t really rules. But it works best
+            if you’re a little strict about them.
         </p>
         <list>
             <li>
                 <strong>Fake people only.</strong>
-                <em>@example.com</em> addresses, made-up names, the password is
-                <em>password</em>. No real person, ever. I say this because I found my own real
-                email and a real password hash sitting in a seed file this week. In my own repo.
-                Rotated, fixed, humbled.
+                <em>@example.com</em> addresses, made-up names, the password is <em>password</em>.
+                No real person, ever. I say this because I found my own real email and a real
+                password hash sitting in a seed file this week. In my own repo. Rotated, fixed,
+                humbled.
             </li>
             <li>
                 <strong>Number them, and name the people.</strong>
@@ -226,16 +228,15 @@
             </li>
             <li>
                 <strong>Don’t change what a scenario means.</strong>
-                Scenario 12 is Alice-invites-Bob forever. Need something different? That’s 12b,
-                or scenario 31. Never “well, for this ticket, 12 means...” and it changes three
-                times. Old tickets, old test names and old bug reports still mean what they
-                said.
+                Scenario 12 is Alice-invites-Bob forever. Need something different? That’s 12b, or
+                scenario 31. Never “well, for this ticket, 12 means...” and it changes three times.
+                Old tickets, old test names and old bug reports still mean what they said.
             </li>
             <li>
                 <strong>Every scenario stands alone.</strong>
-                The cast is shared: Alice shows up in a dozen scenarios. But each scenario owns
-                its own stuff, the specific thing it’s about, sitting there in exactly the state
-                it needs. Scenario 145 has its own checklist for Alice to wreck. No running them in
+                The cast is shared: Alice shows up in a dozen scenarios. But each scenario owns its
+                own stuff, the specific thing it’s about, sitting there in exactly the state it
+                needs. Scenario 145 has its own checklist for Alice to wreck. No running them in
                 order. No building up the data by clicking through the app first. Go straight to
                 142. Break 12 all you want; 142 doesn’t care.
             </li>
@@ -246,26 +247,25 @@
             </li>
             <li>
                 <strong>One command to reload.</strong>
-                <cde>make seed</cde>, or a button. Better yet, reset just the ones you’re
-                working on: <cde>seed:reset 12a 142</cde>, sitting in your shell history,
-                one up-arrow away. Break it, hit up and enter, and break it again. Go further and
-                wire it into your browser tools, so the reset fires from the page you’re testing.
-                However you do it, if resetting is a chore, nobody does it, and you’re back to
-                <em>test4</em>.
+                <cde>make seed</cde>, or a button. Better yet, reset just the ones you’re working
+                on: <cde>seed:reset 12a 142</cde>, sitting in your shell history, one up-arrow away.
+                Break it, hit up and enter, and break it again. Go further and wire it into your
+                browser tools, so the reset fires from the page you’re testing. However you do it,
+                if resetting is a chore, nobody does it, and you’re back to <em>test4</em>.
             </li>
         </list>
         <heading h4>Start with five</heading>
         <p>
-            Fair warning: <cde>make(1000)</cde> is faster. Scenarios take thought, and they
-            take the business, because the business is who knows the stories. That’s the point,
-            not the cost. The scenario names become part of how everyone talks, product, support
-            and devs alike. If you’re into Domain-Driven Design, it’s right next door to
-            ubiquitous language. Call it a ubiquitous cast.
+            Fair warning: <cde>make(1000)</cde> is faster. Scenarios take thought, and they take the
+            business, because the business is who knows the stories. That’s the point, not the cost.
+            The scenario names become part of how everyone talks, product, support and devs alike.
+            If you’re into Domain-Driven Design, it’s right next door to ubiquitous language. Call
+            it a ubiquitous cast.
         </p>
         <p>
             You don’t need all of it on day one. Pick the five situations your team argues about
-            most. Write them down as scenarios, with names. Seed them. Use the names out loud in
-            the next daily sync-up.
+            most. Write them down as scenarios, with names. Seed them. Use the names out loud in the
+            next daily sync-up.
         </p>
         <p>
             That’s the whole trick. It turns “can you set up a user who...” into a number. And
