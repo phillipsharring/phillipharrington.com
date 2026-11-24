@@ -147,8 +147,8 @@
     --color-th-tint-strong: var(--th-tint-strong);
     --color-th-bar: var(--th-bar);
 
-    --font-family-display: 'Syne', system-ui, sans-serif;
-    --font-family-body: 'Manrope', system-ui, sans-serif;
+    --font-display: 'Syne', system-ui, sans-serif;
+    --font-body: 'Manrope', system-ui, sans-serif;
 }
 
 @utility mbs-0 {
@@ -159,24 +159,24 @@
    outline (h2 for a section, h3 inside it), never for its size. */
 @layer components {
     .heading-h1 {
-        @apply text-th-heading mb-2 text-4xl font-extrabold;
+        @apply font-display text-th-heading mb-2 text-3xl font-extrabold sm:text-4xl;
     }
     .heading-h2 {
-        @apply text-th-heading mb-2 text-2xl font-bold tracking-tight;
+        @apply font-display text-th-heading mb-2 text-2xl font-bold tracking-tight;
     }
     .heading-h3 {
-        @apply text-th-heading text-xl font-semibold;
+        @apply font-display text-th-heading text-xl font-semibold;
     }
     .heading-h4 {
-        @apply text-th-text mb-2 text-lg font-bold;
+        @apply font-display text-th-text mb-2 text-lg font-bold;
     }
     .heading-h5 {
-        @apply text-th-text mb-2 text-base font-bold;
+        @apply font-display text-th-text mb-2 text-base font-bold;
     }
 }
 
 html {
-    font-family: var(--font-family-body);
+    font-family: var(--font-body);
     /* A touch heavier than Manrope's 400: thin strokes blur first, for
        astigmatism especially. Headings and bold set their own weights. */
     font-weight: 450;
