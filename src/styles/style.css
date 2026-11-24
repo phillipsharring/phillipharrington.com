@@ -155,23 +155,23 @@
     margin-block-start: 0 !important;
 }
 
-/* Heading sizes, apart from heading levels: <heading> picks the tag from the
-   outline and the size from `look`, so a section can be an h2 that reads like an h3. */
+/* One style per heading level, used by <heading>. Pages pick the level from the
+   outline (h2 for a section, h3 inside it), never for its size. */
 @layer components {
     .heading-h1 {
         @apply text-th-heading mb-2 text-4xl font-extrabold;
     }
     .heading-h2 {
-        @apply text-th-heading text-3xl font-bold;
-    }
-    .heading-h3 {
         @apply text-th-heading mb-2 text-2xl font-bold tracking-tight;
     }
-    .heading-h4 {
+    .heading-h3 {
         @apply text-th-heading text-xl font-semibold;
     }
-    .heading-h5 {
+    .heading-h4 {
         @apply text-th-text mb-2 text-lg font-bold;
+    }
+    .heading-h5 {
+        @apply text-th-text mb-2 text-base font-bold;
     }
 }
 
