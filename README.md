@@ -20,18 +20,8 @@ make deploy      # build, sync to S3, invalidate CloudFront (FORCE_UPLOAD=1 re-u
 ```
 content/
 ├── layouts/default.html       shared shell: header, main, footer
-├── components/                custom HTML tags expanded at build time
-│   ├── lnk.html  heading.html  list.html  quote.html  spaced.html  callout.html
-│   ├── byline.html  fig.html  hero-photo.html  abr.html  cde.html  asterisk.html
-│   ├── band.html  job.html  credits.html
-│   ├── nav-link.html  footer-link.html  hamburger-menu.html  theme-toggle.html
-│   └── initials.html  layout-header.html  layout-footer.html
+├── components/                custom HTML tags expanded at build time (see Custom tags below)
 └── pages/                     one HTML file per route
-    ├── index.html   404.html   about.html   blog.html   work.html   music.html
-    ├── now.html   uses.html   colophon.html   contact.html
-    ├── everybody-knows-alice.html   a-20-year-side-project.html   html-is-fun-again.html
-    ├── say-it-once.html   you-are-not-your-brain.html   did-you-run-this-code.html
-    └── mashanda-smile-big.html   my-trick-for-managing-adhd.html
 
 src/
 ├── app.js                     vite entry: imports CSS + the hamburger menu JS
@@ -39,22 +29,13 @@ src/
 
 public/                        static assets passed through as-is
 ├── img/                       photos (name.webp + name-400.webp, some name-full.webp), logos, icons.svg
-├── favicon-*  apple-icon-*  android-icon-*  ms-icon-*
-└── manifest.json  robots.txt  browserconfig.xml
+└── favicons, manifest.json, robots.txt, browserconfig.xml
 
 assets/graphics/               source artwork (PSDs, originals); raw phone photos are gitignored
-
-scripts/
-├── flatten-dist.mjs           rename dist/<route>/index.html → dist/<route> for abstract URLs
-├── apply-metadata.sh          re-upload extensionless files with Content-Type: text/html
-└── fix-format.sh              post-prettier cleanup (run via npm run format)
-
-deploy/
-├── deploy.sh                  make deploy: build, diff against S3, upload with Cache-Control, invalidate CloudFront
-└── provision.sh               idempotent AWS setup: resource tags, CloudFront logging
-
-cloud/
-└── cloudfront-redirects.js    viewer-request function source, deployed manually
+scripts/                       flatten-dist.mjs, apply-metadata.sh, fix-format.sh (run via npm run format)
+deploy/deploy.sh               make deploy: build, diff against S3, upload with Cache-Control, invalidate CloudFront
+deploy/provision.sh            idempotent AWS setup: resource tags, CloudFront logging
+cloud/cloudfront-redirects.js  viewer-request function source, deployed manually
 
 initials.svg                   the PH mark at the top of this README
 site.config.js                 siteName, siteUrl, copyright, injected into layouts via [[propName]]
