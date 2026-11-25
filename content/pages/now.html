@@ -10,17 +10,30 @@
     />
 </page-head>
 <article>
-    <heading h1 id="now">Now</heading>
-    <byline date="Nov 2026" updated location="Smithfield, NC">
-        This is a
-        <lnk to="https://nownownow.com/about" blank>Now page</lnk>
-    </byline>
+    <div class="mb-5 flex flex-col-reverse gap-8 sm:flex-row sm:items-start sm:gap-12">
+        <div class="min-w-0 flex-1 space-y-5">
+            <heading h1 id="now">Now</heading>
+            <byline date="Nov 2026" updated location="Smithfield, NC">
+                This is a
+                <lnk to="https://nownownow.com/about" blank>Now page</lnk>
+            </byline>
+            <heading h2 id="new-job">New Job</heading>
+            <p>
+                I started a new job at the end of June as a Team Lead at
+                <lnk to="/work">Sightview Software</lnk>.
+            </p>
+        </div>
+        <div class="flex justify-center sm:justify-end">
+            <img
+                src="/img/white-rabbit-im-late.webp"
+                alt="John Tenniel's White Rabbit, checking his pocket watch"
+                width="683"
+                height="683"
+                class="border-th-border-strong block h-auto w-full max-w-xs rounded-lg border sm:w-60 sm:max-w-none md:w-72 lg:w-96"
+            />
+        </div>
+    </div>
     <spaced>
-        <heading h2 id="new-job">New Job</heading>
-        <p>
-            I started a new job at the end of June as a Team Lead at
-            <lnk to="/work">Sightview Software</lnk>.
-        </p>
         <heading h2 id="full-house">Full House</heading>
         <p>
             We've mostly adjusted to life with the full house, since the Goldsboro family had to
