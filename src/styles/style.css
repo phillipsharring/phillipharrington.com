@@ -310,4 +310,6 @@ html {
 #main-nav a[aria-current='page'],
 nav[aria-label='More pages'] a[aria-current='page'] {
     color: var(--color-th-accent);
+    background-color: var(--color-th-tint-strong);
+    border-radius: 0.5rem;
 }
