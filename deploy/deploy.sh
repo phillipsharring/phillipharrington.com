@@ -120,7 +120,10 @@ content_type_for() {
 cache_control_for() {
     case "$1" in
         assets/*|fonts/*) echo "public, max-age=31536000, immutable" ;;
-        img/*) echo "public, max-age=2592000" ;;
+        # A replaced image always gets a new filename, so a year is safe. Editing
+        # one in place (icons.svg included) means renaming it, or visitors keep
+        # the old copy for up to a year.
+        img/*) echo "public, max-age=31536000" ;;
         *.html) echo "public, max-age=0, must-revalidate, s-maxage=31536000" ;;
         *.*) echo "public, max-age=86400" ;;
         *) echo "public, max-age=0, must-revalidate, s-maxage=31536000" ;;
