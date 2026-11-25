@@ -11,6 +11,7 @@ set -euo pipefail
 #
 # Usage:  AWS_PROFILE=phillipharrington ./deploy/deploy.sh
 # Or just: make deploy
+# Re-upload everything (e.g. after changing headers): FORCE_UPLOAD=1 make deploy
 # ──────────────────────────────────────────────────────────────
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -107,6 +108,25 @@ content_type_for() {
     esac
 }
 
+# Cache-Control, set per object at upload so CloudFront passes it to browsers.
+# Before this nothing had one, so every return visit re-downloaded everything.
+#
+# - assets/ and fonts/: the build hashes asset names and the fonts never change,
+#   so a year, immutable.
+# - img/: names are not hashed, so 30 days. Replacing an image means a new name.
+# - pages: browsers always revalidate (max-age=0), while s-maxage lets CloudFront
+#   keep them until the invalidation at the end of every deploy.
+# - the rest (robots.txt, manifest, favicons): a day.
+cache_control_for() {
+    case "$1" in
+        assets/*|fonts/*) echo "public, max-age=31536000, immutable" ;;
+        img/*) echo "public, max-age=2592000" ;;
+        *.html) echo "public, max-age=0, must-revalidate, s-maxage=31536000" ;;
+        *.*) echo "public, max-age=86400" ;;
+        *) echo "public, max-age=0, must-revalidate, s-maxage=31536000" ;;
+    esac
+}
+
 echo "=== phillipharrington.com Deploy ==="
 echo "Bucket:       $S3_BUCKET_NAME"
 echo "Distribution: $CLOUDFRONT_DISTRIBUTION_ID"
@@ -199,7 +219,9 @@ while IFS= read -r file; do
     # An ETag containing a dash is a multipart upload, where it is a hash of
     # part hashes rather than of the object, so it cannot be compared to a local
     # MD5. Treat it as changed: wrong only in the harmless direction.
-    if [ -n "$remote_etag" ] && [ "${remote_etag#*-}" = "$remote_etag" ] \
+    # FORCE_UPLOAD=1 re-uploads everything, for when the metadata changes
+    # (Content-Type, Cache-Control) but the bytes don't, so the ETags still match.
+    if [ "${FORCE_UPLOAD:-0}" != "1" ] && [ -n "$remote_etag" ] && [ "${remote_etag#*-}" = "$remote_etag" ] \
         && [ "$remote_etag" = "$(md5_of "$file")" ]; then
         SAME=$((SAME + 1))
         continue
@@ -217,14 +239,15 @@ echo "  unchanged: $SAME   to upload: $((N_ASSETS + N_PAGES)) ($N_ASSETS assets,
 
 upload_key() {
     local key="$1"
-    local ct
+    local ct cc
     ct="$(content_type_for "$key")"
+    cc="$(cache_control_for "$key")"
     if [ -n "$ct" ]; then
         retry 5 aws s3 cp "$PROJECT_DIR/dist/$key" "s3://$S3_BUCKET_NAME/$key" \
-            --content-type "$ct" --no-progress --region "$REGION"
+            --content-type "$ct" --cache-control "$cc" --no-progress --region "$REGION"
     else
         retry 5 aws s3 cp "$PROJECT_DIR/dist/$key" "s3://$S3_BUCKET_NAME/$key" \
-            --no-progress --region "$REGION"
+            --cache-control "$cc" --no-progress --region "$REGION"
     fi
 }
 
