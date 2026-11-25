@@ -9,3 +9,8 @@ deploy/.env.production
 # CloudFront log analysis (make cf-report)
 .cf-logs/
 cf-report.html
+
+# Raw photos (phone JPEG/HEIC carry GPS); only exported WebP in public/img gets committed
+assets/graphics/*.jpg
+assets/graphics/*.jpeg
+assets/graphics/*.heic
