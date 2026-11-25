@@ -65,9 +65,6 @@
     --th-tint-strong: rgba(0, 0, 0, 0.08);
     --th-bar: #1f2937;
     --th-header-bg: rgba(255, 255, 255, 0.82);
-    --th-glow-opacity: 0.2;
-    --th-glow-blur: 14px;
-    --th-glow-hover-opacity: 0.35;
     --th-logo-filter: grayscale(100%);
     --th-logo-hover-filter: grayscale(0%);
     --th-logo-detail-filter: grayscale(40%);
@@ -94,9 +91,6 @@
     --th-tint-strong: rgba(255, 255, 255, 0.1);
     --th-bar: #d1d5db;
     --th-header-bg: rgba(22, 30, 50, 0.88);
-    --th-glow-opacity: 0.5;
-    --th-glow-blur: 10px;
-    --th-glow-hover-opacity: 0.75;
     --th-logo-filter: brightness(0) invert(1);
     --th-logo-hover-filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(141, 198, 64, 0.3));
     --th-logo-detail-filter: brightness(1.15);
@@ -234,26 +228,6 @@ html {
     color: #080d18;
 }
 
-/* Photo glow effect */
-.photo-glow {
-    position: relative;
-    isolation: isolate;
-}
-.photo-glow::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #8dc640, #476b20, #8dc640);
-    z-index: 0;
-    opacity: var(--th-glow-opacity);
-    filter: blur(var(--th-glow-blur));
-    transition: opacity 0.4s ease;
-}
-.photo-glow:hover::after {
-    opacity: var(--th-glow-hover-opacity);
-}
-
 /* Logo filter for company logos */
 .logo-bright {
     opacity: 0.4;
@@ -330,4 +304,10 @@ html {
 }
 .space-y-6 > :not(:last-child) {
     margin-bottom: calc(var(--spacing) * 6);
+}
+
+/* The current page in either nav. app.js sets aria-current; screen readers announce it too. */
+#main-nav a[aria-current='page'],
+nav[aria-label='More pages'] a[aria-current='page'] {
+    color: var(--color-th-accent);
 }
