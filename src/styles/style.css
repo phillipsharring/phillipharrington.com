@@ -186,6 +186,15 @@ html {
     scroll-padding-top: 5rem;
 }
 
+/* viewport-fit=cover (layouts/default.html) hands the landscape notch to us:
+   iOS WebKit, which Chrome on iPhone runs on, sometimes misplaces its own
+   letterboxing after a rotation until the first scroll. Pad by the notch
+   instead. Unlayered on purpose, so it wins over body's p-0 utility. */
+body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
 /* Grayscale smoothing thins dark text on a light page, so only use it in dark
    mode, where it keeps light-on-dark text from blooming. */
 :root[data-theme='dark'] {

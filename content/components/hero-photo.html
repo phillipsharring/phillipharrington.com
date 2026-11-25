@@ -1,14 +1,16 @@
 <figure>
-    <img
-        src="/img/[[img]].webp"
-        srcset="/img/[[img]]-400.webp 400w, /img/[[img]].webp [[w]]w"
-        sizes="(min-width: 1024px) 384px, (min-width: 768px) 288px, (min-width: 640px) 240px, 320px"
-        width="[[w]]"
-        height="[[h]]"
-        alt="[[alt]]"
-        fetchpriority="high"
-        class="[[#if plain]][[else]]hero-frame[[/if]] block h-auto w-full max-w-xs sm:w-60 sm:max-w-none md:w-72 lg:w-96"
-    />
+    <a href="/img/[[img]][[#if full]]-full[[/if]].webp" class="block">
+        <img
+            src="/img/[[img]].webp"
+            srcset="/img/[[img]]-400.webp 400w, /img/[[img]].webp [[w]]w"
+            sizes="(min-width: 1024px) 384px, (min-width: 768px) 288px, (min-width: 640px) 240px, 320px"
+            width="[[w]]"
+            height="[[h]]"
+            alt="[[alt]]"
+            fetchpriority="high"
+            class="[[#if plain]][[else]]hero-frame[[/if]] block h-auto w-full max-w-xs sm:w-60 sm:max-w-none md:w-72 lg:w-96"
+        />
+    </a>
     [[#if caption]]
     <!-- w-0 min-w-full: the caption adds nothing to the figure's width, so a long
          one wraps at the photo's edge instead of widening the figure. -->
