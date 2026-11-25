@@ -52,7 +52,7 @@
     --th-heading: #111827;
     --th-sub: #374151;
     --th-muted: #4b5563;
-    --th-faint: #6b7280;
+    --th-faint: #5f6673;
     --th-accent: #476b20;
     --th-accent-text: #33491e;
     --th-accent-faded: rgba(71, 107, 32, 0.35);
@@ -153,6 +153,13 @@
 
 @utility mbs-0 {
     margin-block-start: 0 !important;
+}
+
+/* The frame on hero photos and figures: thin, theme-aware border, rounded. */
+@layer components {
+    .hero-frame {
+        @apply border-th-border-strong rounded-lg border;
+    }
 }
 
 /* One style per heading level, used by <heading>. Pages pick the level from the
