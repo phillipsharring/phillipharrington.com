@@ -12,6 +12,7 @@ Static site, no backend, built with [Handlr](https://github.com/phillipsharring/
 npm install
 npm run dev      # vite dev server at localhost:5173, renders pages on the fly
 npm run build    # vite build + handlr-build-pages → dist/
+make deploy      # build, sync to S3, invalidate CloudFront (FORCE_UPLOAD=1 re-uploads everything)
 ```
 
 ## Project shape
@@ -20,37 +21,44 @@ npm run build    # vite build + handlr-build-pages → dist/
 content/
 ├── layouts/default.html       shared shell: header, main, footer
 ├── components/                custom HTML tags expanded at build time
-│   ├── lnk.html  heading.html  list.html  quote.html  spaced.html
-│   ├── byline.html  fig.html  abr.html  cde.html  asterisk.html
-│   ├── band.html  drumset.html  credits.html
-│   ├── nav-link.html  hamburger-menu.html  initials.html
-│   └── layout-header.html  layout-footer.html
+│   ├── lnk.html  heading.html  list.html  quote.html  spaced.html  callout.html
+│   ├── byline.html  fig.html  hero-photo.html  abr.html  cde.html  asterisk.html
+│   ├── band.html  job.html  credits.html
+│   ├── nav-link.html  footer-link.html  hamburger-menu.html  theme-toggle.html
+│   └── initials.html  layout-header.html  layout-footer.html
 └── pages/                     one HTML file per route
-    ├── index.html   404.html   about.html   blog.html
-    ├── colophon.html   contact.html   work.html   uses.html
-    ├── now.html   music.html   mashanda-smile-big.html
-    ├── did-you-run-this-code.html   say-it-once.html
-    ├── you-are-not-your-brain.html  my-trick-for-managing-adhd.html
+    ├── index.html   404.html   about.html   blog.html   work.html   music.html
+    ├── now.html   uses.html   colophon.html   contact.html
+    ├── everybody-knows-alice.html   a-20-year-side-project.html   html-is-fun-again.html
+    ├── say-it-once.html   you-are-not-your-brain.html   did-you-run-this-code.html
+    └── mashanda-smile-big.html   my-trick-for-managing-adhd.html
 
 src/
 ├── app.js                     vite entry: imports CSS + the hamburger menu JS
 └── styles/style.css           tailwind v4 + custom theme palette + selection colors
 
 public/                        static assets passed through as-is
-├── img/                       104 images, SVGs, PNGs, JPGs
+├── img/                       photos (name.webp + name-400.webp, some name-full.webp), logos, icons.svg
 ├── favicon-*  apple-icon-*  android-icon-*  ms-icon-*
 └── manifest.json  robots.txt  browserconfig.xml
 
+assets/graphics/               source artwork (PSDs, originals); raw phone photos are gitignored
+
 scripts/
 ├── flatten-dist.mjs           rename dist/<route>/index.html → dist/<route> for abstract URLs
-└── apply-metadata.sh          re-upload extensionless files with Content-Type: text/html
+├── apply-metadata.sh          re-upload extensionless files with Content-Type: text/html
+└── fix-format.sh              post-prettier cleanup (run via npm run format)
+
+deploy/
+├── deploy.sh                  make deploy: build, diff against S3, upload with Cache-Control, invalidate CloudFront
+└── provision.sh               idempotent AWS setup: resource tags, CloudFront logging
 
 cloud/
 └── cloudfront-redirects.js    viewer-request function source, deployed manually
 
+initials.svg                   the PH mark at the top of this README
 site.config.js                 siteName, siteUrl, copyright, injected into layouts via [[propName]]
 vite.config.js                 vite + handlr-build plugin + tailwind plugin
-buildspec.yml                  AWS CodeBuild → S3 sync → CloudFront invalidate
 ```
 
 ## Page format
@@ -74,7 +82,7 @@ Each page declares its layout and metadata in a self-closing tag at the top, the
 </article>
 ```
 
-Custom tags: `<lnk to="...">`, `<heading h1|h2|h3|h4|h5 id="...">`, `<list>`, `<quote citation="...">`, `<spaced>`, `<byline date="..." location="..." updated>`, `<fig src="..." alt="..." caption="...">`, `<abr tooltip="...">`, `<band>`, `<drumset>`, `<credits>`, `<asterisk />`, `<cde>`. All defined under `content/components/`.
+Custom tags: `<lnk to="...">`, `<heading h1|h2|h3|h4|h5 id="...">`, `<list>`, `<quote citation="...">`, `<spaced>`, `<callout>`, `<byline date="..." location="..." updated>`, `<hero-photo img w h alt [caption] [full] [plain]>`, `<fig img|src w h alt caption [full] [center] [credit] [nozoom]>`, `<abr tooltip="...">`, `<band>`, `<job>`, `<credits>`, `<asterisk />`, `<cde>`. All defined under `content/components/`.
 
 ## Abstract URLs
 
