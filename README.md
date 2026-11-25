@@ -2,23 +2,23 @@
 
 The personal home page of Phillip Harrington.
 
-![Build Badge](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiVXBEREFFbytrYUFTWG9UTVpoWXFKQzFxd1RaemppdFAvWGxWWi80Ty9MV2R6dHhxWUJGK1RLUERNVmhPbHB3MUNVMHlGY1ZWaU5teXMyaFVodEFOK3hZPSIsIml2UGFyYW1ldGVyU3BlYyI6IldsZWFtaTUyTUhXa0hBcWMiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+![PH](initials.svg)
 
-Static site, no backend, built with [Graspr](https://github.com/phillipsharring/graspr-framework). Vite + [`@phillipsharring/graspr-build`](https://github.com/phillipsharring/graspr-build) + Tailwind v4. Hosted on S3 + CloudFront.
+Static site, no backend, built with [Handlr](https://github.com/phillipsharring/handlr-mono). Vite + [`@phillipsharring/handlr-build`](https://github.com/phillipsharring/handlr-mono/tree/main/packages/build) + Tailwind v4. Hosted on S3 + CloudFront.
 
 ## Develop
 
 ```bash
 npm install
 npm run dev      # vite dev server at localhost:5173, renders pages on the fly
-npm run build    # vite build + graspr-build-pages → dist/
+npm run build    # vite build + handlr-build-pages → dist/
 ```
 
 ## Project shape
 
 ```
 content/
-├── layouts/default.html       shared shell — header, main, footer
+├── layouts/default.html       shared shell: header, main, footer
 ├── components/                custom HTML tags expanded at build time
 │   ├── lnk.html  heading.html  list.html  quote.html  spaced.html
 │   ├── byline.html  fig.html  abr.html  cde.html  asterisk.html
@@ -33,7 +33,7 @@ content/
     ├── you-are-not-your-brain.html  my-trick-for-managing-adhd.html
 
 src/
-├── app.js                     vite entry — imports CSS + the hamburger menu JS
+├── app.js                     vite entry: imports CSS + the hamburger menu JS
 └── styles/style.css           tailwind v4 + custom theme palette + selection colors
 
 public/                        static assets passed through as-is
@@ -46,10 +46,10 @@ scripts/
 └── apply-metadata.sh          re-upload extensionless files with Content-Type: text/html
 
 cloud/
-└── cloudfront-redirects.js    viewer-request function source — deployed manually
+└── cloudfront-redirects.js    viewer-request function source, deployed manually
 
-site.config.js                 siteName, siteUrl, copyright — injected into layouts via [[propName]]
-vite.config.js                 vite + graspr-build plugin + tailwind plugin
+site.config.js                 siteName, siteUrl, copyright, injected into layouts via [[propName]]
+vite.config.js                 vite + handlr-build plugin + tailwind plugin
 buildspec.yml                  AWS CodeBuild → S3 sync → CloudFront invalidate
 ```
 
@@ -68,7 +68,7 @@ Each page declares its layout and metadata in a self-closing tag at the top, the
     <heading h1 id="about">About</heading>
     <spaced>
         <p>Page content uses custom tags like <lnk to="/blog">links</lnk>,
-        <heading h3>headings</heading>, <list><li>lists</li></list>, and so on —
+        <heading h3>headings</heading>, <list><li>lists</li></list>, and so on,
         all expanded to plain HTML at build time.</p>
     </spaced>
 </article>
@@ -78,7 +78,7 @@ Custom tags: `<lnk to="...">`, `<heading h1|h2|h3|h4|h5 id="...">`, `<list>`, `<
 
 ## Abstract URLs
 
-Pages are served as extensionless files (`/about`, not `/about/` or `/about/index.html`). graspr-build natively emits `dist/about/index.html`, so the build runs `scripts/flatten-dist.mjs` after `graspr-build-pages` to rename each `dist/<route>/index.html` → `dist/<route>` (and keep `404.html` with its extension for the CloudFront error document).
+Pages are served as extensionless files (`/about`, not `/about/` or `/about/index.html`). handlr-build natively emits `dist/about/index.html`, so the build runs `scripts/flatten-dist.mjs` after `handlr-build-pages` to rename each `dist/<route>/index.html` → `dist/<route>` (and keep `404.html` with its extension for the CloudFront error document).
 
 Once flattened, `apply-metadata.sh` re-uploads each extensionless file to S3 with `--content-type text/html`, because S3 can't infer Content-Type without an extension and CloudFront would otherwise serve the raw bytes as plain text.
 
@@ -87,11 +87,11 @@ A small CloudFront viewer-request function handles the redirects:
 - `/about/index.html` → 301 → `/about`
 - `/index.html` → 301 → `/`
 
-The source is in [`cloud/cloudfront-redirects.js`](cloud/cloudfront-redirects.js). The deployed copy lives in the CloudFront distribution under the function name `PhdcRedirects` — CloudFront does **not** auto-deploy from this repo, so when the file changes the function has to be updated manually (AWS console or CLI) and re-published to the distribution.
+The source is in [`cloud/cloudfront-redirects.js`](cloud/cloudfront-redirects.js). The deployed copy lives in the CloudFront distribution under the function name `PhdcRedirects`. CloudFront does **not** auto-deploy from this repo, so when the file changes the function has to be updated manually (AWS console or CLI) and re-published to the distribution.
 
 ## Tailwind v4 caveat
 
-`src/styles/style.css` includes a workaround for a bug in `tailwindcss@4.2.2` where every `space-y-N` selector ships with an unmatched closing paren and gets dropped by every browser. The site's `<spaced>` component depends on `space-y-5`, and without the override every page renders with no inter-element margin. The block is clearly marked — remove it once Tailwind ships a fix and we upgrade.
+`src/styles/style.css` includes a workaround for a bug in `tailwindcss@4.2.2` where every `space-y-N` selector ships with an unmatched closing paren and gets dropped by every browser. The site's `<spaced>` component depends on `space-y-5`, and without the override every page renders with no inter-element margin. The block is clearly marked; remove it once Tailwind ships a fix and we upgrade.
 
 ## License
 

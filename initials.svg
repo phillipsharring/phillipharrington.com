@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 124.609 93.412" width="125" height="94">
+    <title>PH</title>
+    <style>
+        path { fill: #476b20; }
+        @media (prefers-color-scheme: dark) { path { fill: #8dc640; } }
+    </style>
+    <path d="M27.7 56.5H41.1C64.4 56.5 64.3 22.9 41.1 22.9H18.7V87.2H6.3V6.3H93.2V0H0V93.4H27.7ZM27.7 31.4H41.1C52.5 31.4 52.6 48.3 41.1 48.3H27.7ZM97 0V43H73.6V23H64.7V70.5H73.6V51.3H97V70.5H105.9V6.3H118.3V87.2H31.4V93.4H124.6V0Z" />
+</svg>
