@@ -188,11 +188,15 @@ html {
 
 /* viewport-fit=cover (layouts/default.html) hands the landscape notch to us:
    iOS WebKit, which Chrome on iPhone runs on, sometimes misplaces its own
-   letterboxing after a rotation until the first scroll. Pad by the notch
-   instead. Unlayered on purpose, so it wins over body's p-0 utility. */
-body {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+   letterboxing after a rotation until the first scroll. env(safe-area-inset-*)
+   is no better there: Chrome changes it as its toolbars collapse, so padding
+   by it jumps on scroll. A fixed margin on both sides of a landscape phone
+   instead: 1.75rem plus main's px-8 clears a 59px Dynamic Island, and nothing
+   moves. Unlayered on purpose, so it wins over body's p-0 utility. */
+@media (orientation: landscape) and (max-height: 500px) {
+    body {
+        padding-inline: 1.75rem;
+    }
 }
 
 /* Grayscale smoothing thins dark text on a light page, so only use it in dark

@@ -14,3 +14,6 @@ cf-report.html
 assets/graphics/*.jpg
 assets/graphics/*.jpeg
 assets/graphics/*.heic
+
+# Kept locally, out of the public repo
+assets/graphics/wedding-day-goofballs*.psd
