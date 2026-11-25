@@ -181,6 +181,9 @@ html {
     /* A touch heavier than Manrope's 400: thin strokes blur first, for
        astigmatism especially. Headings and bold set their own weights. */
     font-weight: 450;
+    /* The sticky header is h-16 (4rem) plus a 1px border, so #anchor jumps
+       (e.g. /contact#hiring) land below it with a little room to spare. */
+    scroll-padding-top: 5rem;
 }
 
 /* Grayscale smoothing thins dark text on a light page, so only use it in dark
