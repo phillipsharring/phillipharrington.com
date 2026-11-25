@@ -10,10 +10,8 @@
     />
 </page-head>
 <article>
-    <div
-        class="mb-5 flex flex-col-reverse items-center justify-center sm:flex-row sm:items-start sm:justify-start sm:gap-5"
-    >
-        <spaced>
+    <div class="mb-5 flex flex-col-reverse gap-8 sm:flex-row sm:items-start sm:gap-12">
+        <div class="flex-1 space-y-5">
             <heading h1 id="about">About</heading>
             <heading h2 id="deets">Deets</heading>
             <p>
@@ -34,48 +32,15 @@
                 LOA, people watching, and feeling better. Terrible father of two awesome children
                 whom I'm very proud of.
             </p>
-        </spaced>
-        <div class="flex">
-            <picture class="my-5 min-w-56 sm:mt-0 sm:mb-5">
-                <source
-                    media="(max-width: 224px)"
-                    srcset="/img/phillip-harrington-flight-deck-sq@0.34x.jpg 224w"
-                    width="224"
-                    height="224"
-                />
-                <source
-                    media="(max-width: 329px)"
-                    srcset="/img/phillip-harrington-flight-deck-sq@0.50x.jpg 329w"
-                    width="329"
-                    height="329"
-                />
-                <source
-                    media="(max-width: 466px)"
-                    srcset="/img/phillip-harrington-flight-deck-sq@0.66x.jpg 434w"
-                    width="434"
-                    height="434"
-                />
-                <source
-                    srcset="
-                        /img/phillip-harrington-flight-deck@0.17x.jpg  224w,
-                        /img/phillip-harrington-flight-deck@0.25x.jpg  329w,
-                        /img/phillip-harrington-flight-deck@0.33x.jpg  434w,
-                        /img/phillip-harrington-flight-deck@0.50x.jpg  658w,
-                        /img/phillip-harrington-flight-deck@1x.jpg    1316w
-                    "
-                    sizes="(max-width: 256px) 224px, (max-width: 361px) 329px, (max-width: 466px) 434px, (max-width: 690px) 224px, 224px"
-                    width="224"
-                    height="298"
-                />
-                <img
-                    src="/img/phillip-harrington-flight-deck@0.33x.jpg"
-                    width="224"
-                    height="298"
-                    alt="Phillip Harrington sitting in the pilot's seat on the flight deck of a 737"
-                    title="Phillip Harrington sitting in the pilot's seat on the flight deck of a 737"
-                    class="border-th-border-strong block rounded-lg border"
-                />
-            </picture>
+        </div>
+        <div class="flex justify-center sm:justify-end">
+            <img
+                src="/img/phillip-harrington-flight-deck.webp"
+                alt="Phillip Harrington sitting in the pilot's seat on the flight deck of a 737"
+                width="658"
+                height="658"
+                class="border-th-border-strong block h-auto w-full max-w-xs rounded-lg border sm:w-60 sm:max-w-none md:w-72 lg:w-96"
+            />
         </div>
     </div>
     <spaced>
