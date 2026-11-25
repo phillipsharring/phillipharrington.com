@@ -3,10 +3,12 @@
     [[else]]class="mb-10 w-full sm:float-right sm:m-0 sm:mb-4 sm:ml-4 sm:w-1/3"
     [[/if]]
 >
-    <a
+    <!-- Linked to its biggest version unless nozoom: worth it only when that file
+         is clearly bigger than the figure shows it (full = a -full.webp exists). -->
+    [[#if nozoom]][[else]]<a
         href="[[#if img]]/img/[[img]][[#if full]]-full[[/if]].webp[[else]][[src]][[/if]]"
         class="block"
-    >
+        >[[/if]]
         <img
             [[#if img]]src="/img/[[img]].webp"
             srcset="/img/[[img]]-400.webp 400w, /img/[[img]].webp [[w]]w"
@@ -20,7 +22,8 @@
             [[/if]]
             class="border-th-border-strong [[#if center]]max-w-none[[else]]max-w-72[[/if]] mx-auto w-full rounded-lg border sm:w-full"
         />
-    </a>
+        [[#if nozoom]][[else]]</a
+    >[[/if]]
     <figcaption class="text-th-sub mt-2 text-center font-serif italic">
         [[caption]] [[#if credit]]<asterisk />[[/if]]
     </figcaption>
