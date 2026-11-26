@@ -40,9 +40,12 @@ Drafts live in `drafts/` (the build only reads `content/pages/`, so nothing ther
 7. **Mental health:** on my terms, at my pace.
 8. **Finish or drop** My Trick for Managing ADHD (in `drafts/`).
 
-## Next mastermind member
+## Next mastermind members
 
-The copywriting voice: most likely **Brian Clark** of Copyblogger, the big copywriting and content-marketing blog of the 2010s. (If it's someone else: Jon Morrow of Smart Blogger, or Seth Godin.) Questions to ask him: headlines, the first line of each post, the one-line summaries on `/blog`, and the calls to action in the callouts.
+Saved for a future pass, not applied yet:
+
+- **Brian Clark** (Copyblogger): copywriting. Headlines, first lines, the one-line summaries on `/blog`, the calls to action in the callouts.
+- **Seth Godin:** marketing and point of view. Who each post is for, and what the site is the best at for them.
 
 ## Every new post gets
 
