@@ -24,7 +24,7 @@ window.onReady(() => {
                 commitLink.href = commitLink.href.replace(/commits\/main$/, `commit/${sha}`);
                 const code = document.createElement('code');
                 code.textContent = sha;
-                commitLink.replaceChildren('commit ', code);
+                commitLink.replaceChildren(code);
                 break;
             }
         }

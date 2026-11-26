@@ -211,37 +211,51 @@
     <!-- The bottom of Home, in order: Ask Me About (once the magnet content
          exists), Latest Comment (see docs/comments-plan.md), Built in the Open. -->
 
-    <!-- Built in the Open: things that are true about this page, no boasts that
-         go stale. The commit link starts as "the latest commit"; src/app.js
-         swaps in the deployed sha from the stamp at the top of this page. -->
+    <!-- Built in the Open: four factoids in one row (2x2 on phones), each a big
+         value over a small label. Things that are true about this page, no
+         boasts that go stale. The commit starts as "latest"; src/app.js swaps in
+         the deployed sha from the stamp at the top of this page. -->
     <section class="reveal pb-8">
-        <h2
-            class="font-display text-th-accent mb-5 text-xs font-semibold tracking-widest uppercase"
-        >
-            Built in the Open
-        </h2>
-        <ul class="text-th-muted space-y-2">
-            <li>
-                Plain HTML, built with
-                <lnk to="https://github.com/phillipsharring/handlr-mono/tree/main/packages/build"
-                    ><cde>handlr-build</cde></lnk>
-            </li>
-            <li>No cookies, not one</li>
-            <li><lnk to="/static-site-comments">Comments</lnk> without a database</li>
-            <li>
-                This page was deployed from
-                <a
-                    data-deployed-commit
-                    href="https://github.com/phillipsharring/phillipharrington.com/commits/main"
-                    class="link-themed text-th-accent font-normal underline underline-offset-2 transition-colors duration-200"
-                    >the latest commit</a
-                >
-            </li>
-        </ul>
-        <p class="mt-5">
-            All of it is
-            <lnk to="https://github.com/phillipsharring/phillipharrington.com">on GitHub</lnk>, and
-            the <lnk to="/colophon">Colophon</lnk> says how it's made.
-        </p>
+        <div class="mb-5 flex items-baseline justify-between gap-4">
+            <h2 class="font-display text-th-accent text-xs font-semibold tracking-widest uppercase">
+                Built in the Open
+            </h2>
+            <span class="text-sm"><lnk to="/colophon">How it's made &rarr;</lnk></span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
+            <div>
+                <p class="font-display text-th-heading text-2xl font-bold">0</p>
+                <p class="text-th-muted text-sm">cookies</p>
+            </div>
+            <div>
+                <p class="font-display text-th-heading text-2xl font-bold">0</p>
+                <p class="text-th-muted text-sm">
+                    databases, <lnk to="/static-site-comments">comments</lnk> included
+                </p>
+            </div>
+            <div>
+                <p class="font-display text-th-heading text-2xl font-bold">HTML</p>
+                <p class="text-th-muted text-sm">
+                    built with
+                    <lnk
+                        to="https://github.com/phillipsharring/handlr-mono/tree/main/packages/build"
+                        >handlr-build</lnk>
+                </p>
+            </div>
+            <div>
+                <p class="font-display text-2xl font-bold">
+                    <a
+                        data-deployed-commit
+                        href="https://github.com/phillipsharring/phillipharrington.com/commits/main"
+                        class="link-themed text-th-accent font-normal underline underline-offset-2 transition-colors duration-200"
+                        >latest</a
+                    >
+                </p>
+                <p class="text-th-muted text-sm">
+                    deployed commit &middot;
+                    <lnk to="https://github.com/phillipsharring/phillipharrington.com">source</lnk>
+                </p>
+            </div>
+        </div>
     </section>
 </article>
