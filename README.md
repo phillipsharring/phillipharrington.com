@@ -63,7 +63,7 @@ Each page declares its layout and metadata in a self-closing tag at the top, the
 </article>
 ```
 
-Custom tags: `<lnk to="...">`, `<heading h1|h2|h3|h4|h5 id="...">`, `<list>`, `<quote citation="...">`, `<spaced>`, `<callout label title [href button] [logo logo-w logo-h] [heading]>`, `<steal-this>`, `<byline date="..." location="..." updated>`, `<hero-photo img w h alt [caption] [full] [plain]>`, `<fig img|src w h alt caption [full] [center] [credit] [nozoom]>`, `<margin-row label="...">`, `<job>`, `<comment-count [path]>`, `<inject-comments [path]>`, `<abr tooltip="...">`, `<credits>`, `<asterisk />`, `<cde>`. All defined under `content/components/`.
+Custom tags: `<lnk to="...">`, `<heading h1|h2|h3|h4|h5 id="...">`, `<list>`, `<quote citation="...">`, `<spaced>`, `<callout label title [href button] [logo logo-w logo-h] [heading]>`, `<steal-this>`, `<byline date="..." location="..." updated>`, `<hero-photo img w h alt [caption] [full] [plain]>`, `<fig img|src w h alt caption [full] [center] [credit] [nozoom]>`, `<margin-row label="...">`, `<job>`, `<comment-count [path]>`, `<inject-comments [path]>`, `<latest-comment>`, `<section-heading label [more href]>`, `<abr tooltip="...">`, `<credits>`, `<asterisk />`, `<cde>`. All defined under `content/components/`.
 
 ## Abstract URLs
 
