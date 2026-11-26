@@ -38,7 +38,9 @@ export function createApp(deps) {
 
     async function postComment(req) {
         const form = new URLSearchParams(req.body);
-        const path = form.get('path') ?? '';
+        // The page's script fills in path; without JavaScript, the browser's
+        // Referer from our own site says which post the form was on.
+        const path = form.get('path') || refererPath(req.headers.referer);
         if (!/^\/[a-z0-9-]+$/.test(path)) return text(400, 'Bad request');
         const back = (code) => redirect(`${path}?comment=${code}#comments`);
 
@@ -107,6 +109,15 @@ export function createApp(deps) {
         await deps.putObject(key, JSON.stringify(list));
         await deps.invalidate(`/${key}`);
         return page(200, 'Approved', back);
+    }
+
+    function refererPath(referer) {
+        try {
+            const url = new URL(referer);
+            return url.origin === new URL(config.siteUrl).origin ? url.pathname.replace(/\/+$/, '') : '';
+        } catch {
+            return '';
+        }
     }
 
     // The token carries the whole comment, signed, so nothing waits in storage

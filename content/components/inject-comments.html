@@ -1,5 +1,6 @@
-<!-- Comments for a blog post; use it with path="/the-post-slug". (No tag
-     names in this comment: the build would expand them, forever.)
+<!-- Comments for a blog post. path= is optional: the script uses the current
+     page, and without JavaScript the Lambda reads the Referer. (No tag names
+     in this comment: the build would expand them, forever.)
      Approved comments come from /api/comments/<slug>.json and are drawn by
      src/comments.js into the template below with textContent only. The form
      posts to the comments Lambda, which emails for approval and redirects

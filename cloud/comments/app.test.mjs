@@ -85,6 +85,24 @@ test('a broken email send redirects with error', async () => {
     assert.equal((await comment(good)).headers.location, '/a-post?comment=error#comments');
 });
 
+test('without a path field, the Referer from our own site names the post', async () => {
+    const { req, sent } = setup();
+    const body = new URLSearchParams({ name: 'Al', comment: 'Hi', website: '' }).toString();
+    const fromUs = await req('POST', '/api/comments', {
+        body,
+        headers: { 'x-origin-verify': ORIGIN, referer: 'https://example.com/a-post/' },
+    });
+    assert.equal(fromUs.headers.location, '/a-post?comment=pending#comments');
+    assert.equal(sent.length, 1);
+    const fromElsewhere = await req('POST', '/api/comments', {
+        body,
+        headers: { 'x-origin-verify': ORIGIN, referer: 'https://evil.example/a-post' },
+    });
+    assert.equal(fromElsewhere.status, 400);
+    const noReferer = await req('POST', '/api/comments', { body });
+    assert.equal(noReferer.status, 400);
+});
+
 test('bad paths and pages without the component are refused', async () => {
     assert.equal((await setup().comment({ ...good, path: '/../etc' })).status, 400);
     assert.equal((await setup().comment({ ...good, path: 'https://evil.example' })).status, 400);

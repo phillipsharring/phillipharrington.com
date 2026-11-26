@@ -15,6 +15,8 @@ const MESSAGES = {
 // someone's comment. sessionStorage can be unavailable; that only costs the
 // convenience.
 const draftKey = (path) => `comment-draft:${path}`;
+// Components only need path= when pointing at another page (a count on /blog).
+const here = () => location.pathname.replace(/\/+$/, '') || '/';
 function store(fn) {
     try {
         return fn(window.sessionStorage);
@@ -40,14 +42,15 @@ function getComments(slug) {
 
 export function initComments() {
     document.querySelectorAll('[data-comment-count]').forEach(async (link) => {
-        const n = (await getComments(link.dataset.commentCount.slice(1))).length;
+        const n = (await getComments((link.dataset.commentCount || here()).slice(1))).length;
         link.textContent = n === 0 ? 'Be the first to comment' : n === 1 ? '1 comment' : `${n} comments`;
     });
 
     const root = document.querySelector('[data-comments]');
     if (!root) return;
-    const path = root.dataset.comments;
+    const path = root.dataset.comments || here();
     const form = root.querySelector('[data-comments-form]');
+    form.elements.path.value = path;
     const status = root.querySelector('[data-comments-status]');
 
     const url = new URL(location.href);
