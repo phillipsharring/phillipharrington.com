@@ -237,6 +237,13 @@
                         >The plan</lnk>, CloudFront routes and all
                 </li>
             </list>
+            <p>
+                It's almost build-system agnostic, too. The Lambda, the CloudFront routes and the
+                script are plain AWS and plain JavaScript. The two components are a copy-paste into
+                whatever templates your site uses. The catches: posts have to live one level deep
+                (<cde>/some-post</cde>, not <cde>/blog/2026/some-post</cde>), and the deploy step
+                that makes the empty files expects flat page files.
+            </p>
             <p>The secrets live in AWS, not in the repo. Nice try.</p>
         </steal-this>
         <heading h2 id="what-it-costs">What It Costs</heading>
