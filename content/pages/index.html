@@ -124,54 +124,73 @@
         </div>
     </section>
 
-    <!-- Projects -->
+    <!-- Projects: logos with a line each (a wall of logos alone makes you already
+         know what they are). The full story of each will live on /projects. -->
     <section class="reveal pb-16 sm:pb-24">
         <h2
             class="font-display text-th-accent mb-8 text-xs font-semibold tracking-widest uppercase"
         >
             Projects
         </h2>
-        <div class="flex flex-row flex-wrap items-center justify-center gap-10 sm:gap-14">
-            <a
-                href="https://handlr.dev/?utm_source=phillipharrington&utm_medium=website&utm_campaign=home&utm_content=projects"
-                class="block transition-opacity duration-200 hover:opacity-80"
-                aria-label="Handlr"
-            >
-                <img
-                    src="/img/handlr.webp"
-                    width="506"
-                    height="112"
-                    class="h-10 w-auto sm:h-14"
-                    alt="Handlr"
-                />
-            </a>
-            <a
-                href="https://reuselists.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=home&utm_content=projects"
-                class="block transition-opacity duration-200 hover:opacity-80"
-                aria-label="Reuse Lists: the checklist you never have to remake"
-            >
-                <img
-                    src="/img/reuselists.svg"
-                    width="977"
-                    height="292"
-                    class="h-10 w-auto sm:h-14"
-                    alt="Reuse Lists"
-                />
-            </a>
-            <a
-                href="https://streamtostory.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=home&utm_content=projects"
-                class="block transition-opacity duration-200 hover:opacity-80"
-                aria-label="Stream to Story"
-            >
-                <img
-                    src="/img/streamtostory.svg"
-                    width="520"
-                    height="95"
-                    class="h-10 w-auto sm:h-14"
-                    alt="Stream to Story"
-                />
-            </a>
+        <div
+            class="flex flex-row flex-wrap items-start justify-center gap-x-10 gap-y-10 sm:gap-x-14"
+        >
+            <div class="flex w-64 flex-col items-center gap-3 text-center">
+                <a
+                    href="https://handlr.dev/?utm_source=phillipharrington&utm_medium=website&utm_campaign=home&utm_content=projects"
+                    class="block transition-opacity duration-200 hover:opacity-80"
+                    aria-label="Handlr"
+                >
+                    <img
+                        src="/img/handlr.webp"
+                        width="506"
+                        height="112"
+                        class="h-10 w-auto sm:h-14"
+                        alt="Handlr"
+                    />
+                </a>
+                <p class="text-th-muted text-sm leading-snug text-balance">
+                    My PHP + HTMX framework, and the build step behind this site.
+                </p>
+            </div>
+            <div class="flex w-64 flex-col items-center gap-3 text-center">
+                <a
+                    href="https://reuselists.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=home&utm_content=projects"
+                    class="block transition-opacity duration-200 hover:opacity-80"
+                    aria-label="Reuse Lists: the checklist you never have to remake"
+                >
+                    <img
+                        src="/img/reuselists.svg"
+                        width="977"
+                        height="292"
+                        class="h-10 w-auto sm:h-14"
+                        alt="Reuse Lists"
+                    />
+                </a>
+                <p class="text-th-muted text-sm leading-snug text-balance">
+                    The checklist you never have to remake.
+                </p>
+            </div>
+            <div class="flex w-64 flex-col items-center gap-3 text-center">
+                <a
+                    href="https://streamtostory.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=home&utm_content=projects"
+                    class="block transition-opacity duration-200 hover:opacity-80"
+                    aria-label="Stream to Story"
+                >
+                    <img
+                        src="/img/streamtostory.svg"
+                        width="520"
+                        height="95"
+                        class="h-10 w-auto sm:h-14"
+                        alt="Stream to Story"
+                    />
+                </a>
+                <p class="text-th-muted text-sm leading-snug text-balance">
+                    Free-associate from a daily word until a story turns up.
+                </p>
+            </div>
         </div>
+        <p class="mx-auto mt-8 text-center"><lnk to="/projects">More about my projects</lnk></p>
     </section>
 
     <!-- Testimonials -->
