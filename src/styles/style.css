@@ -63,6 +63,8 @@
     --th-tint: rgba(0, 0, 0, 0.035);
     --th-tint-hover: rgba(0, 0, 0, 0.06);
     --th-tint-strong: rgba(0, 0, 0, 0.08);
+    /* A shade lighter than tint: less black here, more white in dark. */
+    --th-panel: rgba(0, 0, 0, 0.025);
     --th-bar: #1f2937;
     --th-header-bg: rgba(255, 255, 255, 0.82);
     --th-logo-filter: grayscale(100%);
@@ -89,6 +91,7 @@
     --th-tint: rgba(255, 255, 255, 0.02);
     --th-tint-hover: rgba(255, 255, 255, 0.04);
     --th-tint-strong: rgba(255, 255, 255, 0.1);
+    --th-panel: rgba(255, 255, 255, 0.035);
     --th-bar: #d1d5db;
     --th-header-bg: rgba(22, 30, 50, 0.88);
     --th-logo-filter: brightness(0) invert(1);
@@ -139,6 +142,7 @@
     --color-th-tint: var(--th-tint);
     --color-th-tint-hover: var(--th-tint-hover);
     --color-th-tint-strong: var(--th-tint-strong);
+    --color-th-panel: var(--th-panel);
     --color-th-bar: var(--th-bar);
 
     --font-display: 'Sora', system-ui, sans-serif;
