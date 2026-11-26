@@ -31,8 +31,12 @@ function getComments(slug) {
     if (!requests.has(slug)) {
         requests.set(
             slug,
-            fetch(`/api/comments/${slug}.json`)
-                .then((res) => (res.ok ? res.json() : []))
+            // The comments section starts its own request early; use it if it's this post's.
+            (window.commentsRequest?.slug === slug
+                ? window.commentsRequest.response
+                : fetch(`/api/comments/${slug}.json`).catch(() => null)
+            )
+                .then((res) => (res?.ok ? res.json() : []))
                 .then((list) => (Array.isArray(list) ? list : []))
                 .catch(() => []), // offline or blocked: show the empty state, the form still works
         );

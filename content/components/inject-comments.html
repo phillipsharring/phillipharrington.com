@@ -13,11 +13,24 @@
          anchor from the start of the navigation, so the only way to stop the
          jump is to take the id away before the first layout; comments.js puts
          it back and scrolls here once the comments are drawn. -->
+    <!-- Also start the comments request here, while the page is still being
+         read, rather than after app.js downloads and runs: the two load side by
+         side instead of one after the other. comments.js picks it up. -->
     <script>
-        if (location.hash === '#comments') {
-            document.getElementById('comments').removeAttribute('id');
-            document.documentElement.dataset.commentsJump = '';
-        }
+        (function () {
+            var root = document.currentScript.closest('[data-comments]');
+            var slug = (root.dataset.comments || location.pathname.replace(/\/+$/, '')).slice(1);
+            window.commentsRequest = {
+                slug: slug,
+                response: fetch('/api/comments/' + slug + '.json').catch(function () {
+                    return null;
+                }),
+            };
+            if (location.hash === '#comments') {
+                document.getElementById('comments').removeAttribute('id');
+                document.documentElement.dataset.commentsJump = '';
+            }
+        })();
     </script>
     <p
         data-comments-status
