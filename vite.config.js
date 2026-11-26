@@ -9,6 +9,10 @@ export default defineConfig({
     server: {
         host: true,
         allowedHosts: ['phillipharrington.test'],
+        // In the Docker dev container, file-change events from the Mac don't
+        // always arrive, so edits silently don't show up. Poll there instead
+        // (docker-compose.yml sets WATCH_POLL); plain npm run dev keeps events.
+        watch: process.env.WATCH_POLL ? { usePolling: true, interval: 300 } : undefined,
         // Comments live in AWS, not in this repo: read them from the live site
         // so pages here don't 404 on /api/comments/*. Posting from here goes
         // to the real moderation inbox.

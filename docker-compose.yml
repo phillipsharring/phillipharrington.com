@@ -4,6 +4,9 @@ services:
     build: .
     ports:
       - "5177:5173"
+    environment:
+      # File-change events from macOS into the container get dropped; see vite.config.js.
+      WATCH_POLL: "1"
     volumes:
       - .:/app
       - node_modules:/app/node_modules
