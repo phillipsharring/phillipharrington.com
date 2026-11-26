@@ -1,4 +1,8 @@
-<figure>
+<!-- The width lives on the figure, not the image: with the figure sized only
+     by its contents, an image that's "100% of the figure" has no width until it
+     loads, so on phones the figure collapsed and everything below it jumped when
+     the photo arrived (a layout shift). Now the box is reserved from the start. -->
+<figure class="w-full max-w-xs sm:w-60 sm:max-w-none md:w-72 lg:w-96">
     <a href="/img/[[img]][[#if full]]-full[[/if]].webp" class="block">
         <img
             src="/img/[[img]].webp"
@@ -8,7 +12,7 @@
             height="[[h]]"
             alt="[[alt]]"
             fetchpriority="high"
-            class="[[#if plain]][[else]]hero-frame[[/if]] block h-auto w-full max-w-xs sm:w-60 sm:max-w-none md:w-72 lg:w-96"
+            class="[[#if plain]][[else]]hero-frame[[/if]] block h-auto w-full"
         />
     </a>
     [[#if caption]]

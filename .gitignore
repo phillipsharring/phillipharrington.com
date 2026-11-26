@@ -17,3 +17,7 @@ assets/graphics/*.heic
 
 # Kept locally, out of the public repo
 assets/graphics/wedding-day-goofballs*.psd
+
+# Lighthouse reports dropped here for review
+assets/desktop.pdf
+assets/mobile.pdf
