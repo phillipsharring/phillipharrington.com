@@ -15,6 +15,7 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 
 export const LIMITS = { name: 80, comment: 2000, links: 2 };
+export const LATEST_KEY = 'api/comments/latest.json';
 const TOKEN_DAYS = 14;
 
 // deps: { config, getObject, putObject, sendEmail, invalidate, fetchPage, now }
@@ -61,6 +62,7 @@ export function createApp(deps) {
         const entry = {
             id: randomUUID(),
             slug: path.slice(1),
+            title: postTitle(page),
             name,
             comment,
             date: now().toISOString(),
@@ -105,9 +107,14 @@ export function createApp(deps) {
         const back = `<p><a href="/${esc(entry.slug)}#comments">Back to the post</a></p>`;
         if (list.some((c) => c.id === entry.id)) return page(200, 'Already approved', back);
 
-        list.push({ id: entry.id, name: entry.name, comment: entry.comment, date: entry.date });
+        const comment = { id: entry.id, name: entry.name, comment: entry.comment, date: entry.date };
+        list.push(comment);
         await deps.putObject(key, JSON.stringify(list));
-        await deps.invalidate(`/${key}`);
+        // Home shows the newest approved comment anywhere on the site. Links
+        // from before titles rode along fall back to the slug.
+        const latest = { slug: entry.slug, title: entry.title ?? entry.slug, ...comment };
+        await deps.putObject(LATEST_KEY, JSON.stringify(latest));
+        await deps.invalidate([`/${key}`, `/${LATEST_KEY}`]);
         return page(200, 'Approved', back);
     }
 
@@ -141,6 +148,18 @@ export function createApp(deps) {
     function hmac(data) {
         return createHmac('sha256', config.hmacKey).update(data).digest('base64url');
     }
+}
+
+// The post's title, from its <title> minus the " | Site Name" suffix.
+export function postTitle(html) {
+    const m = /<title>([^<]*)<\/title>/i.exec(html ?? '');
+    const decoded = (m ? m[1] : '')
+        .replace(/&#39;|&apos;/g, "'")
+        .replace(/&quot;/g, '"')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&');
+    return decoded.replace(/\s*\|[^|]*$/, '').trim() || null;
 }
 
 // Trim, drop control characters (keeping line breaks in the comment), and

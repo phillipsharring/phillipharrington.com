@@ -310,6 +310,19 @@ while IFS= read -r file; do
         echo "  WARNING, not created: api/comments/$slug.json: $out"
     fi
 done < <(grep -rl --exclude-dir=assets --exclude-dir=img 'data-comments=' "$PROJECT_DIR/dist")
+# Home's Latest Comment reads latest.json; "null" until the first approval
+# (the Lambda overwrites it on every approve). Same create-only rule.
+printf 'null' > "$EMPTY_JSON"
+if out=$(aws s3api put-object --bucket "$COMMENTS_BUCKET" --key "api/comments/latest.json" \
+    --body "$EMPTY_JSON" --if-none-match '*' \
+    --content-type 'application/json; charset=utf-8' \
+    --cache-control 'public, max-age=60, s-maxage=31536000' \
+    --region "$REGION" 2>&1); then
+    echo "  created: api/comments/latest.json"
+    N_SEEDED=$((N_SEEDED + 1))
+elif [[ "$out" != *PreconditionFailed* ]]; then
+    echo "  WARNING, not created: api/comments/latest.json: $out"
+fi
 rm -f "$EMPTY_JSON"
 echo "  new comments files: $N_SEEDED"
 

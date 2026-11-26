@@ -44,7 +44,34 @@ function getComments(slug) {
     return requests.get(slug);
 }
 
+const dateText = (iso) =>
+    new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+// Home's Latest Comment: shown only when there is one.
+async function initLatestComment() {
+    const box = document.querySelector('[data-latest-comment]');
+    if (!box) return;
+    let latest = null;
+    try {
+        const res = await fetch('/api/comments/latest.json');
+        if (res.ok) latest = await res.json();
+    } catch {
+        return;
+    }
+    if (!latest || typeof latest.slug !== 'string' || !/^[a-z0-9-]+$/.test(latest.slug)) return;
+    const time = box.querySelector('[data-latest-date]');
+    time.dateTime = latest.date;
+    time.textContent = dateText(latest.date);
+    box.querySelector('[data-latest-name]').textContent = latest.name;
+    const link = box.querySelector('[data-latest-link]');
+    link.href = `/${latest.slug}#comments`;
+    link.textContent = latest.title || latest.slug;
+    box.querySelector('[data-latest-body]').textContent = latest.comment;
+    box.hidden = false;
+}
+
 export function initComments() {
+    initLatestComment();
     document.querySelectorAll('[data-comment-count]').forEach(async (link) => {
         const n = (await getComments((link.dataset.commentCount || here()).slice(1))).length;
         link.textContent = n === 0 ? 'Be the first to comment' : n === 1 ? '1 comment' : `${n} comments`;
@@ -111,11 +138,7 @@ async function loadComments(root, slug) {
         item.querySelector('[data-comment-name]').textContent = c.name;
         const time = item.querySelector('[data-comment-date]');
         time.dateTime = c.date;
-        time.textContent = new Date(c.date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        });
+        time.textContent = dateText(c.date);
         item.querySelector('[data-comment-body]').textContent = c.comment;
         list.append(item);
     }

@@ -1,10 +1,10 @@
 // Run with: node --test cloud/comments/
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createApp, clean, esc } from './app.mjs';
+import { createApp, clean, esc, postTitle, LATEST_KEY } from './app.mjs';
 
 const ORIGIN = 'origin-secret';
-const POST_HTML = '<html><section id=comments></section></html>';
+const POST_HTML = '<html><title>A &amp; Post | Phillip Harrington</title><section id=comments></section></html>';
 
 function setup({ page = POST_HTML, emailFails = false, start = new Date('2026-11-26T12:00:00Z') } = {}) {
     const store = new Map();
@@ -25,7 +25,7 @@ function setup({ page = POST_HTML, emailFails = false, start = new Date('2026-11
             if (emailFails) throw new Error('ses down');
             sent.push(m);
         },
-        invalidate: async (p) => invalidated.push(p),
+        invalidate: async (paths) => invalidated.push(...paths),
         fetchPage: async () => page,
         now: () => clock,
     });
@@ -135,7 +135,13 @@ test('approving appends to the post file once, and invalidates it', async () => 
     assert.equal(list.length, 1);
     assert.deepEqual(Object.keys(list[0]).sort(), ['comment', 'date', 'id', 'name']);
     assert.equal(list[0].comment, 'Nice post!');
-    assert.deepEqual(invalidated, ['/api/comments/a-post.json']);
+    assert.deepEqual(invalidated, ['/api/comments/a-post.json', '/api/comments/latest.json']);
+    const latest = JSON.parse(store.get(LATEST_KEY));
+    assert.deepEqual(
+        { slug: latest.slug, title: latest.title, name: latest.name, comment: latest.comment },
+        { slug: 'a-post', title: 'A & Post', name: 'Alice', comment: 'Nice post!' },
+    );
+    assert.equal(latest.id, list[0].id);
 });
 
 test('tampered and expired tokens are refused', async () => {
@@ -163,4 +169,17 @@ test('esc covers the HTML specials', () => {
 
 test('unknown routes 404', async () => {
     assert.equal((await setup().req('GET', '/api/nope')).status, 404);
+});
+
+test('postTitle drops the site name and decodes entities', () => {
+    assert.equal(postTitle('<title>It&#39;s A &amp; B | Phillip Harrington</title>'), "It's A & B");
+    assert.equal(postTitle('<title>No Suffix</title>'), 'No Suffix');
+    assert.equal(postTitle('<html>nothing</html>'), null);
+});
+
+test('an approve link from before titles falls back to the slug', async () => {
+    const { req, store, tokenFromEmail, comment } = setup({ page: '<html><section id=comments></section></html>' });
+    await comment(good);
+    await req('POST', '/api/moderate', { body: `t=${tokenFromEmail()}` });
+    assert.equal(JSON.parse(store.get(LATEST_KEY)).title, 'a-post');
 });

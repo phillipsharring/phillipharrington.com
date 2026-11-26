@@ -81,11 +81,14 @@ async function sendEmail({ from, to, subject, body }) {
     );
 }
 
-async function invalidate(path) {
+async function invalidate(paths) {
     await cloudfront.send(
         new CreateInvalidationCommand({
             DistributionId: env.DISTRIBUTION_ID,
-            InvalidationBatch: { CallerReference: `${Date.now()}-${path}`, Paths: { Quantity: 1, Items: [path] } },
+            InvalidationBatch: {
+                CallerReference: `${Date.now()}-${paths.join(',')}`,
+                Paths: { Quantity: paths.length, Items: paths },
+            },
         }),
     );
 }
