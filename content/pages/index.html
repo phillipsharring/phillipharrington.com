@@ -79,7 +79,7 @@
          whitespace already separates them. Update by hand with /blog. -->
     <section class="reveal pb-16 sm:pb-24">
         <h2
-            class="font-display text-th-accent mb-5 text-xs font-semibold tracking-widest uppercase"
+            class="font-display text-th-accent mb-5 text-sm font-semibold tracking-widest uppercase"
         >
             From the Blog
         </h2>
@@ -128,7 +128,7 @@
          know what they are). The full story of each will live on /projects. -->
     <section class="reveal pb-16 sm:pb-24">
         <h2
-            class="font-display text-th-accent mb-8 text-xs font-semibold tracking-widest uppercase"
+            class="font-display text-th-accent mb-8 text-sm font-semibold tracking-widest uppercase"
         >
             Projects
         </h2>
@@ -196,7 +196,7 @@
     <!-- Testimonials -->
     <section class="reveal space-y-5 pb-8">
         <h2
-            class="font-display text-th-accent mb-4 text-xs font-semibold tracking-widest uppercase"
+            class="font-display text-th-accent mb-4 text-sm font-semibold tracking-widest uppercase"
         >
             What People Are Saying
         </h2>
@@ -218,11 +218,12 @@
          the stamp at the top of this page. Ends with a "More on" link, like
          From the Blog. -->
     <section class="reveal pb-8">
-        <h2
-            class="font-display text-th-accent mb-5 text-xs font-semibold tracking-widest uppercase"
-        >
-            Built in the Open
-        </h2>
+        <div class="mb-5 flex items-baseline justify-between gap-4">
+            <h2 class="font-display text-th-accent text-sm font-semibold tracking-widest uppercase">
+                Built in the Open
+            </h2>
+            <span class="text-sm"><lnk to="/colophon">How it's made &rarr;</lnk></span>
+        </div>
         <div class="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
             <div>
                 <p class="text-th-heading font-semibold">Plain HTML</p>
@@ -257,6 +258,5 @@
                 <p class="text-th-muted text-sm">not one</p>
             </div>
         </div>
-        <p class="mt-6"><lnk to="/colophon">More on how it's made</lnk></p>
     </section>
 </article>
