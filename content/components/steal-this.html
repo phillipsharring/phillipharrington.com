@@ -1,7 +1,12 @@
 <!-- "Steal This": where the code for a post lives. The heading is built in;
-     the slot is the paragraphs and lists. A tinted box like callout's, minus the
-     accent rule, so it reads as a pointer rather than a pitch. -->
-<section class="bg-th-panel space-y-3 rounded-lg px-6 py-7 sm:px-8 sm:py-8">
-    <heading h2 id="steal-this">Steal This</heading>
-    [[slot]]
-</section>
+     the slot is the paragraphs and lists. Callout's left rule, a shade darker,
+     on a recessed panel. The outer div's padding is the space around the box:
+     spaced's gap rule overrides margins on its children. -->
+<div class="py-4">
+    <section
+        class="bg-th-panel border-th-panel-border space-y-3 rounded-lg border-l-4 px-6 py-7 sm:px-8 sm:py-8"
+    >
+        <heading h2 id="steal-this">Steal This</heading>
+        [[slot]]
+    </section>
+</div>
