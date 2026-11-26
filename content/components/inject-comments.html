@@ -12,15 +12,20 @@
         role="status"
         class="bg-th-tint text-th-sub hidden rounded-lg px-4 py-3"
     ></p>
-    <ol data-comments-list class="space-y-5"></ol>
+    <ol data-comments-list class="space-y-10"></ol>
     <p data-comments-empty class="text-th-muted hidden italic">No comments yet. Be the first!</p>
+    <!-- Same margin-note grid as band.html: the date in the left column, the
+         words in the text column, whitespace instead of rules between them. -->
     <template data-comment-template>
-        <li class="border-th-border border-l-2 pl-4">
-            <p class="text-th-muted m-0 text-sm">
-                <strong data-comment-name class="text-th-heading"></strong>
-                <time data-comment-date class="ml-1"></time>
-            </p>
-            <p data-comment-body class="mt-1 whitespace-pre-line"></p>
+        <li class="grid gap-x-6 gap-y-1 sm:grid-cols-[7rem_1fr]">
+            <time
+                data-comment-date
+                class="text-th-muted font-display text-sm tabular-nums sm:pt-1 sm:text-right"
+            ></time>
+            <div>
+                <p data-comment-name class="text-th-heading m-0 font-semibold"></p>
+                <p data-comment-body class="mt-1 whitespace-pre-line"></p>
+            </div>
         </li>
     </template>
     <heading h3 id="add-a-comment" class="mt-12">Add your comment</heading>
