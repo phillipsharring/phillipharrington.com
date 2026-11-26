@@ -87,47 +87,53 @@
         </div>
     </section>
 
-    <!-- Recent Writing -->
+    <!-- From the Blog: the newest three, same title, summary and count as /blog,
+         dates in the margin column like Music and Work. No boxes: the
+         whitespace already separates them. Update by hand with /blog. -->
     <section class="reveal pb-16 sm:pb-24">
         <h2
             class="font-display text-th-accent mb-5 text-xs font-semibold tracking-widest uppercase"
         >
-            Recent Writing
+            From the Blog
         </h2>
-        <div class="space-y-3">
-            <a
-                href="/everybody-knows-alice"
-                class="group border-th-border-subtle bg-th-tint hover:border-th-accent-soft hover:bg-th-tint-hover flex items-center justify-between rounded-lg border px-5 py-4 transition-all duration-200"
-            >
-                <span class="text-th-heading group-hover:text-th-accent transition-colors">
-                    Everybody Knows Alice
-                </span>
-                <span class="text-th-faint group-hover:text-th-accent transition-colors">
-                    &rarr;
-                </span>
-            </a>
-            <a
-                href="/a-20-year-side-project"
-                class="group border-th-border-subtle bg-th-tint hover:border-th-accent-soft hover:bg-th-tint-hover flex items-center justify-between rounded-lg border px-5 py-4 transition-all duration-200"
-            >
-                <span class="text-th-heading group-hover:text-th-accent transition-colors">
-                    A 20-Year Side Project
-                </span>
-                <span class="text-th-faint group-hover:text-th-accent transition-colors">
-                    &rarr;
-                </span>
-            </a>
-            <a
-                href="/html-is-fun-again"
-                class="group border-th-border-subtle bg-th-tint hover:border-th-accent-soft hover:bg-th-tint-hover flex items-center justify-between rounded-lg border px-5 py-4 transition-all duration-200"
-            >
-                <span class="text-th-heading group-hover:text-th-accent transition-colors">
-                    HTML is Fun Again
-                </span>
-                <span class="text-th-faint group-hover:text-th-accent transition-colors">
-                    &rarr;
-                </span>
-            </a>
+        <div class="space-y-6">
+            <band years="Nov 2026">
+                <p>
+                    <lnk to="/static-site-comments"
+                        >How in the Hell Does My Static Site Have Comments?</lnk>
+                    <br />
+                    <span class="text-th-muted"
+                        >Comments with no database, no server and no cookies, and still 100s on
+                        Lighthouse.</span
+                    >
+                    <comment-count path="/static-site-comments" />
+                </p>
+            </band>
+            <band years="Nov 2026">
+                <p>
+                    <lnk to="/everybody-knows-alice">Everybody Knows Alice</lnk>
+                    <br />
+                    <span class="text-th-muted"
+                        >Write your seed data as named scenarios, and one story carries you from dev
+                        data to sales demo.</span
+                    >
+                    <comment-count path="/everybody-knows-alice" />
+                </p>
+            </band>
+            <band years="May 2026">
+                <p>
+                    <lnk to="/a-20-year-side-project">A 20-Year Side Project</lnk>
+                    <br />
+                    <span class="text-th-muted"
+                        >The checklist app I wanted for 20 years: one button, a fresh copy, nothing
+                        lost.</span
+                    >
+                    <comment-count path="/a-20-year-side-project" />
+                </p>
+            </band>
+            <band>
+                <p><lnk to="/blog">More on the blog</lnk></p>
+            </band>
         </div>
     </section>
 
