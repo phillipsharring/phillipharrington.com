@@ -13,6 +13,23 @@ window.onReady = function (fn) {
 window.onReady(() => {
     initComments();
 
+    // Home's "Built in the Open": link the commit this page was deployed from.
+    // handlr-build stamps the short sha into the page as an HTML comment.
+    const commitLink = document.querySelector('[data-deployed-commit]');
+    if (commitLink) {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT);
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            const sha = node.nodeValue.trim();
+            if (/^[0-9a-f]{7,40}$/.test(sha)) {
+                commitLink.href = commitLink.href.replace(/commits\/main$/, `commit/${sha}`);
+                const code = document.createElement('code');
+                code.textContent = sha;
+                commitLink.replaceChildren('commit ', code);
+                break;
+            }
+        }
+    }
+
     // Mark the current page in the header and footer navs
     const here = location.pathname.replace(/\/+$/, '') || '/';
     document.querySelectorAll('#main-nav a, nav[aria-label="More pages"] a').forEach((a) => {

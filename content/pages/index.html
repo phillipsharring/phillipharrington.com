@@ -207,4 +207,41 @@
             </p>
         </quote>
     </section>
+
+    <!-- The bottom of Home, in order: Ask Me About (once the magnet content
+         exists), Latest Comment (see docs/comments-plan.md), Built in the Open. -->
+
+    <!-- Built in the Open: things that are true about this page, no boasts that
+         go stale. The commit link starts as "the latest commit"; src/app.js
+         swaps in the deployed sha from the stamp at the top of this page. -->
+    <section class="reveal pb-8">
+        <h2
+            class="font-display text-th-accent mb-5 text-xs font-semibold tracking-widest uppercase"
+        >
+            Built in the Open
+        </h2>
+        <ul class="text-th-muted space-y-2">
+            <li>
+                Plain HTML, built with
+                <lnk to="https://github.com/phillipsharring/handlr-mono/tree/main/packages/build"
+                    ><cde>handlr-build</cde></lnk>
+            </li>
+            <li>No cookies, not one</li>
+            <li><lnk to="/static-site-comments">Comments</lnk> without a database</li>
+            <li>
+                This page was deployed from
+                <a
+                    data-deployed-commit
+                    href="https://github.com/phillipsharring/phillipharrington.com/commits/main"
+                    class="link-themed text-th-accent font-normal underline underline-offset-2 transition-colors duration-200"
+                    >the latest commit</a
+                >
+            </li>
+        </ul>
+        <p class="mt-5">
+            All of it is
+            <lnk to="https://github.com/phillipsharring/phillipharrington.com">on GitHub</lnk>, and
+            the <lnk to="/colophon">Colophon</lnk> says how it's made.
+        </p>
+    </section>
 </article>

@@ -84,3 +84,11 @@ The comment markup lives in the component, so restyling is a normal site deploy.
 7. Write "How in the hell does my static site have comments?"
 
 Roughly a day, most of it steps 3 and 5. Pennies a month to run.
+
+## Later: the latest comment on Home
+
+Phillip's design (2026-11-26), slotted into Home after "Ask Me About" and before "Built in the Open":
+
+- On approve, the Lambda also overwrites `api/comments/latest.json` with that comment plus its post: `{ slug, title, id, name, comment, date }`, and invalidates it along with the post's file. The title comes from the post page's `<title>`, which the Lambda already fetches when the comment is posted (carry it in the signed token).
+- A separate `<latest-comment>` component, not `<inject-comments>`: Home needs one comment and "on <post title>" with a link, not a heading, a list and a form. It reuses the comment template's look (date in the margin column, name, text) and the same textContent-only rendering.
+- The deploy seeds `latest.json` as `null` (create-only, like the per-post files) so Home never 404s before the first approval; the component renders nothing for `null`.
