@@ -1,4 +1,5 @@
 import './styles/style.css';
+import { initComments } from './comments.js';
 
 // Hamburger menu — toggles main nav open/closed on small screens.
 window.onReady = function (fn) {
@@ -10,6 +11,8 @@ window.onReady = function (fn) {
 };
 
 window.onReady(() => {
+    initComments();
+
     // Mark the current page in the header and footer navs
     const here = location.pathname.replace(/\/+$/, '') || '/';
     document.querySelectorAll('#main-nav a, nav[aria-label="More pages"] a').forEach((a) => {

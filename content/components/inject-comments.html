@@ -1,0 +1,64 @@
+<!-- Comments for a blog post; use it with path="/the-post-slug". (No tag
+     names in this comment: the build would expand them, forever.)
+     Approved comments come from /api/comments/<slug>.json and are drawn by
+     src/comments.js into the template below with textContent only. The form
+     posts to the comments Lambda, which emails for approval and redirects
+     back with ?comment=<code>. Plan: docs/comments-plan.md. -->
+<section data-comments="[[path]]" class="mt-16 space-y-5">
+    <heading h2 id="comments">Comments</heading>
+    <p
+        data-comments-status
+        role="status"
+        class="bg-th-tint text-th-sub hidden rounded-lg px-4 py-3"
+    ></p>
+    <ol data-comments-list class="space-y-5"></ol>
+    <p data-comments-empty class="text-th-muted hidden italic">No comments yet. Be the first!</p>
+    <template data-comment-template>
+        <li class="border-th-border border-l-2 pl-4">
+            <p class="text-th-muted m-0 text-sm">
+                <strong data-comment-name class="text-th-heading"></strong>
+                <time data-comment-date class="ml-1"></time>
+            </p>
+            <p data-comment-body class="mt-1 whitespace-pre-line"></p>
+        </li>
+    </template>
+    <form data-comments-form method="post" action="/api/comments" class="max-w-[60ch] space-y-3">
+        <input type="hidden" name="path" value="[[path]]" />
+        <!-- Honeypot: people never see it, bots fill it in. -->
+        <div aria-hidden="true" class="absolute -left-[9999px]">
+            <label
+                >Website <input type="text" name="website" tabindex="-1" autocomplete="off"
+            /></label>
+        </div>
+        <label class="block">
+            <span class="text-th-sub text-sm">Name</span>
+            <input
+                type="text"
+                name="name"
+                required
+                maxlength="80"
+                autocomplete="name"
+                class="border-th-border bg-th-page mt-1 block w-full rounded-lg border px-3 py-2"
+            />
+        </label>
+        <label class="block">
+            <span class="text-th-sub text-sm">Comment</span>
+            <textarea
+                name="comment"
+                required
+                maxlength="2000"
+                rows="5"
+                class="border-th-border bg-th-page mt-1 block w-full rounded-lg border px-3 py-2"
+            ></textarea>
+        </label>
+        <p class="text-th-muted text-sm">
+            Comments show up after I approve them. No email, no cookies.
+        </p>
+        <button
+            type="submit"
+            class="border-th-accent-soft text-th-accent-text hover:border-th-accent hover:bg-th-tint-hover inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition-all duration-200"
+        >
+            Post comment
+        </button>
+    </form>
+</section>
