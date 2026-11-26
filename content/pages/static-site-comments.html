@@ -201,6 +201,44 @@
             straight across.
         </p>
 
+        <heading h2 id="steal-this">Steal This</heading>
+        <p>This whole site is open source, comments included:</p>
+        <list>
+            <li>
+                <lnk
+                    to="https://github.com/phillipsharring/phillipharrington.com/blob/main/cloud/comments/app.mjs"
+                    >The Lambda</lnk>: posting, moderation and the signed links, with
+                <lnk
+                    to="https://github.com/phillipsharring/phillipharrington.com/blob/main/cloud/comments/app.test.mjs"
+                    >its tests</lnk>
+            </li>
+            <li>
+                <lnk
+                    to="https://github.com/phillipsharring/phillipharrington.com/blob/main/content/components/inject-comments.html"
+                    >The comments section</lnk>
+                and
+                <lnk
+                    to="https://github.com/phillipsharring/phillipharrington.com/blob/main/src/comments.js"
+                    >the script that draws it</lnk>
+            </li>
+            <li>
+                <lnk
+                    to="https://github.com/phillipsharring/phillipharrington.com/blob/main/deploy/deploy.sh"
+                    >The deploy script</lnk>, including the step that makes the empty files
+            </li>
+            <li>
+                <lnk
+                    to="https://github.com/phillipsharring/phillipharrington.com/blob/main/deploy/iam"
+                    >The IAM policies</lnk>, scoped down to just these pieces
+            </li>
+            <li>
+                <lnk
+                    to="https://github.com/phillipsharring/phillipharrington.com/blob/main/docs/comments-plan.md"
+                    >The plan</lnk>, CloudFront routes and all
+            </li>
+        </list>
+        <p>The secrets live in AWS, not in the repo. Nice try.</p>
+
         <heading h2 id="what-it-costs">What It Costs</heading>
         <p>
             Pennies a month. One S3 bucket, one small Lambda, a few CloudFront routes, and the email
