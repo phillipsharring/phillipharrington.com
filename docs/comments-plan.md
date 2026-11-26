@@ -31,7 +31,7 @@ Reads come straight from S3 through CloudFront, so showing comments costs no Lam
 ## 1. Infrastructure (added to `deploy/provision.sh`, idempotent)
 
 - **Bucket `phdc-comments`:** private, readable only by CloudFront (OAC), versioning on as the backup.
-- **Lambda (Node):** function URL with IAM auth, callable only by CloudFront. Settings: comments bucket, distribution ID, notification address, signing key (SSM SecureString).
+- **Lambda (Node):** code in `cloud/comments/`. Function URL with auth `NONE`, guarded instead by a secret `x-origin-verify` header that CloudFront adds as an origin custom header; the Lambda rejects requests without it. (CloudFront's OAC signing for Lambda origins needs a body-hash header on POSTs, which a plain browser form can't send.) Settings: comments bucket, distribution ID, notification addresses, and an SSM SecureString holding the HMAC key and the origin secret.
 - **SES:** verify the sending identity. Sandbox mode is fine; the only recipient is Phillip.
 - **CloudFront:** the three behaviors above. The existing `PhdcRedirects` viewer-request function stays on the default behavior only.
 

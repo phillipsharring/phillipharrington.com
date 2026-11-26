@@ -1,0 +1,38 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "CommentFiles",
+            "Effect": "Allow",
+            "Action": ["s3:GetObject", "s3:PutObject"],
+            "Resource": "arn:aws:s3:::phillipharrington-comments/api/comments/*"
+        },
+        {
+            "Sid": "MissingFileIsNotFoundNotDenied",
+            "Effect": "Allow",
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::phillipharrington-comments"
+        },
+        {
+            "Sid": "NotifyPhillip",
+            "Effect": "Allow",
+            "Action": "ses:SendEmail",
+            "Resource": [
+                "arn:aws:ses:us-east-1:*:identity/no-reply@phillipharrington.com",
+                "arn:aws:ses:us-east-1:*:identity/phillip@phillipharrington.com"
+            ]
+        },
+        {
+            "Sid": "ClearApprovedFile",
+            "Effect": "Allow",
+            "Action": "cloudfront:CreateInvalidation",
+            "Resource": "arn:aws:cloudfront::*:distribution/E2KZ7FYUHDL4YG"
+        },
+        {
+            "Sid": "ReadSecrets",
+            "Effect": "Allow",
+            "Action": "ssm:GetParameter",
+            "Resource": "arn:aws:ssm:us-east-1:*:parameter/phillipharrington/comments/secrets"
+        }
+    ]
+}
