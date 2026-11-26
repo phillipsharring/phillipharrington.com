@@ -1,0 +1,10 @@
+<!-- A section's eyebrow heading: small, green, uppercase, a real h2. With
+     href (and more="..."), a small "More ... ->" link sits on the heading's
+     baseline at the right, the one place a section points onward. -->
+<div class="mb-6 flex items-baseline justify-between gap-4">
+    <h2 class="font-display text-th-accent text-sm font-semibold tracking-widest uppercase">
+        [[label]]
+    </h2>
+    [[#if href]]<span class="shrink-0 text-sm"><lnk to="[[href]]">[[more]] &rarr;</lnk></span
+    >[[/if]]
+</div>

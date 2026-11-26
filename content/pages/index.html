@@ -74,64 +74,10 @@
         </callout>
     </section>
 
-    <!-- From the Blog: the newest three, same title, summary and count as /blog,
-         dates in the margin column like Music and Work. No boxes: the
-         whitespace already separates them. Update by hand with /blog. -->
-    <section class="reveal pb-16 sm:pb-24">
-        <h2
-            class="font-display text-th-accent mb-5 text-sm font-semibold tracking-widest uppercase"
-        >
-            From the Blog
-        </h2>
-        <div class="space-y-6">
-            <margin-row label="Nov 2026">
-                <p>
-                    <lnk to="/static-site-comments"
-                        >How in the Hell Does My Static Site Have Comments?</lnk>
-                    <br />
-                    <span class="text-th-muted"
-                        >Comments with no database, no server and no cookies, and still 100s on
-                        Lighthouse.</span
-                    >
-                    <comment-count path="/static-site-comments" />
-                </p>
-            </margin-row>
-            <margin-row label="Nov 2026">
-                <p>
-                    <lnk to="/everybody-knows-alice">Everybody Knows Alice</lnk>
-                    <br />
-                    <span class="text-th-muted"
-                        >Write your seed data as named scenarios, and one story carries you from dev
-                        data to sales demo.</span
-                    >
-                    <comment-count path="/everybody-knows-alice" />
-                </p>
-            </margin-row>
-            <margin-row label="May 2026">
-                <p>
-                    <lnk to="/a-20-year-side-project">A 20-Year Side Project</lnk>
-                    <br />
-                    <span class="text-th-muted"
-                        >The checklist app I wanted for 20 years: one button, a fresh copy, nothing
-                        lost.</span
-                    >
-                    <comment-count path="/a-20-year-side-project" />
-                </p>
-            </margin-row>
-            <margin-row>
-                <p><lnk to="/blog">More on the blog</lnk></p>
-            </margin-row>
-        </div>
-    </section>
-
     <!-- Projects: logos with a line each (a wall of logos alone makes you already
          know what they are). The full story of each will live on /projects. -->
     <section class="reveal pb-16 sm:pb-24">
-        <h2
-            class="font-display text-th-accent mb-8 text-sm font-semibold tracking-widest uppercase"
-        >
-            Projects
-        </h2>
+        <section-heading label="Projects" more="More about my projects" href="/projects" />
         <div
             class="flex flex-row flex-wrap items-start justify-center gap-x-10 gap-y-10 sm:gap-x-14"
         >
@@ -190,16 +136,11 @@
                 </p>
             </div>
         </div>
-        <p class="mx-auto mt-8 text-center"><lnk to="/projects">More about my projects</lnk></p>
     </section>
 
     <!-- Testimonials -->
-    <section class="reveal space-y-5 pb-8">
-        <h2
-            class="font-display text-th-accent mb-4 text-sm font-semibold tracking-widest uppercase"
-        >
-            What People Are Saying
-        </h2>
+    <section class="reveal pb-16 sm:pb-24">
+        <section-heading label="What People Are Saying" />
         <quote citation="Kenton Hyatt & Cheryl De Ciantis, Founders of Kairios, Inc.">
             <p>
                 "Phil's approach blends strategic vision with comprehensive and hands-on technical
@@ -208,22 +149,63 @@
         </quote>
     </section>
 
-    <!-- The bottom of Home, in order: Ask Me About (once the magnet content
-         exists), Latest Comment (see docs/comments-plan.md), Built in the Open. -->
+    <!-- Home, top to bottom: who I am (hero), what I can do for you (pitch),
+         what I've built (Projects), what people say, what I write (From the
+         Blog), then Latest Comment (see docs/comments-plan.md) once it exists,
+         and how this is made (Built in the Open). Ask Me About, once the magnet
+         content exists, goes between What People Are Saying and From the Blog. -->
+
+    <!-- From the Blog: the newest three, same title, summary and count as /blog,
+         dates in the margin column like Music and Work. "More on the blog"
+         sits on the heading line. No boxes: the
+         whitespace already separates them. Update by hand with /blog. -->
+    <section class="reveal pb-16 sm:pb-24">
+        <section-heading label="From the Blog" more="More on the blog" href="/blog" />
+        <div class="space-y-6">
+            <margin-row label="Nov 2026">
+                <p>
+                    <lnk to="/static-site-comments"
+                        >How in the Hell Does My Static Site Have Comments?</lnk>
+                    <br />
+                    <span class="text-th-muted"
+                        >Comments with no database, no server and no cookies, and still 100s on
+                        Lighthouse.</span
+                    >
+                    <comment-count path="/static-site-comments" />
+                </p>
+            </margin-row>
+            <margin-row label="Nov 2026">
+                <p>
+                    <lnk to="/everybody-knows-alice">Everybody Knows Alice</lnk>
+                    <br />
+                    <span class="text-th-muted"
+                        >Write your seed data as named scenarios, and one story carries you from dev
+                        data to sales demo.</span
+                    >
+                    <comment-count path="/everybody-knows-alice" />
+                </p>
+            </margin-row>
+            <margin-row label="May 2026">
+                <p>
+                    <lnk to="/a-20-year-side-project">A 20-Year Side Project</lnk>
+                    <br />
+                    <span class="text-th-muted"
+                        >The checklist app I wanted for 20 years: one button, a fresh copy, nothing
+                        lost.</span
+                    >
+                    <comment-count path="/a-20-year-side-project" />
+                </p>
+            </margin-row>
+        </div>
+    </section>
 
     <!-- Built in the Open: four short statements in one row (2x2 on phones),
          all words and all the same weight. Things that are true about this
          page, nothing that reads like a skill bar or goes stale. The commit
          link says "on GitHub" until src/app.js swaps in the deployed sha from
-         the stamp at the top of this page. Ends with a "More on" link, like
-         From the Blog. -->
+         the stamp at the top of this page. -->
     <section class="reveal pb-8">
-        <div class="mb-5 flex items-baseline justify-between gap-4">
-            <h2 class="font-display text-th-accent text-sm font-semibold tracking-widest uppercase">
-                Built in the Open
-            </h2>
-            <span class="text-sm"><lnk to="/colophon">How it's made &rarr;</lnk></span>
-        </div>
+        <section-heading label="Built in the Open" more="How it's made" href="/colophon" />
         <div class="grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
             <div>
                 <p class="text-th-heading font-semibold">Plain HTML</p>
