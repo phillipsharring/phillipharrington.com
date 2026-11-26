@@ -95,15 +95,17 @@
             The site is served from an AWS S3 bucket with a CloudFront distribution in front of it.
             (And even that seems like an extravagance, when I could just as easily slap this mother
             onto GitHub pages and put Cloudflare in front of it.) I also use AWS for the SSL
-            certificate and domain name. No database. No server-side junk. No container.
+            certificate and domain name. No database. No server-side junk (one tiny Lambda for
+            comments doesn't count). No container.
         </p>
-        <heading h2 id="steal-this">Steal This</heading>
-        <p>
-            It's all open source:
-            <lnk to="https://github.com/phillipsharring/phillipharrington.com">this site</lnk>
-            and
-            <lnk to="https://github.com/phillipsharring/handlr-mono/tree/main/packages/build"
-                ><cde>handlr-build</cde></lnk>, both on GitHub.
-        </p>
+        <steal-this>
+            <p>
+                It's all open source:
+                <lnk to="https://github.com/phillipsharring/phillipharrington.com">this site</lnk>
+                and
+                <lnk to="https://github.com/phillipsharring/handlr-mono/tree/main/packages/build"
+                    ><cde>handlr-build</cde></lnk>, both on GitHub.
+            </p>
+        </steal-this>
     </spaced>
 </article>
