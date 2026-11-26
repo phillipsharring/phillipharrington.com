@@ -7,6 +7,18 @@
      back with ?comment=<code>. Plan: docs/comments-plan.md. -->
 <section data-comments="[[path]]" class="mt-16 space-y-5">
     <heading h2 id="comments">Comments</heading>
+    <!-- Opened at the comments anchor (a link, or the redirect after posting)?
+         Don't jump yet: the comments load a moment later and would shove the
+         form down in front of the reader, a layout shift. Chrome remembers the
+         anchor from the start of the navigation, so the only way to stop the
+         jump is to take the id away before the first layout; comments.js puts
+         it back and scrolls here once the comments are drawn. -->
+    <script>
+        if (location.hash === '#comments') {
+            document.getElementById('comments').removeAttribute('id');
+            document.documentElement.dataset.commentsJump = '';
+        }
+    </script>
     <p
         data-comments-status
         role="status"

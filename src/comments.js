@@ -79,7 +79,18 @@ export function initComments() {
         store((s) => s.setItem(draftKey(path), JSON.stringify(draft)));
     });
 
-    loadComments(root, path.slice(1));
+    loadComments(root, path.slice(1)).then(async () => {
+        // Finish the #comments jump the inline script held back, now that the
+        // comments are in place. Chrome scores shifts per frame, so the scroll
+        // waits for the frame after the comments were drawn (off-screen, at the
+        // top of the page); a scroll on its own isn't a layout shift.
+        if (!('commentsJump' in document.documentElement.dataset)) return;
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+        delete document.documentElement.dataset.commentsJump;
+        const heading = root.querySelector('h2');
+        heading.id = 'comments';
+        heading.scrollIntoView();
+    });
 }
 
 async function loadComments(root, slug) {
