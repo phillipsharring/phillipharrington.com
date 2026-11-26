@@ -1,13 +1,14 @@
 <!-- Link to a post's comments with their count. On the post itself no
      attributes are needed; elsewhere (a count on /blog) give it
-     path="/the-post-slug". The count
+     path="/the-post-slug". A block-level span, not a div, so it
+     can sit inside a paragraph on /blog. The count
      comes from the same JSON in src/comments.js; without JavaScript it just
      says "Comments". -->
-<div class="text-sm sm:text-base">
+<span class="block text-sm sm:text-base">
     <a
-        href="#comments"
+        href="[[path]]#comments"
         data-comment-count="[[path]]"
         class="text-th-muted hover:text-th-accent font-serif italic transition-colors duration-200"
         >Comments</a
     >
-</div>
+</span>
