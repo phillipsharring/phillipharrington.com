@@ -1,0 +1,219 @@
+<layout name="default" title="How in the Hell Does My Static Site Have Comments?" />
+<page-head>
+    <meta
+        name="description"
+        content="Comments on a plain static site: no database, no server, no cookies, no third-party widget. One JSON file per post in S3, a Lambda for posting and moderation, and a perfect Lighthouse score that took three tries."
+    />
+    <meta
+        name="keywords"
+        content="Phillip Harrington, static site comments, AWS Lambda, S3, CloudFront, no cookies, moderation, HMAC, Lighthouse, cumulative layout shift, handlr"
+    />
+    <meta
+        property="og:description"
+        content="Comments on a plain static site: no database, no server, no cookies, no widget, and still 100s on Lighthouse."
+    />
+    <meta property="og:image" content="https://phillipharrington.com/img/mail-room-clerk-og.jpg" />
+    <meta
+        property="og:image:alt"
+        content="Comic-book drawing of a mailroom clerk stamping APPROVED on letters while a trash can overflows with junk mail"
+    />
+</page-head>
+<article>
+    <spaced>
+        <fig
+            priority
+            full
+            credit
+            img="mail-room-clerk"
+            w="600"
+            h="338"
+            alt="Comic-book drawing of a mailroom clerk stamping APPROVED on letters while a trash can overflows with junk mail"
+            caption="My moderation queue, artist's rendering"
+        ></fig>
+        <heading h1 id="how-in-the-hell-does-my-static-site-have-comments"
+            >How in the Hell Does My Static Site Have Comments?</heading
+        >
+        <byline date="Nov 2026">Phillip Harrington</byline>
+        <comment-count />
+        <p>
+            <strong>TL;DR:</strong>
+            Every post gets its own JSON file, and they all live in a separate S3 bucket. A Lambda
+            takes new comments, emails me a signed approve link, and on approval appends to that
+            JSON file. The pages stay plain HTML, nothing sets a cookie, and Lighthouse still says
+            100 across the board. It only took three tries to get there.
+        </p>
+
+        <heading h2 id="where-is-the-community">"Where's the Community?"</heading>
+        <p>
+            I was running this site past the imaginary mastermind group in my head, and Philip
+            Greenspun showed up. If you built web things in the late '90s, you know the name:
+            photo.net, ArsDigita, and the gospel that a website without its readers' voices is a
+            brochure. His first question would be "where's the community?" and the honest answer was
+            "there isn't one, it's static HTML on S3."
+        </p>
+        <p>
+            The usual fix is a comment widget: Disqus, giscus, pick your poison. Every one of them
+            is somebody else's JavaScript, and most of them drop cookies. My footer says this
+            website "doesn't set any damn cookies." I'd like to keep that promise more than I'd like
+            comments.
+        </p>
+        <p>So the rules were:</p>
+        <list>
+            <li>No database and no server I have to babysit</li>
+            <li>No cookies, no accounts, no email address from commenters</li>
+            <li>Every comment approved by me before anyone sees it</li>
+            <li>The pages stay static, and stay fast</li>
+        </list>
+
+        <heading h2 id="one-file-per-post">One File Per Post</heading>
+        <p>
+            Each post's comments are a single file:
+            <cde>/api/comments/everybody-knows-alice.json</cde>. It's a JSON array of name, comment
+            and date. That's the whole database.
+        </p>
+        <p>
+            My first instinct was to bake comments into the page HTML. That fights the deploy: the
+            deploy uploads pages without comments, so every deploy would have to re-bake every page
+            that has them. Keeping the comments in their own file makes the two completely separate.
+            Deploys change pages. Comments change JSON. Neither touches the other.
+        </p>
+        <p>
+            They also live in their own S3 bucket, because my deploy script deletes anything in the
+            site bucket that isn't in the build. That's the right behavior for a site and the wrong
+            behavior for other people's words.
+        </p>
+        <p>CloudFront does the routing, all on my own domain:</p>
+        <list>
+            <li>
+                <cde>GET /api/comments/&lt;post&gt;.json</cde>
+                goes straight to the comments bucket, cached. Reading comments costs zero compute.
+            </li>
+            <li><cde>POST /api/comments</cde> goes to a Lambda</li>
+            <li><cde>/api/moderate</cde> goes to the same Lambda</li>
+        </list>
+        <p>
+            CloudFront matches routes by path, not method, but <cde>/api/comments</cde> and
+            <cde>/api/comments/*</cde> are different patterns, so the reads and the writes can share
+            a prefix.
+        </p>
+
+        <heading h2 id="posting-a-comment">Posting a Comment</heading>
+        <p>
+            The form at the bottom of every post is a plain HTML form. Name, comment, submit. It
+            works with JavaScript turned off. The Lambda:
+        </p>
+        <list>
+            <li>
+                Checks a hidden "website" field that people never see and bots always fill in. If
+                it's filled in, the bot gets a cheerful "thanks, awaiting approval" and nothing
+                happens.
+            </li>
+            <li>Validates the name and comment lengths and strips control characters</li>
+            <li>Checks the post is real and actually has comments turned on</li>
+            <li>Emails me</li>
+            <li>Redirects back to the post with a status code in the URL</li>
+        </list>
+        <p>
+            That status code is <cde>?comment=pending</cde>, or <cde>missing</cde>,
+            <cde>too-long</cde>, <cde>invalid</cde>, <cde>error</cde>. The page's script maps those
+            five codes to its own messages and ignores anything else. So nobody can send someone a
+            link like <cde>?comment=You+have+been+hacked</cde> and put words on my page.
+        </p>
+        <p>
+            If the post fails, the script also saved the draft before submitting, so nobody loses
+            the life of John to a typo in their name.
+        </p>
+
+        <heading h2 id="moderation-without-a-queue">Moderation Without a Queue</heading>
+        <p>
+            Here's the part I like best. There's no "pending comments" table, because there's no
+            table at all. The comment rides inside the approve link in the email, signed with a
+            secret key (an HMAC) so nobody can forge one or edit the text, and it expires in two
+            weeks.
+        </p>
+        <p>
+            To approve a comment, I click the link. To reject one, I do nothing. Spam doesn't pile
+            up anywhere except my inbox, and it goes stale on its own.
+        </p>
+        <p>
+            <strong>$2 tip:</strong>
+            never let a GET request approve anything. Email security scanners open every link in
+            every message to check it for malware. If clicking the link approved the comment, the
+            scanner would approve everything before I ever saw it. So the link opens a confirmation
+            page, and the Approve button on that page is a POST.
+        </p>
+        <p>
+            On approve, the Lambda appends the comment to the post's file, skips it if that comment
+            is already there (double-clicks happen), and clears that one file from the CDN cache.
+        </p>
+
+        <heading h2 id="showing-comments">Showing Comments</heading>
+        <p>
+            A few lines of JavaScript fetch the post's JSON and fill in a template with
+            <cde>textContent</cde>. Never <cde>innerHTML</cde>. Commenter text is only ever text, so
+            if someone's name is <cde>&lt;script&gt;alert(1)&lt;/script&gt;</cde>, that's exactly
+            what you'll see, and nothing runs.
+        </p>
+        <p>
+            The comment markup lives in a component in my site's repo, not in the data. Restyling
+            the comments is a normal deploy.
+        </p>
+
+        <heading h2 id="lighthouse-strikes-back">Lighthouse Strikes Back</heading>
+        <p>
+            Everything worked. Then I ran Lighthouse on
+            <cde>/everybody-knows-alice#comments</cde>
+            and Performance dropped to 80.
+        </p>
+        <p>
+            The culprit was layout shift: 0.471, where anything over 0.1 is bad. Open the page at
+            <cde>#comments</cde> and the browser jumps straight to the comments section. A moment
+            later the comments arrive, appear above the form, and shove it down the screen. That's
+            also exactly where everybody lands after posting a comment, so it wasn't just a
+            Lighthouse thing.
+        </p>
+        <p>
+            Try one: take <cde>#comments</cde> out of the URL before the browser jumps. Didn't work.
+            Chrome decides where it's jumping at the very start of the navigation.
+        </p>
+        <p>
+            Try two: take away the jump target instead. A tiny inline script removes the heading's
+            <cde>id</cde> before the first layout, so there's nothing to jump to, then puts it back
+            and scrolls there once the comments are in. Still a layout shift. A timeline trace
+            showed why: my scroll ran in the same animation frame as the comments being drawn, and
+            Chrome scores shifts per frame.
+        </p>
+        <p>
+            Try three: draw the comments while still at the top of the page, where they're
+            off-screen and moving them doesn't count, then wait a frame and scroll. Layout shift: 0.
+        </p>
+        <p>
+            Then Performance was 99, because the comments request waited for my JavaScript file to
+            download and run first. The same inline script now starts the comments request the
+            moment the browser reads that part of the page, so the two load side by side instead of
+            one after the other. 100.
+        </p>
+        <p>
+            One more: a post with no comments yet asked for a file that didn't exist, and the 404
+            landed in the browser console, which costs a Best Practices point. Now the deploy
+            creates an empty <cde>[]</cde> file for every post that has comments turned on, using
+            S3's create-only-if-missing upload so it can never overwrite real comments. 100s
+            straight across.
+        </p>
+
+        <heading h2 id="what-it-costs">What It Costs</heading>
+        <p>
+            Pennies a month. One S3 bucket, one small Lambda, a few CloudFront routes, and the email
+            service I already had set up. The pages still load fast as fuck-all get-out.
+        </p>
+        <p>
+            And in the spirit of full disclosure: I've spent more words planning this setup than
+            people will ever spend using this setup. Prove me wrong. The form's right down there.
+        </p>
+    </spaced>
+    <inject-comments />
+</article>
+<credits>
+    * Image generated with
+    <lnk to="https://pixlr.com/image-generator/" blank>Pixlr AI Image Generator</lnk>.
+</credits>
