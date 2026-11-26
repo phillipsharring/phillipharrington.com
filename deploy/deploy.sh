@@ -4,10 +4,9 @@ set -euo pipefail
 # ──────────────────────────────────────────────────────────────
 # phillipharrington.com — Deploy Script
 #
-# Builds the static site, syncs to S3, fixes Content-Type metadata
-# on extension-less files, invalidates CloudFront. Mirrors what the
-# CodeBuild buildspec.yml does, but runs locally so you don't need
-# a PR + merge cycle for every single change.
+# Builds the static site, syncs to S3 with the right Content-Type and
+# Cache-Control on every object, makes sure each post with comments has a
+# comments file, and invalidates CloudFront.
 #
 # Usage:  AWS_PROFILE=phillipharrington ./deploy/deploy.sh
 # Or just: make deploy
@@ -281,9 +280,38 @@ echo "  removed: $N_GONE"
 CHANGED=$((N_ASSETS + N_PAGES + N_GONE))
 
 # Content-Type is set per object by upload_key above, so there is no second pass
-# re-uploading the extensionless pages. scripts/apply-metadata.sh still exists
-# and is still correct; buildspec.yml calls it, because CodeBuild runs the plain
-# `aws s3 sync` that cannot set a per-object type.
+# re-uploading the extensionless pages.
+
+# ── 2b. An empty comments file for every post that shows comments ──
+#
+# The page asks for /api/comments/<slug>.json on every load, and a 404 there
+# lands in the browser console (Lighthouse docks Best Practices for it). So a
+# post that carries the comments section gets "[]" in the comments bucket the
+# first time it's deployed. --if-none-match '*' makes S3 create the file only
+# if it isn't there, so this can never touch approved comments, even racing an
+# approval. Nothing else in this script goes near that bucket.
+COMMENTS_BUCKET="phillipharrington-comments"
+echo "→ Making sure every post with comments has a comments file..."
+EMPTY_JSON="$(mktemp)"
+printf '[]' > "$EMPTY_JSON"
+N_SEEDED=0
+while IFS= read -r file; do
+    slug="${file#"$PROJECT_DIR"/dist/}"
+    if out=$(aws s3api put-object --bucket "$COMMENTS_BUCKET" --key "api/comments/$slug.json" \
+        --body "$EMPTY_JSON" --if-none-match '*' \
+        --content-type 'application/json; charset=utf-8' \
+        --cache-control 'public, max-age=60, s-maxage=31536000' \
+        --region "$REGION" 2>&1); then
+        echo "  created: api/comments/$slug.json"
+        N_SEEDED=$((N_SEEDED + 1))
+    elif [[ "$out" != *PreconditionFailed* ]]; then
+        # Not worth stopping a half-done deploy over (the invalidation is still
+        # to come); the post just 404s on its comments until the next deploy.
+        echo "  WARNING, not created: api/comments/$slug.json: $out"
+    fi
+done < <(grep -rl --exclude-dir=assets --exclude-dir=img 'data-comments=' "$PROJECT_DIR/dist")
+rm -f "$EMPTY_JSON"
+echo "  new comments files: $N_SEEDED"
 
 # ── 3. Invalidate CloudFront ────────────────────────────────
 #
