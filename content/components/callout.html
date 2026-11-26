@@ -1,23 +1,23 @@
 <aside
     class="border-th-accent-deep bg-th-tint-deep rounded-lg border-l-4 px-6 py-6 sm:px-8 sm:py-7"
 >
-    <!-- Optional logo="file" logo-w logo-h: a small mark across from the label and
-         title. Decorative (the title names the thing), so it has no alt text. -->
-    <div class="flex items-center justify-between gap-4">
-        <div>
-            <p
-                class="font-display text-th-accent mb-3 text-xs font-semibold tracking-widest uppercase"
-            >
-                [[label]]
-            </p>
-            <p class="font-display text-th-heading text-xl font-bold sm:text-2xl">[[title]]</p>
-        </div>
+    <p class="font-display text-th-accent mb-3 text-xs font-semibold tracking-widest uppercase">
+        [[label]]
+    </p>
+    <!-- Optional logo="file" logo-w logo-h: a small mark at the end of the title
+         line, on the title's first baseline. Baseline alignment puts an image's
+         bottom border edge on the line (margins don't count), so top nudges it
+         down until its letters sit there instead: 11.6% of its height for
+         handlr.webp (letters stop at y=99 of 112).
+         Decorative (the title names the thing), so it has no alt text. -->
+    <div class="flex items-baseline justify-between gap-4">
+        <p class="font-display text-th-heading text-xl font-bold sm:text-2xl">[[title]]</p>
         [[#if logo]]<img
             src="/img/[[logo]]"
             width="[[logo-w]]"
             height="[[logo-h]]"
             alt=""
-            class="h-5 w-auto shrink-0 sm:h-6"
+            class="relative top-[0.145rem] h-5 w-auto shrink-0 sm:top-[0.174rem] sm:h-6"
         />[[/if]]
     </div>
     <div class="text-th-sub mt-4 space-y-3 leading-relaxed">[[slot]]</div>
