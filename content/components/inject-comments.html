@@ -41,44 +41,53 @@
         </li>
     </template>
     <heading h3 id="add-a-comment" class="mt-12">Add your comment</heading>
-    <form data-comments-form method="post" action="/api/comments" class="max-w-[60ch] space-y-3">
-        <input type="hidden" name="path" value="[[path]]" />
-        <!-- Honeypot: people never see it, bots fill it in. -->
-        <div aria-hidden="true" class="absolute -left-[9999px]">
-            <label
-                >Website <input type="text" name="website" tabindex="-1" autocomplete="off"
-            /></label>
-        </div>
-        <label class="block">
-            <span class="text-th-sub text-sm">Name</span>
-            <input
-                type="text"
-                name="name"
-                required
-                maxlength="80"
-                autocomplete="name"
-                class="border-th-border bg-th-page mt-1 block w-full rounded-lg border px-3 py-2"
-            />
-        </label>
-        <label class="block">
-            <span class="text-th-sub text-sm">Comment</span>
-            <textarea
-                name="comment"
-                required
-                maxlength="2000"
-                rows="5"
-                class="border-th-border bg-th-page mt-1 block w-full rounded-lg border px-3 py-2"
-            ></textarea>
-        </label>
-        <p class="text-th-muted text-sm">
-            Comments show up after I approve them. No email address needed.
-            <span class="whitespace-nowrap">Still no cookies.</span>
-        </p>
-        <button
-            type="submit"
-            class="border-th-accent-soft text-th-accent-text hover:border-th-accent hover:bg-th-tint-hover inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition-all duration-200"
+    <!-- The form sits in the text column, under the comments; the heading
+         above stays at the left edge with the other headings. -->
+    <div class="grid gap-x-6 sm:grid-cols-[7rem_1fr]">
+        <form
+            data-comments-form
+            method="post"
+            action="/api/comments"
+            class="max-w-[60ch] space-y-3 sm:col-start-2"
         >
-            Post comment
-        </button>
-    </form>
+            <input type="hidden" name="path" value="[[path]]" />
+            <!-- Honeypot: people never see it, bots fill it in. -->
+            <div aria-hidden="true" class="absolute -left-[9999px]">
+                <label
+                    >Website <input type="text" name="website" tabindex="-1" autocomplete="off"
+                /></label>
+            </div>
+            <label class="block">
+                <span class="text-th-sub text-sm">Name</span>
+                <input
+                    type="text"
+                    name="name"
+                    required
+                    maxlength="80"
+                    autocomplete="name"
+                    class="border-th-border bg-th-page mt-1 block w-full rounded-lg border px-3 py-2"
+                />
+            </label>
+            <label class="block">
+                <span class="text-th-sub text-sm">Comment</span>
+                <textarea
+                    name="comment"
+                    required
+                    maxlength="2000"
+                    rows="5"
+                    class="border-th-border bg-th-page mt-1 block w-full rounded-lg border px-3 py-2"
+                ></textarea>
+            </label>
+            <p class="text-th-muted text-sm">
+                Comments show up after I approve them. No email address needed.
+                <span class="whitespace-nowrap">Still no cookies.</span>
+            </p>
+            <button
+                type="submit"
+                class="border-th-accent-soft text-th-accent-text hover:border-th-accent hover:bg-th-tint-hover inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition-all duration-200"
+            >
+                Post comment
+            </button>
+        </form>
+    </div>
 </section>
