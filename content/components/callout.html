@@ -1,9 +1,16 @@
 <aside
     class="border-th-accent-deep bg-th-tint-deep rounded-lg border-l-4 px-6 py-6 sm:px-8 sm:py-7"
 >
+    <!-- heading: the label is a real h2, for a page whose outline needs it (Home). -->
+    [[#if heading]]
+    <h2 class="font-display text-th-accent mb-3 text-xs font-semibold tracking-widest uppercase">
+        [[label]]
+    </h2>
+    [[else]]
     <p class="font-display text-th-accent mb-3 text-xs font-semibold tracking-widest uppercase">
         [[label]]
     </p>
+    [[/if]]
     <!-- Optional logo="file" logo-w logo-h: a small mark at the end of the title
          line, on the title's first baseline. Baseline alignment puts an image's
          bottom border edge on the line (margins don't count), so top nudges it

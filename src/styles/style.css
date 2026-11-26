@@ -310,7 +310,7 @@ html {
  * Workaround for tailwindcss@4.2.2 bug: the generated `.space-y-N > :not(:last-child)`
  * selector ships with an extra unmatched `)` (e.g. `:not(:last-child))`), so the entire
  * rule is invalid CSS and gets dropped by every browser. The site uses space-y-1/3/5
- * via the <spaced>, <list>, <band>, <drumset> components, and without these overrides
+ * via the <spaced>, <list>, <margin-row> components, and without these overrides
  * everything wrapped in <spaced> renders with no inter-element margin at all.
  *
  * These are valid hand-written equivalents — same selector minus the broken paren,
