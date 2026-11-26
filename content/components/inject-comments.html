@@ -22,6 +22,7 @@
             <p data-comment-body class="mt-1 whitespace-pre-line"></p>
         </li>
     </template>
+    <heading h3 id="add-a-comment" class="mt-12">Add your comment</heading>
     <form data-comments-form method="post" action="/api/comments" class="max-w-[60ch] space-y-3">
         <input type="hidden" name="path" value="[[path]]" />
         <!-- Honeypot: people never see it, bots fill it in. -->
@@ -52,7 +53,8 @@
             ></textarea>
         </label>
         <p class="text-th-muted text-sm">
-            Comments show up after I approve them. No email address needed. Still no cookies.
+            Comments show up after I approve them. No email address needed.
+            <span class="whitespace-nowrap">Still no cookies.</span>
         </p>
         <button
             type="submit"

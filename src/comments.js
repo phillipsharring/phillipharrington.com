@@ -23,7 +23,27 @@ function store(fn) {
     }
 }
 
+// One request per post, shared by the comments list and any count links.
+const requests = new Map();
+function getComments(slug) {
+    if (!requests.has(slug)) {
+        requests.set(
+            slug,
+            fetch(`/api/comments/${slug}.json`)
+                .then((res) => (res.ok ? res.json() : []))
+                .then((list) => (Array.isArray(list) ? list : []))
+                .catch(() => []), // offline or blocked: show the empty state, the form still works
+        );
+    }
+    return requests.get(slug);
+}
+
 export function initComments() {
+    document.querySelectorAll('[data-comment-count]').forEach(async (link) => {
+        const n = (await getComments(link.dataset.commentCount.slice(1))).length;
+        link.textContent = n === 0 ? 'Be the first to comment' : n === 1 ? '1 comment' : `${n} comments`;
+    });
+
     const root = document.querySelector('[data-comments]');
     if (!root) return;
     const path = root.dataset.comments;
@@ -63,14 +83,8 @@ async function loadComments(root, slug) {
     const list = root.querySelector('[data-comments-list]');
     const empty = root.querySelector('[data-comments-empty]');
     const template = root.querySelector('[data-comment-template]');
-    let comments = [];
-    try {
-        const res = await fetch(`/api/comments/${slug}.json`);
-        if (res.ok) comments = await res.json();
-    } catch {
-        // Offline or blocked: show the empty state, the form still works.
-    }
-    if (!Array.isArray(comments) || comments.length === 0) {
+    const comments = await getComments(slug);
+    if (comments.length === 0) {
         empty.classList.remove('hidden');
         return;
     }

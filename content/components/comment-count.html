@@ -1,0 +1,12 @@
+<!-- Link to the post's comments with their count; drop it anywhere on a post,
+     with the same path="/the-post-slug" as the comments section. The count
+     comes from the same JSON in src/comments.js; without JavaScript it just
+     says "Comments". -->
+<div class="text-sm sm:text-base">
+    <a
+        href="#comments"
+        data-comment-count="[[path]]"
+        class="text-th-muted hover:text-th-accent font-serif italic transition-colors duration-200"
+        >Comments</a
+    >
+</div>
