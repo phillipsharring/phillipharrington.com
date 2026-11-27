@@ -10,115 +10,111 @@
     />
 </page-head>
 <article>
-    <spaced>
+    <hero
+        img="jost-amman-buchdrucker"
+        w="751"
+        h="879"
+        alt="Jost Amman's 1568 woodcut of a print shop: one printer lifts a freshly printed sheet from the press while another inks the type, with compositors setting type in the background"
+        caption="Shipping it, 1568."
+        credit
+    >
         <heading h1 id="projects">Projects</heading>
         <p>
             Things I build on my own time. All three run on Handlr, so I'm eating my own dog food
             every day.
         </p>
 
-        <heading h2 id="handlr" class="mt-12">
-            <img
-                src="/img/handlr.webp"
-                width="506"
-                height="112"
-                alt="Handlr"
-                class="h-10 w-auto sm:h-12"
-            />
-        </heading>
-        <p>
-            My framework: a lightweight PHP backend built on pipes and handlers, and an HTMX and
-            Handlebars frontend toolkit, released together. It also has a build step for plain
-            static sites. That's what builds this one.
-        </p>
-        <div class="space-y-2">
-            <margin-row label="Status">
-                <p>Open source, in active development, published to npm and Packagist</p>
-            </margin-row>
-            <margin-row label="Built with">
-                <p>PHP, HTMX, Handlebars, Tailwind</p>
-            </margin-row>
-            <margin-row label="Code">
-                <p>
-                    <lnk to="https://github.com/phillipsharring/handlr-mono"
-                        >handlr-mono on GitHub</lnk>
-                    &middot;
-                    <lnk
-                        to="https://handlr.dev/?utm_source=phillipharrington&utm_medium=website&utm_campaign=projects&utm_content=handlr"
-                        >the docs at handlr.dev</lnk>
-                </p>
-            </margin-row>
-            <margin-row label="Read">
-                <p><lnk to="/html-is-fun-again">HTML is Fun Again</lnk></p>
-            </margin-row>
-        </div>
+        <project id="handlr" logo="handlr.webp" logo-w="506" logo-h="112" name="Handlr" eager>
+            <p>
+                My framework: a lightweight PHP backend built on pipes and handlers, and an HTMX and
+                Handlebars frontend toolkit, released together. It also has a build step for plain
+                static sites. That's what builds this one.
+            </p>
+            <facts>
+                <margin-row label="Status">
+                    <p>Open source, in active development, published to npm and Packagist</p>
+                </margin-row>
+                <margin-row label="Built with">
+                    <p>PHP, HTMX, Handlebars, Tailwind</p>
+                </margin-row>
+                <margin-row label="Code">
+                    <p>
+                        <lnk to="https://github.com/phillipsharring/handlr-mono"
+                            >handlr-mono on GitHub</lnk>
+                        &middot;
+                        <lnk
+                            to="https://handlr.dev/?utm_source=phillipharrington&utm_medium=website&utm_campaign=projects&utm_content=handlr"
+                            >the docs at handlr.dev</lnk>
+                    </p>
+                </margin-row>
+                <margin-row label="Read">
+                    <p><lnk to="/html-is-fun-again">HTML is Fun Again</lnk></p>
+                </margin-row>
+            </facts>
+        </project>
+    </hero>
+    <spaced>
+        <project
+            id="reuse-lists"
+            logo="reuselists-logo.webp"
+            logo-w="562"
+            logo-h="168"
+            name="Reuse Lists"
+        >
+            <p>
+                The checklist app I wanted for 20 years. Make a checklist once, check things off,
+                then hit Reuse for a fresh copy with everything unchecked. The original stays as
+                your record of what you actually did, and the lists you reuse most can be pinned.
+            </p>
+            <facts>
+                <margin-row label="Status">
+                    <p>
+                        Live at
+                        <lnk
+                            to="https://reuselists.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=projects&utm_content=reuselists"
+                            >reuselists.com</lnk>
+                    </p>
+                </margin-row>
+                <margin-row label="Built with">
+                    <p>Handlr, with its A/B testing module</p>
+                </margin-row>
+                <margin-row label="Read">
+                    <p>
+                        <lnk to="/a-20-year-side-project">A 20-Year Side Project</lnk>
+                        &middot;
+                        <lnk to="/everybody-knows-alice">Everybody Knows Alice</lnk>
+                    </p>
+                </margin-row>
+            </facts>
+        </project>
 
-        <heading h2 id="reuse-lists" class="mt-12">
-            <img
-                src="/img/reuselists-logo.webp"
-                width="562"
-                height="168"
-                alt="Reuse Lists"
-                loading="lazy"
-                decoding="async"
-                class="h-10 w-auto sm:h-12"
-            />
-        </heading>
-        <p>
-            The checklist app I wanted for 20 years. Make a checklist once, check things off, then
-            hit Reuse for a fresh copy with everything unchecked. The original stays as your record
-            of what you actually did, and the lists you reuse most can be pinned.
-        </p>
-        <div class="space-y-2">
-            <margin-row label="Status">
-                <p>
-                    Live at
-                    <lnk
-                        to="https://reuselists.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=projects&utm_content=reuselists"
-                        >reuselists.com</lnk>
-                </p>
-            </margin-row>
-            <margin-row label="Built with">
-                <p>Handlr, with its A/B testing module</p>
-            </margin-row>
-            <margin-row label="Read">
-                <p>
-                    <lnk to="/a-20-year-side-project">A 20-Year Side Project</lnk>
-                    &middot;
-                    <lnk to="/everybody-knows-alice">Everybody Knows Alice</lnk>
-                </p>
-            </margin-row>
-        </div>
-
-        <heading h2 id="stream-to-story" class="mt-12">
-            <img
-                src="/img/streamtostory-wordmark.webp"
-                width="822"
-                height="168"
-                alt="Stream to Story"
-                loading="lazy"
-                decoding="async"
-                class="h-10 w-auto sm:h-12"
-            />
-        </heading>
-        <p>
-            Every day there's a word. Type the first thing it makes you think of, then the first
-            thing that makes you think of, and keep going. After five or ten of those ripples, a
-            memory usually turns up. That's the story: write it down or don't, share it or keep it.
-        </p>
-        <div class="space-y-2">
-            <margin-row label="Status">
-                <p>
-                    Live at
-                    <lnk
-                        to="https://streamtostory.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=projects&utm_content=streamtostory"
-                        >streamtostory.com</lnk>
-                </p>
-            </margin-row>
-            <margin-row label="Built with">
-                <p>Handlr</p>
-            </margin-row>
-        </div>
+        <project
+            id="stream-to-story"
+            logo="streamtostory-wordmark.webp"
+            logo-w="822"
+            logo-h="168"
+            name="Stream to Story"
+        >
+            <p>
+                Every day there's a word. Type the first thing it makes you think of, then the first
+                thing that makes you think of, and keep going. After five or ten of those ripples, a
+                memory usually turns up. That's the story: write it down or don't, share it or keep
+                it.
+            </p>
+            <facts>
+                <margin-row label="Status">
+                    <p>
+                        Live at
+                        <lnk
+                            to="https://streamtostory.com/?utm_source=phillipharrington&utm_medium=website&utm_campaign=projects&utm_content=streamtostory"
+                            >streamtostory.com</lnk>
+                    </p>
+                </margin-row>
+                <margin-row label="Built with">
+                    <p>Handlr</p>
+                </margin-row>
+            </facts>
+        </project>
 
         <heading h2 id="this-site" class="mt-20">Psst... You're Soaking In It</heading>
         <name-wordmark />
@@ -126,7 +122,7 @@
             This site is a project, too (what nerd's home page isn't?). It's open source, like
             Handlr. Plain HTML, built by Handlr's static-site build step, comments and all.
         </p>
-        <div class="space-y-2">
+        <facts>
             <margin-row label="Status">
                 <p>You're looking at it</p>
             </margin-row>
@@ -151,6 +147,11 @@
                         >How in the Hell Does My Static Site Have Comments?</lnk>
                 </p>
             </margin-row>
-        </div>
+        </facts>
     </spaced>
 </article>
+<credits>
+    Woodcut by Jost Amman, from the <em>Ständebuch</em> (Frankfurt, 1568). Public domain, via
+    <lnk to="https://commons.wikimedia.org/wiki/File:Buchdrucker-1568.png" blank
+        >Wikimedia Commons</lnk>.
+</credits>

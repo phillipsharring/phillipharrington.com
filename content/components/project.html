@@ -1,0 +1,16 @@
+<!-- One project on Projects: its logo as the heading, then the slot (a
+     description, then the facts tag). name is the logo's alt text. The logo
+     loads lazily unless eager is set, for one that's on screen at load. -->
+<heading h2 id="[[id]]" class="mt-12">
+    <img
+        src="/img/[[logo]]"
+        width="[[logo-w]]"
+        height="[[logo-h]]"
+        alt="[[name]]"
+        [[#if eager]][[else]]loading="lazy"
+        decoding="async"
+        [[/if]]
+        class="h-10 w-auto sm:h-12"
+    />
+</heading>
+[[slot]]

@@ -64,9 +64,15 @@ async function initLatestComment() {
     time.textContent = dateText(latest.date);
     box.querySelector('[data-latest-name]').textContent = latest.name;
     const link = box.querySelector('[data-latest-link]');
-    link.href = `/${latest.slug}#comments`;
+    // Comments run oldest first, so the newest is the last one: link to it.
+    link.href = `/${latest.slug}#latest-comment`;
     link.textContent = latest.title || latest.slug;
-    box.querySelector('[data-latest-body]').textContent = latest.comment;
+    // Only the first line (paragraph) of the comment, with an ellipsis when
+    // there's more. Clamping the whole multi-line comment left the ellipsis
+    // stranded on a line of its own at some widths.
+    const lines = String(latest.comment).trim().split(/\n+/);
+    box.querySelector('[data-latest-body]').textContent =
+        lines.length > 1 ? `${lines[0].trim().replace(/[.,;:!?]+$/, '')}…` : lines[0];
     box.hidden = false;
 }
 
@@ -115,9 +121,16 @@ export function initComments() {
         // comments are in place. Chrome scores shifts per frame, so the scroll
         // waits for the frame after the comments were drawn (off-screen, at the
         // top of the page); a scroll on its own isn't a layout shift.
-        if (!('commentsJump' in document.documentElement.dataset)) return;
+        // #latest-comment (from Home's Latest Comment) does the same, to the
+        // newest comment, which is the last one.
+        const jump = document.documentElement.dataset.commentsJump;
+        if (jump === undefined) return;
         await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
         delete document.documentElement.dataset.commentsJump;
+        if (jump === 'latest') {
+            document.getElementById('latest-comment')?.scrollIntoView();
+            return;
+        }
         const heading = root.querySelector('h2');
         heading.id = 'comments';
         heading.scrollIntoView();
@@ -133,8 +146,10 @@ async function loadComments(root, slug) {
         empty.classList.remove('hidden');
         return;
     }
-    for (const c of comments) {
+    for (const [i, c] of comments.entries()) {
         const item = template.content.cloneNode(true);
+        // The newest comment is last; Home's Latest Comment links here.
+        if (i === comments.length - 1) item.firstElementChild.id = 'latest-comment';
         item.querySelector('[data-comment-name]').textContent = c.name;
         const time = item.querySelector('[data-comment-date]');
         time.dateTime = c.date;
