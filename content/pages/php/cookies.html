@@ -1,0 +1,193 @@
+<layout name="default" title="Cookies" />
+<page-head>
+    <meta
+        name="description"
+        content="How a website remembers you when HTTP doesn't: what a cookie is, how Set-Cookie and Cookie work, the flags that matter, and why you never trust one. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="cookies, Set-Cookie, Cookie header, setcookie, $_COOKIE, HttpOnly, Secure, SameSite, Max-Age, session cookie, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How a website remembers you when HTTP doesn't. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="cookies">Cookies</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            HTTP forgets you. Every request stands on its own, so as far as the server knows, your
+            second click comes from a stranger. Yet sites keep you logged in, remember what's in
+            your cart, and know you picked dark mode. That's cookies: a small piece of text the
+            server asks your browser to keep, and to hand back with every request after.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-cookie">What's a Cookie?</heading>
+        <p>
+            A name and a value, like <cde>theme=dark</cde>, kept by the browser for one site. The
+            server sets it with a response header:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>Set-Cookie: theme=dark; Max-Age=31536000; Path=/; Secure; HttpOnly; SameSite=Lax</code-block>
+        <p>
+            From then on, every request the browser makes to that site carries it back, in a request
+            header:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>Cookie: theme=dark</code-block>
+        <p>
+            That's the whole trick. The server doesn't remember you; your browser reminds it, every
+            single time.
+        </p>
+
+        <heading h3 id="cookie-settings">The Settings After the Value</heading>
+        <list>
+            <li>
+                <strong>Max-Age</strong> or <strong>Expires</strong>: how long to keep it. Leave
+                both off, and it's a session cookie, gone when the browser closes.
+            </li>
+            <li><strong>Path</strong> and <strong>Domain</strong>: which URLs it gets sent to.</li>
+            <li><strong>Secure</strong>: only send it over HTTPS.</li>
+            <li><strong>HttpOnly</strong>: JavaScript in the page can't read it.</li>
+            <li>
+                <strong>SameSite</strong>: whether other sites can make your browser send it.
+                <cde>Lax</cde> is the sensible default.
+            </li>
+        </list>
+        <p>
+            The last three are security, and they get a lesson of their own, Sessions and Cookie
+            Flags. For now: login cookies get all three.
+        </p>
+
+        <side-story title="Magic Cookies">
+            Lou Montulli, a programmer at Netscape, invented web cookies in 1994, to build a
+            shopping cart that remembered what you'd put in it. He borrowed the name from "magic
+            cookie," old Unix slang for a small token one program hands another and gets back later,
+            unchanged.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>You visit a site. The browser has no cookies for it, so it sends none.</li>
+            <li>The server answers with a <cde>Set-Cookie</cde> header.</li>
+            <li>The browser stores it, labeled with the site's name.</li>
+            <li>
+                Every later request to that site, pages, images, scripts, all of them, includes it
+                in a <cde>Cookie</cde> header, until it expires.
+            </li>
+            <li>To delete it, the server sets it again with an expiry in the past.</li>
+        </ol>
+        <p>
+            Notice step four. The cookie comes from the browser, which means from whoever controls
+            the browser. A cookie is input, and <strong>you never trust input</strong>. Anyone can
+            open their browser's developer tools and change a cookie to anything they like. So a
+            cookie should never say "role=admin" or "price=1.00". The usual move is to put a long
+            random ID in the cookie, and keep everything that matters on the server, filed under
+            that ID. That's a session, and it gets a lesson of its own.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>A visit counter that lives in a cookie. In a folder, make <cde>index.php</cde>:</p>
+        <code-block example="cookies/index.php" />
+        <p>Start the server the usual way:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and reload a few times. The number goes up: the
+            browser is sending the cookie back, and the server adds one each time.
+        </p>
+        <p>
+            Now break it. Open your browser's developer tools, find the cookies for localhost (the
+            Application tab in Chrome, Storage in Firefox), and change <cde>visits</cde> to
+            <cde>41</cde>. Reload: "Visit number 42." You just told the server something false, and
+            it believed you. Or skip the browser entirely, and send any cookie you like:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -b 'visits=41' http://localhost:8000</code-block>
+        <p>
+            Try <cde>-b 'visits=banana'</cde>, too. The <cde>(int)</cde> in the code turns nonsense
+            into 0, so you get visit 1, not an error. That one cast is the code not trusting its
+            input.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>setcookie($name, $value, $options)</cde> sends <cde>Set-Cookie</cde>. The
+                options array takes <cde>expires</cde>, <cde>path</cde>, <cde>domain</cde>,
+                <cde>secure</cde>, <cde>httponly</cde> and <cde>samesite</cde>.
+            </li>
+            <li>
+                <cde>$_COOKIE</cde> holds the cookies the browser sent with this request. Treat
+                every value in it as input from a stranger, because it is.
+            </li>
+            <li>
+                To delete one: <cde>setcookie('visits', '', ['expires' =&gt; time() - 3600]);</cde>
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A cookie you just set isn't in <cde>$_COOKIE</cde> yet.</strong>
+                <cde>setcookie()</cde> only adds a header to the response. The browser sends it back
+                starting with the next request.
+            </li>
+            <li>
+                <strong>"Headers already sent."</strong> A cookie is a header, so
+                <cde>setcookie()</cde> has to come before any output, like <cde>header()</cde> in
+                Request and Response.
+            </li>
+            <li>
+                <strong>Cookies ride along on everything.</strong> Every image, script and
+                stylesheet request to the site carries them too. Keep them small: a browser keeps
+                about 4 KB per cookie, and every byte travels on every request.
+            </li>
+            <li>
+                <strong>Never trust a cookie.</strong> It's input. It can be edited, replayed, or
+                made up from scratch, as Try It showed.
+            </li>
+        </list>
+
+        <side-story title="This Site Sets None">
+            The footer of this site says it doesn't set any cookies, and it's true: no login, no
+            tracking, so nothing to remember. The cookie banners on so many other sites exist
+            because European privacy law requires asking before setting cookies that aren't strictly
+            needed, mostly the tracking kind.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="A private window is a fresh cookie jar">
+            <p>
+                Need to see your site as a stranger, logged out, nothing remembered? Open a private
+                window. It starts with no cookies and forgets them all when you close it, so you
+                don't have to clear anything from your real browser.
+            </p>
+        </two-dollars>
+
+        <p>
+            A cookie rides along in a header. There's an even plainer way to send a little data with
+            a request, right in the URL. Next: query strings.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <span class="text-th-muted text-right">Next: Query Strings (coming soon)</span>
+        </nav>
+    </spaced>
+</article>
