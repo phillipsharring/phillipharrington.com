@@ -1,0 +1,226 @@
+<layout name="default" title="DNS" />
+<page-head>
+    <meta
+        name="description"
+        content="How a name like phillipharrington.com turns into an address a computer can connect to: domain names, IP addresses, DNS records, resolvers, and caching. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="DNS, domain name system, IP address, A record, CNAME, MX record, TTL, resolver, nslookup, gethostbyname, dns_get_record, checkdnsrr, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How a name turns into an address. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="dns">DNS</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            In Client/Server, the server had to be easy to find. Computers find each other by
+            number, the IP address, but people use names. DNS, the Domain Name System, is how a name
+            like <cde>phillipharrington.com</cde> turns into a number a client can connect to. It
+            happens before every new connection, usually in a few milliseconds, and you only notice
+            it when it breaks.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-ip-address">What's an IP Address?</heading>
+        <p>
+            The number a computer is reached at, like a phone number. The older kind, IPv4, is four
+            numbers from 0 to 255 with dots between them: <cde>203.0.113.7</cde>. The newer kind,
+            IPv6, is much longer and written in hexadecimal with colons. Both are still in use, side
+            by side.
+        </p>
+
+        <heading h2 id="whats-a-domain-name">What's a Domain Name?</heading>
+        <p>
+            The name people type instead of the number. It reads right to left, from general to
+            specific: in <cde>www.phillipharrington.com</cde>, <cde>com</cde> is the top-level
+            domain, <cde>phillipharrington</cde> is the name someone registered under it, and
+            <cde>www</cde> is a subdomain the owner made up. The owner can make as many of those as
+            they like.
+        </p>
+
+        <heading h2 id="records">What's a DNS Record?</heading>
+        <p>
+            A domain's DNS is a short list of records, each one a fact about the name. The ones
+            you'll meet:
+        </p>
+        <list>
+            <li><strong>A</strong>: this name is at this IPv4 address.</li>
+            <li><strong>AAAA</strong>: the same, for an IPv6 address.</li>
+            <li><strong>CNAME</strong>: this name is another name; go look that one up instead.</li>
+            <li><strong>MX</strong>: mail for this name goes to this server.</li>
+            <li>
+                <strong>TXT</strong>: a note, usually proof to some service that you own the domain,
+                or rules about who may send its email.
+            </li>
+            <li><strong>NS</strong>: these servers are in charge of this name's records.</li>
+        </list>
+        <p>
+            Every record also has a TTL, "time to live": how many seconds anyone who looks it up may
+            remember the answer before asking again.
+        </p>
+
+        <side-story title="One File for the Whole Internet">
+            Before DNS, every computer on the early internet kept a copy of one file, HOSTS.TXT,
+            listing every machine's name and number. It was maintained by hand at a single office at
+            the Stanford Research Institute, and you got updates by downloading it again. By the
+            early 1980s it was changing faster than anyone could copy it, so in 1983 Paul
+            Mockapetris designed DNS to replace it.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When your browser needs the address for a name, it goes something like this:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The browser checks whether it looked this name up recently.</li>
+            <li>
+                If not, your computer checks its own memory, and a small file called the hosts file,
+                where you can pin names to addresses yourself.
+            </li>
+            <li>
+                If not, it asks a resolver: a DNS server run by your internet provider, or a public
+                one like Cloudflare's <cde>1.1.1.1</cde> or Google's <cde>8.8.8.8</cde>.
+            </li>
+            <li>
+                If the resolver doesn't know either, it starts at the top. It asks a root server,
+                "who's in charge of <cde>.com</cde>?" Then it asks the <cde>.com</cde> servers,
+                "who's in charge of <cde>phillipharrington.com</cde>?" Then it asks that domain's
+                own servers for the record itself.
+            </li>
+            <li>
+                The answer comes back down the chain, and every step remembers it for as long as the
+                TTL allows.
+            </li>
+        </ol>
+        <p>
+            That memory is why DNS is fast: almost every lookup is answered from step one, two or
+            three. It's also why DNS changes are slow. Change a record, and the old answer lives on
+            in caches all over the world until their TTLs run out.
+        </p>
+        <p>
+            Notice the resolver is a server to you and a client to the root, the <cde>.com</cde>
+            servers and the domain's servers. Same relationship as last time, more links in the
+            chain.
+        </p>
+
+        <side-story title="Thirteen Names">
+            There are thirteen root server names, <cde>a.root-servers.net</cde> through
+            <cde>m.root-servers.net</cde>, run by twelve different organizations. But each name is
+            many actual machines around the world sharing one address, well over a thousand in all,
+            and you're answered by whichever is closest.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            PHP can do DNS lookups itself, so start there. In a folder, make a file called
+            <cde>dns.php</cde>:
+        </p>
+        <code-block
+            >&lt;?php $host = $argv[1] ?? 'phillipharrington.com'; echo gethostbyname($host), "\n";
+            print_r(dns_get_record($host, DNS_A)); print_r(dns_get_record($host,
+            DNS_MX));</code-block
+        >
+        <p>Run it in a container, the same way as last time, giving it a name to look up:</p>
+        <code-block
+            >docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php
+            phillipharrington.com</code-block
+        >
+        <p>
+            The first line is one address: <cde>gethostbyname()</cde> asks the question the way a
+            browser would and takes the first answer. Then <cde>dns_get_record()</cde> shows the
+            actual A records, several of them, each with its TTL. This site sits behind a CDN, so
+            the name points at a handful of the CDN's servers.
+        </p>
+        <p>
+            The MX records are where its email goes: five of Google's mail servers, each with a
+            priority number (<cde>pri</cde>). Senders try the lowest number first and work up the
+            list if it doesn't answer. Try another name, and the mail setup is different:
+        </p>
+        <code-block
+            >docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php
+            reuselists.com</code-block
+        >
+        <p>
+            One MX record this time. Then ask a different client, the one that comes with every
+            operating system:
+        </p>
+        <code-block>nslookup phillipharrington.com</code-block>
+        <p>Same answer, different client. It also tells you which resolver answered, at the top.</p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <p>
+            Most of the time PHP does DNS for you without asking: connecting to a database by name,
+            or fetching a URL, starts with a lookup. When you need one yourself, three functions
+            cover it:
+        </p>
+        <list>
+            <li><cde>gethostbyname()</cde>: one IPv4 address for a name.</li>
+            <li><cde>dns_get_record()</cde>: the records themselves, any type.</li>
+            <li>
+                <cde>checkdnsrr()</cde>: does a record of this type exist? The classic use is a
+                signup form: <cde>checkdnsrr($domain, 'MX')</cde> tells you whether an email
+                address's domain accepts mail at all, before you try to send to it.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>"I changed it, but I still see the old site."</strong> The old answer is
+                cached somewhere between you and the domain's servers. It goes away when the TTL
+                runs out. Waiting is the fix; so is the $2 tip below, next time.
+            </li>
+            <li>
+                <strong><cde>gethostbyname()</cde> doesn't fail like you'd expect.</strong> When a
+                name doesn't exist, it returns the name you gave it, unchanged, not
+                <cde>false</cde>. Check whether what came back is an address.
+            </li>
+            <li>
+                <strong>The hosts file wins.</strong> A name pinned in your hosts file never reaches
+                DNS at all. That's how local development names like <cde>myapp.test</cde> work, and
+                why a forgotten line in it can make one computer see a different site from everyone
+                else.
+            </li>
+        </list>
+
+        <side-story title="It's Always DNS">
+            Operations people have a haiku about outages: "It's not DNS. There's no way it's DNS. It
+            was DNS." Funny because it's true: when everything is broken at once, DNS is the first
+            thing to check.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Turn the TTL down before you move">
+            <p>
+                Moving a site to a new server? A day before, lower the TTL on its records to five
+                minutes. Then, when you switch, the old address only lingers for five minutes
+                instead of a day. Once it's settled, turn the TTL back up.
+            </p>
+        </two-dollars>
+
+        <p>
+            Now the client has an address, and can open a connection. Next: the language they speak
+            once they're connected, HTTP.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <span class="text-th-muted text-right">Next: HTTP, HTTPS and TLS (coming soon)</span>
+        </nav>
+    </spaced>
+</article>
