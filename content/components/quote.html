@@ -1,5 +1,7 @@
 <!-- Pull quote. Shrinks to fit its text (capped at the article line length)
-     and centers, so a one-liner doesn't sit in a half-empty box off to the left.
+     and centers, so a one-liner doesn't sit in a half-empty box off to the left, and is
+     at least 26rem wide (or the column, if that's narrower), so a quote of
+     short lines doesn't shrink to a sliver.
     It centers within the 60ch reading column (the wrapper), not the page: the
     page is max-w-5xl, so centering in that pushed quotes well right of the text.
     The quote mark is the old left-quotes artwork, back as inline SVG in the
@@ -7,7 +9,7 @@
     plus a negative z-index keeps it above the box's tint, below the words). -->
 <div class="max-w-[60ch]">
     <blockquote
-        class="border-th-accent-soft/75 bg-th-tint text-th-sub relative isolate mx-auto block w-fit max-w-[60ch] overflow-hidden rounded-lg border-l-4 px-8 py-6 italic"
+        class="border-th-accent-soft/75 bg-th-tint text-th-sub relative isolate mx-auto block w-fit min-w-[min(100%,26rem)] max-w-[60ch] overflow-hidden rounded-lg border-l-4 px-8 py-6 italic"
     >
         <svg
             aria-hidden="true"
