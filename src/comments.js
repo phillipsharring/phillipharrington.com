@@ -66,7 +66,12 @@ async function initLatestComment() {
     const link = box.querySelector('[data-latest-link]');
     link.href = `/${latest.slug}#comments`;
     link.textContent = latest.title || latest.slug;
-    box.querySelector('[data-latest-body]').textContent = latest.comment;
+    // Only the first line (paragraph) of the comment, with an ellipsis when
+    // there's more. Clamping the whole multi-line comment left the ellipsis
+    // stranded on a line of its own at some widths.
+    const lines = String(latest.comment).trim().split(/\n+/);
+    box.querySelector('[data-latest-body]').textContent =
+        lines.length > 1 ? `${lines[0].trim().replace(/[.,;:!?]+$/, '')}…` : lines[0];
     box.hidden = false;
 }
 
