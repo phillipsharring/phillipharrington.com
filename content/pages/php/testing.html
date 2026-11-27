@@ -1,0 +1,240 @@
+<layout name="default" title="Testing" />
+<page-head>
+    <meta
+        name="description"
+        content="Automated tests with PHPUnit, once the pieces are small enough to test: test classes, assertions, data providers, fakes instead of the real mail server, and watching a test fail. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHPUnit, PHP testing, unit tests, assertSame, data providers, expectException, test doubles, fakes, Pest, composer require --dev, phpunit.xml, did you run this code, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="PHPUnit, once the pieces are small enough to test. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="testing">Testing</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The harness in the last lesson had five checks in an array. It works, and it'll keep
+            working until there are fifty, and you want to know which one failed and what came back
+            instead, and run only the ones about links. That's what a testing framework is for. The
+            hard part, getting the code into pieces small enough to test, you've already done. This
+            is the easy part.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-test">What's a Test?</heading>
+        <p>
+            A small method that runs a piece of your code and checks one thing about the result.
+            Each test has the same three parts, often in this order, with a blank line between:
+        </p>
+        <list>
+            <li><strong>Arrange</strong>: make what the code needs.</li>
+            <li><strong>Act</strong>: call it.</li>
+            <li>
+                <strong>Assert</strong>: check the result. <cde>assertSame($expected, $actual)</cde>
+                fails the test if they aren't identical.
+            </li>
+        </list>
+        <p>
+            A test that checks one small piece on its own, with nothing else running, is a unit
+            test. That's most of what you'll write.
+        </p>
+
+        <heading h3 id="phpunit">PHPUnit</heading>
+        <p>
+            The standard testing framework for PHP, installed with Composer. Tests are classes that
+            extend <cde>TestCase</cde>, in a <cde>tests</cde> folder; each method whose name starts
+            with <cde>test</cde> is one test. Pest is a popular alternative, built on top of
+            PHPUnit, with a shorter way of writing the same tests. Learn PHPUnit first, and Pest
+            reads easily.
+        </p>
+
+        <heading h3 id="fakes">Fakes</heading>
+        <p>
+            A stand-in for a dependency, so a test doesn't need the real thing. The
+            <cde>MemoryMailer</cde> from
+            <lnk to="/php/dependency-injection">Dependency Injection</lnk> is one: it keeps emails
+            in a list, and the test reads the list. This is where injection pays for itself. A class
+            that makes its own mailer can't be handed a fake.
+        </p>
+
+        <side-story title="Thirty-Seven Seconds">
+            In 1996, the first Ariane 5 rocket broke up about 37 seconds after launch. Part of its
+            guidance software was reused from the smaller Ariane 4, where it had worked for years.
+            The new rocket was faster sideways, a number got too big to fit where the code put it,
+            and the guidance system shut down. The inquiry found that this part of the software had
+            not been tested with the new rocket's flight path. It had worked before, so everyone
+            assumed it still did.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                You run <cde>vendor/bin/phpunit</cde>. It reads <cde>phpunit.xml</cde> to find the
+                tests folder and the autoloader.
+            </li>
+            <li>It loads every test class in the folder.</li>
+            <li>
+                For each test method, it makes a fresh object of the class and calls the method, so
+                no test can leave anything behind for the next one.
+            </li>
+            <li>
+                An assertion that fails stops that test and records what was expected and what came
+                back. The rest still run.
+            </li>
+            <li>
+                At the end, it prints a dot for each pass and an <cde>F</cde> for each failure, the
+                details of every failure, and exits 0 if everything passed, 1 if anything didn't.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Start a folder with the code from the last two lessons in <cde>src</cde>:
+            <cde>verification.php</cde> from
+            <lnk to="/php/two-dollar-test-harnesses">Two-Dollar Test Harnesses</lnk>, and
+            <cde>Mailer.php</cde>, <cde>MemoryMailer.php</cde> and <cde>Welcome.php</cde> from
+            Dependency Injection. Then <cde>composer.json</cde>:
+        </p>
+        <code-block example="testing/composer.json" />
+        <p>
+            PHPUnit is in <cde>require-dev</cde>: it's for development, and
+            <cde>composer install --no-dev</cde> leaves it off the server.
+            <cde>autoload.files</cde> loads <cde>verification.php</cde>, which has functions, not a
+            class. Then <cde>phpunit.xml</cde>, which tells PHPUnit where things are:
+        </p>
+        <code-block example="testing/phpunit.xml" />
+        <p>Install:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <p>Now the tests. The link, in <cde>tests/VerificationTest.php</cde>:</p>
+        <code-block example="testing/tests/VerificationTest.php" />
+        <p>
+            <cde>tamperedLinks()</cde> is a data provider: one test, run once for each link in the
+            list. Every one is a link someone edited, or made up, and
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: each has to come back <cde>null</cde>. Then the welcome email, in
+            <cde>tests/WelcomeTest.php</cde>, with the fake mailer:
+        </p>
+        <code-block example="testing/tests/WelcomeTest.php" />
+        <p>Run them, in the course's PHP:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli vendor/bin/phpunit</code-block>
+        <p>
+            Thirteen dots and <cde>OK (13 tests, 15 assertions)</cde>: nine test methods, one of
+            them run five times, and no mail server anywhere. Now break the code the way you did in
+            the last lesson. In <cde>src/verification.php</cde>, change
+            <cde>if ((int) $expires &lt; $now) {</cde> to <cde>if (false) {</cde>, and run the tests
+            again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>There was 1 failure:
+
+1) Tests\VerificationTest::testAnExpiredLinkIsRefused
+Failed asserting that 'ada@example.com' is null.
+
+/app/tests/VerificationTest.php:31
+
+FAILURES!
+Tests: 13, Assertions: 15, Failures: 1.</code-block>
+        <p>
+            Which test, what it expected, what came back, and the line. Put the check back. Add
+            <cde>--testdox</cde> to see every test's name as a sentence, or
+            <cde>--filter Expired</cde> to run only the tests with that in their name.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>composer require --dev phpunit/phpunit</cde> adds it to a project.</li>
+            <li>
+                <cde>assertSame()</cde> compares with <cde>===</cde>.
+                <cde>assertEquals()</cde> compares with <cde>==</cde>, and lets <cde>'1'</cde> pass
+                for <cde>1</cde>. Use <cde>assertSame()</cde> unless you mean otherwise.
+            </li>
+            <li>
+                <cde>assertNull()</cde>, <cde>assertTrue()</cde>, <cde>assertCount()</cde>,
+                <cde>assertStringContainsString()</cde>: the rest of the everyday set.
+            </li>
+            <li>
+                <cde>$this-&gt;expectException(InvalidArgumentException::class);</cde> before the
+                call that should throw.
+            </li>
+            <li>
+                <cde>#[DataProvider('tamperedLinks')]</cde> runs a test once per row. The provider
+                is a <cde>public static</cde> method, because PHPUnit requires it: one of the places
+                a library gives you no choice.
+            </li>
+            <li>
+                <cde>setUp()</cde>, if a class has one, runs before every test in it, for shared
+                arranging.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A test that has never failed might not test anything.</strong> An assertion
+                on the wrong variable, or a test method PHPUnit never ran because of a typo in its
+                name, passes forever. Break the code once and watch the test catch it, as in the Try
+                It.
+            </li>
+            <li>
+                <strong
+                    >Tests that need the time, the network or a database are slow and flaky.</strong>
+                Hand those in, as in the last two lessons, and test the logic on its own. Keep a few
+                bigger tests for the wiring, and run them less often.
+            </li>
+            <li>
+                <strong>Statics and globals leak between tests.</strong> PHPUnit makes a fresh test
+                object every time, but a static property set in one test is still set in the next,
+                as <lnk to="/php/constants-and-statics">Constants and Statics</lnk> warned.
+            </li>
+            <li>
+                <strong>Test what it does, not how.</strong> A test that checks which private method
+                ran breaks every time you tidy the code, though nothing changed for the caller.
+                Check the result.
+            </li>
+            <li>
+                <strong>Passing tests aren't proof.</strong> They prove the cases you thought of.
+                The bugs are usually in the ones you didn't, which is why the input tests try links
+                that are edited, empty and the wrong type.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Write the test for the bug first">
+            <p>
+                When a bug report comes in, write a test that shows the bug before you touch the
+                code. Watch it fail. Then fix the code and watch it pass. You've proved the fix
+                works, and that bug can never quietly come back.
+            </p>
+        </two-dollars>
+
+        <p>
+            Half the tests in this lesson were about links someone tampered with. Everything that
+            comes from outside your code is like that. Next, in Security: never trust input.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/never-trust-input">Next: Never Trust Input &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

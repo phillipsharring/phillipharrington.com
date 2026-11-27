@@ -1,0 +1,234 @@
+<layout name="default" title="Sending a File" />
+<page-head>
+    <meta
+        name="description"
+        content="How PHP hands someone a download: Content-Type, Content-Disposition and the download name, readfile(), and streaming a big file instead of loading it all into memory. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP download, Content-Disposition, attachment, filename, filename*, readfile, file_get_contents memory, streaming, Content-Length, memory_limit, X-Accel-Redirect, path traversal, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Downloads, and streaming a big file instead of loading it. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="sending-a-file">Sending a File</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A web server can hand out any file in the document root by itself. The files that need
+            PHP are the ones it shouldn't hand out to just anyone: a report for logged-in users, an
+            invoice that belongs to one customer, an export built on request. PHP checks who's
+            asking, then sends the file. <lnk to="/php/content-types">Content Types</lnk> showed the
+            headers that turn a response into a download. This lesson sends a real file with them,
+            including one too big to fit in memory.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-download">What's a Download?</heading>
+        <p>
+            An ordinary response, labeled so the browser saves it instead of showing it. Two headers
+            do the labeling:
+        </p>
+        <list>
+            <li>
+                <strong>Content-Type</strong>: what the file is, like <cde>text/csv</cde> or
+                <cde>application/pdf</cde>.
+            </li>
+            <li>
+                <strong>Content-Disposition</strong>: <cde>attachment</cde> means "save this," and
+                <cde>filename="..."</cde> is the name to save it as. <cde>inline</cde> means "show
+                it if you can."
+            </li>
+        </list>
+        <p>
+            A third, <cde>Content-Length</cde>, gives the size, so the browser can show a progress
+            bar.
+        </p>
+
+        <heading h3 id="the-download-name">The Download Name</heading>
+        <p>
+            The name in <cde>Content-Disposition</cde> doesn't have to match the file on disk.
+            Usually it shouldn't: on disk the file can be <cde>4f1c9a.csv</cde>, and the visitor
+            gets <cde>sales-report.csv</cde>. A name with characters outside ASCII goes in a second
+            form, <cde>filename*</cde>, written as UTF-8 and percent-encoded, with a plain
+            <cde>filename</cde> beside it for old browsers.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                A request asks for a file, by some name or id in the query string, like
+                <cde>?file=report</cde>.
+            </li>
+            <li>
+                PHP decides whether to send it: whether the file is one it offers, and whether this
+                visitor may have it.
+            </li>
+            <li>It sends the headers: the type, the disposition and name, the size.</li>
+            <li>
+                It sends the file itself, a piece at a time, straight from the disk to the
+                connection.
+            </li>
+        </ol>
+        <p>
+            Step two is where downloads go wrong. The name in the query string is input, and
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>. Build a path from it, and someone will ask for <cde>../.env</cde>. Look it up in a
+            list of the files you offer instead, and anything not on the list is a 404.
+        </p>
+        <p>
+            Step four is where they get slow. Reading the whole file into a string first means
+            holding all of it in memory, for every download running at once. Sending it a piece at a
+            time means each download needs only a few kilobytes.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A folder with a <cde>files</cde> folder (the files to send, outside the web root) and a
+            <cde>public</cde> folder (the web root). In <cde>files</cde>, put any small CSV as
+            <cde>report.csv</cde> and <cde>menu.csv</cde>. Then a script to make a big one,
+            <cde>make-big-file.php</cde>:
+        </p>
+        <code-block example="sending-a-file/make-big-file.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php make-big-file.php</code-block>
+        <p>Now <cde>public/download.php</cde>, which sends any file on its list:</p>
+        <code-block example="sending-a-file/public/download.php" />
+        <p>
+            And <cde>public/all-at-once.php</cde>, which sends the big file the easy way, by reading
+            it into a string:
+        </p>
+        <code-block example="sending-a-file/public/all-at-once.php" />
+        <p>
+            Serve <cde>public</cde>, with PHP's memory limit turned down to 16 MB, so a 40 MB file
+            can't fit:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -d memory_limit=16M -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000/download.php?file=report</cde> in a browser: it saves
+            <cde>sales-report.csv</cde>, though the file on disk is <cde>report.csv</cde>. Then,
+            from a second terminal, look at the menu's headers:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -I 'http://localhost:8000/download.php?file=menu'</code-block>
+        <p>
+            <cde>filename="caf_-menu.csv"</cde> for old browsers, and
+            <cde>filename*=UTF-8''caf%C3%A9-menu.csv</cde> for everything else: the é, as its two
+            UTF-8 bytes. Now the big one, both ways:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -o everyone.csv 'http://localhost:8000/download.php?file=big'
+curl 'http://localhost:8000/all-at-once.php' | tail -c 300</code-block>
+        <p>
+            The first saves all 40 MB, under a 16 MB limit, because <cde>readfile()</cde> never
+            holds more than a piece of it. The second dies with
+            <cde>Allowed memory size of 16777216 bytes exhausted</cde>: it tried to hold the whole
+            file at once. Last, go after a file that isn't on the list:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i 'http://localhost:8000/download.php?file=../.gitignore'</code-block>
+        <p>A 404. The list is the only way in.</p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>header('Content-Disposition: attachment; filename="report.csv"');</cde> makes
+                it a download, with a name.
+            </li>
+            <li>
+                <cde>readfile($path)</cde> sends a file a piece at a time. <cde>fpassthru()</cde>
+                does the same for a file you've already opened.
+            </li>
+            <li><cde>filesize($path)</cde> for the <cde>Content-Length</cde> header.</li>
+            <li><cde>rawurlencode()</cde> builds the percent-encoded <cde>filename*</cde>.</li>
+            <li>
+                For a file you build as you go, like an export from the database, open
+                <cde>php://output</cde> with <cde>fopen()</cde> and write it a row at a time with
+                <cde>fputcsv()</cde>. The Exporting Data project does this.
+            </li>
+            <li>
+                <cde>file_get_contents()</cde> is fine for small files you read in your own code.
+                Don't use it to send big ones.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>An open buffer undoes the streaming.</strong> If a buffer from
+                <lnk to="/php/output-buffering">Output Buffering</lnk> is open, everything
+                <cde>readfile()</cde> sends piles up in it, in memory. That's why the example closes
+                every buffer first.
+            </li>
+            <li>
+                <strong>A name from input is a path from input.</strong> Never build a path out of
+                what's in the query string. <cde>basename()</cde> stops <cde>../</cde>, but still
+                lets anyone ask for any file in the folder, including other people's. Use a list of
+                what you offer, or ids from your database that you check against the visitor.
+            </li>
+            <li>
+                <strong>The download name goes in a header.</strong> If it ever comes from a user,
+                like an uploaded file's original name, strip the quotes and anything that isn't a
+                plain character from the <cde>filename</cde> part. PHP's <cde>header()</cde> refuses
+                a line break, but a stray quote can still mangle the header.
+            </li>
+            <li>
+                <strong>Anything after the file is part of the file.</strong> A warning, a blank
+                line after a closing <cde>?&gt;</cde>, a footer from an include: it all lands in the
+                download, and the CSV or PDF comes out broken.
+            </li>
+            <li>
+                <strong>Big files take time.</strong> On Linux, PHP's
+                <cde>max_execution_time</cde> doesn't count time spent sending, but a proxy in the
+                middle may give up on a slow download. For really big files, let the web server do
+                the sending.
+            </li>
+        </list>
+
+        <side-story title="Resume Where You Left Off">
+            HTTP/1.1, published in 1997, added range requests: a client can ask for "bytes from here
+            to there" of a file instead of all of it. In the dial-up years, that's what let a
+            download that died at 90% pick up at 90% instead of starting over. Web servers answer
+            range requests for the files they serve themselves. A PHP script that calls
+            <cde>readfile()</cde> doesn't, unless you write that part yourself.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Let nginx carry it">
+            <p>
+                Behind nginx, PHP can check the visitor, then answer with one header,
+                <cde>X-Accel-Redirect: /protected/report.csv</cde>, and no body. nginx sends the
+                file itself, from a location marked <cde>internal</cde> that visitors can't ask for
+                directly, with range requests and all. Apache has the same idea as
+                <cde>X-Sendfile</cde>, through a module.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's the last lesson on what a script sends. The rest of this section is about how to
+            organize the code that does the sending. Next: classes and objects.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/classes-and-objects">Next: Classes and Objects &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

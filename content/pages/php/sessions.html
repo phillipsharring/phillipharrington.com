@@ -1,0 +1,186 @@
+<layout name="default" title="Sessions" />
+<page-head>
+    <meta
+        name="description"
+        content="How a site remembers you from one page to the next: a cookie with an id in it, and a file on the server with your data. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP sessions, session_start, $_SESSION, PHPSESSID, session id, session files, use_strict_mode, session locking, stateless HTTP, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A cookie with an id, and a file on the server. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="sessions">Sessions</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            HTTP forgets you the moment it answers. Every request arrives alone, with no memory of
+            the one before. <lnk to="/php/cookies">Cookies</lnk> gave the browser a way to remember
+            a little. Sessions put the memory on the server instead, where the visitor can't read it
+            or change it, and hand the browser only a ticket.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-session">What's a Session?</heading>
+        <p>
+            Two things. A cookie, usually called <cde>PHPSESSID</cde>, holding a long random id. And
+            a file on the server, named after that id, holding whatever you saved for that visitor.
+            The cookie is the ticket. The file is the coat.
+        </p>
+        <p>
+            The id is all the browser ever has. What's in the session, a user id, a cart, a message
+            to show on the next page, stays on the server.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Your code calls <cde>session_start()</cde>.</li>
+            <li>
+                PHP looks for the session cookie in the request. If there isn't one, it makes a new
+                random id and sends it back in a <cde>Set-Cookie</cde> header.
+            </li>
+            <li>
+                It opens the file for that id, reads it, and puts what's in it into
+                <cde>$_SESSION</cde>, an ordinary array.
+            </li>
+            <li>Your code reads and changes <cde>$_SESSION</cde>.</li>
+            <li>When the script ends, PHP writes <cde>$_SESSION</cde> back to the file.</li>
+        </ol>
+        <p>
+            The id arrives in a cookie, and <strong>a cookie is input.</strong> Anyone can send any
+            id they like. What they can't do is change what's in the file, so the data you put in a
+            session is yours. The id is the only part to doubt.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>A page that counts your visits. In a folder, make <cde>index.php</cde>:</p>
+        <code-block example="sessions/index.php" />
+        <p>
+            Start it with a name this time, <cde>--name sessions</cde>, so you can look inside the
+            container in a minute:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it --name sessions -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and reload a few times: the count goes up. From a
+            second terminal, do it with curl, keeping the cookie in a jar file between requests:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -c jar.txt -b jar.txt http://localhost:8000
+curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
+        <p>
+            Visit number 2. Now look at the other half of the session, the file on the server. Use
+            the id the page printed:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker exec sessions cat /tmp/sess_YOUR_ID</code-block>
+        <p>
+            <cde>visits|i:2;</cde>: your count, in PHP's own format, on the server's disk. The
+            cookie in <cde>jar.txt</cde> holds only the id. Now send an id you made up:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -b 'PHPSESSID=madeup' http://localhost:8000</code-block>
+        <p>
+            Visit number 1, and a fresh id in <cde>Set-Cookie</cde>. That's
+            <cde>use_strict_mode</cde> at work: PHP refuses an id it didn't make.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> not even the
+            ticket.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>session_start()</cde> before you use <cde>$_SESSION</cde>, and before any
+                output, because it may send a header. It takes an array of settings, as in the
+                example.
+            </li>
+            <li>
+                <cde>$_SESSION</cde> is an array: set, read and <cde>unset()</cde> keys like any
+                other.
+            </li>
+            <li>
+                <cde>session_regenerate_id(true)</cde> gives the visitor a new id and throws the old
+                one away. Do it whenever someone logs in.
+            </li>
+            <li>
+                <cde>session_destroy()</cde> deletes the file. To log someone out, empty
+                <cde>$_SESSION</cde>, destroy the session, and expire the cookie.
+            </li>
+            <li>
+                <cde>session_write_close()</cde> saves and closes the session early, once you're
+                done changing it.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The id is the key to the account.</strong> Whoever has it is that visitor,
+                as far as PHP knows. That's why the cookie needs its flags, and why a login gets a
+                new id. <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>, in
+                Security, is all about it.
+            </li>
+            <li>
+                <strong>Sessions lock.</strong> While one request has a visitor's session open, the
+                next request from the same visitor waits for it. A slow page can stall every other
+                tab they have open. Call <cde>session_write_close()</cde> when you're done writing.
+            </li>
+            <li>
+                <strong>Files live on one server.</strong> Behind a load balancer, from
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>, the next request may
+                land on a server that has never heard of you. Busy sites keep sessions in a database
+                or a cache like Redis instead.
+            </li>
+            <li>
+                <strong>Sessions expire.</strong> By default PHP treats a session as garbage after
+                1,440 seconds, 24 minutes, without a visit, and cleans it up when it gets around to
+                it. Someone who walks away from a long form can come back to nothing.
+            </li>
+        </list>
+
+        <side-story title="Sessions in the URL">
+            Browsers have always been able to refuse cookies, so PHP once offered a fallback: it
+            could add the session id to every link on the page, as <cde>?PHPSESSID=...</cde>. The id
+            then showed up in bookmarks, in server logs, and in the Referer header sent to other
+            sites, and anyone who saw it could use it. The setting is off by default now, and should
+            stay that way.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Keep the id, not the record">
+            <p>
+                Put the user's id in the session, not their whole row from the database. Look the
+                rest up on each request. When they change their name, or you lock their account, the
+                next page knows, instead of trusting a copy from an hour ago.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>session_start()</cde> has to come before any output, because headers go first. PHP
+            can hold output back so you can change your mind. Next: output buffering.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/output-buffering">Next: Output Buffering &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

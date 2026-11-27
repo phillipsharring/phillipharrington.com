@@ -1,0 +1,232 @@
+<layout name="default" title="Functions" />
+<page-head>
+    <meta
+        name="description"
+        content="Writing your own PHP functions: parameters and their types, return types, defaults, named arguments, nullable returns, void, any number of arguments, and passing functions around. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP functions, function parameters, return types, default arguments, named arguments, nullable types, void, variadic functions, first-class callable, anonymous functions, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Writing your own PHP functions. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="functions">Functions</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            You've been calling PHP's functions since the first lesson: <cde>strlen()</cde>,
+            <cde>htmlspecialchars()</cde>, <cde>array_map()</cde>. Writing your own is how you stop
+            repeating yourself, and how you give a piece of work a name.
+            <lnk to="/php/scope">Scope</lnk> already showed the most important rule: a function sees
+            only what you hand it. This lesson is the rest of the line that starts with
+            <cde>function</cde>.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-function">What's a Function?</heading>
+        <p>A named piece of code that takes values in and hands one back:</p>
+        <!-- prettier-ignore -->
+        <code-block>function format_cents(int $cents): string
+{
+    return '$' . number_format($cents / 100, 2);
+}</code-block>
+        <list>
+            <li>
+                <cde>format_cents</cde> is the name. You call it with <cde>format_cents(1999)</cde>.
+            </li>
+            <li>
+                <cde>(int $cents)</cde> is the parameter list: what goes in, each with a type and a
+                name.
+            </li>
+            <li><cde>: string</cde> is the return type: what comes out.</li>
+            <li><cde>return</cde> hands the value back and ends the function, right there.</li>
+        </list>
+
+        <heading h3 id="parameters">Parameters</heading>
+        <list>
+            <li>
+                <strong>Defaults:</strong> <cde>string $greeting = 'Hello'</cde> can be left off
+                when calling. Put parameters with defaults after the ones without.
+            </li>
+            <li>
+                <strong>Named arguments:</strong> <cde>greet(name: 'Carol', greeting: 'Hi')</cde>
+                says which value is which, in any order. Since PHP 8.0.
+            </li>
+            <li>
+                <strong>Any number:</strong> <cde>int ...$prices</cde> collects every remaining
+                argument into an array.
+            </li>
+            <li>
+                <strong>Copies:</strong> each parameter is a copy of what was passed. Changing it
+                inside doesn't change the caller's variable.
+            </li>
+        </list>
+
+        <heading h3 id="return-types">Return Types</heading>
+        <list>
+            <li>
+                <cde>?int</cde>: an int, or <cde>null</cde>. Useful for "here's the answer, or there
+                isn't one."
+            </li>
+            <li>
+                <cde>void</cde>: returns nothing. It does something instead, like writing a log
+                line.
+            </li>
+            <li>
+                <cde>never</cde>: never returns at all, because it always stops the script or
+                throws.
+            </li>
+        </list>
+
+        <heading h3 id="functions-as-values">Functions as Values</heading>
+        <p>
+            A function can be handed to another function. <cde>strlen(...)</cde>, with three dots,
+            is <cde>strlen</cde> itself, not a call to it, so
+            <cde>array_map(strlen(...), $words)</cde> runs it on every word. An arrow function,
+            <cde>fn(int $c): int =&gt; $c * 2</cde>, is a small one written right where it's needed.
+        </p>
+
+        <side-story title="The Wheeler Jump">
+            Reusable pieces of program are older than programming languages. On Cambridge's EDSAC,
+            one of the first stored-program computers, David Wheeler worked out how to jump into a
+            shared piece of code and come back to where you left off; it was called the Wheeler
+            jump, and it's the subroutine. A few years later, in 1952, Grace Hopper's A-0 system
+            built programs by pulling numbered subroutines from a library and stitching them
+            together, which is why it's often called the first compiler.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When your code calls <cde>format_cents(1999)</cde>:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                PHP finds the function. It can be defined anywhere in the file, even below the call.
+            </li>
+            <li>
+                It checks each argument against the parameter's type: under strict_types, it must
+                match exactly, or it's a <cde>TypeError</cde>.
+            </li>
+            <li>It fills in defaults for anything left off.</li>
+            <li>It runs the body in a fresh scope, with the parameters as its variables.</li>
+            <li>
+                At <cde>return</cde>, it checks the value against the return type, and hands it
+                back. The call is replaced by that value, so
+                <cde>echo format_cents(1999);</cde> prints <cde>$19.99</cde>.
+            </li>
+        </ol>
+        <p>
+            The best functions are the ones where that's the whole story: values in, one value out,
+            nothing else touched. You can read them on their own, test them on their own, and trust
+            them anywhere. Some functions have to change something, like writing a file or sending
+            an email. Keep those separate, and keep them small.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A handful of functions, and one call that breaks the rules. In a folder, make
+            <cde>functions.php</cde>:
+        </p>
+        <code-block example="functions/functions.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php functions.php</code-block>
+        <p>
+            Each line of output comes from one call. <cde>quantity_from()</cde> is the pattern for
+            input: <strong>never trust input</strong>, so it checks the type and the range, and
+            gives back a clean int or <cde>null</cde>. <cde>'3'</cde> passes; <cde>'30'</cde>,
+            <cde>'three'</cde> and an array don't. The code that calls it only has to check for
+            <cde>null</cde>.
+        </p>
+        <p>
+            The last line passes the string <cde>'1999'</cde> to <cde>format_cents()</cde>, and
+            strict_types stops it with a <cde>TypeError</cde> that names the function, the
+            parameter, and both lines involved.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>function name(type $param): type { ... }</cde>: the shape of every function.
+            </li>
+            <li><cde>return</cde>: hand back a value and stop.</li>
+            <li>
+                <cde>?type</cde>, <cde>void</cde>, <cde>never</cde>, <cde>mixed</cde>, and unions
+                like <cde>int|string</cde>, from <lnk to="/php/types-of-types">Types of Types</lnk>.
+            </li>
+            <li><cde>name: value</cde> when calling, for named arguments.</li>
+            <li><cde>...$rest</cde>: any number of arguments, as an array.</li>
+            <li>
+                <cde>strlen(...)</cde>: a function as a value. <cde>fn() =&gt; ...</cde>: a small
+                one on the spot.
+            </li>
+            <li><cde>function_exists('name')</cde>: is it defined?</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A function with no return returns <cde>null</cde>.</strong> Forget the
+                <cde>return</cde>, and the caller gets <cde>null</cde>. A return type catches that:
+                <cde>: string</cde> with no return is a <cde>TypeError</cde>.
+            </li>
+            <li>
+                <strong>Booleans in a row are unreadable.</strong>
+                <cde>make_user('Alice', true, false, true)</cde> means nothing to the next reader.
+                Use named arguments, or split it into separate functions.
+            </li>
+            <li>
+                <strong
+                    >An <cde>&amp;</cde> in front of a parameter changes the caller's
+                    variable.</strong>
+                <cde>function add_tax(int &amp;$cents)</cde> works on the original, not a copy.
+                PHP's own <cde>sort()</cde> does this. Don't, in your own functions: return the new
+                value instead.
+            </li>
+            <li>
+                <strong>You can't define the same name twice.</strong> Including a file of functions
+                twice is a fatal error, "Cannot redeclare." <lnk to="/php/includes">Includes</lnk>
+                has the fix.
+            </li>
+            <li>
+                <strong>Names are case-insensitive.</strong> <cde>Format_Cents()</cde> calls
+                <cde>format_cents()</cde>. Variables aren't. Write a name the same way every time.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name the flags at the call">
+            <p>
+                Named arguments fix PHP's own functions too.
+                <cde>htmlspecialchars($text, double_encode: false)</cde> skips the two arguments you
+                don't care about, and the call says what it does. The names are the parameter names
+                in the manual's signature, so <lnk to="/php/documentation">Documentation</lnk> is
+                where you find them.
+            </p>
+        </two-dollars>
+
+        <p>
+            When a function gets something it can't handle, PHP tells you: a warning, a
+            <cde>TypeError</cde>, a fatal error. Where those messages go, and where they must never
+            go, is next: Errors and the Error Log.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/errors-and-the-error-log">Next: Errors and the Error Log &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

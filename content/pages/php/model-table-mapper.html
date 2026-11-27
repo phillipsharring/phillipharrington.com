@@ -1,0 +1,195 @@
+<layout name="default" title="Model, Table, Mapper" />
+<page-head>
+    <meta
+        name="description"
+        content="Three small classes for data in a database: the model holds one thing and its rules, the table runs the SQL, and the mapper turns rows into models and back. Why splitting them pays, and how it compares to Active Record. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="data mapper, table data gateway, model class, PHP PDO, domain model, Active Record, repository pattern, ORM, readonly class, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The model, the SQL, and the code between them. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="model-table-mapper">Model, Table, Mapper</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            CRUD's <cde>src/notes.php</cde> ran the SQL and handed back rows as plain arrays. That's
+            fine for one page. Once a note travels through an app, you want it to be a real object
+            with rules, and you want the SQL in one place. MVC called all of that "the model." This
+            lesson splits it into three parts, each with one job.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-model">What's the Model?</heading>
+        <p>
+            A class for one thing: a <cde>Note</cde>, with typed properties and the rules that make
+            it valid. A note is 1 to 500 characters, so its constructor refuses anything else. It
+            has never heard of a database. You can make one, change one and test one with no
+            database anywhere.
+        </p>
+
+        <heading h2 id="the-table">What's the Table?</heading>
+        <p>
+            A class for one database table: <cde>NotesTable</cde>, holding the connection and the
+            SQL. Insert, find, list, update, delete. It speaks in rows, plain arrays with the
+            table's column names, and knows nothing about <cde>Note</cde>.
+        </p>
+
+        <heading h2 id="the-mapper">What's the Mapper?</heading>
+        <p>
+            The translator between them: <cde>NoteMapper</cde> turns a row into a <cde>Note</cde>,
+            and a <cde>Note</cde> into a row. That's where <cde>created_at</cde> the string becomes
+            <cde>createdAt</cde> the <cde>DateTimeImmutable</cde>, and where column names meet
+            property names. No SQL, and no rules of its own.
+        </p>
+
+        <side-story title="Patterns With Names">
+            Martin Fowler's <em>Patterns of Enterprise Application Architecture</em> (2002) named
+            most of the ways to connect objects to tables. A class for a table's SQL is a Table Data
+            Gateway. A class that moves data between objects and the database while keeping them
+            independent is a Data Mapper. A class that is a row and saves itself is Active Record,
+            which is what Rails and Laravel's Eloquent use.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>Saving a note:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Your code makes a <cde>Note</cde>. If it breaks a rule, it never exists.</li>
+            <li>The mapper turns it into a row.</li>
+            <li>The table inserts the row, with a prepared statement.</li>
+        </ol>
+        <p>And reading one is the same, backwards:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The table finds the row.</li>
+            <li>The mapper turns it into a <cde>Note</cde>, which checks its rules again.</li>
+            <li>Your code gets a <cde>Note</cde>, never a raw row.</li>
+        </ol>
+        <p>
+            Each part changes for one reason. A new column changes the table and the mapper. A new
+            rule changes the model. Moving to another database changes only the table.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The notes from CRUD, as three classes. In a folder, make <cde>compose.yml</cde>, with
+            MySQL and a PHP container to run a script:
+        </p>
+        <code-block example="model-table-mapper/compose.yml" />
+        <p>
+            The same two-line <cde>Dockerfile</cde> as CRUD, the connection in
+            <cde>config/db.php</cde>, and <cde>init.sql</cde>:
+        </p>
+        <code-block example="model-table-mapper/Dockerfile" />
+        <code-block example="model-table-mapper/config/db.php" />
+        <code-block example="model-table-mapper/init.sql" />
+        <p><cde>composer.json</cde>, for the autoloader:</p>
+        <code-block example="model-table-mapper/composer.json" />
+        <p>Now the three. The model, <cde>src/Note.php</cde>:</p>
+        <code-block example="model-table-mapper/src/Note.php" />
+        <p>The table, <cde>src/NotesTable.php</cde>:</p>
+        <code-block example="model-table-mapper/src/NotesTable.php" />
+        <p>The mapper, <cde>src/NoteMapper.php</cde>:</p>
+        <code-block example="model-table-mapper/src/NoteMapper.php" />
+        <p>And <cde>demo.php</cde>, which puts them to work:</p>
+        <code-block example="model-table-mapper/demo.php" />
+        <p>Generate the autoloader, run the demo, and clean up:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install
+docker compose run --rm php
+docker compose down -v</code-block>
+        <p>
+            The note goes in and comes back as a <cde>Note</cde>, emoji and all. A blank body is
+            refused before it gets near the table. Then the interesting part: the demo slips a blank
+            row straight into the database with SQL, the way a bug or an old script might, and the
+            mapper won't turn it into a <cde>Note</cde>. The rows in your own database are input
+            too. <lnk to="/php/never-trust-input">Never trust input</lnk>, even from yourself, and
+            the model's constructor is where that's enforced, every time.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>final readonly class</cde> (PHP 8.2) for models: properties set once in the
+                constructor, never changed. A change makes a new object, like <cde>withBody()</cde>.
+            </li>
+            <li>
+                Constructor promotion, <cde>public function __construct(public string $body)</cde>,
+                keeps a model short. See <lnk to="/php/modern-php">Modern PHP</lnk>.
+            </li>
+            <li>
+                The table takes the <cde>PDO</cde> in its constructor, never makes its own. That's
+                <lnk to="/php/dependency-injection">Dependency Injection</lnk>, and it's how a test
+                can hand it a test database.
+            </li>
+            <li>
+                <cde>DateTimeImmutable::createFromFormat()</cde> to read a
+                <cde>DATETIME</cde> column, and <cde>-&gt;format('Y-m-d H:i:s')</cde> to write one.
+            </li>
+            <li>
+                <cde>$mapper-&gt;toModel(...)</cde>, with the three dots, makes a function you can
+                pass to <cde>array_map()</cde> to map a whole list of rows at once.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Rules in the table are rules in the wrong place.</strong> If
+                <cde>NotesTable::insert()</cde> checks the length, then a <cde>Note</cde> made
+                anywhere else can still be invalid. The model owns its rules.
+            </li>
+            <li>
+                <strong>Keep the database's rules too.</strong> <cde>NOT NULL</cde> and
+                <cde>VARCHAR(500)</cde> are a second line of defense for whatever skips your PHP.
+                They aren't instead of the model's check.
+            </li>
+            <li>
+                <strong>Active Record is simpler, until it isn't.</strong> A model that saves itself
+                (<cde>$note-&gt;save()</cde>) is less code at first. It also means every model needs
+                a database to exist, which makes testing it harder and ties its rules to its
+                storage.
+            </li>
+            <li>
+                <strong>You'll also hear "repository."</strong> Usually it's a class that hides a
+                table and a mapper behind methods like <cde>find(int $id): ?Note</cde>. Same parts,
+                one front.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Test the model with no database">
+            <p>
+                Because <cde>Note</cde> has never heard of MySQL, its tests need nothing: make one
+                with a blank body, expect the exception. That's a test that runs in a millisecond.
+                Put as many rules as you can in the model, and most of your tests get that fast.
+            </p>
+        </two-dollars>
+
+        <p>
+            The CRUD page answered browsers with HTML. When the client is a program instead, the
+            same four operations get a stricter set of conventions. Next: REST.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/rest">Next: REST &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

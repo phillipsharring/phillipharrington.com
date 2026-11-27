@@ -1,0 +1,193 @@
+<layout name="default" title="Logging" />
+<page-head>
+    <meta
+        name="description"
+        content="Give an app a way to tell you what it's doing: Monolog from Composer, one line per event, a request id on every line, uncaught exceptions logged in full while visitors see an apology, and input kept where it can't forge a log line. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP logging, Monolog, PSR-3, log levels, request id, X-Request-Id, set_exception_handler, log injection, Composer, tail -f, PHP project, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Give an app a way to tell you what it's doing. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="logging">Logging</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The server's access log says a request came in. PHP's error log says something broke.
+            Neither says what your app was doing: who searched for what, which page threw, what it
+            was in the middle of. That's your own log, and it's the first thing you'll open when
+            someone says "it didn't work."
+        </p>
+        <p>
+            You'll build a small app that writes every event to <cde>logs/app.log</cde> with
+            Monolog, the logging library most PHP projects use. Each line gets a level and a request
+            id, and anything that blows up is logged in detail while the visitor gets a polite
+            apology with the id in it.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/access-and-error-logs">Access and Error Logs</lnk> and
+                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>: the logs you
+                already have.
+            </li>
+            <li>
+                <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>: installing
+                Monolog.
+            </li>
+            <li>
+                <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk>: the ones nobody caught.
+            </li>
+            <li><lnk to="/php/tools#reading-logs">Reading Logs</lnk>: <cde>tail -f</cde>.</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="install-monolog">Install Monolog</heading>
+        <p>
+            In a new project folder, add a <cde>.gitignore</cde> first, so the installed code and
+            the logs never go into git:
+        </p>
+        <code-block example="project-logging/.gitignore" />
+        <p>Then ask Composer for Monolog:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require monolog/monolog:^3</code-block>
+        <p>
+            That writes <cde>composer.json</cde> and <cde>composer.lock</cde>, which you commit, and
+            <cde>vendor/</cde>, which you don't. Anyone who clones the project runs
+            <cde>composer install</cde> to get the same versions.
+        </p>
+
+        <heading h3 id="set-up-the-logger">Set Up the Logger</heading>
+        <p><cde>src/bootstrap.php</cde> builds the logger once, for every request:</p>
+        <code-block example="project-logging/src/bootstrap.php" />
+        <list>
+            <li>
+                <strong>A logger and a handler.</strong> The <cde>Logger</cde> is what your code
+                talks to; the <cde>StreamHandler</cde> decides where lines go, here a file outside
+                <cde>public</cde>. <cde>Level::Debug</cde> means "write everything." On a live site
+                you'd raise it to <cde>Info</cde> or <cde>Warning</cde>.
+            </li>
+            <li>
+                <strong>A request id.</strong> Sixteen random hex characters, made fresh for each
+                request. A processor adds it to every line, and the <cde>X-Request-Id</cde> header
+                sends it back, so one request's lines can be picked out of thousands.
+            </li>
+            <li>
+                <strong>An exception handler.</strong> <cde>set_exception_handler()</cde> runs when
+                an exception goes uncaught. It logs the details and shows the visitor a 500 with the
+                id, and nothing about your code.
+            </li>
+        </list>
+
+        <heading h3 id="log-things">Log Things</heading>
+        <p>
+            <cde>public/index.php</cde> is a tiny app with a home page, a search, a page that always
+            fails, and a 404 for everything else, each logging what happened:
+        </p>
+        <code-block example="project-logging/public/index.php" />
+        <p>
+            The levels come from PSR-3, the shared logging standard: <cde>debug</cde>,
+            <cde>info</cde>, <cde>notice</cde>, <cde>warning</cde>, <cde>error</cde>,
+            <cde>critical</cde>, <cde>alert</cde> and <cde>emergency</cde>. Pick by what you'd want
+            to happen: <cde>info</cde> is "for the record," <cde>warning</cde> is "look at this
+            sometime," <cde>error</cde> is "look at this today."
+        </p>
+
+        <heading h3 id="run-it">Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>In a second terminal, watch the log, and in a third, make some requests:</p>
+        <!-- prettier-ignore -->
+        <code-block>tail -f logs/app.log</code-block>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000/
+curl 'http://localhost:8000/search?q=caf%C3%A9'
+curl -i http://localhost:8000/boom</code-block>
+        <p>Each one appears in the log as it happens:</p>
+        <!-- prettier-ignore -->
+        <code-block>[2026-11-27T19:55:15.771326+00:00] app.INFO: Home page viewed [] {"request_id":"c52c43924e91238e"}
+[2026-11-27T19:55:15.784126+00:00] app.INFO: Search {"q":"café"} {"request_id":"6635c799a37a7ac5"}
+[2026-11-27T19:55:15.794508+00:00] app.ERROR: Uncaught exception {"exception":"[object] (RuntimeException(code: 0): The /boom page always fails, on purpose. at /app/public/index.php:26)"} {"request_id":"7ebd291ca018709a"}</code-block>
+        <p>
+            The search arrived as <cde>caf%C3%A9</cde>, the URL encoding of the UTF-8 bytes, and the
+            log has <cde>café</cde>, because PHP decoded it and Monolog writes UTF-8. The
+            <cde>/boom</cde> request got "Something went wrong" and an id; the log has the class,
+            the message, the file and the line, under the same id.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Input goes in the context, never in the message.</strong> A log is one event
+                per line, so a newline is a new event. <strong>Never trust input:</strong> write a
+                search to a log by hand, with <cde>error_log()</cde> or
+                <cde>file_put_contents()</cde>, and a visitor can send
+                <cde>?q=x%0A[2026-01-01T00:00:00] app.CRITICAL: ...</cde> and add a fake line of
+                their own. Monolog's line format turns newlines into spaces, and in the context it
+                encodes the value as JSON, so the newline is written as <cde>\n</cde>, harmless and
+                labeled. Try it, and look at the log.
+            </li>
+            <li>
+                <strong>Never log secrets.</strong> Passwords, session ids, API keys, card numbers,
+                whole request bodies. Logs get copied, shipped to other services and read by people
+                who shouldn't see any of those. Log that a login failed, and for which address,
+                never what was typed.
+            </li>
+            <li>
+                <strong>Logs fill disks.</strong> A busy site writes a lot, forever. Rotate them:
+                Monolog's <cde>RotatingFileHandler</cde> starts a new file each day and keeps a set
+                number, or let the system's <cde>logrotate</cde> do it.
+            </li>
+            <li>
+                <strong>No stack trace by default.</strong> The line format keeps each event on one
+                line, so it leaves the trace off. Call <cde>includeStacktraces()</cde> on a
+                <cde>LineFormatter</cde> when you want it, and accept the extra lines.
+            </li>
+        </list>
+
+        <side-story title="Why It's Called a Log">
+            Sailors once measured a ship's speed by throwing a piece of wood, the log, over the
+            stern on a line knotted at regular intervals, and counting the knots that ran out in a
+            set time. That's where "knots" comes from, too. The results went in the logbook, which
+            became the record of everything that happened on board.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Grep by request id">
+            <p>
+                When someone reports an error, ask for the id on the error page, then
+                <cde>grep</cde> the log for it. You get every line that request wrote, in order, and
+                nothing from the thousands of requests around it. A support ticket that comes with
+                an id is ten minutes of work instead of an afternoon.
+            </p>
+        </two-dollars>
+
+        <p>
+            The log tells you about the server's side. The next project is about something the
+            browser keeps for you. Next: cookies.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/cookies">Next: Cookies &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

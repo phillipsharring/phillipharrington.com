@@ -1,0 +1,182 @@
+<layout name="default" title="Declaring Symbols vs. Causing Changes" />
+<page-head>
+    <meta
+        name="description"
+        content="A PHP file should either declare things (functions, classes, constants) or do things (output, settings, files), never both. What the rule is, where it comes from, and what breaks when you ignore it. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PSR-1 side effects, declare symbols, side effects, PHP includes, require, autoloading, functions file, entry point, readable code, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A file should declare things or do things, never both. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="declaring-vs-causing">Declaring Symbols vs. Causing Changes</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Magic Numbers split its code in two: <cde>rules.php</cde> only declared things, and
+            <cde>after.php</cde> only did things. That's a rule of its own, and one of the first in
+            PSR-1: a file should either declare symbols or cause side effects, and not both. It
+            sounds fussy. It's the reason you can <cde>require</cde> a file without wondering what
+            it will do to you.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="declaring-a-symbol">What's Declaring a Symbol?</heading>
+        <p>
+            Giving something a name, for later: a function, a class, an interface, an enum, a
+            constant. Declaring doesn't run anything. Loading a file that only declares changes
+            nothing until someone calls what's in it.
+        </p>
+
+        <heading h2 id="causing-a-change">What's Causing a Change?</heading>
+        <p>Anything that makes a difference the moment the line runs. These are side effects:</p>
+        <list>
+            <li>output: <cde>echo</cde>, HTML outside <cde>&lt;?php</cde>, <cde>header()</cde></li>
+            <li>settings: <cde>ini_set()</cde>, <cde>date_default_timezone_set()</cde></li>
+            <li>files, logs and databases: writing, connecting, querying</li>
+            <li><cde>session_start()</cde>, setting a cookie, sending an email</li>
+            <li>changing a global variable</li>
+        </list>
+
+        <side-story title="Why PSRs Shout">
+            PSR-1 says a file SHOULD do one or the other, in capitals. The capitals come from RFC
+            2119, written by Scott Bradner in 1997, which pinned down exactly what MUST, SHOULD and
+            MAY mean in a standard. MUST is a requirement. SHOULD means you need a good reason not
+            to. Most internet standards, and every PSR, use those words that way.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Files that declare hold your functions and classes. One class per file, once you use
+                <lnk to="/php/autoloading">Composer's autoloader</lnk>.
+            </li>
+            <li>
+                A few files cause: the entry points, like <cde>public/index.php</cde> or a
+                command-line script. They set things up, then call what was declared.
+            </li>
+            <li>
+                An entry point requires (or autoloads) the declaring files it needs. Requiring them
+                is always safe, from anywhere, any time, in any order.
+            </li>
+        </ol>
+        <p>
+            The payoff is that a declaring file can be used by something its author never pictured:
+            a test, a command-line job, another page. If loading it also printed a nav bar or
+            started a session, every one of those would get the nav bar too.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A helpers file, the way a lot of PHP sites grow one. In a folder, make a
+            <cde>before</cde> folder, and in it <cde>helpers.php</cde>:
+        </p>
+        <code-block example="declaring-vs-causing/before/helpers.php" />
+        <p>
+            It was written for web pages, so it sets things up for them. Now a command-line job that
+            only wants <cde>slugify()</cde>, <cde>before/slugs.php</cde>:
+        </p>
+        <code-block example="declaring-vs-causing/before/slugs.php" />
+        <p>Run it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php before/slugs.php</code-block>
+        <p>
+            The slugs come out, under a nav bar nobody asked for. And there's a new file,
+            <cde>before/visits.log</cde>: your command-line job counted itself as a visit. Run it
+            again, and the log grows. Now split the file. Make an <cde>after</cde> folder, with
+            <cde>text.php</cde>, which only declares:
+        </p>
+        <code-block example="declaring-vs-causing/after/text.php" />
+        <p><cde>page.php</cde>, which does the page's doing:</p>
+        <code-block example="declaring-vs-causing/after/page.php" />
+        <p>And the same job, <cde>after/slugs.php</cde>, requiring only what it needs:</p>
+        <code-block example="declaring-vs-causing/after/slugs.php" />
+        <p>Run the job, then the page:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/slugs.php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/page.php</code-block>
+        <p>
+            The job prints its two slugs and nothing else, and logs nothing. The page still gets its
+            nav bar, its settings and its log line, because the page asked for them.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>require</cde> and <cde>include</cde> run the whole file, top to bottom, every
+                time. Declarations are the only lines that are safe to run that way.
+            </li>
+            <li>
+                <cde>require_once</cde> loads a file only the first time. A declaring file loaded
+                twice with plain <cde>require</cde> dies with "Cannot redeclare."
+            </li>
+            <li>
+                Composer's autoloader requires a class's file the first time the class is used,
+                which could be at any point. That only works if loading the file has no effects.
+            </li>
+            <li>
+                PHP_CodeSniffer's PSR-12 check, from
+                <lnk to="/php/coding-standards">Coding Standards</lnk>, warns about a file that does
+                both.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Whitespace outside <cde>&lt;?php</cde> is output.</strong> A blank line
+                before the opening tag, or after a closing <cde>?&gt;</cde>, gets sent, and then
+                <cde>header()</cde> fails with "headers already sent." It's why PSR-12 says to leave
+                the closing tag off.
+            </li>
+            <li>
+                <strong>A constructor that connects is a side effect too.</strong> A class whose
+                constructor opens a database connection does it the moment anything makes one. Pass
+                the connection in instead; that's
+                <lnk to="/php/dependency-injection">Dependency Injection</lnk>.
+            </li>
+            <li>
+                <strong><cde>declare(strict_types=1)</cde> isn't a side effect.</strong> It's a
+                setting for the file it's in, and it belongs at the top of every file, declaring or
+                causing.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Require it and listen">
+            <p>
+                To check that a file only declares, load it and do nothing else:
+                <cde>php -r 'require "after/text.php";'</cde>. It should print nothing, write
+                nothing and take no time. Anything it does, you'll see.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>slugify()</cde> trusts its argument completely. So far that's fine, but code that
+            gets used from places its author never pictured needs to be careful about what it's
+            handed. Next: defensive programming.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/defensive-programming">Next: Defensive Programming &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

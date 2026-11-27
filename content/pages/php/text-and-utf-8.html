@@ -1,0 +1,247 @@
+<layout name="default" title="Text and UTF-8" />
+<page-head>
+    <meta
+        name="description"
+        content="Characters versus bytes: ASCII, Unicode and UTF-8, why strlen('café') is 5, the mb_ functions that count characters, and the places text gets mangled on its way in and out: the page, the form, the database and email. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="UTF-8, Unicode, character encoding, charset, bytes vs characters, mb_strlen, mb_substr, mbstring, mb_check_encoding, mojibake, utf8mb4, BOM, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Why strlen('café') is 5, and how to keep text intact. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="text-and-utf-8">Text and UTF-8</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/strings">Strings</lnk> said a string is a row of bytes, and quietly
+            assumed one byte is one letter. That's true for plain English, and false for "café," for
+            "Zoë," for Chinese, for emoji, and for a good share of your visitors' names. This is the
+            whole story: what the bytes mean, how PHP counts them, and the four places on every trip
+            where text gets mangled. <lnk to="/php/content-types">Content Types</lnk> introduced the
+            <cde>charset</cde>; this is what it's for.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-character-set">What's a Character Set?</heading>
+        <p>
+            A list that gives every character a number. Computers only store numbers, so text is
+            stored as the numbers of its characters, and both ends have to agree on the list.
+        </p>
+
+        <heading h3 id="ascii">ASCII</heading>
+        <p>
+            The old American list, from 1963: 128 characters, numbered 0 to 127. English letters,
+            digits, punctuation, and some control codes like the new line. Each fits in one byte,
+            with room to spare.
+        </p>
+
+        <heading h3 id="unicode">Unicode</heading>
+        <p>
+            One list for every writing system, with well over a hundred thousand characters, each
+            with a number called its code point: <cde>U+0041</cde> is A, <cde>U+00E9</cde> is é,
+            <cde>U+1F44D</cde> is 👍. Unicode is the list. It doesn't say how to store the numbers
+            as bytes. That's the encoding's job.
+        </p>
+
+        <heading h3 id="utf-8">UTF-8</heading>
+        <p>
+            The encoding nearly the whole web uses. It stores each code point in one to four bytes.
+            The ASCII characters keep their old one-byte form, so plain English text is the same in
+            ASCII and UTF-8. Everything else takes more: é is two bytes, <cde>c3 a9</cde>, and an
+            emoji is four. Use UTF-8 for everything, everywhere, and say so at every boundary.
+        </p>
+
+        <heading h3 id="bytes-and-characters">Bytes and Characters</heading>
+        <p>
+            So "café" is four characters and five bytes. PHP's plain string functions,
+            <cde>strlen()</cde>, <cde>substr()</cde>, <cde>strtoupper()</cde>, work in bytes. The
+            <cde>mb_</cde> functions (for "multibyte") work in characters: <cde>mb_strlen()</cde>,
+            <cde>mb_substr()</cde>, <cde>mb_strtoupper()</cde>. When it's text a person typed or
+            will read, use the <cde>mb_</cde> ones.
+        </p>
+
+        <side-story title="On a Placemat">
+            UTF-8 was designed in September 1992 by Ken Thompson and Rob Pike, two of the people
+            behind Unix, and the first sketch of it was drawn on a placemat in a New Jersey diner.
+            They needed it for Plan 9, the operating system they were working on, and had it running
+            within days. Its trick, keeping ASCII exactly as it was, is why it could take over a web
+            that was already mostly ASCII.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>
+            Text crosses a boundary every time it moves, and at each one, both sides have to agree
+            it's UTF-8. Follow one name, "Zoë," from a form to a page:
+        </p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <strong>The page.</strong> Your form page says it's UTF-8, in the
+                <cde>Content-Type</cde> header and in <cde>&lt;meta charset="utf-8"&gt;</cde>.
+            </li>
+            <li>
+                <strong>The form.</strong> The browser sends what's typed in the page's encoding. A
+                UTF-8 page sends UTF-8: <cde>Zo%C3%AB</cde>.
+            </li>
+            <li>
+                <strong>PHP.</strong> <cde>$_POST['name']</cde> is the bytes as sent. PHP doesn't
+                check them. You do, because <strong>never trust input</strong>: anyone can send
+                bytes that aren't UTF-8 at all.
+            </li>
+            <li>
+                <strong>The database.</strong> The table, and the connection to it, both have to be
+                UTF-8. In MySQL that's <cde>utf8mb4</cde>, the subject of
+                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk>.
+            </li>
+            <li>
+                <strong>The page again, or an email.</strong> Out it goes, with the charset said
+                again. Email has its own rules: the body needs a <cde>charset</cde> in its
+                <cde>Content-Type</cde>, and a subject line with anything but ASCII has to be
+                encoded specially.
+            </li>
+        </ol>
+        <p>
+            Get one wrong, and you get mojibake: UTF-8's two bytes for é read as two separate
+            one-byte characters, so "café" turns into "cafÃ©." When you see Ã followed by another
+            odd character, some boundary read UTF-8 as something older.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>Bytes and characters, side by side. In a folder, make <cde>bytes.php</cde>:</p>
+        <code-block example="text-and-utf-8/bytes.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php bytes.php</code-block>
+        <p>
+            <cde>strlen()</cde> says 5, <cde>mb_strlen()</cde> says 4. <cde>substr()</cde> took four
+            bytes and cut é in half, leaving <cde>c3</cde>, which isn't a character at all.
+            <cde>strtoupper()</cde> skipped the é. The two "café"s look identical and aren't equal:
+            one has é as one code point, the other as an e plus a combining accent. And "Read wrong"
+            is mojibake, made on purpose.
+        </p>
+        <p>Now a page that takes a name, checks it, and counts it. Make <cde>index.php</cde>:</p>
+        <code-block example="text-and-utf-8/index.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and type a name with an accent, or an emoji. It
+            counts characters and bytes separately. Then, from a second terminal, send "café" both
+            ways, first as UTF-8 and then as a single Latin-1 byte for é:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?name=caf%C3%A9'
+curl 'http://localhost:8000/?name=caf%E9'</code-block>
+        <p>
+            The first says 4 characters, 5 bytes. The second is refused: <cde>E9</cde> alone isn't
+            valid UTF-8, and <cde>mb_check_encoding()</cde> caught it before it got anywhere near
+            the page or a database.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>mb_strlen()</cde>, <cde>mb_substr()</cde>, <cde>mb_strtoupper()</cde>,
+                <cde>mb_strtolower()</cde>, <cde>mb_str_pad()</cde>, and, new in PHP 8.4,
+                <cde>mb_trim()</cde> and <cde>mb_ucfirst()</cde>: the character-counting versions.
+            </li>
+            <li>
+                <cde>mb_check_encoding($input, 'UTF-8')</cde>: is this valid UTF-8? Ask it of every
+                string from outside.
+            </li>
+            <li>
+                <cde>mb_convert_encoding($text, 'UTF-8', 'Windows-1252')</cde>: convert text you
+                know is in an older encoding, like an old CSV export.
+            </li>
+            <li>
+                <cde>htmlspecialchars()</cde> assumes UTF-8, and since PHP 8.1 it replaces broken
+                bytes with � rather than returning nothing.
+            </li>
+            <li>
+                <cde>default_charset</cde>, a setting, is UTF-8 out of the box. It's what PHP puts
+                in the <cde>Content-Type</cde> it sends.
+            </li>
+            <li><cde>mb_encode_mimeheader()</cde>: an email subject that isn't plain ASCII.</li>
+            <li>
+                <cde>grapheme_strlen()</cde>, from the <cde>intl</cde> extension, counts what a
+                person would call one character. It isn't in the Docker image by default.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A length limit in bytes rejects real names.</strong> "Twenty characters"
+                checked with <cde>strlen()</cde> means ten for someone writing in Greek. Count with
+                <cde>mb_strlen()</cde>. (Databases count characters too, in a <cde>VARCHAR</cde>.)
+            </li>
+            <li>
+                <strong>Cutting text with <cde>substr()</cde> breaks it.</strong> A summary cut at
+                100 bytes can end in half a character, which shows up as � or makes the whole string
+                invalid. Use <cde>mb_substr()</cde>.
+            </li>
+            <li>
+                <strong>Some characters are several code points.</strong> An emoji family, a flag,
+                an accent added separately: <cde>mb_strlen()</cde> counts the code points, so one
+                visible character can count as five. For most limits that's fine. For exact
+                counting, use the <cde>grapheme_</cde> functions.
+            </li>
+            <li>
+                <strong>Text that looks the same can be different.</strong> é as one code point and
+                é as e plus an accent don't compare equal. Searching and logins can trip on it.
+                <cde>Normalizer::normalize()</cde>, in <cde>intl</cde>, turns both into one form.
+            </li>
+            <li>
+                <strong>MySQL's <cde>utf8</cde> isn't UTF-8.</strong> It stops at three bytes, so
+                emoji can't be stored. Use <cde>utf8mb4</cde>, in the tables and the connection.
+            </li>
+            <li>
+                <strong>The invisible BOM.</strong> Some editors start a UTF-8 file with three
+                bytes, <cde>EF BB BF</cde>, called a byte order mark. In a PHP file, they're output
+                before <cde>&lt;?php</cde>, and headers already sent, as in
+                <lnk to="/php/output">Output</lnk>. Save as UTF-8 without a BOM.
+            </li>
+        </list>
+
+        <side-story title="Mojibake">
+            The word for garbled text is Japanese: mojibake, roughly "character transformation."
+            Japanese computing had several competing encodings for decades, so text shown in the
+            wrong one was common enough to need a name. Everyone else borrowed it.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Look at the bytes">
+            <p>
+                When text looks wrong, stop guessing and look at the bytes:
+                <cde>bin2hex($text)</cde> in PHP, or <cde>xxd file.txt | head</cde> in the terminal.
+                <cde>c3 a9</cde> is a UTF-8 é. A lone <cde>e9</cde> is a Latin-1 é.
+                <cde>c3 83 c2 a9</cde> is UTF-8 that got encoded twice. <cde>ef bb bf</cde> at the
+                start is a BOM. Once you can see which, you know which boundary to fix.
+            </p>
+        </two-dollars>
+
+        <p>
+            Text is one value at a time. Most apps work with many at once: a list of names, a row
+            from a database, an order with its items. Next: Arrays.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/arrays">Next: Arrays &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

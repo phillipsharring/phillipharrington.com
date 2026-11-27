@@ -1,0 +1,193 @@
+<layout name="default" title="Sending Email" />
+<page-head>
+    <meta
+        name="description"
+        content="Send an email from PHP with Symfony Mailer, to Mailpit, a mail catcher in a container that keeps every message and sends none: plain text and HTML parts, a UTF-8 subject, and an address checked before it goes anywhere near a header. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="send email PHP, Symfony Mailer, Mailpit, SMTP, mail catcher, Docker Compose, UTF-8 subject, email header injection, FILTER_VALIDATE_EMAIL, SPF DKIM DMARC, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Send an email from PHP, and catch it before it goes anywhere. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="sending-email">Sending Email</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Sooner or later your site has to send an email: a receipt, a password reset, a message
+            from the contact form. The hard part isn't the code. It's testing it without sending
+            real mail to real people while you get it wrong.
+        </p>
+        <p>
+            So this project starts with a mail catcher, Mailpit, in a container. It speaks SMTP like
+            a real mail server, keeps everything you send it, and delivers none of it. Then you'll
+            send it a proper email from PHP with Symfony Mailer: a plain text part, an HTML part,
+            and a subject with an accent in it.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>: installing the
+                mailer.
+            </li>
+            <li>
+                <lnk to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</lnk>: where the mail server is.
+            </li>
+            <li>
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: text that leaves your server.
+            </li>
+            <li><lnk to="/php/never-trust-input">Never Trust Input</lnk>: an address is input.</li>
+            <li>
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: two containers in one
+                <cde>compose.yml</cde>.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="install-the-mailer">Install the Mailer</heading>
+        <p>In a new project folder, a <cde>.gitignore</cde>, then Symfony Mailer:</p>
+        <code-block example="project-sending-email/.gitignore" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require symfony/mailer</code-block>
+        <p>
+            PHP has a built-in <cde>mail()</cde> function, but it hands the message to a
+            <cde>sendmail</cde> program on the server, which containers don't have, and it leaves
+            you writing headers by hand. A mailer library talks SMTP itself, builds the headers
+            correctly, and encodes everything for the trip.
+        </p>
+
+        <heading h3 id="start-mailpit">Start the Mail Catcher</heading>
+        <p><cde>compose.yml</cde> runs Mailpit, and a PHP container that knows where to find it:</p>
+        <code-block example="project-sending-email/compose.yml" />
+        <p>
+            The PHP side reaches Mailpit at the name <cde>mailpit</cde>, on port 1025, its SMTP
+            port. You reach its web page at <cde>http://localhost:8025</cde>. Start it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d mailpit</code-block>
+
+        <heading h3 id="send-one">Send One</heading>
+        <p><cde>send.php</cde> sends a welcome email to the address you give it:</p>
+        <code-block example="project-sending-email/send.php" />
+        <list>
+            <li>
+                <strong>The address is checked first.</strong> <cde>filter_var()</cde> with
+                <cde>FILTER_VALIDATE_EMAIL</cde> refuses anything that isn't one address.
+                <strong>Never trust input</strong>, even on the command line: this same code will
+                take its address from a form one day.
+            </li>
+            <li>
+                <strong>The mail server comes from the environment.</strong> Mailpit here; a real
+                mail service on a live site. The code doesn't change, only the settings.
+            </li>
+            <li>
+                <strong>Two versions of the body.</strong> <cde>text()</cde> and <cde>html()</cde>
+                go out together, and each reader's mail program shows the one it prefers.
+            </li>
+        </list>
+        <p>Send it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php send.php alice@example.com</code-block>
+        <p>
+            Open <cde>http://localhost:8025</cde>. There it is, in Mailpit's inbox, with the HTML
+            version showing. Mailpit can also show you the raw message, exactly as it arrived. Part
+            of it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>Subject: Welcome to the =?utf-8?Q?caf=C3=A9?=
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary=yAK7a8_b
+
+--yAK7a8_b
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable</code-block>
+        <p>
+            Email headers come from a time of plain ASCII, so the mailer encoded the
+            <cde>é</cde> in the subject as its UTF-8 bytes, <cde>C3 A9</cde>, and labeled it
+            <cde>utf-8</cde>. Every mail program decodes that back to "café." The body is labeled
+            <cde>charset=utf-8</cde> too. Leave the labels off, and someone's inbox shows
+            <cde>cafÃ©</cde>.
+        </p>
+        <p>Now try to sneak a header in with the address, the way a form field could:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php send.php $'alice@example.com\nBcc: everyone@example.com'</code-block>
+        <p>
+            Refused, and nothing sent. <cde>docker compose down</cde> stops Mailpit and throws its
+            messages away.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="The @ Sign">
+            Ray Tomlinson sent the first email between two computers on the ARPANET in 1971. He
+            needed a way to say "this person, at that machine," and picked the <cde>@</cde> sign,
+            because it was on the keyboard and almost never appeared in names.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Header injection.</strong> Headers are lines, so a newline in anything that
+                ends up in a header starts a new one. Glue a form's email field into a
+                <cde>mail()</cde> header by hand, and someone can add a <cde>Bcc:</cde> with a
+                thousand addresses, and your server sends their spam. Validate every address, and
+                let a library build the headers.
+            </li>
+            <li>
+                <strong>Send from your own domain.</strong> Mail services check that a message
+                claiming to be from <cde>example.com</cde> really came from a server
+                <cde>example.com</cde> allows, using DNS records called SPF, DKIM and DMARC. Put a
+                visitor's address in <cde>From</cde>, and the mail lands in spam or bounces. Use
+                your own address in <cde>From</cde>, and theirs in <cde>Reply-To</cde>.
+            </li>
+            <li>
+                <strong>Sending is slow, and it fails.</strong> An SMTP conversation can take
+                seconds, and the mail server can be down. A page that waits for it is a slow page,
+                and one that crashes when it fails loses the message. The
+                <lnk to="/php/projects/queues">Queues</lnk> project sends mail in the background.
+            </li>
+            <li>
+                <strong>Never point development at a real mail server.</strong> One test run against
+                a copy of real data can email every customer you have. Development sends to a
+                catcher, always, and test addresses use <cde>example.com</cde>, which is reserved
+                for exactly this and can't receive mail.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Check your HTML against real mail programs">
+            <p>
+                Mail programs support far less HTML and CSS than browsers, and each supports a
+                different part of it. Open a message in Mailpit and look at its HTML Check tab: it
+                lists what in your message won't work in which mail programs, before a customer
+                finds out for you.
+            </p>
+        </two-dollars>
+
+        <p>
+            You can send mail. The obvious thing to do with that is let visitors send mail to you,
+            which is where it gets interesting. Next: a contact form.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/contact-form">Next: Contact Form &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

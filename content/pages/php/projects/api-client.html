@@ -1,0 +1,277 @@
+<layout name="default" title="API Client" />
+<page-head>
+    <meta
+        name="description"
+        content="A PHP client for someone else's API, with its token kept out of the code: read from the environment, sent only in a header, never printed. Plus timeouts, retries with Retry-After, and answers checked before they're used. Break It finds a hard-coded key in the code and in the API's log. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP API client, curl, API key, secrets out of code, .env, getenv, Authorization Bearer, token in query string, access log, SensitiveParameter, timeouts, retries, Retry-After, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Call an API without leaving its key lying around. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="api-client">API Client</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The REST API answered programs. This is the program on the other end: PHP code that
+            calls someone else's API, for a payment, a map, a list of tasks, with a token that
+            proves it's allowed to. You'll build a small client that does it carefully, and a
+            pretend API to call, so it all runs on your machine.
+        </p>
+        <p>
+            The token is the whole story. It's a password, often for something that costs money or
+            holds other people's data, and the easiest place to put it is right in the code. You'll
+            do that first, then find it two ways without any access to the code's author: in the
+            repository, and in the API's own log.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk>: where the token lives
+                instead
+            </li>
+            <li>
+                <lnk to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</lnk>: <cde>.env</cde> and <cde>getenv()</cde>
+            </li>
+            <li>
+                <lnk to="/php/projects/rest-api">REST API</lnk>: bearer tokens and status codes,
+                from the other side
+            </li>
+            <li>
+                <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk>: failures the caller can
+                handle
+            </li>
+            <li>
+                <lnk to="/php/projects/php-on-the-command-line">PHP on the Command Line</lnk>: the
+                client is a script
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-somewhere-to-keep-the-token"
+            >Step 1: Somewhere to Keep the Token</heading
+        >
+        <p>
+            The token goes in a file called <cde>.env</cde>, next to the code, and
+            <cde>.gitignore</cde> keeps that file out of the repository. What goes in git is an
+            example with no real values, so the next person knows what to fill in:
+        </p>
+        <code-block example="project-api-client/.gitignore" />
+        <code-block example="project-api-client/.env.example" />
+        <p>
+            Copy <cde>.env.example</cde> to <cde>.env</cde> and put a long random token in it.
+            <cde>php -r 'echo bin2hex(random_bytes(20));'</cde> makes one.
+        </p>
+        <p>
+            Two containers: the pretend API, and one to run the client in. Compose reads
+            <cde>.env</cde> by itself and passes the token into each as an environment variable, so
+            it's never written in <cde>compose.yml</cde> either:
+        </p>
+        <code-block example="project-api-client/compose.yml" />
+
+        <heading h3 id="step-2-the-pretend-api">Step 2: The Pretend API</heading>
+        <p>
+            <cde>api/index.php</cde> stands in for someone else's service. It wants the token, and
+            it misbehaves on purpose at a few addresses: <cde>/flaky</cde> is busy twice before it
+            answers, <cde>/slow</cde> takes ten seconds, and <cde>/broken</cde> sends HTML where
+            JSON should be.
+        </p>
+        <code-block example="project-api-client/api/index.php" />
+
+        <heading h3 id="step-3-the-client">Step 3: The Client</heading>
+        <code-block example="project-api-client/src/ApiError.php" />
+        <code-block example="project-api-client/src/ApiClient.php" />
+        <list>
+            <li>
+                <strong>It's handed the token.</strong> The class never reads a file or the
+                environment. Whoever builds it decides where the token comes from, which makes it
+                easy to test and impossible to hard-code by accident.
+            </li>
+            <li>
+                <strong>The token goes in a header</strong>, <cde>Authorization: Bearer ...</cde>,
+                and only to HTTPS addresses, or to this machine's own containers.
+            </li>
+            <li>
+                <strong><cde>#[\SensitiveParameter]</cde></strong> tells PHP to hide the token in
+                stack traces, which otherwise print every argument and are exactly the kind of thing
+                that ends up in a log.
+            </li>
+            <li>
+                <strong>Timeouts.</strong> Without them, a slow API makes your code wait as long as
+                it likes. Five seconds, then give up.
+            </li>
+            <li>
+                <strong>Retries, politely.</strong> A <cde>429</cde> or <cde>503</cde> means "not
+                now." It waits as long as <cde>Retry-After</cde> asks, within a limit, and tries up
+                to three times.
+            </li>
+            <li>
+                <strong>The answer is checked.</strong>
+                <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and an
+                API's response is input. It has to be JSON, and an object, or it's an error.
+            </li>
+        </list>
+
+        <heading h3 id="step-4-the-script">Step 4: The Script</heading>
+        <p>
+            <cde>bin/tasks.php</cde> is where the token comes in: from the environment, and nowhere
+            else. If it's missing, the script says so and stops.
+        </p>
+        <code-block example="project-api-client/bin/tasks.php" />
+        <p>
+            It also checks each task's shape before printing it. The API is someone else's code, and
+            it can change without telling you.
+        </p>
+
+        <heading h3 id="step-5-run-it">Step 5: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d api
+docker compose run --rm client php bin/tasks.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>[x] 1 Write the API
+[ ] 2 Write the client
+[ ] 3 &lt;script&gt;alert(1)&lt;/script&gt;</code-block>
+        <p>
+            In a terminal, that third title is harmless text. Put it in a web page, and it's the XSS
+            from <lnk to="/php/projects/comments">Comments</lnk>: data from an API gets escaped like
+            any other. Then the misbehaving addresses:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm client php bin/tasks.php /flaky
+docker compose run --rm client php bin/tasks.php /slow
+docker compose run --rm client php bin/tasks.php /broken</code-block>
+        <p>
+            The first succeeds on the third try. The second gives up after five seconds instead of
+            ten. The third says the answer wasn't JSON. None of them print the token.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>The client most people write first:</p>
+        <code-block example="project-api-client/bin/naive.php" />
+        <p>
+            For this part, set <cde>API_TOKEN</cde> in <cde>.env</cde> to the token in
+            <cde>naive.php</cde>, as if someone had pasted the real one into the code, and restart
+            the API with <cde>docker compose up -d api</cde>. It works:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm client php bin/naive.php</code-block>
+        <p>
+            Now be someone who has a copy of the repository: a new hire, a contractor, anyone the
+            repository is ever shared with, or everyone, if it's public:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>grep -rn 'wnp_' .</code-block>
+        <p>
+            There's the token, with a file name and line number. Committed once, it stays in the
+            history even after it's deleted from the file. Automated scanners search public
+            repositories for keys around the clock, and often find new ones within minutes of a
+            push.
+        </p>
+        <p>Now be someone who can read the API's logs:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose logs api | grep api_key</code-block>
+        <!-- prettier-ignore -->
+        <code-block>api-1  | [Fri Nov 27 20:38:06 2026] 172.19.0.3:47076 [200]: GET /tasks?api_key=wnp_live_7d3f9a2c8e1b4f6a</code-block>
+        <p>
+            Web servers log every URL, query string and all. So do proxies, CDNs and load balancers
+            along the way. A token in a URL is a token in all of their logs.
+        </p>
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            The real client fixes both. The token lives in <cde>.env</cde>, which never goes in git,
+            and travels in a header, which servers don't log by default. Search for it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>grep -rn 'wnp_' src bin/tasks.php
+docker compose logs api | grep -c "$(grep API_TOKEN .env | cut -d= -f2)"</code-block>
+        <p>
+            Nothing in the code, and the only log lines with the token are the naive client's. Then
+            delete <cde>naive.php</cde>, and, because the token was in code and in a log, treat it
+            as stolen: make a new one, and switch the old one off. With a real API, that's the only
+            fix that counts.
+        </p>
+
+        <side-story title="Keys in a Repository">
+            In 2016, attackers found login credentials for Uber's Amazon Web Services account in a
+            private GitHub repository that Uber's engineers used. With them, they downloaded data on
+            57 million riders and drivers. A private repository is still a copy of your secrets on
+            someone else's servers, readable by everyone who can read the code.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Deleting a secret from git doesn't remove it.</strong> It's in the history,
+                in every clone, and in every fork. Rotate it: make a new one and revoke the old.
+            </li>
+            <li>
+                <strong>A token in the browser is a public token.</strong> Anything in your
+                JavaScript can be read by anyone who opens developer tools. Calls that need a secret
+                go through your server, which keeps the secret and makes the call.
+            </li>
+            <li>
+                <strong>Debugging leaks secrets.</strong> <cde>var_dump($client)</cde>, curl's
+                verbose mode, a stack trace with arguments: each prints the token. Mark it
+                <cde>#[\SensitiveParameter]</cde>, and never log whole requests.
+            </li>
+            <li>
+                <strong><cde>.env</cde> files are a start, not the finish.</strong> On a server, the
+                file sits on disk, readable by anything that can read the folder. Bigger setups keep
+                secrets in a secrets manager and load them into memory when the app starts.
+            </li>
+            <li>
+                <strong>Give each token the least it needs.</strong> A read-only token for a
+                dashboard, a separate one for each program. When one leaks, you revoke one, and
+                nothing else stops working.
+            </li>
+        </list>
+
+        <side-story title="Off the Disk">
+            One of my own apps kept its production secrets in <cde>.env</cde> files on the server's
+            disk. We moved them into a secrets manager, loaded into memory when the app starts, and
+            then rotated every one of them, because a secret that has sat in a file has to be
+            assumed copied.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Scan before you push">
+            <p>
+                Run a secret scanner, like gitleaks, on your repository before you push, or in a git
+                hook so it runs every time. It knows the shapes of hundreds of kinds of keys, and
+                it's much cheaper to find one on your own machine than in someone else's scanner's
+                results.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's the last project. You've gone from two computers talking to a shop that takes
+            payments without touching a card, an API, and a client that keeps its secrets. Back to
+            the course, for anything you want to read again.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php">Back to the course &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,226 @@
+<layout name="default" title="Modern PHP" />
+<page-head>
+    <meta
+        name="description"
+        content="The newer PHP features worth using every day: enums, readonly properties and classes, constructor promotion, match, named arguments and the nullsafe operator. Not a tour of every release. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="modern PHP, PHP 8, enums, backed enums, tryFrom, readonly, readonly classes, constructor promotion, match expression, named arguments, nullsafe operator, SensitiveParameter, PHP versions, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The newer PHP features worth using. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="modern-php">Modern PHP</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A lot of what people say about PHP is about PHP 5, which stopped getting fixes years
+            ago. PHP 7 and 8 added types, and then a run of features that make code shorter and
+            harder to get wrong. This isn't every one of them. It's the six you'll use every week,
+            and that you'll see in any PHP code written lately.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-features">The Features</heading>
+
+        <heading h3 id="enums">Enums</heading>
+        <p>
+            A type with a fixed list of values. An order's status is pending, paid or shipped, and
+            nothing else. Before enums, that was a string, and <cde>'shiped'</cde> was a string too.
+            A backed enum gives each case a value to store:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>enum Status: string
+{
+    case Pending = 'pending';
+    case Paid = 'paid';
+}</code-block>
+        <p>
+            <cde>Status::Paid-&gt;value</cde> is <cde>'paid'</cde>, and
+            <cde>Status::tryFrom('paid')</cde> turns it back. Store the value in a
+            <cde>VARCHAR</cde> column, and let the enum be the list of what's allowed. Enums can
+            have methods and constants, like a class.
+        </p>
+
+        <heading h3 id="readonly">Readonly</heading>
+        <p>
+            A <cde>readonly</cde> property can be set once, from inside the class, and never again.
+            A <cde>readonly class</cde> makes every property readonly. For a value that shouldn't
+            change after it's made, like an order that's been placed, it saves writing the checks.
+        </p>
+
+        <heading h3 id="constructor-promotion">Constructor Promotion</heading>
+        <p>
+            Put <cde>public</cde>, <cde>private</cde> or <cde>readonly</cde> in front of a
+            constructor parameter, and it's a property too, set from the argument. The
+            declare-assign-assign dance from
+            <lnk to="/php/classes-and-objects">Classes and Objects</lnk> becomes one line per
+            property.
+        </p>
+
+        <heading h3 id="match">Match</heading>
+        <p>
+            Like <cde>switch</cde>, but it's an expression that returns a value, it compares with
+            <cde>===</cde>, it has no fall-through, so no <cde>break</cde> to forget, and if nothing
+            matches, it throws instead of quietly doing nothing.
+        </p>
+
+        <heading h3 id="named-arguments">Named Arguments</heading>
+        <p>
+            <cde>new Order(id: 1042, status: $status, totalCents: 4_500)</cde>. Each argument says
+            which parameter it's for. You can skip optional ones, and nobody has to remember whether
+            the price came before the quantity.
+        </p>
+
+        <heading h3 id="nullsafe-operator">The Nullsafe Operator</heading>
+        <p>
+            <cde>$order-&gt;coupon?-&gt;code</cde> gives the coupon's code, or <cde>null</cde> if
+            there's no coupon, instead of an error. Pair it with <cde>??</cde> for a default.
+        </p>
+
+        <side-story title="There Is No PHP 6">
+            PHP went from 5.6 straight to 7.0, in 2015. PHP 6 was a real project: an effort, started
+            in the mid-2000s, to build Unicode into the language from the bottom up. It turned out
+            to be slow and very hard, and it was abandoned around 2010. Books had already been
+            published about it, so the next version skipped the number to avoid any confusion. Which
+            is why UTF-8 in PHP is still the <cde>mb_</cde> functions, from
+            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The features arrive one release at a time, on a schedule:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>A new version of PHP comes out every year, usually in November.</li>
+            <li>For its first two years, it gets bug fixes.</li>
+            <li>For two more, it gets security fixes only.</li>
+            <li>Then nothing. Running it after that means running known holes.</li>
+        </ol>
+        <p>
+            Enums and readonly properties came in PHP 8.1, readonly classes in 8.2; match, named
+            arguments, constructor promotion and the nullsafe operator in 8.0. The course uses 8.4,
+            so all of them work. A server on an older version would refuse the newer ones with a
+            parse error, which is why <cde>composer.json</cde> says which PHP the code needs, like
+            the <cde>"php": "&gt;=8.4"</cde> in <lnk to="/php/autoloading">Autoloading</lnk>.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>All six in one script, <cde>order.php</cde>:</p>
+        <code-block example="modern-php/order.php" />
+        <p>Run it with a status:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php order.php paid</code-block>
+        <p>
+            Two orders, labeled by <cde>match</cde>. The one without a coupon says <cde>none</cde>,
+            through <cde>?-&gt;</cde> and <cde>??</cde>. The status is saved as the plain string
+            <cde>paid</cde>. And the last line is PHP refusing to change a readonly property:
+            <cde>Cannot modify readonly property Order::$totalCents</cde>. Now a status that doesn't
+            exist:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php order.php lost</code-block>
+        <p>
+            <cde>Unknown status.</cde> The status came from the command line, and
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: <cde>tryFrom()</cde> is the allow list, built in. Anything that isn't a case comes
+            back <cde>null</cde>.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>Status::tryFrom($input)</cde> for input: a case or <cde>null</cde>.
+                <cde>Status::from()</cde> throws a <cde>ValueError</cde> instead, for values you
+                stored yourself and expect to be good.
+            </li>
+            <li><cde>Status::cases()</cde> lists every case, for a select box or a check.</li>
+            <li>
+                <cde>$status === Status::Paid</cde> compares enums; each case is a single object.
+            </li>
+            <li>
+                <cde
+                    >match (true) { $n &lt; 0 =&gt; ..., $n === 0 =&gt; ..., default =&gt; ...
+                    }</cde>
+                for ranges.
+            </li>
+            <li>
+                A few small ones worth knowing: <cde>str_contains()</cde>,
+                <cde>str_starts_with()</cde>, <cde>str_ends_with()</cde>, and <cde>1_000_000</cde>,
+                underscores to make long numbers readable.
+            </li>
+            <li>
+                PHP 8.4 added property hooks and asymmetric visibility,
+                <cde>public private(set)</cde>. Useful, newer, and not in this course's examples
+                yet.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Readonly is shallow.</strong> A readonly property holding an object can't be
+                pointed at a different object, but the object it holds can still change inside.
+            </li>
+            <li>
+                <strong>Readonly means really once.</strong> No setting it again, not even from
+                inside the class. To change a readonly object, make a new one with the new value.
+            </li>
+            <li>
+                <strong>Named arguments make names part of the deal.</strong> Once callers write
+                <cde>totalCents:</cde>, renaming the parameter breaks them.
+            </li>
+            <li>
+                <strong
+                    >A <cde>match</cde> with no <cde>default</cde> throws on anything
+                    unlisted.</strong>
+                That's usually what you want: add a case to the enum, and every
+                <cde>match</cde> that forgot it fails loudly with an <cde>UnhandledMatchError</cde>,
+                instead of quietly doing the wrong thing.
+            </li>
+            <li>
+                <strong>An enum isn't a database column type.</strong> Store
+                <cde>-&gt;value</cde> as a string, and turn it back with <cde>from()</cde>. Don't
+                reach for MySQL's own <cde>ENUM</cde> column: changing its list means changing the
+                table, while a <cde>VARCHAR</cde> and a PHP enum change with a deploy.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Keep passwords out of stack traces">
+            <p>
+                Put <cde>#[\SensitiveParameter]</cde> in front of any parameter that holds a
+                password, a key or a token:
+                <cde>function login(string $email, #[\SensitiveParameter] string $password)</cde>.
+                If an exception passes through that function, its stack trace shows
+                <cde>Object(SensitiveParameterValue)</cde> where the password would have been, so it
+                never lands in your logs. PHP 8.2 and up.
+            </p>
+        </two-dollars>
+
+        <p>
+            Modern PHP also kept some older features that do things behind your back: methods PHP
+            calls for you, without you ever calling them. Next: magic methods.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/magic-methods">Next: Magic Methods &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

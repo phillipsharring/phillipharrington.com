@@ -1,0 +1,257 @@
+<layout name="default" title="Configuration and the Environment" />
+<page-head>
+    <meta
+        name="description"
+        content="Settings that change between your computer and the live server, and secrets that must never be in your code: environment variables, .env files, .env.example, php.ini, and why the secrets never go in git. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="environment variables, .env file, .env.example, getenv, APP_ENV, php.ini, ini_set, docker env-file, secrets in git, twelve-factor, clear_env, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Settings out of the code, and secrets out of git. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Web Server Basics
+        </p>
+        <heading h1 id="configuration-and-the-environment"
+            >Configuration and the Environment</heading
+        >
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            PHP-FPM runs on settings: how many workers, whether to show errors, whether to say which
+            version it is. Your app has settings too: the database password, an API key, whether
+            it's on your computer or the live server. The same code runs in both places, with
+            different settings, and some of those settings are secrets. None of them belong in the
+            code.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-configuration">What's Configuration?</heading>
+        <p>
+            Anything that changes between the places your code runs: where the database is and its
+            password, keys for other services, the site's address, whether errors are shown. The
+            code is the same everywhere. The configuration is what makes this copy yours, or the
+            live one.
+        </p>
+        <p>
+            A good test: could you publish your code right now, for anyone to read, without giving
+            away a single password? If not, some configuration is still in the code.
+        </p>
+
+        <side-story title="Twelve Factors">
+            In 2011, developers at the hosting company Heroku published "The Twelve-Factor App," a
+            short list of rules for building apps that run well on servers you don't control. The
+            third factor is "store config in the environment." The publish-it-now test above is
+            theirs. A lot of what's normal now, like the <cde>.env</cde> file, grew up around it.
+        </side-story>
+
+        <heading h2 id="whats-the-environment">What's the Environment?</heading>
+        <p>The word means two things here, and they meet.</p>
+
+        <heading h3 id="environment-variables">Environment Variables</heading>
+        <p>
+            Named values every program gets from whatever started it: <cde>APP_ENV=production</cde>,
+            <cde>DB_HOST=db</cde>. Your terminal has dozens. Docker, the server's setup, or a
+            hosting panel can set them for PHP, and PHP reads them with <cde>getenv()</cde>. They're
+            the usual way to hand a program its settings, because they're nowhere in the code.
+        </p>
+
+        <heading h3 id="development-and-production">Development and Production</heading>
+        <p>
+            The other meaning is the place the code is running. Development is your computer.
+            Production is the live site, with real visitors. Many teams have staging in between, a
+            copy of production for trying things first. Apps usually learn which one they're in from
+            an environment variable, often called <cde>APP_ENV</cde>, and behave accordingly: show
+            errors in development, never in production.
+        </p>
+
+        <side-story title="The Admin Nobody Meant to Ship">
+            One of my apps had seed scripts: small programs that fill a fresh database with test
+            data, including an admin account at <cde>admin@example.com</cde> with the password
+            <cde>password</cde>. Handy in development. They also ran on production deploys, until we
+            stopped them. A setting that says "this is production" is only useful if the code asks
+            it.
+        </side-story>
+
+        <heading h2 id="whats-a-env-file">What's a .env File?</heading>
+        <p>
+            A text file of settings, one <cde>NAME=value</cde> per line, that something loads into
+            the environment before your code runs. Docker reads one with <cde>--env-file</cde>, and
+            Compose with <cde>env_file:</cde>. PHP libraries can read one too, once you have
+            <lnk to="/php/autoloading">Composer</lnk>.
+        </p>
+        <p>
+            The file with the real values is called <cde>.env</cde>, and it never goes in git. Next
+            to it, in git, is <cde>.env.example</cde>: the same names, with blank or harmless
+            values. It tells the next person, or you in a year, which settings the app needs.
+        </p>
+
+        <heading h2 id="phps-own-settings">PHP's Own Settings</heading>
+        <p>
+            PHP reads its settings, like <cde>display_errors</cde>, from a file called
+            <cde>php.ini</cde>. <cde>php --ini</cde> says which one it loaded. In the official
+            Docker images, the answer is none: they come with two samples,
+            <cde>php.ini-development</cde> and <cde>php.ini-production</cde>, and you copy the one
+            you want into place. For one run, <cde>php -d name=value</cde> sets a setting on the
+            command line, as Access and Error Logs did. In code, <cde>ini_set()</cde> changes some
+            of them while the script runs.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Something puts the values in the environment: Docker from a <cde>.env</cde> file,
+                the server's setup, or a secrets manager.
+            </li>
+            <li>The web server or PHP-FPM starts, and inherits them.</li>
+            <li>Your code reads each one with <cde>getenv()</cde>.</li>
+            <li>
+                At the start, it checks the ones it can't live without, and stops with a clear error
+                if any is missing.
+            </li>
+        </ol>
+        <p>
+            On your computer, the <cde>.env</cde> file is fine. On a live server, a file full of
+            secrets sitting on the disk is one more thing to steal. Better is a secrets manager, a
+            service that holds them and hands them to the app when it starts, so they live only in
+            memory. <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk>, in Security, goes
+            further.
+        </p>
+
+        <side-story title="Off the Disk">
+            One of my apps kept its production secrets in <cde>.env</cde> files on the servers'
+            disks. We moved them into a secrets manager, loaded into memory when the app starts, and
+            then rotated every one: changed each password and key, so the copies that had sat on
+            disk were worth nothing.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            An app that gets every setting from the environment. In a folder, make
+            <cde>.env.example</cde>, the list of what it needs:
+        </p>
+        <code-block example="configuration-and-the-environment/.env.example" />
+        <p>A <cde>.gitignore</cde>, which tells git to leave <cde>.env</cde> alone:</p>
+        <code-block example="configuration-and-the-environment/.gitignore" />
+        <p>And <cde>public/index.php</cde>:</p>
+        <code-block example="configuration-and-the-environment/public/index.php" />
+        <p>
+            Make your own <cde>.env</cde> from the example, then open it and give
+            <cde>MAIL_API_KEY</cde> a pretend value, like <cde>test-key-1234</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>cp .env.example .env</code-block>
+        <p>Start the server with <cde>--env-file .env</cde>, which loads it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 --env-file .env -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>: "Shirt Shop, running in development," and the
+            key's last four characters, never the whole thing. Stop it, and start it again without
+            <cde>--env-file .env</cde>. Now it's a 500, "This app isn't set up yet," and the
+            terminal says which setting is missing. Then put the file back and add
+            <cde>-e APP_ENV=production</cde> before the image name: a setting given with
+            <cde>-e</cde> wins over the file, so it says production, and stops showing errors.
+        </p>
+        <p>Last, the reason for <cde>.gitignore</cde>. In the same folder:</p>
+        <!-- prettier-ignore -->
+        <code-block>git init
+git status</code-block>
+        <p>
+            Git lists <cde>.env.example</cde>, <cde>.gitignore</cde> and <cde>public/</cde>, and not
+            <cde>.env</cde>. It can't commit a file it doesn't see.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>getenv('NAME')</cde> reads an environment variable. It gives back
+                <cde>false</cde> when there isn't one, so <cde>getenv('NAME') ?: 'default'</cde>
+                handles both missing and empty.
+            </li>
+            <li>
+                <cde>$_ENV</cde> holds them too, but only when PHP's
+                <cde>variables_order</cde> setting includes <cde>E</cde>.
+                <cde>php.ini-production</cde> leaves it out, so <cde>$_ENV</cde> is often empty.
+                <cde>getenv()</cde> works either way.
+            </li>
+            <li><cde>ini_get('display_errors')</cde> reads one of PHP's settings.</li>
+            <li><cde>ini_set('display_errors', '0')</cde> changes it, for this script only.</li>
+            <li>
+                <cde>php_ini_loaded_file()</cde> says which <cde>php.ini</cde> PHP loaded, if any.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A secret committed once is in git forever.</strong> Deleting the file in the
+                next commit leaves it in the history, for anyone with a copy. If a secret ever goes
+                in, change the secret.
+            </li>
+            <li>
+                <strong>Copies of secrets leak.</strong> One of my apps had a deploy script that
+                left a copy of the production <cde>.env</cde> in <cde>/tmp</cde>, readable by anyone
+                on the machine, until it was fixed to use a private temporary file, deleted when the
+                script finished. Every copy is another place to lose it.
+            </li>
+            <li>
+                <strong><cde>.env</cde> formats aren't all the same.</strong> Docker's
+                <cde>--env-file</cde> keeps quotes as part of the value, so
+                <cde>APP_NAME="Shirt Shop"</cde> comes out with the quote marks in it. Many PHP
+                libraries strip them. Check what yours does.
+            </li>
+            <li>
+                <strong>PHP-FPM can hide the environment.</strong> Its <cde>clear_env</cde> setting
+                is on by default, which empties the environment before your code sees it. The
+                official Docker image turns it off; on other servers, turn it off, or pass each
+                variable in the pool settings.
+            </li>
+            <li>
+                <strong>Secrets in the environment show up in <cde>phpinfo()</cde>.</strong> It
+                prints every environment variable. Never leave it on a live server; the next lesson
+                says more.
+            </li>
+            <li>
+                <strong>Missing should mean safe.</strong> When <cde>APP_ENV</cde> isn't set, the
+                example assumes production, so a forgotten setting hides errors rather than showing
+                them to the world.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Show the last four">
+            <p>
+                When you change a key, you'll want to know whether the app picked up the new one.
+                Have it log or show only the last four characters, like the example. That's enough
+                to tell two keys apart, and not enough to use either.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's the server around your code. Now the code itself, starting with what a PHP file
+            is and what happens inside one. Next, in PHP Basics: PHP Files, Escaping into PHP, and
+            phpinfo().
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/php-files">Next: PHP Files, Escaping into PHP, and phpinfo() &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

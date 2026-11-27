@@ -1,0 +1,294 @@
+<layout name="default" title="Don't Touch Cards" />
+<page-head>
+    <meta
+        name="description"
+        content="No card number should ever touch your server. What PCI DSS is, why a card form on your own page pulls your whole system into it, and how a hosted checkout like Stripe Checkout keeps cards off your server entirely. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PCI DSS, card payments, Stripe Checkout, hosted checkout, SAQ A, cardholder data, CVC, stripe-mock, payment webhooks, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="No card number should ever touch your server. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="dont-touch-cards">Don't Touch Cards</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every lesson so far has been about handling dangerous things carefully. This one is
+            about not handling them at all. If your site takes card payments, the safest card number
+            is one that never reaches your server. Not checked carefully, not encrypted, not deleted
+            quickly: never there. A payment company's page takes the card, and your code only ever
+            hears whether it worked.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-pci-dss">What's PCI DSS?</heading>
+        <p>
+            The Payment Card Industry Data Security Standard: the rules for anyone who stores,
+            processes or transmits card numbers. It's set by the PCI Security Standards Council,
+            which the big card brands (Visa, Mastercard, American Express, Discover and JCB) formed
+            in 2006. Your bank or payment company makes following it a condition of taking cards.
+        </p>
+        <p>
+            The full standard is twelve broad requirements broken into hundreds of detailed ones:
+            networks, firewalls, encryption, access control, logging, scanning, testing, policies
+            and paperwork, and an assessment every year. It applies to every system that touches a
+            card number, and every system connected to those.
+        </p>
+
+        <heading h3 id="saqs">How Much of It Is Yours</heading>
+        <p>
+            Small merchants prove they comply with a Self-Assessment Questionnaire, and which one
+            depends on how close cards come to you:
+        </p>
+        <list>
+            <li>
+                <strong>SAQ A</strong>: you've handed everything to a provider. The visitor types
+                their card on the provider's page, or in the provider's frame, and your systems
+                never store, process or send a card number. The shortest one.
+            </li>
+            <li>
+                <strong>SAQ A-EP</strong>: the card goes straight to the provider, but your own page
+                builds the form or loads the scripts that collect it, so your server's security
+                affects it. Much longer.
+            </li>
+            <li>
+                <strong>SAQ D</strong>: card numbers pass through your server. Nearly the whole
+                standard, for every system involved.
+            </li>
+        </list>
+
+        <heading h3 id="whats-a-hosted-checkout">What's a Hosted Checkout?</heading>
+        <p>
+            A payment page that the payment company runs. Your server asks it to start a payment
+            (this product, this price), it answers with an address, and you send the visitor there.
+            They type the card on its page; it sends them back to yours when they're done. Stripe
+            Checkout is one. PayPal, Square, Adyen and others have their own.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>With Stripe Checkout:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The visitor presses Buy. Your page sends a POST to your server; no card fields.</li>
+            <li>
+                Your server asks Stripe for a Checkout Session, with the product and price from your
+                own code, and where to send the visitor afterward.
+            </li>
+            <li>Stripe answers with the session's address, on <cde>checkout.stripe.com</cde>.</li>
+            <li>Your server redirects the visitor there, with a <cde>303</cde>.</li>
+            <li>The visitor types their card on Stripe's page. Stripe charges it.</li>
+            <li>
+                Stripe sends the visitor back to your success page, and separately tells your server
+                with a webhook: a signed request saying the payment was completed.
+            </li>
+            <li>
+                Your server checks, with Stripe, that the payment really happened, and only then
+                ships the mug.
+            </li>
+        </ol>
+        <p>
+            The card number went from the visitor's keyboard to Stripe. It was never in your
+            request, your code, your logs, your database or your backups. That puts you in SAQ A,
+            and puts the rest of the standard on Stripe, which is what you're paying them for.
+        </p>
+
+        <side-story title="130 Million Cards">
+            In January 2009, Heartland Payment Systems, a company that processed card payments for
+            hundreds of thousands of businesses, announced that attackers had been inside its
+            network for months, recording card numbers as they passed through. About 130 million
+            cards were exposed. The way in, according to the prosecutors who charged Albert Gonzalez
+            for it, was <lnk to="/php/sql-injection">SQL injection</lnk>.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A mug shop that takes payment through Stripe Checkout. You don't need a Stripe account
+            for this: Stripe publishes stripe-mock, a pretend version of its API that runs in a
+            container. In a folder, make <cde>compose.yml</cde>:
+        </p>
+        <code-block example="dont-touch-cards/compose.yml" />
+        <p>
+            Install Stripe's PHP library with Composer, as in
+            <lnk to="/php/autoloading">Autoloading with Composer</lnk>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require stripe/stripe-php</code-block>
+        <p>
+            The pages go in <cde>public</cde>. First, <cde>public/stripe.php</cde>, which sets up
+            the client from the environment, the way
+            <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk> says:
+        </p>
+        <code-block example="dont-touch-cards/public/stripe.php" />
+        <p>The shop page, <cde>public/index.php</cde>. Notice what isn't in it:</p>
+        <code-block example="dont-touch-cards/public/index.php" />
+        <p>The page that starts the payment, <cde>public/checkout.php</cde>:</p>
+        <code-block example="dont-touch-cards/public/checkout.php" />
+        <p>
+            And the page Stripe sends people back to, <cde>public/thanks.php</cde>. It doesn't
+            believe the address it was reached by; it asks Stripe:
+        </p>
+        <code-block example="dont-touch-cards/public/thanks.php" />
+        <p>Start the shop and stripe-mock:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>From another terminal, press the button the way the browser would:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -X POST http://localhost:8000/checkout.php</code-block>
+        <p>
+            <cde>303 See Other</cde>, with a <cde>Location</cde> on
+            <cde>https://checkout.stripe.com/</cde>. That's the whole of your part. stripe-mock's
+            address is made up and won't open, but with a real Stripe test key it's a real payment
+            page: start the shop with
+            <cde>STRIPE_SECRET_KEY=sk_test_... STRIPE_API_BASE= docker compose up</cde>, open
+            <cde>http://localhost:8000</cde>, press Buy it, and pay with Stripe's test card,
+            <cde>4242 4242 4242 4242</cde>, any future date, any CVC.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>new Stripe\StripeClient(['api_key' =&gt; $key])</cde>, with the key from the
+                environment. Test keys start <cde>sk_test_</cde>, live ones <cde>sk_live_</cde>.
+            </li>
+            <li>
+                <cde>$stripe-&gt;checkout-&gt;sessions-&gt;create([...])</cde> with the mode, line
+                items, <cde>success_url</cde> and <cde>cancel_url</cde>. Amounts are whole cents, an
+                <cde>int</cde>, never a float.
+            </li>
+            <li>
+                <cde>header('Location: ' . $session-&gt;url, true, 303)</cde> to send the visitor.
+            </li>
+            <li>
+                <cde>$stripe-&gt;checkout-&gt;sessions-&gt;retrieve($id)</cde> and
+                <cde>payment_status === 'paid'</cde> to find out what really happened.
+            </li>
+            <li>
+                <cde>Stripe\Webhook::constructEvent($body, $signature, $secret)</cde> to check a
+                webhook's signature before believing it.
+                <lnk to="/php/projects/stripe-checkout">Taking a Payment with Stripe Checkout</lnk>
+                builds the whole thing.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The success page is not proof of payment.</strong> It's an address anyone
+                can type. <strong>Never trust input</strong>: ship on a signed webhook, or after
+                asking Stripe, as <cde>thanks.php</cde> does. Visiting it with a made-up session id
+                gets "We haven't received your payment yet."
+            </li>
+            <li>
+                <strong>The price comes from your code.</strong> If <cde>checkout.php</cde> took the
+                amount from the form, you'd be back in
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>'s mug shop, selling at
+                whatever price the visitor typed.
+            </li>
+            <li>
+                <strong
+                    >"We only keep the last four" is fine; "we keep it encrypted" isn't
+                    enough.</strong>
+                Encrypted card numbers are still card numbers, in scope. And the card's security
+                code, the extra three or four digits, may never be stored after the payment is
+                approved, by anyone, even encrypted.
+            </li>
+            <li>
+                <strong>Card fields on your page are still on your page.</strong> Building your own
+                form that sends cards straight to the provider with JavaScript keeps them off your
+                server, but your page now controls the form, which is SAQ A-EP. A redirect or the
+                provider's own embedded frame keeps you in SAQ A.
+            </li>
+            <li>
+                <strong>SAQ A is short, not nothing.</strong> You still fill it in, and your site
+                still has to be secure, because a hacked site can send visitors to a fake checkout.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            You won't attack a card here. The danger of a card form on your own page isn't a clever
+            payload; it's that card numbers start landing in places you never thought of as part of
+            a payment system. Make <cde>public/naive.php</cde>, a shop with its own card form, and
+            the debugging line every app has somewhere:
+        </p>
+        <code-block example="dont-touch-cards/public/naive.php" />
+        <p>With the shop running, buy a mug with Stripe's test card number:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'card_number=4242424242424242&amp;card_expiry=12/34&amp;card_cvc=123' http://localhost:8000/naive.php
+docker compose logs shop</code-block>
+        <!-- prettier-ignore -->
+        <code-block>shop-1  | [Fri Nov 27 20:11:18 2026] New order: {"card_number":"4242424242424242","card_expiry":"12\/34","card_cvc":"123"}</code-block>
+        <p>
+            The card number, the expiry and the CVC, in your log. Nothing was charged, nothing was
+            hacked, and you're already storing cardholder data, including the one part nobody is
+            ever allowed to keep. In a real shop, that log is copied to a log service, kept for
+            months, and backed up. Each of those is now a system that stores card numbers, and the
+            whole of PCI DSS applies to all of them.
+        </p>
+        <p>
+            And that's the honest version. A hacked server with a card form on it can do far worse:
+            attackers who get in add a few lines that send each card to them as it's typed, and
+            nobody notices until the cards are used.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            The fix is the shop from Try It: no card fields anywhere, and a redirect to Stripe.
+            Delete <cde>naive.php</cde>, restart, buy through <cde>index.php</cde>, and check the
+            log again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose down
+docker compose up -d
+curl -X POST http://localhost:8000/checkout.php
+docker compose logs shop | grep -c 4242</code-block>
+        <p>
+            <cde>0</cde>. There's nothing to find, because there was never anything to log. No
+            check, no encryption and no cleanup job: the card number never had a way in.
+        </p>
+
+        <side-story title="Not My Problem, by Design">
+            Payments in one of my apps go through Stripe Checkout. No card number has ever touched
+            its servers, and none can: there's no field for one to arrive in. Every question in this
+            lesson about storing, encrypting or logging cards has the same answer there: there are
+            none.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Grep your logs for cards">
+            <p>
+                Now and then, search your logs and database dumps for anything shaped like a card
+                number: <cde>grep -E '\b[0-9]{13,19}\b' app.log</cde>. Most hits will be order
+                numbers or timestamps. Any that aren't are a card number that got in somewhere it
+                shouldn't, and better found by you.
+            </p>
+        </two-dollars>
+
+        <p>
+            Cards stay off your server. What your server does send, every response, can carry
+            instructions that make the browser itself part of your defense. Next: security headers.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/security-headers">Next: Security Headers &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,235 @@
+<layout name="default" title="Errors and the Error Log" />
+<page-head>
+    <meta
+        name="description"
+        content="Notices, warnings, deprecations, fatal errors and exceptions: what each means, the settings that control them (error_reporting, display_errors, log_errors, error_log), why errors never show on a live site, and where the log is when PHP runs in Docker. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP errors, error log, display_errors, log_errors, error_reporting, E_ALL, warnings, notices, fatal errors, exceptions, error_log(), docker logs, php.ini-production, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="What PHP's errors mean, and where they should go. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="errors-and-the-error-log">Errors and the Error Log</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every lesson so far has had a line that went wrong on purpose: a header sent too late, a
+            <cde>TypeError</cde>, a missing variable. Each time, PHP said something. What it says
+            depends on how bad the problem is, and where it says it depends on a few settings. On
+            your computer, you want every message in your face. On a live site, you want every
+            message in a log and none of them on the page.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-error">What's an Error?</heading>
+        <p>PHP's way of telling you something went wrong. They come in levels:</p>
+        <list>
+            <li>
+                <strong>Deprecated:</strong> this works now, and will stop working in a future
+                version of PHP. Fix it before you upgrade.
+            </li>
+            <li>
+                <strong>Notice:</strong> something minor, which might be a mistake. PHP 8 turned
+                most of these into warnings.
+            </li>
+            <li>
+                <strong>Warning:</strong> something is wrong, and PHP carries on anyway. Reading a
+                variable or array key that doesn't exist is a warning, and you get <cde>null</cde>.
+                Carrying on is often worse than stopping: the page runs with a hole in it.
+            </li>
+            <li>
+                <strong>Fatal error:</strong> PHP stops the script, right there. A parse error, a
+                typo in the code itself, is fatal before anything runs.
+            </li>
+        </list>
+
+        <heading h3 id="exceptions">Exceptions</heading>
+        <p>
+            An exception is an error your code can catch and handle. Code throws one with
+            <cde>throw new RuntimeException('...')</cde>, and PHP throws its own for many problems:
+            a <cde>TypeError</cde>, a <cde>ValueError</cde>, dividing by zero. If nothing catches
+            it, it becomes a fatal error: "Uncaught RuntimeException." Catching them is
+            <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk>.
+        </p>
+
+        <heading h3 id="the-error-log">The Error Log</heading>
+        <p>
+            A file, or a stream, where PHP writes one line per error: when, what, which file, which
+            line. It's the same idea as the server logs in
+            <lnk to="/php/access-and-error-logs">Access and Error Logs</lnk>, and often the same
+            place.
+        </p>
+
+        <side-story title="The First Actual Case">
+            On September 9, 1947, Grace Hopper's team working on the Harvard Mark II found a moth
+            stuck in one of its relays. They taped it into the logbook with a note: "First actual
+            case of bug being found." Engineers had called faults bugs for decades already, which is
+            the joke. The page, moth included, is at the Smithsonian. It's also, fittingly, an entry
+            in a log.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When something goes wrong, PHP asks four settings what to do:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <cde>error_reporting</cde>: which levels count at all. Use <cde>E_ALL</cde>,
+                everything, which is PHP 8's default.
+            </li>
+            <li>
+                <cde>display_errors</cde>: print the message into the output, so it shows up on the
+                page. On while you're building. <strong>Off in production, always.</strong>
+            </li>
+            <li><cde>log_errors</cde>: write the message to the error log. On, everywhere.</li>
+            <li>
+                <cde>error_log</cde>: where the log is. Set it to a file path, or leave it empty and
+                PHP hands the message to whatever is running it: the terminal for the command line
+                and the built-in server, the web server's own error log under Apache, PHP-FPM's log
+                under FPM.
+            </li>
+        </ol>
+        <p>
+            Why off in production: an error message is written for you, and it's full of things
+            nobody else should see. File paths, the line of code that failed, sometimes the SQL
+            query, sometimes a value from your settings. On a live page, it's a free map of your app
+            for whoever is attacking it.
+        </p>
+
+        <heading h3 id="in-docker">Where the Log Is in Docker</heading>
+        <p>
+            A container's habit is to write logs to its own output, not to files, and PHP's images
+            follow it: with no <cde>error_log</cde> set, messages go to the terminal you started the
+            container in, or to <cde>docker logs</cde> and the container's name if it's running in
+            the background. The official PHP-FPM images point FPM's log there too. When you're
+            hunting for "the PHP log" in a container, start with <cde>docker logs</cde>.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A page that goes wrong two ways, run with development settings, then production ones. In
+            a folder, make <cde>index.php</cde>:
+        </p>
+        <code-block example="errors-and-the-error-log/index.php" />
+        <p>
+            Start it the way you would while building, with errors on the page and in the log. The
+            <cde>-d</cde> flag sets a setting for this one run:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -d display_errors=1 -d log_errors=1</code-block>
+        <p>From a second terminal:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i 'http://localhost:8000/?problem=warning'
+curl -i 'http://localhost:8000/?problem=exception'</code-block>
+        <p>
+            The warning is right there in the page, "Undefined array key," and the page carried on
+            to "Order 1001 is done" with a blank where the email should be. The exception stopped
+            everything, and its message, with the file path and line, is in the page too. And look
+            at the status: <cde>200 OK</cde>. The error message was output, so the headers had
+            already gone out, success code and all.
+        </p>
+        <p>
+            Every message also went to the first terminal, along with the line from
+            <cde>error_log()</cde>. Stop the server and start it with production settings:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -d display_errors=0 -d log_errors=1</code-block>
+        <p>
+            Run the same two <cde>curl</cde>s. The warning page shows nothing wrong, just the blank.
+            The exception gets <cde>500 Internal Server Error</cde> and an empty page: no path, no
+            line, nothing for an attacker. Everything is still in the first terminal, which is where
+            you'd look.
+        </p>
+        <p>
+            One more thing the example does: it only logs <cde>problem</cde> if it's one of the two
+            known values. <strong>Never trust input,</strong> not even in a log. A value with a new
+            line in it can forge a whole fake line in your log file.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                In <cde>php.ini</cde>: <cde>error_reporting = E_ALL</cde>,
+                <cde>display_errors = Off</cde>, <cde>log_errors = On</cde>, and
+                <cde>error_log</cde> if you want a file.
+            </li>
+            <li>
+                In Docker, start from PHP's own production settings:
+                <cde>RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"</cde> in your
+                <cde>Dockerfile</cde>.
+            </li>
+            <li><cde>php -d display_errors=1 ...</cde>: one setting, for one run.</li>
+            <li>
+                <cde>ini_set('display_errors', '1')</cde>: change it from code. Too late for a parse
+                error in the same file, which happens before any code runs.
+            </li>
+            <li><cde>error_log('message')</cde>: write your own line to the same log.</li>
+            <li><cde>docker logs -f</cde> and the container's name: follow a container's log.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>display_errors on a live site.</strong> Paths, code, queries and settings,
+                on the page, for anyone who can make your code fail. And attackers try to make it
+                fail, precisely to see what it says.
+            </li>
+            <li>
+                <strong>A fatal error can still say 200.</strong> If anything was printed before it,
+                the headers are gone, and the broken page goes out as a success. Monitoring that
+                only counts 500s won't see it.
+            </li>
+            <li>
+                <strong>Warnings are bugs.</strong> PHP carries on after a warning, with
+                <cde>null</cde> where a value should be. Treat every warning in the log as a bug to
+                fix, and keep the log empty enough that a new one stands out.
+            </li>
+            <li>
+                <strong>The <cde>@</cde> operator hides errors.</strong>
+                <cde>@file_get_contents($path)</cde> silences the warning, and you're left with
+                <cde>false</cde> and no idea why. Check the result instead.
+            </li>
+            <li>
+                <strong>Input in a log is input.</strong> Log the values you've checked, or encode
+                the ones you haven't with <cde>json_encode()</cde>, so a new line can't start a fake
+                entry.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Dump to the log">
+            <p>
+                When you can't print to the page, like in the middle of a redirect or an API
+                response, dump to the log instead: <cde>error_log(print_r($thing, true));</cde>. The
+                <cde>true</cde> makes <cde>print_r()</cde> return the text instead of printing it.
+                Watch it arrive with <cde>docker logs -f</cde> in another terminal, and take the
+                line out when you're done.
+            </p>
+        </two-dollars>
+
+        <p>
+            One way to keep errors down is to write each piece once, in one file, and use it from
+            everywhere. Next: Includes.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/includes">Next: Includes &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

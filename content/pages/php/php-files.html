@@ -1,0 +1,209 @@
+<layout name="default" title="PHP Files, Escaping into PHP, and phpinfo()" />
+<page-head>
+    <meta
+        name="description"
+        content="What a PHP file is, how PHP switches between sending text and running code, the short echo tag, and phpinfo(): the page that tells you everything about your PHP, and why it never goes on a live server. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP file, php open tag, php closing tag, short echo tag, escaping into PHP, phpinfo, php -i, php --ini, php -m, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="What's in a PHP file, and what phpinfo() gives away. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="php-files">PHP Files, Escaping into PHP, and phpinfo()</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Web Server Basics ended with settings: where they live, and how they reach your code.
+            Now the code itself. PHP lives in plain text files that end in <cde>.php</cde>, and a
+            PHP file can hold more than PHP. Most of what makes PHP easy to start with, and easy to
+            make a mess with, comes from that one fact.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-php-file">What's a PHP File?</heading>
+        <p>
+            A text file the web server hands to PHP instead of sending it. PHP reads it from top to
+            bottom. Anything outside PHP's tags is copied out exactly as it is. Anything inside the
+            tags is code: PHP runs it, and only what the code prints goes out.
+        </p>
+
+        <heading h3 id="the-tags">The Tags</heading>
+        <list>
+            <li>
+                <cde>&lt;?php</cde> opens PHP, and <cde>?&gt;</cde> closes it. Going in and out like
+                that is called escaping into PHP, and you can do it as often as you like.
+            </li>
+            <li>
+                <cde>&lt;?= $name ?&gt;</cde> is short for <cde>&lt;?php echo $name; ?&gt;</cde>:
+                print one thing and leave again. It's the tag you'll use most inside HTML.
+            </li>
+            <li>
+                A file that's all PHP opens with <cde>&lt;?php</cde> on the first line and leaves
+                the closing tag off. That's allowed, and it's the right way: anything after a
+                closing tag, even a stray blank line, gets sent.
+            </li>
+        </list>
+
+        <heading h3 id="whats-phpinfo">What's phpinfo()?</heading>
+        <p>
+            A built-in function that prints a long page about the PHP running it: the version, every
+            setting and where it came from, every extension, the request's headers, and the server's
+            environment variables. It's the fastest way to answer "which PHP is this, and how is it
+            set up?" It's also, for the same reasons, a gift to anyone attacking you.
+        </p>
+
+        <side-story title="Before Plain .php">
+            Old URLs were full of <cde>.php3</cde> and <cde>.phtml</cde>. Servers were set up to
+            hand files with those extensions to the PHP of the day, so the extension said which
+            version a page was written for. Plain <cde>.php</cde> won. You'll still find the old
+            ones in server settings that nobody ever cleaned up.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>A request comes in for a file ending in <cde>.php</cde>.</li>
+            <li>
+                The server doesn't send the file. It hands it to PHP, the way Document Root
+                described.
+            </li>
+            <li>
+                PHP reads the file. Text outside the tags goes into the response as it is. Code
+                inside the tags runs, and whatever it prints goes into the response at that spot.
+            </li>
+            <li>
+                An <cde>if</cde> or a loop can wrap plain HTML, too, so whole chunks of the page are
+                sent or skipped.
+            </li>
+            <li>
+                At the end of the file, the response is done. The visitor gets the result, never the
+                code.
+            </li>
+        </ol>
+        <p>
+            So a <cde>.php</cde> file is a template and a program at once. That's how PHP started,
+            and it's still handy for small pages. Bigger apps keep the two apart, with the code in
+            files that are all PHP and the HTML in templates that only print. Separating Concerns,
+            much later, is about that.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>In a folder, make <cde>index.php</cde>, with HTML and PHP mixed together:</p>
+        <code-block example="php-files/index.php" />
+        <p>And <cde>info.php</cde>, which is nothing but PHP, with no closing tag:</p>
+        <code-block example="php-files/info.php" />
+        <p>
+            Start the server, with a pretend secret in its environment, the way real servers get
+            theirs:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -e API_KEY=pretend-secret -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>, then view the page's source. The HTML is there,
+            with the name and the time filled in, and only one of the two greetings. There's no PHP
+            in it at all: no tags, no <cde>$name</cde>. The visitor gets the output, never the
+            program.
+        </p>
+        <p>
+            Now open <cde>http://localhost:8000/info.php</cde> and scroll. Your PHP version, every
+            setting, every extension. Then look for the secret:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -s http://localhost:8000/info.php | grep pretend-secret</code-block>
+        <p>
+            There it is, in the Environment section. On a real server, that's your database password
+            and your API keys, on a page anyone can load.
+        </p>
+        <p>
+            You don't need a web page for most of this. On the command line,
+            <cde>php -v</cde> prints the version, <cde>php -m</cde> lists the extensions, and
+            <cde>php -i</cde> prints everything <cde>phpinfo()</cde> does, as plain text:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm php:8.4-cli php -v
+docker run --rm php:8.4-cli php -m</code-block>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>&lt;?php ... ?&gt;</cde> for code, <cde>&lt;?= ... ?&gt;</cde> to print one
+                thing.
+            </li>
+            <li>
+                <cde>if (...): ... endif;</cde>, <cde>foreach (...): ... endforeach;</cde>: the
+                colon forms read better than braces when the body is HTML.
+            </li>
+            <li><cde>phpinfo()</cde> prints everything, as a web page.</li>
+            <li>
+                <cde>php -v</cde>, <cde>php -m</cde>, <cde>php -i</cde> and <cde>php --ini</cde> on
+                the command line: version, extensions, everything, and which settings files were
+                loaded.
+            </li>
+            <li><cde>PHP_VERSION</cde> is the version, as a string, if your code needs to know.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never leave phpinfo() on a live server.</strong> It shows your environment
+                variables, which is where your secrets are, plus your versions, paths and settings:
+                a map for an attacker. Make <cde>info.php</cde>, read it, delete it. Scanners ask
+                for <cde>/info.php</cde> and <cde>/phpinfo.php</cde> all day.
+            </li>
+            <li>
+                <strong>Anything outside the tags is output.</strong> A blank line or a space before
+                <cde>&lt;?php</cde>, or after a closing <cde>?&gt;</cde>, is sent to the browser.
+                Once anything is sent, PHP can't send headers anymore. Output, next, shows what that
+                breaks.
+            </li>
+            <li>
+                <strong>The short <cde>&lt;?</cde> tag isn't always on.</strong> It depends on a
+                setting, <cde>short_open_tag</cde>, which differs from server to server, and it
+                trips over <cde>&lt;?xml</cde>. Always write <cde>&lt;?php</cde>. The
+                <cde>&lt;?=</cde> tag is always on, so it's fine.
+            </li>
+            <li>
+                <strong>A file that isn't .php isn't run.</strong> Rename <cde>info.php</cde> to
+                <cde>info.php.bak</cde> and the server sends the source as text. Document Root's
+                leftovers gotcha, again.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Ask which php.ini">
+            <p>
+                When a setting won't change, run <cde>php --ini</cde>. It names the
+                <cde>php.ini</cde> PHP actually loaded, and the extra files it read, and it's often
+                not the one you've been editing. The Docker image loads none at all; it ships two
+                samples, <cde>php.ini-development</cde> and <cde>php.ini-production</cde>, in
+                <cde>/usr/local/etc/php</cde>.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>phpinfo()</cde> tells you about your PHP. For everything else about PHP, there is
+            the manual. Next: php.net, and how to read it.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/documentation">Next: Documentation: php.net &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,268 @@
+<layout name="default" title="Security Headers" />
+<page-head>
+    <meta
+        name="description"
+        content="A handful of response headers that turn the browser into part of your defense: Content-Security-Policy, framing rules against clickjacking, nosniff, HSTS and more. What each one does, and a clickjacking attack, broken and fixed. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="security headers, Content-Security-Policy, CSP, frame-ancestors, X-Frame-Options, clickjacking, X-Content-Type-Options nosniff, Strict-Transport-Security, HSTS, Referrer-Policy, Permissions-Policy, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Response headers that make the browser part of your defense. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="security-headers">Security Headers</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every lesson in this section so far has been about your own code. This one is about the
+            browser. Browsers will enforce a set of rules for your site, if you ask: run no scripts
+            but yours, let no other site put your page in a frame, never treat a file as anything
+            but what you said it was, never use plain HTTP again. You ask with response headers, a
+            few lines sent with every page.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-headers">The Headers</heading>
+
+        <heading h3 id="content-security-policy">Content-Security-Policy</heading>
+        <p>The big one. A list of where the page may load things from, by type:</p>
+        <!-- prettier-ignore -->
+        <code-block>Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'</code-block>
+        <list>
+            <li>
+                <strong>script-src 'self'</strong>: scripts only from files on your own site. An
+                inline <cde>&lt;script&gt;</cde> in the page, or an <cde>onclick</cde> attribute, is
+                refused. So a script that an <lnk to="/php/xss">XSS</lnk> hole lets in doesn't run.
+            </li>
+            <li><strong>default-src 'self'</strong>: everything else, from your site only.</li>
+            <li><strong>object-src 'none'</strong>: no plugins.</li>
+            <li>
+                <strong>base-uri</strong> and <strong>form-action</strong>: no changing where the
+                page's relative links point, and forms only send to your own site.
+            </li>
+            <li><strong>frame-ancestors 'none'</strong>: no site may show this page in a frame.</li>
+        </list>
+
+        <heading h3 id="x-frame-options">X-Frame-Options</heading>
+        <p>
+            The older way to say "don't frame me," <cde>DENY</cde>. <cde>frame-ancestors</cde>
+            replaces it, but sending both costs nothing and covers old browsers.
+        </p>
+
+        <heading h3 id="x-content-type-options">X-Content-Type-Options</heading>
+        <p>
+            <cde>nosniff</cde>: use the <lnk to="/php/content-types">Content-Type</lnk> I sent, and
+            don't guess. Without it, a browser can decide an uploaded "image" looks like HTML or
+            script and treat it as such.
+        </p>
+
+        <heading h3 id="strict-transport-security">Strict-Transport-Security</heading>
+        <p>
+            HSTS: from now on, for this long, only ever reach this site over HTTPS. After one visit,
+            the browser changes any <cde>http://</cde> link to <cde>https://</cde> itself, before
+            anything is sent. See <lnk to="/php/http">HTTP, HTTPS and TLS</lnk>. Browsers ignore it
+            when it arrives over plain HTTP.
+        </p>
+
+        <heading h3 id="referrer-and-permissions">Referrer-Policy and Permissions-Policy</heading>
+        <p>
+            <cde>Referrer-Policy</cde> limits what the <cde>Referer</cde> header tells other sites
+            about the page a visitor came from: <cde>strict-origin-when-cross-origin</cde> sends
+            only your site's address, not the full path. <cde>Permissions-Policy</cde> switches off
+            browser features you never use, like the camera and microphone, so nothing on your page
+            can ask for them.
+        </p>
+
+        <heading h3 id="whats-clickjacking">What's Clickjacking?</heading>
+        <p>
+            Putting your page, invisible, in a frame on top of the attacker's page, lined up so that
+            what the visitor clicks isn't what they see. They click "Click here to win!" and press
+            your "Delete my account" button. It's your real page, logged in, CSRF token and all, so
+            none of your other defenses notice.
+        </p>
+
+        <side-story title="Clickjacking, 2008">
+            Jeremiah Grossman and Robert Hansen named clickjacking in 2008, and held back a talk
+            about it until Adobe could fix the worst example: Flash Player's settings page could be
+            framed invisibly, so a few innocent-looking clicks turned on someone's webcam and
+            microphone. Microsoft added the <cde>X-Frame-Options</cde> header to Internet Explorer 8
+            the next year, and other browsers followed.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Your page sends its headers with every response, before any of the HTML.</li>
+            <li>The browser reads them and remembers the rules for this page, or this site.</li>
+            <li>
+                As it builds the page, it checks each script, frame, image and form against the
+                rules, and refuses what isn't allowed, with a message in the developer tools'
+                console.
+            </li>
+            <li>
+                Another site trying to frame your page gets an empty frame or an error, never your
+                page.
+            </li>
+        </ol>
+        <p>
+            Headers are a second line, not the first. A page with an XSS hole and a strict policy is
+            still a page with an XSS hole; the policy just stops the most common way of using it.
+            Fix the code, and send the headers too.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            An account page with a "Delete my account" button, sent two ways. In a folder, make
+            <cde>page.php</cde>, the page itself. It has an inline script on purpose, to see what a
+            policy does to one, and loads <cde>app.js</cde>:
+        </p>
+        <code-block example="security-headers/page.php" />
+        <code-block example="security-headers/app.js" />
+        <p>Then <cde>headers.php</cde>, the headers, in one function:</p>
+        <code-block example="security-headers/headers.php" />
+        <p>
+            <cde>naive.php</cde> sends the page with no headers, and <cde>index.php</cde> sends them
+            first:
+        </p>
+        <code-block example="security-headers/naive.php" />
+        <code-block example="security-headers/index.php" />
+        <p>Start the server, and compare the two:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <!-- prettier-ignore -->
+        <code-block>curl -I http://localhost:8000/naive.php
+curl -I http://localhost:8000/</code-block>
+        <p>
+            The naive page sends none of them, and announces <cde>X-Powered-By: PHP/8.4.28</cde>
+            (or whatever yours is). The fixed one sends all six and no version. Now open both in a
+            browser. The naive page says "The inline script ran." The fixed page says "The inline
+            script didn't run," and the console says why: it violates the Content Security Policy.
+            <cde>app.js</cde> runs on both, because it's a file on your own site.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>header('Name: value')</cde>, before any output. One function that sends them
+                all, called at the top of every page, or once in a
+                <lnk to="/php/single-point-of-entry">single point of entry</lnk>.
+            </li>
+            <li>
+                <cde>header_remove('X-Powered-By')</cde>, or <cde>expose_php = Off</cde> in
+                <cde>php.ini</cde>.
+            </li>
+            <li>
+                Or let the web server send them for every response, PHP or not. In nginx,
+                <cde>add_header</cde>, with <cde>always</cde>.
+            </li>
+            <li>
+                Check them with <cde>curl -I</cde>, or the Network tab in the browser's developer
+                tools.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A strict policy breaks inline scripts, including yours.</strong>
+                <cde>onclick="..."</cde>, <cde>&lt;script&gt;</cde> blocks in the page, and
+                <cde>javascript:</cde> links all stop working. Move scripts into files. Adding
+                <cde>'unsafe-inline'</cde> to make the errors go away also lets every injected
+                script back in.
+            </li>
+            <li>
+                <strong>HSTS is hard to take back.</strong> A browser that has seen a year-long
+                <cde>max-age</cde> will refuse plain HTTP for a year. With
+                <cde>includeSubDomains</cde>, that's every subdomain too. Start with a short
+                <cde>max-age</cde>, and raise it once you're sure. Adding your site to the browsers'
+                preload list is harder still to undo.
+            </li>
+            <li>
+                <strong>nginx forgets inherited headers.</strong> An <cde>add_header</cde> inside a
+                <cde>location</cde> block means none of the server-level <cde>add_header</cde> lines
+                apply there. And without <cde>always</cde>, they're not sent on error pages.
+            </li>
+            <li>
+                <strong>Headers go on every response, files included.</strong>
+                <cde>nosniff</cde> matters most on uploads and downloads, like the images from
+                <lnk to="/php/file-uploads">File Uploads</lnk>.
+            </li>
+            <li>
+                <strong>Skip <cde>X-XSS-Protection</cde>.</strong> It controlled a filter browsers
+                have since removed. Old checklists still list it.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            The attacker's page: a big gold "Click here to win!" with your account page in a frame
+            on top of it, lined up so the delete button sits right over the prize. Make
+            <cde>evil.html</cde>:
+        </p>
+        <code-block example="security-headers/evil.html" />
+        <p>
+            Open <cde>http://localhost:8000/evil.html</cde>. You'll see the faint outline of "Delete
+            my account" over "Click here to win!" At opacity 0, you'd see only the prize. Click it:
+            the frame says "Your account has been deleted." The click went to your real page, which
+            had your session and a valid CSRF token, so it worked.
+        </p>
+        <p>
+            (In a real attack this page is on another site. There, a session cookie with
+            <cde>SameSite=Lax</cde>, from
+            <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>, isn't sent to
+            the frame at all, which helps. But not every page needs a login to do damage, and a page
+            on your own site, or a sibling subdomain, gets the cookie anyway.)
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            The fixed page already sends <cde>frame-ancestors 'none'</cde> and
+            <cde>X-Frame-Options: DENY</cde>. Make <cde>evil-fixed.html</cde>, the same page framing
+            <cde>/</cde> instead of <cde>/naive.php</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>&lt;iframe src="/"&gt;&lt;/iframe&gt;</code-block>
+        <p>
+            Open <cde>http://localhost:8000/evil-fixed.html</cde>. There's the gold prize, and
+            nothing over it: the browser refused to put your page in the frame. Click the prize, and
+            nothing happens to your account. The console says the page was blocked by its
+            <cde>frame-ancestors</cde> directive.
+        </p>
+
+        <!-- $2 tip -->
+        <two-dollars title="Try a policy before you enforce it">
+            <p>
+                Send your new policy as <cde>Content-Security-Policy-Report-Only</cde> first. The
+                browser enforces nothing, but logs every violation in the console, so you can click
+                through your whole site and see what would break: the inline script you forgot, the
+                font from another site. Fix those, then rename the header.
+            </p>
+        </two-dollars>
+
+        <p>
+            Your headers, your code, your settings. But most of the code running your site wasn't
+            written by you. Next: your dependencies are your code too.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/dependencies">Next: Your Dependencies Are Your Code Too &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

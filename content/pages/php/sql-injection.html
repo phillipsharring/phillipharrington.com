@@ -1,0 +1,277 @@
+<layout name="default" title="SQL Injection" />
+<page-head>
+    <meta
+        name="description"
+        content="What happens when input is pasted into a SQL query: the quote that breaks it, the OR that finds everyone, the UNION that hands over the password hashes, and the prepared statement that ends all of it. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="SQL injection, prepared statements, PDO prepare, bound parameters, UNION injection, OR 1=1, Bobby Tables, ORDER BY allow list, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Input pasted into SQL, and the prepared statement that stops it. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="sql-injection">SQL Injection</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/never-trust-input">Never Trust Input</lnk> ended with a rule for values on
+            their way out of your code: escape them for wherever they're going. SQL injection is
+            what happens when the place is a database query and nobody did. It's one of the oldest
+            attacks on the web and still one of the most common, and in PHP the fix is one habit
+            you've had since <lnk to="/php/pdo">PDO and Prepared Statements</lnk>.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-sql-injection">What's SQL Injection?</heading>
+        <p>
+            Your code builds a query by gluing input into a string of
+            <lnk to="/php/sql">SQL</lnk>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>$sql = "SELECT `name` FROM `members` WHERE `email` = '$email'";</code-block>
+        <p>
+            You meant <cde>$email</cde> to be a value. But the database can't see where your SQL
+            ends and the input begins; it gets one string and runs all of it. If the input contains
+            a quote, it closes yours, and whatever comes after is SQL the visitor wrote. They've
+            injected it.
+        </p>
+
+        <heading h3 id="whats-a-prepared-statement">What's a Prepared Statement?</heading>
+        <p>
+            A query sent in two parts. First the SQL, with a <cde>?</cde> (or a name like
+            <cde>:email</cde>) where each value goes. Then the values, separately. The database has
+            already read the SQL before it sees the values, so a value can only ever be a value. A
+            quote in it is a quote character, nothing more.
+        </p>
+
+        <side-story title="Phrack, 1998">
+            One of the first public write-ups of SQL injection appeared in December 1998, in the
+            hacker magazine Phrack, by Jeff Forristal under the name rain.forest.puppy. He showed
+            how web pages that pasted input into queries for Microsoft SQL Server could be made to
+            run extra commands. More than 25 years later, it's still on every list of the most
+            common web vulnerabilities.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The attack, against a query glued together from input:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The attacker types a quote, <cde>'</cde>, into a field.</li>
+            <li>
+                Your code pastes it in. The query now has one quote too many, and the database
+                answers with a syntax error. That error tells the attacker the field goes straight
+                into SQL.
+            </li>
+            <li>
+                They type something that closes your quote and adds a condition of their own:
+                <cde>' OR '1'='1</cde>. Now the <cde>WHERE</cde> is true for every row.
+            </li>
+            <li>
+                Then a <cde>UNION</cde>, which tacks a second query of their choosing onto yours,
+                and the page shows its results as if they were yours: any table, any column.
+            </li>
+        </ol>
+        <p>And the defense, with a prepared statement:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                PHP sends the SQL with a <cde>?</cde> in it. The database reads it and plans it.
+            </li>
+            <li>PHP sends the value. The database puts it in the <cde>?</cde> as data.</li>
+            <li>
+                The query looks for a member whose email is, character for character,
+                <cde>' OR '1'='1</cde>. There isn't one.
+            </li>
+        </ol>
+        <p>
+            Escaping a value by hand, adding backslashes before its quotes, can also work, and it is
+            how this was fought for years. It's easy to forget once, and once is all it takes.
+            Prepared statements make the safe way the only way.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A members' club with a lookup page: give it an email, and it tells you the member's
+            name. You need a database, so this is a Compose project like the one in
+            <lnk to="/php/sql">SQL</lnk>. In a folder, make <cde>compose.yml</cde>:
+        </p>
+        <code-block example="sql-injection/compose.yml" />
+        <p>
+            Then the two-line <cde>Dockerfile</cde> that adds MySQL support to PHP, and
+            <cde>init.sql</cde>, which makes the table. The passwords are stored the right way, as
+            hashes, which <lnk to="/php/passwords">Passwords</lnk> explains:
+        </p>
+        <code-block example="sql-injection/Dockerfile" />
+        <code-block example="sql-injection/init.sql" />
+        <p>And <cde>db.php</cde>, which connects:</p>
+        <code-block example="sql-injection/db.php" />
+        <p>
+            Now the lookup page, the naive way, pasting the email into its SQL. Make
+            <cde>naive.php</cde>. It prints its own query, so you can watch what happens to it:
+        </p>
+        <code-block example="sql-injection/naive.php" />
+        <p>Start everything, and wait until the database is ready:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --build --wait</code-block>
+        <p>Look up a member:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl --get --data-urlencode 'email=alice@example.com' http://localhost:8000/naive.php</code-block>
+        <p>
+            <cde>Found: Alice</cde>, and the query it ran. It works, for every honest visitor. Keep
+            it running for Break It.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$pdo-&gt;prepare('... WHERE `email` = ?')</cde>, then
+                <cde>$statement-&gt;execute([$email])</cde>. Or named: <cde>:email</cde>, and
+                <cde>execute(['email' =&gt; $email])</cde>.
+            </li>
+            <li>
+                <cde>PDO::ATTR_EMULATE_PREPARES =&gt; false</cde> makes PDO send real prepared
+                statements to MySQL, instead of building the query itself with escaped values.
+            </li>
+            <li>
+                <cde>charset=utf8mb4</cde> in the connection string, so PHP and MySQL agree on how
+                the bytes are read. See
+                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk>.
+            </li>
+            <li>
+                <cde>$pdo-&gt;query()</cde> only for SQL with no input in it at all. If you're about
+                to put a variable in the string, stop and use <cde>prepare()</cde>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Column and table names can't be bound.</strong> A <cde>?</cde> stands for a
+                value, never for <cde>ORDER BY ?</cde>. For a sort column picked by the visitor, use
+                an allow list:
+                <cde
+                    >$column = match ($_GET['sort'] ?? '') { 'email' =&gt; 'email', default =&gt;
+                    'name' };</cde>, then put <cde>$column</cde> in the SQL.
+            </li>
+            <li>
+                <strong><cde>LIKE</cde> has its own wildcards.</strong> A bound value is safe, but a
+                <cde>%</cde> or <cde>_</cde> in it still matches anything. Escape those yourself if
+                a search should take them literally.
+            </li>
+            <li>
+                <strong><cde>IN (...)</cde> needs one <cde>?</cde> per value.</strong> Build the
+                placeholders, <cde>implode(',', array_fill(0, count($ids), '?'))</cde>, and bind the
+                values. Never <cde>implode()</cde> the values themselves into the SQL.
+            </li>
+            <li>
+                <strong>The database's data is input too.</strong> A value that went in safely
+                through a prepared statement can still be pasted unsafely into a later query.
+                Second-order injection, it's called. Bind it again, every time.
+            </li>
+            <li>
+                <strong>Error messages help the attacker.</strong> The naive page printed MySQL's
+                complaint, with your file path. Turn <cde>display_errors</cde> off in production, as
+                in <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            <strong>Never trust input,</strong> and here's why. With Try It still running, start
+            with one quote:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl --get --data-urlencode "email='" http://localhost:8000/naive.php</code-block>
+        <p>
+            The query is now <cde>WHERE `email` = '''</cde>, and the answer is a fatal error: "You
+            have an error in your SQL syntax." The attacker now knows this field goes straight into
+            SQL. Next, a condition that's always true:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl --get --data-urlencode "email=' OR '1'='1" http://localhost:8000/naive.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>The query: SELECT `name` FROM `members` WHERE `email` = '' OR '1'='1'
+
+Found: Alice
+Found: Bob
+Found: Chloé</code-block>
+        <p>
+            Every member. Then a <cde>UNION</cde>, to read columns the page never meant to show. The
+            <cde>-- -</cde> at the end starts a comment, which swallows your closing quote:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl --get --data-urlencode "email=' UNION SELECT CONCAT(email, ' ', password_hash) FROM members -- -" http://localhost:8000/naive.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>Found: alice@example.com $2y$12$HEA59rdH50QDhKzo1h3G7Oxt0X.q59l7rP5Jio4u/kbNJ2Xd3TO4i
+Found: bob@example.com $2y$12$Tj1fZosmNkQQ1LO6zcMr9Or2WaIl8AfptGAbNefTZTTuIPPWS0ULa
+Found: chloe@example.com $2y$12$eVGWV53tJlybT6QhQDs45ebkfpm33TCNZzTT4i0uJ.FR1V4A6lHey</code-block>
+        <p>
+            Every email address and every password hash, from a page that was only ever supposed to
+            say a name. The same trick reads any table the database user can.
+        </p>
+        <p>
+            You may have heard of the attack that ends in <cde>DROP TABLE</cde>. Try
+            <cde>'; DROP TABLE members; -- -</cde> here, and MySQL refuses it with another syntax
+            error. With emulation off, PDO sends even <cde>query()</cde> as a real prepared
+            statement, and MySQL allows only one statement in one of those. That's luck, not safety.
+            The <cde>UNION</cde> didn't need a second statement.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>Make <cde>index.php</cde>. The SQL has a <cde>?</cde>, and the email goes separately:</p>
+        <code-block example="sql-injection/index.php" />
+        <p>Send it the same three:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl --get --data-urlencode "email='" http://localhost:8000/
+curl --get --data-urlencode "email=' OR '1'='1" http://localhost:8000/
+curl --get --data-urlencode "email=' UNION SELECT CONCAT(email, ' ', password_hash) FROM members -- -" http://localhost:8000/</code-block>
+        <p>
+            Each one gets "No member with that email." The database looked for a member whose email
+            is that whole string, quotes and all, and found nobody. Honest lookups still work.
+            <cde>docker compose down -v</cde> stops everything and deletes the database.
+        </p>
+
+        <side-story title="Little Bobby Tables">
+            In 2007, the webcomic xkcd ran "Exploits of a Mom": a school calls a mother because her
+            son's name has broken their records, and the name is
+            <cde>Robert'); DROP TABLE Students;--</cde>. She hopes they've learned to sanitize their
+            database inputs. Developers have been sending each other that strip ever since, and
+            "Bobby Tables" is the nickname the attack never lost.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Grep for the quote">
+            <p>
+                Search your code for SQL with a variable in it:
+                <cde>grep -rnE "(query|exec)\(.*\\$" src/</cde> finds <cde>query()</cde> and
+                <cde>exec()</cde> calls with a <cde>$</cde> in the line. Every hit is either SQL
+                with no input in it, which is fine, or a prepared statement waiting to be written.
+            </p>
+        </two-dollars>
+
+        <p>
+            A prepared statement keeps input out of your SQL. Keeping it out of your HTML is the
+            same idea with a different escape. Next: XSS and escaping output.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/xss">Next: XSS and Escaping Output &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

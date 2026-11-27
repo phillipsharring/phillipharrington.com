@@ -1,0 +1,203 @@
+<layout name="default" title="Defensive Programming" />
+<page-head>
+    <meta
+        name="description"
+        content="Code that checks what it's handed and refuses loudly when it's wrong, instead of carrying on with nonsense. Where to check, what to check, and where checking more stops helping. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="defensive programming, fail fast, guard clauses, InvalidArgumentException, strict_types, TypeError, assert, input validation, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Code that checks what it's handed and refuses loudly. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="defensive-programming">Defensive Programming</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A file that only declares things can be used from anywhere, which means it will be
+            called by code you didn't write, with values you didn't expect. Defensive programming is
+            writing each function so that when it's handed something wrong, it says so right away,
+            instead of quietly working out a wrong answer for someone else to find.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-defensive-programming">What's Defensive Programming?</heading>
+        <p>
+            Checking your assumptions in code, at the top of a function, before you rely on them. A
+            price can't be negative. A percentage is 0 to 100. An order being shipped has been paid
+            for. Each of those is true in your head; a defensive function makes it true in the
+            program, by refusing to go on when it isn't.
+        </p>
+
+        <heading h3 id="fail-loudly">Fail Loudly, Fail Early</heading>
+        <p>
+            A function that gets nonsense has two choices: carry on, or stop. Carrying on looks
+            friendlier, and it's how a negative price ends up on an invoice three steps later, far
+            from the line that caused it. Stopping, with an exception that says what was wrong and
+            what the value was, puts the error next to its cause.
+        </p>
+
+        <heading h3 id="validating-vs-defending">Validating vs. Defending</heading>
+        <p>
+            Two jobs that look alike. <strong>Validating</strong> happens at the edge, where input
+            arrives: a form, a URL, an API call. Bad input there is normal, and it gets a polite
+            answer for a person. <strong>Defending</strong> happens inside: a function checking its
+            own arguments. Bad values there mean a bug, and they get an exception for a programmer.
+            You need both. <lnk to="/php/never-trust-input">Never trust input</lnk> at the edge, and
+            don't let a mistake inside pass in silence.
+        </p>
+
+        <side-story title="Margaret Hamilton and the 1202">
+            Minutes before Apollo 11 landed, the guidance computer started raising alarms, 1202 and
+            1201: it had more work than it could do. The software, written by the MIT team led by
+            Margaret Hamilton, was built for that. It dropped its lowest-priority jobs, kept the
+            ones the landing needed, and carried on. Hamilton is also known for insisting on the
+            term "software engineering," so that the work would be taken as seriously as the rest of
+            the engineering.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Let the types do what they can. With <cde>declare(strict_types=1)</cde>, an
+                <cde>int</cde> parameter refuses a string, even <cde>'25'</cde>.
+            </li>
+            <li>
+                Check what types can't say, first thing: ranges, empty strings, states that make no
+                sense.
+            </li>
+            <li>
+                If a check fails, throw, with the name of the thing and the value you got. Don't
+                return <cde>false</cde>, <cde>null</cde> or <cde>0</cde> and hope someone checks.
+            </li>
+            <li>
+                At the edge, validate input before it reaches those functions, and answer the person
+                politely. The function's check is for the mistake you didn't think of.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A discount, written twice. In a folder, make a <cde>before</cde> folder with
+            <cde>discount.php</cde>, which trusts its caller:
+        </p>
+        <code-block example="defensive-programming/before/discount.php" />
+        <p>Then an <cde>after</cde> folder with its own <cde>discount.php</cde>, which checks:</p>
+        <code-block example="defensive-programming/after/discount.php" />
+        <p>And <cde>run.php</cde>, which calls one or the other with the same three discounts:</p>
+        <code-block example="defensive-programming/run.php" />
+        <p>Run both:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php before
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block>
+        <p>
+            The trusting version sells a 20.00 shirt for -10.00 at 150% off, and for 30.00 at -50%
+            off, and never complains. The careful one refuses both and says exactly what it got.
+            Both refuse the string <cde>'25'</cde>: that's the types, for free. Now the edge. Make
+            <cde>shop.php</cde>, where a discount code arrives from a URL:
+        </p>
+        <code-block example="defensive-programming/shop.php" />
+        <p>Serve the folder, and try a real code and a made-up one:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000
+curl 'http://localhost:8000/shop.php?code=half'
+curl -i 'http://localhost:8000/shop.php?code=FREE'</code-block>
+        <p>
+            <cde>half</cde> gets 10.00. <cde>FREE</cde> gets a <cde>422</cde> and a sentence a
+            person can read, and <cde>discountedCents()</cde> is never called with it. The polite
+            answer is the shop's job; the exception is there for the day someone calls the function
+            with a number nobody checked.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>declare(strict_types=1)</cde> and typed parameters and returns: the cheapest
+                defense there is. A wrong type is a <cde>TypeError</cde>.
+            </li>
+            <li>
+                <cde>InvalidArgumentException</cde> for an argument that's the right type and the
+                wrong value; <cde>DomainException</cde> or your own exception class for a state that
+                shouldn't happen. See <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk>.
+            </li>
+            <li>
+                <cde>match</cde> with no <cde>default</cde> throws <cde>UnhandledMatchError</cde>
+                for a case you didn't list, instead of falling through.
+            </li>
+            <li>
+                <cde>assert()</cde> checks things in development. In production it's normally
+                switched off (<cde>zend.assertions = -1</cde>), so never use it for anything that
+                has to happen.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Exceptions aren't for users.</strong> A visitor who types a bad code should
+                see "That code isn't one of ours," not a stack trace. Validate at the edge, and let
+                exceptions inside reach your error log, not the page.
+            </li>
+            <li>
+                <strong>Returning <cde>false</cde> on failure is a trap.</strong> Somebody will
+                forget to check, and <cde>false</cde> becomes <cde>0</cde> in the next sum. PHP's
+                older functions do this (<cde>file_get_contents()</cde>, <cde>fopen()</cde>); your
+                own functions don't have to.
+            </li>
+            <li>
+                <strong>Don't defend everything everywhere.</strong> Checking the same value in five
+                functions in a row is clutter, and clutter hides bugs too. Check at the edge, check
+                where a function's own rules begin, and trust the types in between.
+            </li>
+            <li>
+                <strong>The checks are input handling too.</strong> <cde>shop.php</cde> checks that
+                <cde>code</cde> is a string before trimming it: ask for <cde>?code[]=HALF</cde>, and
+                PHP hands you an array. Never trust input to be the type you expect.
+            </li>
+        </list>
+
+        <side-story title="Ariane 5">
+            In 1996, the first Ariane 5 rocket broke up less than a minute after launch. Its
+            guidance software had been reused from Ariane 4, and one conversion, from a 64-bit
+            floating-point number to a 16-bit integer, wasn't protected, because on Ariane 4 the
+            value could never get that big. Ariane 5 was faster. The number overflowed, the guidance
+            system shut down, and the backup, running the same code, had already done the same.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Put the value in the message">
+            <p>
+                "Invalid percentage" tells you something went wrong. "percentOff must be 0 to 100,
+                got 150" tells you what, and usually where it came from. Every exception message you
+                write, include the value you were handed. It costs a few characters and saves the
+                hour you'd spend reproducing it.
+            </p>
+        </two-dollars>
+
+        <p>
+            Checks like these are easy to copy into every place that needs them, and every copy is
+            one more place to forget when the rule changes. Next: DRY.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/dry">Next: DRY &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

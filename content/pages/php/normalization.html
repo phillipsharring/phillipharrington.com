@@ -1,0 +1,262 @@
+<layout name="default" title="Normalization" />
+<page-head>
+    <meta
+        name="description"
+        content="Say each fact once, in the table it's about. Normalization in plain words, what goes wrong when you don't, and when to break the rule on purpose. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="database normalization, first normal form, second normal form, third normal form, denormalization, update anomaly, duplicate data, counter cache, schema design, MySQL, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Say each fact once, in the table it's about. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="normalization">Normalization</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/relating-tables">Relating Tables</lnk> moved the authors out of the books
+            table and into their own, so each name is written once. Normalization is that move, made
+            into a habit: say each fact once, in the table it's about. It has a reputation for
+            theory and numbered forms, but the idea fits in a sentence, and the reason for it fits
+            in one Try It.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-normalization">What's Normalization?</heading>
+        <p>
+            Arranging tables so that every fact is stored in exactly one place. A customer's email
+            is a fact about the customer, so it lives in one row of <cde>customers</cde>. Not on
+            every order she's ever placed.
+        </p>
+        <p>
+            When a fact is written in two places, the two can disagree, and then nobody knows which
+            is right. Normalization doesn't make that rare. It makes it impossible.
+        </p>
+
+        <heading h3 id="the-normal-forms">The Normal Forms</heading>
+        <p>
+            Database books number the rules. The first three are the ones that matter day to day,
+            and each fits in a line:
+        </p>
+        <list>
+            <li>
+                <strong>First</strong>: one value per column. No list of tags in a
+                <cde>tags</cde> column, no <cde>phone1</cde>, <cde>phone2</cde>, <cde>phone3</cde>.
+                A list is rows in another table.
+            </li>
+            <li>
+                <strong>Second</strong>: when the key is more than one column, every other column
+                depends on all of it. In <cde>book_tags</cde>, keyed on book and tag, a tag's name
+                depends on the tag alone, so it belongs in <cde>tags</cde>.
+            </li>
+            <li>
+                <strong>Third</strong>: no column depends on another column that isn't the key. An
+                order's customer email depends on the customer, not the order, so it belongs in
+                <cde>customers</cde>.
+            </li>
+        </list>
+        <p>
+            Put together: every column is a fact about the thing the table is about, and nothing
+            else.
+        </p>
+
+        <side-story title="Codd's Paper">
+            Edgar Codd, a mathematician at IBM, published "A Relational Model of Data for Large
+            Shared Data Banks" in 1970. It described data as tables related by values, and the first
+            normal form came with it. He defined the second and third the year after. Most of what
+            this section teaches, tables, keys and the rules about where facts go, traces back to
+            those papers.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>To normalize a table, go column by column and ask whose fact it is:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Find the thing the table is about: an order. Its key identifies one of them.</li>
+            <li>
+                For each column, ask: is this a fact about the order? The product it was for, yes.
+                The customer's email, no: that's a fact about the customer.
+            </li>
+            <li>
+                Move each fact that's about something else into that thing's table, and leave a
+                foreign key in its place: <cde>customer_id</cde>.
+            </li>
+            <li>When you need them together again, join.</li>
+        </ol>
+        <p>
+            Some facts look like copies and aren't. An order's price is what the customer paid that
+            day. The product's price is what it costs now. They start out equal, and they're
+            supposed to drift apart, so the order keeps its own.
+        </p>
+
+        <heading h3 id="breaking-it-on-purpose">Breaking It on Purpose</heading>
+        <p>
+            Sometimes you store a copy anyway, because working it out every time costs too much. A
+            page that shows every customer with their number of orders would count all the orders of
+            every customer, on every view. Storing an <cde>order_count</cde> on each customer makes
+            that page cheap. It's a copy of a fact (the real one is the orders themselves), and it's
+            fine, as long as you treat it like one:
+        </p>
+        <list>
+            <li>Every piece of code that adds or removes an order updates the count, too.</li>
+            <li>Both changes happen together, or not at all.</li>
+            <li>
+                You know which one is the truth (the orders), and you have a query that rebuilds the
+                copy from it.
+            </li>
+        </list>
+        <p>
+            Do it when you've measured a real cost, not in advance. Most counts are cheap to work
+            out, given the right index.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The same four orders, stored the flat way and the normalized way. The same
+            <cde>compose.yml</cde>, <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL, and this
+            <cde>init.sql</cde>:
+        </p>
+        <code-block example="normalization/init.sql" />
+        <p>Start the database and open the <cde>mysql</cde> command:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose exec db mysql -u app -papp-password course</code-block>
+        <p>
+            Alice gets a new email address. In the flat table, code that updates "the order she's
+            looking at" changes one row:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>UPDATE `orders_flat`
+SET `customer_email` = 'alice@example.org'
+WHERE `id` = 3;
+
+SELECT DISTINCT `customer_name`, `customer_email`
+FROM `orders_flat`
+WHERE `customer_name` = 'Alice Rivera';</code-block>
+        <p>
+            Alice now has two email addresses, and nothing in the database says which is current.
+            Send her a receipt, and it's a coin toss. Now the normalized tables:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>UPDATE `customers`
+SET `email` = 'alice@example.org'
+WHERE `id` = 1;
+
+SELECT `orders`.`id`, `customers`.`email`
+FROM `orders`
+INNER JOIN `customers` ON `customers`.`id` = `orders`.`customer_id`
+WHERE `customers`.`id` = 1;</code-block>
+        <p>
+            One row changed, and all three of her orders show the new address, because there was
+            only ever one. Then raise the price of a mug, and look at the old order:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>UPDATE `products`
+SET `price_cents` = 1400
+WHERE `id` = 1;
+
+SELECT `orders`.`id`, `orders`.`price_cents` AS `paid`, `products`.`price_cents` AS `now`
+FROM `orders`
+INNER JOIN `products` ON `products`.`id` = `orders`.`product_id`
+WHERE `products`.`id` = 1;</code-block>
+        <p>
+            Paid 1200, now 1400. Both are true. Type <cde>exit</cde>. Last, the copy kept on
+            purpose. <cde>place-order.php</cde> adds an order and bumps the customer's
+            <cde>order_count</cde>, together:
+        </p>
+        <code-block example="normalization/place-order.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php place-order.php 2 1</code-block>
+        <p>
+            Bo's order costs the new price, 14.00. Check the copy against the truth, from the
+            <cde>mysql</cde> command again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `customers`.`name`, `customers`.`order_count`, COUNT(`orders`.`id`) AS `counted`
+FROM `customers`
+LEFT JOIN `orders` ON `orders`.`customer_id` = `customers`.`id`
+GROUP BY `customers`.`id`;</code-block>
+        <p>
+            The stored count and the real one agree: 3 and 3, 2 and 2. Run that query now and then
+            in real life, too. <cde>docker compose down -v</cde> when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Read the current price from <cde>products</cde>, on the server, and copy it into the
+                order. <strong>Never trust input</strong>: a price that arrives in a form is
+                whatever the visitor decided to pay.
+            </li>
+            <li>
+                <cde>$pdo-&gt;beginTransaction()</cde> and <cde>$pdo-&gt;commit()</cde> around a
+                change and its copy, so they can't come apart.
+                <lnk to="/php/transactions">Transactions</lnk> has the rest.
+            </li>
+            <li>
+                <cde>SET `order_count` = `order_count` + 1</cde> lets the database do the adding.
+                Reading the count into PHP, adding one, and writing it back loses updates when two
+                orders land at once.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A repeated value isn't always a repeated fact.</strong> Two customers who
+                both live in Portland don't need a table of cities. Each one's city is a fact about
+                that customer. It's only a copy when it has to change everywhere at once.
+            </li>
+            <li>
+                <strong>Lists in a column can't be joined, checked or indexed.</strong>
+                <cde>'classic,science fiction'</cde> in one column looks easy until you need every
+                book with a tag, or need to rename one. Use a table with a row per item.
+            </li>
+            <li>
+                <strong>Copies drift.</strong> Store a count, and someday a script will delete an
+                order straight from the database and forget it. Keep the rebuild query, and the
+                truth, close by.
+            </li>
+            <li>
+                <strong>Don't point at a value that's meant to stay put.</strong> An order that
+                looks up the product's current price shows the wrong total the day the price
+                changes. Copy what has to stay as it was.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Write the rebuild next to the copy">
+            <p>
+                Whenever you store a copy on purpose, put a comment beside the column saying what it
+                copies, and the query that rebuilds it, like the one on
+                <cde>order_count</cde> in <cde>init.sql</cde>. The next person, or you in a year,
+                will know which number to trust, and how to fix the other.
+            </p>
+        </two-dollars>
+
+        <p>
+            That count was worth storing because counting is slow, when the database has to read
+            every row to do it. There's a better fix for most slow queries. Next: indexes.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/indexes">Next: Indexes &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

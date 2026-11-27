@@ -1,0 +1,202 @@
+<layout name="default" title="Form Validation" />
+<page-head>
+    <meta
+        name="description"
+        content="Pull form checking out of the page and into a small Validator class you can reuse and test: required fields, lengths in characters, email addresses, numbers in a range, allow lists, errors beside each field, and PHPUnit tests that prove it. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP form validation, validator class, server-side validation, PHPUnit, FILTER_VALIDATE_INT, FILTER_VALIDATE_EMAIL, mb_strlen, aria-invalid, aria-describedby, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A small, tested Validator class for every form you write. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="form-validation">Form Validation</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The Contact Form checked three fields by hand, and the checking was most of the page.
+            Every form you write from now on needs the same checks: is it there, is it text, is it
+            too long, is it an email address, is it one of the choices. Write them once, in a class,
+            and every form gets them right.
+        </p>
+        <p>
+            You'll build a small <cde>Validator</cde>, a registration form that uses it and shows
+            each error beside its field, and a set of PHPUnit tests that prove the validator does
+            what it says. Validation is exactly the kind of code that should have tests: small,
+            fiddly, and the only thing standing between your database and whatever people send.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: the reason this class
+                exists.
+            </li>
+            <li>
+                <lnk to="/php/classes-and-objects">Classes and Objects</lnk> and
+                <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>.
+            </li>
+            <li>
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: counting characters, not bytes.
+            </li>
+            <li><lnk to="/php/testing">Testing</lnk>: PHPUnit.</li>
+            <li>
+                <lnk to="/php/projects/contact-form">Contact Form</lnk>: the hand-written checks
+                this replaces.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-setup">The Setup</heading>
+        <p>
+            A new project folder, with a <cde>.gitignore</cde> and a <cde>composer.json</cde> that
+            autoloads your code from <cde>src</cde> and your tests from <cde>tests</cde>:
+        </p>
+        <code-block example="project-form-validation/.gitignore" />
+        <p>
+            Then add PHPUnit as a development dependency. <cde>--dev</cde> means it's for working on
+            the project, not for running it, so a live server can skip it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require --dev phpunit/phpunit</code-block>
+        <code-block example="project-form-validation/composer.json" />
+
+        <heading h3 id="the-validator">The Validator</heading>
+        <p><cde>src/Validator.php</cde>:</p>
+        <code-block example="project-form-validation/src/Validator.php" />
+        <p>How it works:</p>
+        <list>
+            <li>
+                <strong>It's given the data.</strong> The constructor takes an array, usually
+                <cde>$_POST</cde>. It never reaches for <cde>$_POST</cde> itself, which is what
+                makes it easy to test: hand it any array you like.
+            </li>
+            <li>
+                <strong>Each method checks one field and returns it clean,</strong> trimmed and
+                typed, or <cde>null</cde> if it failed. <cde>int()</cde> returns an actual
+                <cde>int</cde>, so the rest of your code never sees the string <cde>"42"</cde>.
+            </li>
+            <li>
+                <strong>Everything starts with <cde>text()</cde>.</strong> Before anything else, the
+                value has to be a string (not missing, not an array from <cde>name[]=</cde>), valid
+                UTF-8, and no longer than the limit, counted with <cde>mb_strlen()</cde> in
+                characters, so "Zoë" is three, not four.
+            </li>
+            <li>
+                <strong>Errors are filed by field,</strong> so the form can show each one where it
+                belongs. Only the first problem with a field is kept.
+            </li>
+            <li>
+                <strong><cde>oneOf()</cde> is an allow list,</strong> with the strict
+                <cde>in_array()</cde>, as in <lnk to="/php/forms">Forms</lnk>.
+            </li>
+        </list>
+
+        <heading h3 id="the-tests">The Tests</heading>
+        <p>
+            <cde>tests/ValidatorTest.php</cde> says what the validator promises, one promise per
+            test, including the hostile cases: an array instead of text, a byte sequence that isn't
+            UTF-8, a number with letters after it, a hex number, an email address with a header
+            tucked in after a newline:
+        </p>
+        <code-block example="project-form-validation/tests/ValidatorTest.php" />
+        <p>And <cde>phpunit.xml</cde>, which tells PHPUnit where things are:</p>
+        <code-block example="project-form-validation/phpunit.xml" />
+        <p>Run them:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php vendor/bin/phpunit</code-block>
+        <p>
+            Twelve dots and <cde>OK (12 tests, 28 assertions)</cde>. Break the validator on purpose,
+            say by changing <cde>mb_strlen</cde> to <cde>strlen</cde>, and run them again: the
+            characters-not-bytes test fails, and tells you which line. That's what tests are for.
+        </p>
+
+        <heading h3 id="the-form">The Form</heading>
+        <p><cde>public/index.php</cde>, a registration form that uses it:</p>
+        <code-block example="project-form-validation/public/index.php" />
+        <p>
+            Each field gets its error beside it, and <cde>aria-invalid</cde> and
+            <cde>aria-describedby</cde> tie the error to the field, so a screen reader says what's
+            wrong when someone lands on it. What they typed goes back into the form, escaped, so a
+            mistake doesn't mean starting over. The form has <cde>novalidate</cde> so you can see
+            the server's checks at work; take it off and add <cde>required</cde> to bring back the
+            browser's as a courtesy.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and press Register with nothing filled in. Then
+            send it nonsense, the way a script would:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'name=&amp;email=alice@&amp;age=12abc&amp;ticket=free' http://localhost:8000</code-block>
+        <p>
+            "Please fix the 4 problems below," and each one beside its field: Name is required,
+            Email must be an email address, Age must be a whole number from 13 to 120, Ticket must
+            be one of the choices.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Validate, then escape. They're different jobs.</strong> Validation decides
+                whether to accept a value. Escaping makes a value safe in one particular place:
+                HTML, SQL, a URL. A perfectly valid name can still be
+                <cde>&lt;b&gt;Al&lt;/b&gt;</cde>, and it still gets escaped on the way out.
+            </li>
+            <li>
+                <strong><cde>(int)</cde> isn't validation.</strong> <cde>(int) "12abc"</cde> is 12,
+                and <cde>(int) "banana"</cde> is 0. Casting hides bad input; it doesn't refuse it.
+                <cde>FILTER_VALIDATE_INT</cde> refuses it.
+            </li>
+            <li>
+                <strong>Be careful how strict you are about names.</strong> People's names have
+                apostrophes, hyphens, spaces, accents, one word or five, and letters from every
+                alphabet. Limit the length and the encoding, and accept the rest.
+            </li>
+            <li>
+                <strong>Email validation only checks the shape.</strong>
+                <cde>alice@example.com</cde>
+                passes, whether or not there's an Alice. The only way to know an address works is to
+                send it something and see if they answer.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Test the attack, not just the happy path">
+            <p>
+                For every check you write, write one test with the input you're afraid of: the
+                array, the 10,000-character string, the invalid UTF-8, the newline. Happy-path tests
+                tell you the code works. Hostile-input tests tell you it can't be fooled, and they
+                keep it that way after the next person edits it.
+            </p>
+        </two-dollars>
+
+        <p>
+            A good form, once it's accepted, usually sends the visitor somewhere else. Where it
+            sends them turns out to be a question an attacker would like to answer. Next:
+            redirecting.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/redirecting">Next: Redirecting &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

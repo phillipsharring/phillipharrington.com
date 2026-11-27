@@ -1,0 +1,199 @@
+<layout name="default" title="JavaScript" />
+<page-head>
+    <meta
+        name="description"
+        content="The language that runs in the browser: what it can and can't do, how it reaches the page, and how to hand it data from PHP without letting input break out of the script. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="JavaScript, script tag, defer, DOM, events, textContent vs innerHTML, json_encode, JSON_HEX_TAG, PHP to JavaScript, client-side validation, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The language that runs in the browser, and handing it data from PHP. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="javascript">JavaScript</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            HTML is what the page is, and CSS is how it looks. JavaScript is what it does once it's
+            in the browser: open a menu, check a field as you type, fetch new data without loading a
+            new page. It's a whole language, and this course won't teach all of it. What a PHP
+            developer needs is where it runs, what it can be trusted with, and how to hand it data.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-javascript">What's JavaScript?</heading>
+        <p>
+            A programming language built into every browser. PHP runs on your server, once per
+            request, and is finished before the page arrives. JavaScript runs on the visitor's
+            computer, after the page arrives, for as long as the page is open. It can change
+            anything on the page, react to clicks and typing, and make requests of its own.
+        </p>
+        <p>
+            It runs on the visitor's computer, so the visitor controls it. They can read every line,
+            change it, or turn it off. Anything JavaScript checks, the server checks again. Anything
+            in JavaScript, every key and every rule, is public.
+        </p>
+
+        <heading h3 id="the-dom">The DOM</heading>
+        <p>
+            The tree of elements the browser built from the HTML, from the
+            <lnk to="/php/html">HTML</lnk> lesson. JavaScript sees the page as that tree:
+            <cde>document.getElementById('size')</cde> finds an element, and changing it changes the
+            page on the spot.
+        </p>
+
+        <heading h3 id="events">Events</heading>
+        <p>
+            Things that happen: a click, a key, a form being sent, the page finishing loading.
+            <cde>element.addEventListener('change', ...)</cde> says what to run when one happens.
+            Most of the JavaScript on a page is waiting for one.
+        </p>
+
+        <side-story title="Ten Days in May">
+            Brendan Eich wrote the first version of JavaScript at Netscape in about ten days in May
+            1995. It was called Mocha, then LiveScript, and then JavaScript, a name chosen while
+            Java was the most talked-about language around. Apart from the name and some syntax, the
+            two have little in common. The standard version is called ECMAScript, after Ecma
+            International, which published it in 1997.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The HTML names a script:
+                <cde>&lt;script src="/app.js" defer&gt;&lt;/script&gt;</cde>.
+            </li>
+            <li>
+                The browser fetches it, like a stylesheet. <cde>defer</cde> says to run it after the
+                whole page has been read, so the elements it looks for exist.
+            </li>
+            <li>
+                The script runs, finds the elements it needs, and sets up what to do when events
+                happen.
+            </li>
+            <li>The visitor does something, and the matching code runs and changes the page.</li>
+        </ol>
+        <p>
+            A script often needs data from PHP: a name, a list, a setting. The safe way is to print
+            it into the page as JSON, inside a
+            <cde>&lt;script type="application/json"&gt;</cde> tag, which the browser stores but
+            doesn't run, and have the script read and parse it. The danger is the data itself. If a
+            value contains <cde>&lt;/script&gt;</cde>, it closes the tag early, and whatever follows
+            is HTML, and maybe a script of the visitor's choosing.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> not even on
+            its way into JavaScript.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            PHP hands a list and a name to JavaScript, which builds a menu from it. In a folder,
+            make a <cde>public</cde> folder, and in it, <cde>index.php</cde>:
+        </p>
+        <code-block example="javascript/public/index.php" />
+        <p>And <cde>public/app.js</cde>:</p>
+        <code-block example="javascript/public/app.js" />
+        <p>Start it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000/?name=Alice</cde> and pick a size. The menu wasn't in
+            the HTML PHP sent: JavaScript built it from the data. Now try to break out of the script
+            tag:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?name=%3C/script%3E%3Cscript%3Ealert(1)%3C/script%3E'</code-block>
+        <p>
+            In the data, every <cde>&lt;</cde> and <cde>&gt;</cde> has become
+            <cde>&#92;u003C</cde> and <cde>&#92;u003E</cde>: still the same characters to JavaScript
+            once it's parsed, but nothing the HTML reader can mistake for a tag. Open the same URL
+            in the browser, pick a size, and the sentence shows the name as text, tags and all.
+            That's <cde>textContent</cde>. Had the script used <cde>innerHTML</cde>, the browser
+            would have read the name as HTML.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde
+                    >json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+                    | JSON_THROW_ON_ERROR)</cde>
+                for any data printed into a page for JavaScript. The
+                <lnk to="/php/json">JSON</lnk> lesson is the rest of it.
+            </li>
+            <li>
+                <cde>data-</cde> attributes are the other safe way, for a value or two:
+                <cde>&lt;div data-name="&lt;?= htmlspecialchars($name) ?&gt;"&gt;</cde>, read in
+                JavaScript as <cde>element.dataset.name</cde>.
+            </li>
+            <li>
+                Never paste a value straight into script code, like
+                <cde>let name = '&lt;?= $name ?&gt;';</cde>. One apostrophe in the name, and the
+                visitor is writing your JavaScript.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Checks in JavaScript are a courtesy.</strong> Like the browser's checks in
+                <lnk to="/php/forms">Forms</lnk>, they save honest visitors a round trip, and stop
+                nobody else. The server checks everything again.
+            </li>
+            <li>
+                <strong>Everything in JavaScript is public.</strong> An API key in a script is
+                readable by anyone who opens the developer tools. Keys stay on the server, and the
+                browser asks your server, which uses them.
+            </li>
+            <li>
+                <strong><cde>innerHTML</cde> runs HTML.</strong> Use <cde>textContent</cde> for
+                anything from outside. If you must build HTML, escape it the way you would in PHP.
+            </li>
+            <li>
+                <strong>A script that runs too early finds nothing.</strong> Without
+                <cde>defer</cde>, a script in the head runs before the body exists, and
+                <cde>getElementById()</cde> returns <cde>null</cde>.
+            </li>
+            <li>
+                <strong>Not everyone has it.</strong> Scripts fail to load, get blocked, or break.
+                Links and forms that work without JavaScript keep working when it doesn't.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Keep the console open">
+            <p>
+                Open the developer tools (<cde>F12</cde>, or <cde>Cmd+Option+I</cde> on a Mac) and
+                leave the Console tab showing while you work. A JavaScript error doesn't show on the
+                page; the page just stops working. The console says what broke and on which line.
+            </p>
+        </two-dollars>
+
+        <p>
+            JavaScript can also ask the server for more, while the page stays where it is. Next:
+            fetch() and AJAX.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/fetch">Next: fetch() and AJAX &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

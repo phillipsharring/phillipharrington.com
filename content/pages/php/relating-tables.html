@@ -1,0 +1,235 @@
+<layout name="default" title="Relating Tables: Keys and Foreign Keys" />
+<page-head>
+    <meta
+        name="description"
+        content="How tables point at each other: primary keys, foreign keys, one-to-many and many-to-many, and what the database does when a link would break. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="primary key, foreign key, FOREIGN KEY REFERENCES, one-to-many, many-to-many, join table, INNER JOIN, surrogate key, natural key, InnoDB, error 1452, error 1451, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How tables point at each other. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="relating-tables">Relating Tables: Keys and Foreign Keys</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The books in <lnk to="/php/sql">SQL</lnk> kept the author's name in every row, typed out
+            again for each book. A real catalog keeps authors in a table of their own, and each book
+            points at its author. The pointing is done with keys, and the database can hold you to
+            it: no book can point at an author who isn't there.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-primary-key">What's a Primary Key?</heading>
+        <p>
+            The column that tells one row from every other, like <cde>id</cde> in Creating Tables.
+            Every table gets one. It never repeats, it's never <cde>NULL</cde>, and once a row has
+            one, it shouldn't change, because other rows are using it to find this one.
+        </p>
+
+        <heading h3 id="natural-and-surrogate-keys">Natural and Surrogate Keys</heading>
+        <p>
+            A natural key is something real that's already unique: an email address, an ISBN. A
+            surrogate key is a number the database makes up, with <cde>AUTO_INCREMENT</cde>, that
+            means nothing outside it. Use the surrogate. Real things change (people change email
+            addresses) and turn out not to be unique after all (old books have no ISBN, and some
+            share one by mistake). Keep the real value in its own column, with a
+            <cde>UNIQUE</cde> rule if it has to be unique.
+        </p>
+
+        <heading h2 id="whats-a-foreign-key">What's a Foreign Key?</heading>
+        <p>
+            A column that holds another table's primary key. <cde>books.author_id</cde> holds an
+            <cde>authors.id</cde>. Declared as a foreign key, it's also a rule: the database won't
+            let it hold an id that doesn't exist.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>CONSTRAINT `books_author_id_fk` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`)</code-block>
+
+        <heading h3 id="one-to-many">One to Many</heading>
+        <p>
+            One author, many books: the foreign key goes on the "many" side. Each book names one
+            author. The author doesn't list her books; you find them by asking which books point at
+            her.
+        </p>
+
+        <heading h3 id="many-to-many">Many to Many</heading>
+        <p>
+            A book has many tags, and a tag has many books. Neither table can hold the other's key,
+            so a third one does: <cde>book_tags</cde>, with one row per pairing, a
+            <cde>book_id</cde> and a <cde>tag_id</cde>. Its primary key is both columns together, so
+            the same pair can't be added twice.
+        </p>
+
+        <side-story title="The Programmer as Navigator">
+            Before relational databases, records were linked by pointers: a program found an author,
+            then followed a stored link to her first book, then from that book to the next. Charles
+            Bachman designed one of the first of these databases, and called his 1973 Turing Award
+            lecture "The Programmer as Navigator." Edgar Codd's relational model, in 1970, replaced
+            the pointers with values. A book holds its author's id, and any query can follow it, in
+            either direction. Codd got his own Turing Award in 1981.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                You make the parent table first (<cde>authors</cde>), then the child that points at
+                it (<cde>books</cde>).
+            </li>
+            <li>
+                On every insert or update of a book, the database looks up its
+                <cde>author_id</cde> in <cde>authors</cde>. No such author, no row.
+            </li>
+            <li>
+                On every delete of an author, it looks for books that point at her. If there are
+                any, by default, the delete is refused.
+            </li>
+            <li>
+                To read across the link, a query joins the tables, matching each book's
+                <cde>author_id</cde> to an author's <cde>id</cde>.
+            </li>
+        </ol>
+        <p>
+            Step three can do other things instead, like deleting the books along with the author.
+            That's in Deleting Data.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Authors, books and tags, linked. The same <cde>compose.yml</cde>,
+            <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL, and a new <cde>init.sql</cde>:
+        </p>
+        <code-block example="relating-tables/init.sql" />
+        <p>Start the database and open the <cde>mysql</cde> command:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose exec db mysql -u app -papp-password course</code-block>
+        <p>
+            Ask for each book with its author's name. <cde>INNER JOIN</cde> pairs each book with the
+            author its <cde>author_id</cde> points at:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `books`.`title`, `authors`.`name`
+FROM `books`
+INNER JOIN `authors` ON `authors`.`id` = `books`.`author_id`
+ORDER BY `books`.`year`;</code-block>
+        <p>And across the many-to-many, every book tagged science fiction:</p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `books`.`title`
+FROM `books`
+INNER JOIN `book_tags` ON `book_tags`.`book_id` = `books`.`id`
+INNER JOIN `tags` ON `tags`.`id` = `book_tags`.`tag_id`
+WHERE `tags`.`name` = 'science fiction'
+ORDER BY `books`.`title`;</code-block>
+        <p>Now try to break the links. A book by an author who doesn't exist:</p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `books` (`author_id`, `title`, `year`)
+VALUES (99, 'Nobody', 2000);</code-block>
+        <p>
+            Refused: <cde>a foreign key constraint fails</cde>, and the message names the rule,
+            <cde>books_author_id_fk</cde>. Then delete an author who still has books:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>DELETE FROM `authors`
+WHERE `id` = 1;</code-block>
+        <p>
+            Refused again: <cde>Cannot delete or update a parent row</cde>. Mary Shelley stays, and
+            Frankenstein still has an author. Type <cde>exit</cde>. From PHP, the same rule catches
+            a bad id. Make <cde>add-book.php</cde>:
+        </p>
+        <code-block example="relating-tables/add-book.php" />
+        <p>Add a book for an author who exists, then one who doesn't:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php add-book.php 2 'Dawn' 1987
+docker compose run --rm php php add-book.php 99 'Nobody' 2000</code-block>
+        <p>
+            The first is added. The second is a perfectly good number, so it passes the script's own
+            checks, and the foreign key refuses it. <strong>Never trust input</strong>: an id from a
+            form or a URL is only a number someone sent you. The script checks that it's a number;
+            the database checks that it's real. <cde>docker compose down -v</cde> when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$pdo-&gt;lastInsertId()</cde> gets the id the database just made, so you can
+                use it as the foreign key in the next insert: an author, then her books.
+            </li>
+            <li>
+                <cde>$e-&gt;errorInfo[1]</cde> on a <cde>PDOException</cde> is MySQL's own error
+                number: 1452 for a child row with no parent, 1451 for a parent that still has
+                children, 1062 for a duplicate key.
+            </li>
+            <li>
+                <cde
+                    >filter_var($id, FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt;
+                    1]])</cde>
+                before any id goes near a query. Ids start at 1.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Both sides of a key must be the same type.</strong> An
+                <cde>INT</cde> pointing at an <cde>INT UNSIGNED</cde> is refused when you create the
+                table: <cde>Referencing column and referenced column are incompatible</cde>. Copy
+                the type exactly.
+            </li>
+            <li>
+                <strong>Order matters, both ways.</strong> Create parents before children, and drop
+                children before parents. A table can't point at one that isn't there yet.
+            </li>
+            <li>
+                <strong>Only InnoDB enforces foreign keys.</strong> InnoDB is MySQL's default
+                engine, and the one to use. An old table on MyISAM accepts the foreign key in its
+                definition and then ignores it, quietly.
+            </li>
+            <li>
+                <strong>An id that exists isn't an id that's theirs.</strong> The foreign key proves
+                the author is real. It doesn't prove the person asking may change her books. Check
+                that the row belongs to whoever is asking, every time. Never trust input, even when
+                it's a valid id.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name keys so joins read themselves">
+            <p>
+                Call every primary key <cde>id</cde>, and every foreign key the singular of its
+                table plus <cde>_id</cde>: <cde>author_id</cde>, <cde>book_id</cde>. Then
+                <cde>`authors`.`id` = `books`.`author_id`</cde> is the only way a join can be
+                written, and a wrong one looks wrong. Name the constraints too, like
+                <cde>books_author_id_fk</cde>, so the error tells you which link broke.
+            </p>
+        </two-dollars>
+
+        <p>
+            Moving the authors into their own table wasn't only tidier. It means each author's name
+            is written down once, so it can't be spelled two ways. That idea has a name. Next:
+            normalization.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/normalization">Next: Normalization &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

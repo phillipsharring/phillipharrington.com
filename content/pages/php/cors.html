@@ -1,0 +1,224 @@
+<layout name="default" title="CORS" />
+<page-head>
+    <meta
+        name="description"
+        content="Why a page on one site can't read answers from another unless that site says so: origins, the same-origin policy, CORS headers, preflight requests, and why CORS protects your visitors, not your server. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="CORS, cross-origin resource sharing, same-origin policy, origin, Access-Control-Allow-Origin, preflight, OPTIONS request, Vary Origin, JSONP, fetch cross origin, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Which other sites may read your answers, and why it's the browser that asks. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="cors">CORS</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            In fetch() and AJAX, a page asked its own server for JSON, and it just worked. Point the
+            same <cde>fetch()</cde> at a different site, and the browser blocks it, unless that site
+            says this page may read its answers. The rule is the same-origin policy, and the way a
+            server makes exceptions to it is CORS: Cross-Origin Resource Sharing.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-origin">What's an Origin?</heading>
+        <p>
+            The scheme, host and port of a URL, from
+            <lnk to="/php/anatomy-of-a-url">Anatomy of a URL</lnk>. <cde>https://example.com</cde>
+            is one origin. Change any of the three, and it's another:
+        </p>
+        <list>
+            <li><cde>http://example.com</cde>: a different scheme.</li>
+            <li><cde>https://api.example.com</cde>: a different host, even on the same domain.</li>
+            <li><cde>https://example.com:8443</cde>: a different port.</li>
+        </list>
+        <p>The path doesn't count. Every page on one origin is the same origin.</p>
+
+        <heading h2 id="whats-the-same-origin-policy">What's the Same-Origin Policy?</heading>
+        <p>
+            The browser's rule that a page's JavaScript can read answers only from its own origin.
+            Without it, any site you visited could quietly <cde>fetch()</cde> your email or your
+            bank, with your cookies, and read the answer. The rule stops the reading. It doesn't
+            always stop the request from being sent, which is why <lnk to="/php/csrf">CSRF</lnk> is
+            a separate problem.
+        </p>
+
+        <heading h2 id="whats-cors">What's CORS?</heading>
+        <p>
+            The server's way of saying "this other origin may read my answers." It's a set of
+            response headers. The main one, <cde>Access-Control-Allow-Origin</cde>, names the origin
+            allowed, or <cde>*</cde> for any. If it matches the page's origin, the browser hands the
+            answer to the script. If not, the script gets an error, and the answer is thrown away.
+        </p>
+
+        <heading h3 id="preflight">The Preflight</heading>
+        <p>
+            For anything beyond a plain GET or a form-style POST, such as a JSON body, a custom
+            header, or a PUT or DELETE, the browser asks first. It sends an <cde>OPTIONS</cde>
+            request, the preflight, saying which method and headers it wants to use. Only if the
+            answer allows them does it send the real request.
+        </p>
+
+        <side-story title="Before CORS, JSONP">
+            The same-origin policy never applied to <cde>&lt;script src&gt;</cde>: a page could load
+            a script from anywhere. So before CORS, sites shared data by sending it as a script.
+            You'd ask for <cde>/data?callback=show</cde>, and the server answered with
+            <cde>show({...})</cde>, which called your function with the data. It was called JSONP.
+            It only did GET, and it meant running whatever the other site sent as code on your page.
+            CORS replaced it.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>
+            A page on <cde>http://localhost:8001</cde> POSTs JSON to an API on
+            <cde>http://localhost:8000</cde>:
+        </p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The browser sees a different origin, and a JSON body, so it sends a preflight first:
+                <cde>OPTIONS</cde>, with <cde>Origin: http://localhost:8001</cde>,
+                <cde>Access-Control-Request-Method: POST</cde> and
+                <cde>Access-Control-Request-Headers: content-type</cde>.
+            </li>
+            <li>
+                The API checks the origin against its allow list and answers with
+                <cde>Access-Control-Allow-Origin: http://localhost:8001</cde> and the methods and
+                headers it accepts.
+            </li>
+            <li>The browser compares. It matches, so it sends the real POST.</li>
+            <li>
+                The API answers, with <cde>Access-Control-Allow-Origin</cde> again, and the browser
+                lets the script read it.
+            </li>
+        </ol>
+        <p>
+            Every step is the browser's doing. curl doesn't care about any of it, and neither does
+            any program that isn't a browser. CORS protects your visitors from other sites' pages;
+            it doesn't protect your server from anyone. The <cde>Origin</cde> header is a header,
+            and from anything but a browser it says whatever the sender wants.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> your API
+            still checks who's asking, the way it would without CORS.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Two sites on two origins: an API on port 8000, and a page on port 8001 that calls it. In
+            a folder, make an <cde>api</cde> folder, and in it, <cde>index.php</cde>:
+        </p>
+        <code-block example="cors/api/index.php" />
+        <p>Then a <cde>site</cde> folder, with <cde>index.html</cde>:</p>
+        <code-block example="cors/site/index.html" />
+        <p>And <cde>site/app.js</cde>:</p>
+        <code-block example="cors/site/app.js" />
+        <p>Start each site in its own terminal, from the folder that holds both:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t api
+docker run --rm -it -p 8001:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t site</code-block>
+        <p>
+            Open <cde>http://localhost:8001</cde>: "Hello from the API." The API's terminal shows
+            two requests, an <cde>OPTIONS</cde> and then the <cde>POST</cde>. That's the preflight.
+            Now change the allow list in <cde>api/index.php</cde> to some other origin, and reload.
+            The page says it's blocked, and the browser's console names CORS as the reason. Change
+            it back.
+        </p>
+        <p>Then ask the way a browser does, and the way anything else can:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -X OPTIONS -H 'Origin: http://localhost:8001' -H 'Access-Control-Request-Method: POST' http://localhost:8000/
+curl -i -H 'Origin: http://evil.example' http://localhost:8000/</code-block>
+        <p>
+            The first is a 204 with the permission headers. The second has no permission at all, and
+            gets the message anyway. A browser would hide it from the page; curl just shows it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$_SERVER['HTTP_ORIGIN']</cde> is the requesting page's origin. Compare it
+                against an allow list, exactly, with <cde>in_array(..., true)</cde>.
+            </li>
+            <li>
+                <cde>header('Access-Control-Allow-Origin: ' . $origin)</cde> only for an origin on
+                the list.
+            </li>
+            <li>
+                <cde>Access-Control-Allow-Methods</cde> and
+                <cde>Access-Control-Allow-Headers</cde> answer the preflight's questions.
+            </li>
+            <li>
+                <cde>Access-Control-Allow-Credentials: true</cde> lets the browser send cookies
+                along. It only works with a named origin, never <cde>*</cde>.
+            </li>
+            <li>
+                <cde>header('Vary: Origin')</cde> whenever the answer depends on the origin, so a
+                cache in the middle doesn't hand one origin's answer to another.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Echoing back any Origin is the same as <cde>*</cde>, only worse.</strong>
+                Copying the request's <cde>Origin</cde> into the answer without checking it allows
+                every site, and with credentials on, lets every site read your logged-in visitors'
+                data. Use an allow list.
+            </li>
+            <li>
+                <strong
+                    ><cde>localhost</cde> and <cde>127.0.0.1</cde> are different origins.</strong>
+                So are <cde>http</cde> and <cde>https</cde>, and the same host on two ports. Allow
+                exactly the origins your pages use.
+            </li>
+            <li>
+                <strong>The preflight needs an answer too.</strong> An app that only handles GET and
+                POST turns away the <cde>OPTIONS</cde> request, and the real one never gets sent.
+            </li>
+            <li>
+                <strong>The browser won't tell your script why.</strong> A CORS failure looks like a
+                network error to JavaScript, on purpose. The details are only in the console.
+            </li>
+            <li>
+                <strong>Errors need the headers as well.</strong> If your 500 page or your proxy's
+                error page has no <cde>Access-Control-Allow-Origin</cde>, the script sees a CORS
+                error instead of your error.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Don't need CORS">
+            <p>
+                If you control both sides, put them on one origin: serve the API at
+                <cde>/api</cde> on the same site, with a
+                <lnk to="/php/whats-in-the-middle">reverse proxy</lnk> sending those paths to the
+                API server. Same origin, no preflights, no headers to get wrong.
+            </p>
+        </two-dollars>
+
+        <p>
+            JSON is for programs talking to programs. When the data is going to a person with a
+            spreadsheet, there's an older format. Next: CSV.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/csv">Next: CSV &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

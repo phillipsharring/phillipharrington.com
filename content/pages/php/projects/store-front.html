@@ -1,0 +1,181 @@
+<layout name="default" title="Store Front" />
+<page-head>
+    <meta
+        name="description"
+        content="The window of an online shop: products in MySQL, prices as whole cents, categories and sorting from the query string through allow lists, sold-out and hidden products, and a page per product. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP store, product catalog, prices in cents, integer money, ORDER BY allow list, query string filters, http_build_query, product page, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Products, prices in cents, categories and sorting. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="store-front">Store Front</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The newsletter told people about things. Now build the shop window they arrive at: a
+            list of products from the database, filtered by category, sorted by name or price, with
+            a page for each one. This and the next three projects build an online shop in order:
+            store front, shopping cart, checkout, and taking a payment.
+        </p>
+        <p>
+            Nothing here is new on its own. What matters is getting two habits right before money is
+            involved: prices stored as whole cents, and every choice in the URL checked against a
+            list of your own.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/types-of-types">Types of Types</lnk>: why floats are not for money
+            </li>
+            <li>
+                <lnk to="/php/relating-tables">Relating Tables: Keys and Foreign Keys</lnk>:
+                products and their categories
+            </li>
+            <li>
+                <lnk to="/php/query-strings">Query Strings</lnk>:
+                <cde>?category=mugs&amp;sort=price-low</cde>
+            </li>
+            <li>
+                <lnk to="/php/sql-injection">SQL Injection</lnk>: the part of a query a placeholder
+                can't protect
+            </li>
+            <li><lnk to="/php/projects/blog">Blog</lnk>: a page per row, at a clean address</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-products">Step 1: The Products</heading>
+        <p>
+            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones from
+            <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <cde>store</cde>. The tables:
+        </p>
+        <code-block example="project-store-front/init.sql" />
+        <p>
+            <cde>price_cents</cde> is an integer. A float can't hold most decimal fractions exactly,
+            and in PHP <cde>0.1 + 0.2 === 0.3</cde> is <cde>false</cde>. That's fine for a
+            temperature and wrong for money, where every cent has to add up. Whole cents in an
+            integer add up exactly, always.
+        </p>
+        <p>
+            <cde>active</cde> hides a product without deleting it. Old orders still point at old
+            products, so products are almost never really deleted.
+        </p>
+
+        <heading h3 id="step-2-showing-a-price">Step 2: Showing a Price</heading>
+        <code-block example="project-store-front/src/money.php" />
+        <p>
+            Cents stay cents until the last moment, when they become text. <cde>intdiv()</cde> and
+            <cde>%</cde> split them into dollars and cents without a float in sight.
+        </p>
+
+        <heading h3 id="step-3-the-queries">Step 3: The Queries</heading>
+        <code-block example="project-store-front/src/catalog.php" />
+        <p>
+            The category goes into the query as a placeholder, like everything else. The sort can't:
+            <cde>ORDER BY</cde> takes a column, and placeholders only stand for values. So the
+            visitor picks a key, like <cde>price-low</cde>, and the SQL comes from <cde>SORTS</cde>,
+            written by you. Whatever they send, only your own SQL reaches the database.
+        </p>
+
+        <heading h3 id="step-4-the-pages">Step 4: The Pages</heading>
+        <code-block example="project-store-front/public/index.php" />
+        <p>
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> Both choices
+            in the query string are checked against lists before they're used: the category against
+            the categories in the database, the sort against the keys of <cde>SORTS</cde>. Anything
+            else, including an array where a string should be, quietly becomes the default. The
+            links are built with <cde>http_build_query()</cde>, which encodes each value, and then
+            escaped for the page.
+        </p>
+
+        <heading h3 id="step-5-run-it">Step 5: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>. Click a category, sort by price, open a product.
+            The white mug is sold out; the old sticker isn't there at all. Then try the things a
+            visitor shouldn't be able to do:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?sort=price_cents%3B%20DROP%20TABLE%20products'
+curl -i http://localhost:8000/products/old-sticker</code-block>
+        <p>
+            The first is sorted by name, and the table is fine: the sort wasn't one of ours, so it
+            was never used. The second is a 404: an inactive product doesn't exist, as far as
+            visitors know.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="The Penny Problem">
+            In 1982, the Vancouver Stock Exchange started a new index at 1,000. Every time it was
+            recalculated, thousands of times a day, the result was cut off to three decimal places
+            instead of rounded, and the lost fractions piled up. By late 1983 the index stood near
+            520, when it should have been above 1,000. Once it was recalculated correctly, it nearly
+            doubled overnight. Small errors in arithmetic don't stay small when they're repeated.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Not every currency has cents.</strong> The Japanese yen has no minor unit,
+                and a few currencies have three decimal places. If you sell in more than one
+                currency, store the amount in the currency's smallest unit, and the currency's code
+                beside it.
+            </li>
+            <li>
+                <strong>Sold out today, back next week.</strong> Hide inactive products, but keep
+                sold-out ones visible and marked. A product page that suddenly 404s loses its place
+                in search results.
+            </li>
+            <li>
+                <strong>A price on the page is a fact about now.</strong> Prices change. Anything
+                that records a sale, starting with the checkout two projects from now, must copy the
+                price at that moment, not point at the current one.
+            </li>
+            <li>
+                <strong>Filters multiply pages.</strong> Every combination of category and sort is a
+                URL search engines may crawl. A <cde>&lt;link rel="canonical"&gt;</cde> pointing at
+                the plain version tells them which one counts.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name the unit in the column">
+            <p>
+                Call it <cde>price_cents</cde>, not <cde>price</cde>. Then
+                <cde>$product['price_cents'] / 100</cde> looks as wrong as it is, and nobody ever
+                has to guess whether 1400 means fourteen dollars or fourteen hundred.
+                <cde>timeout_seconds</cde>, <cde>size_bytes</cde> and <cde>weight_grams</cde> work
+                the same way.
+            </p>
+        </two-dollars>
+
+        <p>
+            Looking is free. Next: a shopping cart, to keep what someone wants to buy while they
+            keep looking.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/shopping-cart">Next: Shopping Cart &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

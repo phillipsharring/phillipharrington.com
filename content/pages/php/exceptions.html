@@ -1,0 +1,220 @@
+<layout name="default" title="Exceptions and Try/Catch" />
+<page-head>
+    <meta
+        name="description"
+        content="What happens when code can't do what it was asked: throwing an exception, catching the ones you can handle, letting the rest go up, and one handler at the top that logs the details and shows the visitor a plain 500. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP exceptions, try catch finally, throw, Throwable, Exception, Error, TypeError, RuntimeException, InvalidArgumentException, custom exceptions, set_exception_handler, 500 error, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Throwing, catching, and the handler at the top. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="exceptions">Exceptions and Try/Catch</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Some failures can't be handled where they happen. A function that splits a bill can tell
+            that "zero people" is nonsense, but it has no idea whether it's running in a web page, a
+            command, or a test, so it can't decide what to show anyone. It needs a way to stop and
+            hand the problem to whoever called it. That's an exception.
+            <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk> introduced them;
+            this lesson is what to do with one.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-exception">What's an Exception?</heading>
+        <p>
+            An object that describes what went wrong: a message, the file and line it came from, and
+            the stack trace, the list of function calls that led there. You make one with
+            <cde>new</cde>, like any object, and <cde>throw</cde> it.
+        </p>
+
+        <heading h3 id="try-and-catch">Try and Catch</heading>
+        <p>
+            <cde>try</cde> marks a block of code. <cde>catch</cde> says which kinds of exception
+            you're ready to handle if that block throws one. <cde>finally</cde>, if you add it, runs
+            either way, for cleanup like closing a file.
+        </p>
+
+        <heading h3 id="the-family-tree">The Family Tree</heading>
+        <p>Everything you can throw implements <cde>Throwable</cde>, in two branches:</p>
+        <list>
+            <li>
+                <strong>Exception</strong>: things that can go wrong in a working program. A file
+                that isn't there, bad input, a database that's down. Its children include
+                <cde>RuntimeException</cde>, <cde>InvalidArgumentException</cde> and
+                <cde>JsonException</cde>.
+            </li>
+            <li>
+                <strong>Error</strong>: mistakes in the code itself, thrown by PHP. Calling a
+                function that doesn't exist, a class that isn't found, a <cde>TypeError</cde> from
+                <lnk to="/php/variables-and-types">strict types</lnk>,
+                <cde>DivisionByZeroError</cde>.
+            </li>
+        </list>
+        <p>
+            Catching a class catches its children too, so
+            <cde>catch (RuntimeException $e)</cde> also catches your own <cde>BadRequest</cde> if it
+            extends <cde>RuntimeException</cde>.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Code runs <cde>throw new BadRequest('...')</cde>. It stops on that line.</li>
+            <li>
+                PHP looks for the nearest <cde>try</cde> around it, in this function, then in the
+                function that called this one, and so on up.
+            </li>
+            <li>
+                At each <cde>try</cde>, it checks the <cde>catch</cde> blocks in order. The first
+                one that matches the exception's class runs, and the program carries on after it.
+            </li>
+            <li>Any <cde>finally</cde> blocks on the way run as it passes.</li>
+            <li>
+                If nothing catches it, the exception handler runs, if you set one. Then the script
+                ends. On a web page, that's a 500.
+            </li>
+        </ol>
+        <p>
+            So catch an exception where you can actually do something about it, and let the rest go
+            up. A web app usually has very few <cde>catch</cde> blocks: one around anything that's
+            the visitor's fault, which becomes a 400 with a helpful message, and one handler at the
+            top for everything else, which becomes a 500 with an unhelpful one.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A bill splitter, with both kinds of failure. First the handler at the top,
+            <cde>handler.php</cde>, outside the web root:
+        </p>
+        <code-block example="exceptions/handler.php" />
+        <p>Then the page, <cde>public/index.php</cde>:</p>
+        <code-block example="exceptions/public/index.php" />
+        <p>And a page that fails in a way nobody planned for, <cde>public/oops.php</cde>:</p>
+        <code-block example="exceptions/public/oops.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>From a second terminal, a good request, then two bad ones:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?cents=1000&amp;people=3'
+curl -i 'http://localhost:8000/?cents=1000&amp;people=0'
+curl -i 'http://localhost:8000/?cents=lots&amp;people=3'</code-block>
+        <p>
+            <cde>334, 333, 333</cde>: ten dollars, three ways, adding up to the cent. Then two 400s,
+            each saying what was wrong. <cde>wholeNumber()</cde> threw a <cde>BadRequest</cde>, and
+            the <cde>catch</cde> around the call turned it into an answer. That's the input check,
+            and <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: the query string is whatever anyone typed, and <cde>filter_var()</cde> takes only a
+            whole number in range. Now the unplanned one:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/oops.php</code-block>
+        <p>
+            A 500 and <cde>Something went wrong. It's been logged.</cde> Nothing in the page says
+            what. Look at the terminal running the server: the whole exception is there, message,
+            file, line and stack trace, where you can read it and the visitor can't.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>throw new InvalidArgumentException('...');</cde> throws one.
+                <cde>throw</cde> works as an expression too: <cde>$x ?? throw new ...</cde>.
+            </li>
+            <li>
+                <cde>try { ... } catch (BadRequest $e) { ... } finally { ... }</cde>; and
+                <cde>catch (A | B $e)</cde> catches either.
+            </li>
+            <li>
+                <cde>$e-&gt;getMessage()</cde>, <cde>getFile()</cde>, <cde>getLine()</cde>,
+                <cde>getTraceAsString()</cde>, and <cde>(string) $e</cde> for all of it at once.
+            </li>
+            <li>
+                <cde>class BadRequest extends RuntimeException {}</cde> makes your own kind, so you
+                can catch exactly that.
+            </li>
+            <li><cde>set_exception_handler()</cde> sets the handler of last resort.</li>
+            <li>
+                <cde>json_decode($json, true, 512, JSON_THROW_ON_ERROR)</cde>: some functions only
+                throw if you ask. Ask.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>An empty catch hides the problem.</strong>
+                <cde>catch (Exception $e) {}</cde> makes the error go away and the bug stay. If you
+                catch it, handle it, or at least log it.
+            </li>
+            <li>
+                <strong><cde>catch (Exception $e)</cde> doesn't catch an <cde>Error</cde>.</strong>
+                A <cde>TypeError</cde> sails right past it. The top-level handler takes a
+                <cde>Throwable</cde> for that reason.
+            </li>
+            <li>
+                <strong>The details are for you, not the visitor.</strong> A stack trace shows file
+                paths, function names, sometimes the values passed in. With
+                <cde>display_errors</cde> on and no handler, PHP prints all of it on the page. Log
+                it, and show a plain message.
+            </li>
+            <li>
+                <strong>Not every failure throws.</strong> Plenty of PHP's older functions return
+                <cde>false</cde> and raise a warning instead: <cde>file_get_contents()</cde>,
+                <cde>fopen()</cde>. Check what they return.
+            </li>
+            <li>
+                <strong>Exceptions aren't for the normal path.</strong> "No results" is an answer,
+                not a failure. Return an empty array. Throw when the function truly can't do its
+                job.
+            </li>
+        </list>
+
+        <side-story title="Not Everyone Throws">
+            Exceptions aren't the only way. Go, released by Google in 2009, has none for ordinary
+            failures: a function that can fail returns its result and an error side by side, and the
+            caller checks the error right there. Rust does something similar with a
+            <cde>Result</cde> type. Both choices were on purpose: a failure you can see in the code
+            is harder to forget about than one that might fly past from somewhere below.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Keep the cause">
+            <p>
+                When you catch one exception and throw your own, pass the first one along as the
+                third argument: <cde>throw new ReportFailed('Sales report failed.', 0, $e);</cde>.
+                The new message says what your code was trying to do, and <cde>(string) $e</cde> in
+                the log still shows the original, underneath it.
+            </p>
+        </two-dollars>
+
+        <p>
+            The bill splitter's limits, 1 to 50 people, are written into the code as bare numbers.
+            They'd be better with names. Next: constants, static variables and functions.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/constants-and-statics"
+                >Next: Constants, Static Variables and Functions &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

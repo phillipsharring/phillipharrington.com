@@ -1,0 +1,260 @@
+<layout name="default" title="Character Sets and Collation" />
+<page-head>
+    <meta
+        name="description"
+        content="How MySQL stores text and decides whether two pieces of it are equal: utf8mb4, why MySQL's utf8 isn't UTF-8, the connection's character set, and collation, which sets case and accent sensitivity and sort order. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="utf8mb4, MySQL utf8 vs utf8mb4, utf8mb3, character set, collation, utf8mb4_0900_ai_ci, case insensitive, accent sensitive, emoji in MySQL, mojibake, SET NAMES, PDO charset, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How MySQL stores and compares text. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="character-sets-and-collation">Character Sets and Collation</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            At the end of <lnk to="/php/indexes">Indexes</lnk>, an email address in capitals found
+            the same customer as one in lowercase. The database decided those were equal, and it
+            could have decided otherwise. Text in a database comes with two settings: how its
+            characters are stored as bytes, and how they're compared. Get the first wrong and names
+            come back mangled. Get the second wrong and "Cafe" and "café" are the same username.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-character-set">What's a Character Set?</heading>
+        <p>
+            The rule for turning characters into bytes and back.
+            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> has the full story; the short version
+            is that UTF-8 can store every character there is, using one to four bytes each, and it's
+            the only one you should use. In MySQL, that's called <cde>utf8mb4</cde>.
+        </p>
+
+        <heading h3 id="mysqls-utf8-isnt">MySQL's utf8 Isn't</heading>
+        <p>
+            MySQL also has a character set called <cde>utf8</cde>, and it isn't UTF-8. It stores at
+            most three bytes per character, which covers most of the world's writing, and not emoji,
+            some rarer Chinese characters, or anything else that takes four. Its real name is
+            <cde>utf8mb3</cde>, and <cde>utf8</cde> is an old alias for it. Try to store an emoji in
+            it, and in strict mode it's refused; with strict mode off, the emoji is quietly stored
+            as a question mark. <cde>utf8mb4</cde>, "up to four bytes," is the real thing. MySQL 8
+            uses it by default, but older tables, and older tutorials, still say <cde>utf8</cde>.
+        </p>
+
+        <heading h2 id="whats-a-collation">What's a Collation?</heading>
+        <p>
+            The rules for comparing and sorting text: whether <cde>a</cde> equals <cde>A</cde>,
+            whether <cde>e</cde> equals <cde>é</cde>, and which comes first. Every character set has
+            several. Their names say what they do:
+        </p>
+        <list>
+            <li>
+                <strong>utf8mb4_0900_ai_ci</strong>, MySQL 8's default: Unicode's rules (version
+                9.0.0), accent insensitive, case insensitive. <cde>cafe</cde>, <cde>Cafe</cde> and
+                <cde>café</cde> are all equal.
+            </li>
+            <li>
+                <strong>utf8mb4_0900_as_cs</strong>: accent sensitive, case sensitive. All three are
+                different.
+            </li>
+            <li>
+                <strong>utf8mb4_bin</strong>: compares the bytes. Exact, and it sorts by byte value,
+                so every capital comes before every lowercase letter, and accented letters come
+                after <cde>z</cde>.
+            </li>
+        </list>
+        <p>
+            The default is right for most text people search for, like names and email addresses:
+            "alice@example.com" should find "Alice@Example.com". Pick a different one, column by
+            column, when equal has to mean identical.
+        </p>
+
+        <side-story title="When Three Bytes Was Everything">
+            Unicode began, in 1991, as a 16-bit code: room for 65,536 characters, which was meant to
+            be enough for every script in use. Characters that fit in 16 bits take at most three
+            bytes in UTF-8. Unicode outgrew 16 bits in 1996, but when MySQL added its
+            <cde>utf8</cde>, in version 4.1, it stopped at three. Real four-byte UTF-8 arrived as
+            <cde>utf8mb4</cde> in MySQL 5.5.3, in 2010, the same year emoji joined Unicode. It
+            became the default in MySQL 8.0.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>Text passes through three character sets on its way into a table:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <strong>The connection's.</strong> When PHP connects, it tells MySQL which character
+                set its bytes are in: <cde>charset=utf8mb4</cde> in the connection string.
+            </li>
+            <li>
+                <strong>The column's.</strong> MySQL converts the text from the connection's
+                character set to the column's, if they differ. A character the column's can't hold
+                is refused.
+            </li>
+            <li>
+                <strong>Back out.</strong> On the way out, MySQL converts from the column's
+                character set to the connection's again.
+            </li>
+        </ol>
+        <p>
+            The conversions are only right if each side tells the truth. If PHP sends UTF-8 but says
+            it's latin1, MySQL "converts" bytes that were already right, and stores something else.
+            Every comparison, <cde>WHERE</cde>, <cde>ORDER BY</cde>, <cde>UNIQUE</cde> or join, uses
+            the column's collation.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The same <cde>compose.yml</cde>, <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL.
+            Note the <cde>LANG</cde> line in <cde>compose.yml</cde>: the <cde>mysql</cde> command
+            picks its character set from it, and without it, it would assume latin1. This
+            <cde>init.sql</cde> makes a table in each character set, and two for comparing:
+        </p>
+        <code-block example="character-sets-and-collation/init.sql" />
+        <p>Then <cde>save.php</cde>, which tries to save the same text in both note tables:</p>
+        <code-block example="character-sets-and-collation/save.php" />
+        <p>Start the database, and save an elephant:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose run --rm php php save.php 'Hello 🐘'</code-block>
+        <p>
+            <cde>notes_utf8: refused</cde>, and <cde>notes: saved</cde>. The elephant takes four
+            bytes, and <cde>utf8</cde> only has room for three. Save <cde>'café'</cde>, and both
+            take it: <cde>é</cde> needs only two.
+        </p>
+        <p>
+            Now lie about the connection. <cde>wrong-charset.php</cde> saves "café" over a
+            connection that says latin1, then reads it back both ways:
+        </p>
+        <code-block example="character-sets-and-collation/wrong-charset.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php wrong-charset.php</code-block>
+        <p>
+            Read back through the same wrong connection, it says <cde>café</cde>, and looks fine.
+            Read through a correct one, it says <cde>cafÃ©</cde>. The bytes on disk are
+            <cde>C383C2A9</cde> where <cde>é</cde> should be <cde>C3A9</cde>: MySQL converted the
+            UTF-8 bytes as if they were latin1 characters, and stored those. Mangled text like this
+            has a name, mojibake, and it's very hard to undo once a table is full of it.
+        </p>
+        <p>Then open the <cde>mysql</cde> command, and compare:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
+        <!-- prettier-ignore -->
+        <code-block>SELECT 'cafe' = 'café', 'Cafe' = 'cafe';
+
+SELECT 'cafe' = 'café' COLLATE utf8mb4_0900_as_cs;</code-block>
+        <p>
+            Equal, equal, and then not equal, once the collation cares about accents. Sort the
+            words, the default way and then by bytes:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `word`
+FROM `words`
+ORDER BY `word`;
+
+SELECT `word`
+FROM `words`
+ORDER BY `word` COLLATE utf8mb4_bin;</code-block>
+        <p>
+            The default puts them where a person would: apple, éclair, Émile, zebra, Zoë. By bytes,
+            it's Zoë, apple, zebra, Émile, éclair. Last, sign up two users:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `users` (`username`)
+VALUES ('Cafe');
+
+INSERT INTO `users` (`username`)
+VALUES ('café');</code-block>
+        <p>
+            The second is refused as a <cde>Duplicate entry</cde>. To this collation, they're the
+            same name, which is usually what you want for usernames: nobody gets to pretend to be
+            someone by adding an accent. <cde>docker compose down -v</cde> when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>charset=utf8mb4</cde> in the PDO connection string, always. It's the one
+                setting that makes everything else work.
+            </li>
+            <li>
+                <cde>mb_check_encoding($text, 'UTF-8')</cde> before saving text that came from
+                outside. <strong>Never trust input</strong>, including its bytes: a form, a file or
+                an API can send something that isn't UTF-8 at all.
+            </li>
+            <li>
+                <cde>mb_strlen()</cde> to check a length against a <cde>VARCHAR</cde>, which counts
+                characters. <cde>strlen('café')</cde> is 5, and MySQL's
+                <cde>CHAR_LENGTH('café')</cde> is 4.
+            </li>
+            <li>
+                <cde>&lt;meta charset="utf-8"&gt;</cde> on every page, so the browser sends forms
+                back in UTF-8 too. The database is only one of the boundaries.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Wrong both ways looks right.</strong> Text saved and read through the same
+                wrong connection comes back looking fine, for years, until something else (a report,
+                a new app, a correct connection) reads the table and finds mojibake. If you take
+                over an old app, check with <cde>HEX()</cde> what's really stored.
+            </li>
+            <li>
+                <strong>Old collations think all emoji are the same.</strong>
+                <cde>utf8mb4_general_ci</cde> and <cde>utf8mb4_unicode_ci</cde>, common on older
+                tables, give every emoji the same weight, so <cde>'🐘' = '🐬'</cde> is true, and a
+                unique column can only hold one of them. The <cde>0900</cde> collations tell them
+                apart.
+            </li>
+            <li>
+                <strong>The table's setting isn't the column's.</strong> A table's
+                <cde>DEFAULT CHARSET</cde> only applies to columns made after it's set. Changing it
+                later leaves the existing columns as they were. <cde>SHOW CREATE TABLE</cde> shows
+                each column's real character set when it differs from the table's.
+            </li>
+            <li>
+                <strong>Comparing across collations can fail.</strong> Join two columns with
+                different collations, and MySQL may refuse with
+                <cde>Illegal mix of collations</cde>. Pick one collation for the whole database and
+                stick to it.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="HEX() tells the truth">
+            <p>
+                When text looks wrong, don't trust what the screen shows: every layer between the
+                table and your eyes can convert it again. <cde>SELECT HEX(`body`)</cde> shows the
+                bytes that are actually stored. <cde>C3A9</cde> is a correct <cde>é</cde>.
+                <cde>C383C2A9</cde> is one that was converted twice, and now you know where to look.
+            </p>
+        </two-dollars>
+
+        <p>
+            Text, numbers, keys and indexes: the tables are ready for real data, from real people.
+            Next: inserting data.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/inserting-data">Next: Inserting Data &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

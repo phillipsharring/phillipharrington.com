@@ -1,0 +1,218 @@
+<layout name="default" title="HTML" />
+<page-head>
+    <meta
+        name="description"
+        content="The language of every web page: elements, attributes, the document every page needs around its content, the elements that say what things are, and building it from PHP with every piece of input escaped. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="HTML, HTML elements, attributes, doctype, meta charset, UTF-8, lang attribute, semantic HTML, htmlspecialchars, HTML validator, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The language of every web page, built from PHP. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="html">HTML</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Most of what PHP sends is HTML. You've written bits of it in every Try It since
+            <lnk to="/php/forms">Forms</lnk>, and escaped what went into it since
+            <lnk to="/php/xss">XSS and Escaping Output</lnk>. This section steps back to the
+            technologies around PHP, starting with the one every page is made of: what HTML is, what
+            a whole page needs, and how to build one from PHP without letting input rewrite it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-html">What's HTML?</heading>
+        <p>
+            HyperText Markup Language: plain text, with tags that say what each part of it is. The
+            browser reads the tags and draws the page.
+        </p>
+
+        <heading h3 id="elements-and-attributes">Elements and Attributes</heading>
+        <!-- prettier-ignore -->
+        <code-block>&lt;a href="/shirts" class="big"&gt;Shirts&lt;/a&gt;</code-block>
+        <p>
+            That's one element: an opening tag, <cde>&lt;a&gt;</cde>, the content,
+            <cde>Shirts</cde>, and a closing tag, <cde>&lt;/a&gt;</cde>. Elements go inside other
+            elements, like a list inside a section inside the body. The
+            <cde>name="value"</cde> pairs in the opening tag are attributes: <cde>href</cde> says
+            where the link goes, and <cde>class</cde> gives CSS something to grab. A few elements,
+            like <cde>&lt;img&gt;</cde> and <cde>&lt;input&gt;</cde>, have no content and no closing
+            tag.
+        </p>
+
+        <heading h3 id="the-document">The Document</heading>
+        <p>Every page needs the same few things around its content:</p>
+        <list>
+            <li>
+                <cde>&lt;!doctype html&gt;</cde> first, so the browser follows the modern rules, not
+                the old ones it keeps for pages from the 1990s.
+            </li>
+            <li>
+                <cde>&lt;html lang="en"&gt;</cde>, which says what language the page is in. Screen
+                readers use it to pick a voice, and browsers to offer translation.
+            </li>
+            <li>
+                <cde>&lt;meta charset="utf-8"&gt;</cde>, early in the <cde>&lt;head&gt;</cde>, so
+                the browser reads the bytes as UTF-8. The
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> lesson is why that matters.
+            </li>
+            <li>
+                <cde>&lt;meta name="viewport" ...&gt;</cde>, so phones show the page at their own
+                width instead of shrinking a desktop page to fit.
+            </li>
+            <li>A <cde>&lt;title&gt;</cde>, for the tab, bookmarks and search results.</li>
+        </list>
+
+        <heading h3 id="elements-that-mean-something">Elements That Mean Something</heading>
+        <p>
+            Pick elements for what things are, not how they look: <cde>&lt;h1&gt;</cde> to
+            <cde>&lt;h6&gt;</cde> for headings, in order; <cde>&lt;p&gt;</cde> for paragraphs;
+            <cde>&lt;ul&gt;</cde> and <cde>&lt;li&gt;</cde> for lists; <cde>&lt;a&gt;</cde> to go
+            somewhere and <cde>&lt;button&gt;</cde> to do something; <cde>&lt;header&gt;</cde>,
+            <cde>&lt;main&gt;</cde>, <cde>&lt;nav&gt;</cde> and <cde>&lt;footer&gt;</cde> for the
+            parts of a page. Screen readers, search engines and the browser's reader mode all depend
+            on it. How it looks is CSS's job.
+        </p>
+
+        <side-story title="HTML Tags">
+            In 1991, Tim Berners-Lee described the first HTML in a short document called "HTML
+            Tags." Many of the elements in it, like <cde>&lt;a&gt;</cde>, <cde>&lt;p&gt;</cde>, the
+            headings and the lists, are still in every page today. HTML is now a "living standard,"
+            updated continuously by the browser makers' group WHATWG, rather than numbered versions.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The browser gets the response, sees <cde>text/html</cde> from
+                <lnk to="/php/content-types">Content Types</lnk>, and starts reading at the top.
+            </li>
+            <li>
+                It turns the tags into a tree of elements, called the DOM: the html element, with
+                the head and body inside, and everything else inside those.
+            </li>
+            <li>
+                Along the way it finds the stylesheets, scripts and images the page names, and sends
+                a request for each one.
+            </li>
+            <li>It draws the tree, styled by the CSS.</li>
+        </ol>
+        <p>
+            Browsers forgive almost anything. A missing closing tag, a list item outside a list:
+            they guess what you meant and draw something. That's kind to visitors and hard on you,
+            because broken HTML can look fine until it doesn't.
+        </p>
+        <p>
+            When PHP builds HTML, a value from outside is just more text in that stream, and the
+            browser can't tell your tags from tags inside a visitor's name.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> every value
+            goes through <cde>htmlspecialchars()</cde> on the way into the page.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>A whole page, built by PHP. In a folder, make <cde>index.php</cde>:</p>
+        <code-block example="html/index.php" />
+        <p>Start it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>, then view the page source (<cde>Ctrl+U</cde>, or
+            <cde>Cmd+Option+U</cde> on a Mac). That's what PHP sent: no PHP left in it, just HTML.
+            Click the link to say hello to Alice. Then send a name with tags in it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?name=%3Cem%3EAlice%3C/em%3E'</code-block>
+        <p>
+            The name comes back as <cde>&amp;lt;em&amp;gt;Alice&amp;lt;/em&amp;gt;</cde>. In the
+            browser that shows as the text <cde>&lt;em&gt;Alice&lt;/em&gt;</cde>, angle brackets and
+            all, not as Alice in italics. The visitor gets to choose the words, never the tags.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Text outside <cde>&lt;?php ?&gt;</cde> is sent as it is, so a page can be mostly
+                HTML with PHP only where it's needed.
+            </li>
+            <li>
+                <cde>&lt;?= htmlspecialchars($value) ?&gt;</cde> for every value you didn't write
+                yourself, in text and in attributes alike. Since PHP 8.1 it escapes both kinds of
+                quotes by default, so attributes in either quotes are safe.
+            </li>
+            <li>
+                <cde>if (...):</cde> and <cde>foreach (...):</cde>, with <cde>endif;</cde> and
+                <cde>endforeach;</cde>, read better than braces between lines of HTML.
+            </li>
+            <li>
+                <cde>header('Content-Type: text/html; charset=utf-8')</cde> is already PHP's
+                default, so the <cde>meta charset</cde> and the header agree.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The charset has to come early.</strong> The browser only looks for
+                <cde>&lt;meta charset&gt;</cde> in the first 1024 bytes. Put it first in the
+                <cde>&lt;head&gt;</cde>.
+            </li>
+            <li>
+                <strong>Escaping is for HTML, not for everything.</strong>
+                <cde>htmlspecialchars()</cde> makes a value safe in HTML text and in a quoted
+                attribute. It doesn't make a URL safe in an <cde>href</cde>:
+                <cde>javascript:</cde> links are still links. Check URLs from outside before you use
+                them.
+            </li>
+            <li>
+                <strong>A <cde>div</cde> with a click handler isn't a button.</strong> It can't be
+                reached with the keyboard, and screen readers don't announce it. Use
+                <cde>&lt;button&gt;</cde>.
+            </li>
+            <li>
+                <strong>Every image needs <cde>alt</cde> text.</strong> It's what a screen reader
+                says, and what shows when the image doesn't load. A purely decorative image gets
+                <cde>alt=""</cde>.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Run it past the validator">
+            <p>
+                The W3C's checker at
+                <lnk to="https://validator.w3.org/nu/" blank>validator.w3.org/nu</lnk>
+                takes a URL, a file or pasted source, and lists every unclosed tag and misplaced
+                element the browser quietly fixed for you. Paste in your page's source once in a
+                while. It takes a minute and catches the bugs that only show up in one browser.
+            </p>
+        </two-dollars>
+
+        <p>
+            HTML says what everything is. How it looks is a different language, in a different file.
+            Next: CSS.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/css">Next: CSS &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

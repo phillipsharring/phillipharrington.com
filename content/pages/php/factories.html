@@ -1,0 +1,208 @@
+<layout name="default" title="Factories" />
+<page-head>
+    <meta
+        name="description"
+        content="An object whose job is making other objects: it knows which class to build, from which settings, and refuses settings that make no sense. Factories in PHP, how they fit with dependency injection, and the static ones you'll see anyway. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="factory pattern, PHP factory, factory method, abstract factory, dependency injection, configuration, interfaces, match, named constructors, design patterns, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="An object whose job is making other objects. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="factories">Factories</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Singletons ended with one place that builds the app and hands out what it built. That
+            place had it easy: there was one kind of mailer. Real apps pick: log the emails in
+            development, send them in production, drop them in tests. Picking, and building what was
+            picked, is a job, and a factory is an object that does it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-factory">What's a Factory?</heading>
+        <p>
+            A class whose method returns a new object. The caller asks for "a
+            <cde>Mailer</cde>" and gets one, without knowing or caring which class it is. The
+            factory knows the classes, reads the settings, checks them, and builds the right one
+            with the right arguments.
+        </p>
+        <p>
+            It works because of an interface (see <lnk to="/php/interfaces">Interfaces</lnk>).
+            <cde>LogMailer</cde>, <cde>SmtpMailer</cde> and <cde>NullMailer</cde> all implement
+            <cde>Mailer</cde>, so the code that sends email only ever needs to know that one name.
+        </p>
+
+        <heading h3 id="the-kinds">The Kinds You'll Hear Of</heading>
+        <list>
+            <li>
+                <strong>A simple factory</strong>: one class with a <cde>create()</cde> method, like
+                the one in this lesson. By far the most common.
+            </li>
+            <li>
+                <strong>Factory Method</strong>: a method a subclass overrides to decide what gets
+                made. From the Gang of Four's book.
+            </li>
+            <li>
+                <strong>Abstract Factory</strong>: a factory for a family of related objects, like a
+                mailer, a queue and a cache that all have to match one environment.
+            </li>
+        </list>
+
+        <side-story title="Weaving Patterns">
+            Joseph Marie Jacquard's loom, from 1804, wove patterns read from a chain of punched
+            cards: change the cards, and the same machine made different cloth. Charles Babbage
+            planned to feed his Analytical Engine with cards the same way. Ada Lovelace, whose notes
+            on the Engine in 1843 included what's often called the first published program, wrote
+            that it "weaves algebraical patterns just as the Jacquard-loom weaves flowers and
+            leaves."
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The app starts, and makes the factory with the settings.</li>
+            <li>It asks the factory for a <cde>Mailer</cde>.</li>
+            <li>
+                The factory reads which kind is wanted, checks that it's a kind it knows, and checks
+                the settings that kind needs.
+            </li>
+            <li>
+                If anything is wrong, it throws, and the app stops at startup, with a message that
+                says what to fix.
+            </li>
+            <li>
+                If not, it builds the mailer and returns it, and the app passes it to whatever needs
+                one, as in <lnk to="/php/dependency-injection">Dependency Injection</lnk>.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Three mailers and the interface they share. In a folder, make
+            <cde>src/Mailer.php</cde>:
+        </p>
+        <code-block example="factories/src/Mailer.php" />
+        <p>
+            <cde>src/LogMailer.php</cde>, <cde>src/SmtpMailer.php</cde> and
+            <cde>src/NullMailer.php</cde>:
+        </p>
+        <code-block example="factories/src/LogMailer.php" />
+        <code-block example="factories/src/SmtpMailer.php" />
+        <code-block example="factories/src/NullMailer.php" />
+        <p>And <cde>src/load.php</cde>, which requires them all (and the factory, coming up):</p>
+        <code-block example="factories/src/load.php" />
+        <p>First the way it often starts, choosing inline. Make <cde>before.php</cde>:</p>
+        <code-block example="factories/before.php" />
+        <p>Run it with good settings, then with the kind of mistake people make:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=587 -v "$PWD":/app -w /app php:8.4-cli php before.php
+docker run --rm -e MAILER=smpt -e SMTP_HOST=smtp.example.com -e SMTP_PORT=587 -v "$PWD":/app -w /app php:8.4-cli php before.php
+docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=abc -v "$PWD":/app -w /app php:8.4-cli php before.php</code-block>
+        <p>
+            The first sends. The second has a typo, <cde>smpt</cde>, so it falls through to the
+            <cde>else</cde> and logs the email instead of sending it. In production, that's a
+            welcome email nobody gets, and no error anywhere. The third turns <cde>abc</cde> into
+            port <cde>0</cde>. Now the factory, <cde>src/MailerFactory.php</cde>:
+        </p>
+        <code-block example="factories/src/MailerFactory.php" />
+        <p>And <cde>after.php</cde>, which asks it:</p>
+        <code-block example="factories/after.php" />
+        <p>The same three:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=587 -v "$PWD":/app -w /app php:8.4-cli php after.php
+docker run --rm -e MAILER=smpt -e SMTP_HOST=smtp.example.com -e SMTP_PORT=587 -v "$PWD":/app -w /app php:8.4-cli php after.php
+docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=abc -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
+        <p>
+            The first sends. The other two stop the app before anything happens: "MAILER must be
+            log, none or smtp, got 'smpt'," and "SMTP_PORT must be 1 to 65535, got 'abc'." A mistake
+            in the settings is found in the first second of a deploy, not by a customer a week
+            later. Settings come from outside the code, and the same rule applies to them as to
+            anything else: <lnk to="/php/never-trust-input">never trust input</lnk>.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>match</cde> with a <cde>default</cde> that throws: every kind listed, and
+                anything else an error. Since PHP 8, <cde>throw</cde> works as an expression, so it
+                fits right in the <cde>match</cde>.
+            </li>
+            <li>
+                <cde>getenv()</cde> with no argument returns every environment variable as an array,
+                which is what the factory gets here. See
+                <lnk to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</lnk>.
+            </li>
+            <li>
+                <cde>filter_var($value, FILTER_VALIDATE_INT, ['options' =&gt; [...]])</cde> turns a
+                setting into a real integer in range, or <cde>false</cde>.
+            </li>
+            <li>
+                The factory itself is an ordinary object, made with <cde>new</cde> and passed its
+                settings. A test can make one with an array, and check what it builds.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A silent default is a bug waiting.</strong>
+                <cde>else { use the log mailer }</cde> feels safe and is the opposite: it turns
+                every typo into a quiet failure. List what you accept, and refuse the rest.
+            </li>
+            <li>
+                <strong>Static factory methods are everywhere.</strong> PHP's own
+                <cde>DateTimeImmutable::createFromFormat()</cde> is one, and many libraries offer
+                <cde>Thing::fromArray()</cde>. They're fine to call. In your own code, a factory you
+                can inject is easier to swap and to test.
+            </li>
+            <li>
+                <strong>Not everything needs a factory.</strong> If there's one kind of thing and
+                it's simple to make, <cde>new</cde> is the factory. Reach for one when there's a
+                choice to make, or the building takes more than a line.
+            </li>
+            <li>
+                <strong>Never let a request pick the class.</strong> <cde>new $_GET['type']()</cde>
+                lets a visitor build any class your app can load. The factory's list is the allow
+                list.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Build everything at startup">
+            <p>
+                Have the app ask its factories for everything it needs as it starts, not lazily on
+                the first email. Then a bad setting fails the deploy, in front of the person doing
+                it, instead of failing the first customer to sign up.
+            </p>
+        </two-dollars>
+
+        <p>
+            The signup sends a welcome email. Soon it also adds the person to a newsletter, and
+            writes an audit log, and notifies the team. There's a pattern for letting all of those
+            react without the signup knowing about any of them. Next: observers.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/observers">Next: Observers &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

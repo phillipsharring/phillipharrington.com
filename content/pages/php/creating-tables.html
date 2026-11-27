@@ -1,0 +1,272 @@
+<layout name="default" title="Creating Tables" />
+<page-head>
+    <meta
+        name="description"
+        content="CREATE TABLE, column by column: types, NOT NULL, defaults, AUTO_INCREMENT and the primary key, money in cents, and why the allowed values for a column live in your code instead of an ENUM. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="CREATE TABLE, MySQL column types, VARCHAR, INT UNSIGNED, DECIMAL, DATETIME, NOT NULL, DEFAULT, AUTO_INCREMENT, primary key, strict mode, ENUM, money in cents, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="CREATE TABLE, column by column. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="creating-tables">Creating Tables</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            In <lnk to="/php/sql">SQL</lnk>, the <cde>books</cde> table was already there. Someone
+            had to decide what it holds: which columns, what type each one is, which ones can be
+            empty. That decision is a <cde>CREATE TABLE</cde> statement, and it's worth getting
+            right, because the database enforces it on every row, forever, whatever your code
+            forgets to check.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-create-table">What's CREATE TABLE?</heading>
+        <p>The statement that makes a table, naming each column and its rules:</p>
+        <!-- prettier-ignore -->
+        <code-block>CREATE TABLE `books` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `title` VARCHAR(200) NOT NULL,
+    PRIMARY KEY (`id`)
+);</code-block>
+        <p>
+            Each line is a column: a name, a type, then any rules. The last line says which column
+            identifies a row.
+        </p>
+
+        <heading h3 id="types">Types</heading>
+        <list>
+            <li>
+                <strong>Whole numbers</strong>: <cde>INT</cde> (up to about 2.1 billion, or 4.2
+                billion when it's <cde>UNSIGNED</cde>, which means no negatives),
+                <cde>BIGINT</cde> for more, <cde>SMALLINT</cde> and <cde>TINYINT</cde> for less.
+                MySQL has no true yes-or-no type: <cde>BOOLEAN</cde> is a <cde>TINYINT</cde>
+                holding 0 or 1.
+            </li>
+            <li>
+                <strong>Exact decimals</strong>: <cde>DECIMAL(10, 2)</cde>, ten digits with two
+                after the point. Never <cde>FLOAT</cde> or <cde>DOUBLE</cde> for money; they're
+                approximate, the same way they are in PHP. Or do what
+                <lnk to="/php/types-of-types">Types of Types</lnk> says and count cents in an
+                <cde>INT</cde>.
+            </li>
+            <li>
+                <strong>Text</strong>: <cde>VARCHAR(200)</cde> holds up to 200 characters, and
+                <cde>TEXT</cde> holds a lot more, for things like the body of a post.
+            </li>
+            <li>
+                <strong>Dates and times</strong>: <cde>DATE</cde> for a day, <cde>DATETIME</cde> for
+                a moment.
+            </li>
+        </list>
+
+        <heading h3 id="rules">Rules</heading>
+        <list>
+            <li>
+                <strong>NOT NULL</strong>: the column must have a value. Without it, a column
+                accepts <cde>NULL</cde>, which means "no value," and every column does, unless you
+                say otherwise.
+            </li>
+            <li>
+                <strong>DEFAULT</strong>: the value it gets when an insert doesn't give one.
+                <cde>DEFAULT CURRENT_TIMESTAMP</cde> stamps the time a row was made.
+            </li>
+            <li>
+                <strong>AUTO_INCREMENT</strong>: the database numbers the rows itself, 1, 2, 3, so
+                every row gets an id without your code picking one.
+            </li>
+            <li>
+                <strong>PRIMARY KEY</strong>: the column that tells one row from every other.
+                There's one per table, it can't repeat, and it can't be <cde>NULL</cde>. The next
+                lesson is about keys.
+            </li>
+        </list>
+
+        <side-story title="Why Everything Is VARCHAR(255)">
+            Old schemas are full of <cde>VARCHAR(255)</cde>, whatever the column holds. Until MySQL
+            5.0.3, in 2005, 255 characters was as long as a <cde>VARCHAR</cde> could be, so it was
+            the safe choice. The limit is long gone. The habit isn't. Pick a length that fits the
+            thing: 200 for a title is plenty.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>You run <cde>CREATE TABLE</cde> once, when the table is made.</li>
+            <li>
+                The database stores the definition, and from then on checks every insert and update
+                against it.
+            </li>
+            <li>
+                A value that breaks a rule (too long, a <cde>NULL</cde> where one isn't allowed, a
+                number out of range) is refused with an error, and the row isn't written.
+            </li>
+            <li>
+                Changing the table later takes another statement, <cde>ALTER TABLE</cde>. That's
+                what Migrations, at the end of this section, are for.
+            </li>
+        </ol>
+        <p>
+            Step three depends on strict mode, which MySQL 8.4 turns on by default. Without it,
+            MySQL cuts the value down to fit, writes it anyway, and leaves you a warning nobody
+            reads.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Make a table with rules, then break every one of them. Use the same
+            <cde>compose.yml</cde> and <cde>Dockerfile</cde> as in SQL:
+        </p>
+        <code-block example="creating-tables/compose.yml" />
+        <code-block example="creating-tables/Dockerfile" />
+        <p>This time, <cde>init.sql</cde> is the table definition itself:</p>
+        <code-block example="creating-tables/init.sql" />
+        <p>Start the database and open the <cde>mysql</cde> command:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose exec db mysql -u app -papp-password course</code-block>
+        <p>Look at what you made:</p>
+        <!-- prettier-ignore -->
+        <code-block>DESCRIBE `books`;</code-block>
+        <p>Add a book, giving only the columns that need a value, and look at the row:</p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `books` (`title`, `format`, `price_cents`)
+VALUES ('Frankenstein', 'paperback', 1299);
+
+SELECT *
+FROM `books`;</code-block>
+        <p>
+            The database filled in the rest: an <cde>id</cde> of 1, <cde>NULL</cde> for the pages
+            and the date, and the time for <cde>created_at</cde>. Now break the rules, one at a
+            time:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `books` (`title`, `format`, `price_cents`)
+VALUES (NULL, 'paperback', 1299);
+
+INSERT INTO `books` (`title`, `format`, `price_cents`)
+VALUES ('Dracula', 'paperback', -1);
+
+INSERT INTO `books` (`title`, `format`, `price_cents`)
+VALUES (REPEAT('x', 201), 'paperback', 1299);</code-block>
+        <p>
+            Three refusals: <cde>Column 'title' cannot be null</cde>,
+            <cde>Out of range value for column 'price_cents'</cde>, and
+            <cde>Data too long for column 'title'</cde>. Now one the table can't catch:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `books` (`title`, `format`, `price_cents`)
+VALUES ('Dracula', 'scroll', 999);</code-block>
+        <p>
+            Accepted. <cde>format</cde> is just text, and the database has no idea which formats you
+            sell. That list belongs in your code. Type <cde>exit</cde>, and make
+            <cde>add-book.php</cde>, which keeps the list and checks everything else too:
+        </p>
+        <code-block example="creating-tables/add-book.php" />
+        <p>It needs the <cde>db.php</cde> from SQL, too:</p>
+        <code-block example="creating-tables/db.php" />
+        <p>Add a book the right way, and then the wrong way:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php add-book.php 'Jane Eyre' ebook 899
+docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block>
+        <p>
+            The first is added, with the next id. The second is refused twice, for the format and
+            for the price, before the database ever sees it. <strong>Never trust input</strong>: the
+            table's rules are the last line of defense, and your code is the first.
+            <cde>docker compose down -v</cde> when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>in_array($value, $allowed, true)</cde> is the allow list for a column like
+                <cde>format</cde>, the same check as the shirt sizes in
+                <lnk to="/php/forms">Forms</lnk>.
+            </li>
+            <li>
+                <cde>filter_var($value, FILTER_VALIDATE_INT)</cde> for anything bound for an integer
+                column, with <cde>min_range</cde> and <cde>max_range</cde> to match the column.
+            </li>
+            <li>
+                <cde>mb_strlen()</cde>, not <cde>strlen()</cde>, to check text against a
+                <cde>VARCHAR</cde> length. The length counts characters, and
+                <cde>strlen()</cde> counts bytes. <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>
+                has the difference.
+            </li>
+            <li>
+                A <cde>PDOException</cde> is what PHP gets when the table refuses a row. Most of the
+                time it means a check is missing from your code: catch the problem before the
+                database has to.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Don't use ENUM columns.</strong> MySQL has an <cde>ENUM</cde> type that
+                takes only listed values, and it looks like the answer for <cde>format</cde>. It
+                isn't. Adding a value means altering the table. It sorts by the order of the list,
+                not alphabetically. And with strict mode off, a value that isn't on the list is
+                stored as an empty string. Use a <cde>VARCHAR</cde>, and keep the list in your code.
+            </li>
+            <li>
+                <strong>A decimal in an integer column is rounded, not refused.</strong> Give
+                <cde>price_cents</cde> the value <cde>12.99</cde>, and strict mode or not, it stores
+                13, without an error. That's why <cde>add-book.php</cde> checks for a whole number
+                itself.
+            </li>
+            <li>
+                <strong>Strict mode can be off.</strong> It's the default, but some hosts and old
+                configurations turn it off, and then too-long text is cut short and out-of-range
+                numbers are clamped, silently. <cde>SELECT @@sql_mode;</cde> should include
+                <cde>STRICT_TRANS_TABLES</cde>.
+            </li>
+            <li>
+                <strong>TIMESTAMP ends in 2038.</strong> MySQL has a <cde>TIMESTAMP</cde> type, too,
+                and it can't hold a moment after January 19, 2038. It also converts to and from the
+                connection's time zone as it goes. Use <cde>DATETIME</cde>, and store times in UTC.
+            </li>
+            <li>
+                <strong>Columns accept NULL unless you say they don't.</strong> Leave off
+                <cde>NOT NULL</cde>, and every query that touches the column has to handle "no
+                value." Make a column nullable only when "no value" means something, like a book
+                whose page count you don't know yet.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="SHOW CREATE TABLE">
+            <p>
+                <cde>SHOW CREATE TABLE `books`\G</cde> prints the exact statement that would make
+                the table as it stands now, defaults and all, including the ones you didn't write.
+                It's the quickest way to see what a table really is, and to copy it somewhere else.
+            </p>
+        </two-dollars>
+
+        <p>
+            One table only gets you so far. Books have authors, and authors have more than one book.
+            Next: relating tables, with keys and foreign keys.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/relating-tables">Next: Relating Tables: Keys and Foreign Keys &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

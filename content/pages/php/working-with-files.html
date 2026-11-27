@@ -1,0 +1,225 @@
+<layout name="default" title="Working with Files" />
+<page-head>
+    <meta
+        name="description"
+        content="Reading and writing files in PHP: file_get_contents and file_put_contents, appending with a lock, reading a big file one line at a time, where files should live, permissions, and keeping a file name from input inside the folder it belongs in. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP files, file_get_contents, file_put_contents, FILE_APPEND, LOCK_EX, fopen, fgets, file(), realpath, path traversal, file permissions, temp files, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Reading and writing files, and keeping input out of your paths. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="working-with-files">Working with Files</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/includes">Includes</lnk> read a PHP file and ran it. Most files aren't
+            code: logs, exports, settings, uploads, a cache. PHP reads and writes them with a few
+            functions, and the functions are the easy part. The hard parts are where the file lives,
+            who else can read it, and what happens when a visitor gets to choose its name.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-file">What's a File, to PHP?</heading>
+        <p>
+            A named row of bytes on disk, at a path. PHP reads them into strings and writes strings
+            out to them. It doesn't care whether the bytes are text, JSON or a photo. If they're
+            text, they should be UTF-8, like everything else (<lnk to="/php/text-and-utf-8"
+                >Text and UTF-8</lnk>).
+        </p>
+
+        <heading h3 id="whole-files">Whole Files at Once</heading>
+        <list>
+            <li><cde>file_get_contents($path)</cde>: the whole file, as one string.</li>
+            <li>
+                <cde>file_put_contents($path, $data)</cde>: write a string to a file, replacing what
+                was there. Add <cde>FILE_APPEND</cde> to add to the end instead, and
+                <cde>LOCK_EX</cde> so two requests writing at once don't mix their lines.
+            </li>
+            <li><cde>file($path)</cde>: the whole file, as an array of lines.</li>
+        </list>
+        <p>Each returns <cde>false</cde> when it fails, with a warning. Check for it.</p>
+
+        <heading h3 id="line-by-line">A Line at a Time</heading>
+        <p>
+            For a file too big to hold in memory, open it and read it a piece at a time:
+            <cde>fopen()</cde> gives you a handle, <cde>fgets()</cde> reads the next line from it,
+            and <cde>fclose()</cde> closes it. A 2 GB log read this way uses about as much memory as
+            its longest line.
+        </p>
+
+        <heading h3 id="permissions">Permissions</heading>
+        <p>
+            Every file has an owner, and settings for who can read and write it. PHP runs as some
+            user, often one called <cde>www-data</cde> on a server, and can only touch what that
+            user is allowed to. "Permission denied" means the file is there and PHP's user can't
+            have it.
+        </p>
+
+        <side-story title="Left in /tmp">
+            One of my apps had a deploy script that wrote a copy of the production
+            <cde>.env</cde> to <cde>/tmp</cde> while it worked, and left it there. On that machine,
+            <cde>/tmp</cde> could be read by every user, so every secret the app had was sitting in
+            a file anyone logged in could open. The fix was a private temp file, readable only by
+            the script's own user, and deleted when the script ended, however it ended.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                You build a path, from <cde>__DIR__</cde>, to a folder outside the web root that's
+                meant for the app's data.
+            </li>
+            <li>
+                If any part of the path came from outside, you check that it still points inside
+                that folder.
+            </li>
+            <li>PHP asks the operating system for the file, as PHP's user.</li>
+            <li>The operating system checks the permissions, and hands it over or refuses.</li>
+            <li>
+                PHP reads or writes, then closes the file. With <cde>LOCK_EX</cde>, other writers
+                wait their turn.
+            </li>
+        </ol>
+        <p>
+            Step two is the one that matters. A file name from a form, a query string or a command
+            line is input, and <cde>../</cde> climbs out of any folder you put in front of it.
+            <strong>Never trust input,</strong> least of all in a path.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>A notes file you add to and read back. In a folder, make <cde>notes.php</cde>:</p>
+        <code-block example="working-with-files/notes.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php notes.php add "Buy milk"
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php notes.php add "Call the café about the order"
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php notes.php list</code-block>
+        <p>
+            There's a <cde>data/notes.txt</cde> in your folder now, one note per line. Try adding a
+            note that's only spaces, and it's refused. Each note is checked before it's written, and
+            any new line inside it becomes a space, so nobody can sneak in a second line.
+        </p>
+        <p>Now read a file line by line. Make <cde>search.php</cde>:</p>
+        <code-block example="working-with-files/search.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php search.php notes.txt milk
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php search.php ../notes.php php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php search.php /etc/passwd root</code-block>
+        <p>
+            The first finds the milk. The other two try to climb out of <cde>data/</cde>, and are
+            refused. <cde>realpath()</cde> works out where a path really points, every
+            <cde>../</cde> followed, and the script only goes on if that's still inside
+            <cde>data/</cde>. Without that check, the second would print your source code and the
+            third the server's list of users.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>file_get_contents()</cde>, <cde>file_put_contents()</cde>, <cde>file()</cde>:
+                whole files.
+            </li>
+            <li>
+                <cde>fopen()</cde>, <cde>fgets()</cde>, <cde>fwrite()</cde>, <cde>fclose()</cde>: a
+                piece at a time.
+            </li>
+            <li><cde>FILE_APPEND | LOCK_EX</cde>: add to a file safely.</li>
+            <li>
+                <cde>is_file()</cde>, <cde>is_dir()</cde>, <cde>file_exists()</cde>,
+                <cde>is_readable()</cde>, <cde>is_writable()</cde>: ask before you act.
+            </li>
+            <li>
+                <cde>mkdir()</cde>, <cde>rename()</cde>, <cde>unlink()</cde> (delete),
+                <cde>scandir()</cde>, <cde>glob()</cde>.
+            </li>
+            <li>
+                <cde>realpath()</cde> and <cde>str_starts_with()</cde>: is this path really inside
+                that folder? <cde>basename()</cde> strips a name down to its last part.
+            </li>
+            <li>
+                <cde>tmpfile()</cde> and <cde>tempnam()</cde>: temp files with names nobody else
+                picked.
+            </li>
+            <li>
+                <cde>fgetcsv()</cde> and <cde>fputcsv()</cde>: spreadsheets, in
+                <lnk to="/php/csv">CSV</lnk>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A file name from input can go anywhere.</strong>
+                <cde>'data/' . $_GET['file']</cde> with <cde>../../.env</cde> is your secrets. Use
+                an allow list, or <cde>realpath()</cde> and check the folder, as
+                <cde>search.php</cde> does.
+            </li>
+            <li>
+                <strong>A file name from input can be a URL.</strong>
+                <cde>file_get_contents()</cde> opens <cde>http://</cde> addresses too, and special
+                ones like <cde>php://</cde>. Code that reads "a file" a visitor named can be made to
+                fetch things from your own network.
+            </li>
+            <li>
+                <strong>Don't write into the web root.</strong> Anything PHP writes inside
+                <cde>public/</cde> can be downloaded, or run, if it ends in <cde>.php</cde>. Keep
+                data, logs and uploads outside it, like
+                <lnk to="/php/document-root">Document Root</lnk> said.
+            </li>
+            <li>
+                <strong>Never fix "Permission denied" with <cde>chmod 777</cde>.</strong> It means
+                every user on the machine can read and change the file. Give PHP's user what it
+                needs, and nobody else.
+            </li>
+            <li>
+                <strong>A half-written file is a broken file.</strong> If two requests replace the
+                same file at once, or the script dies mid-write, readers get a mess. Lock it, or use
+                the tip below.
+            </li>
+            <li>
+                <strong>Windows line endings.</strong> A file made on Windows ends its lines with
+                <cde>\r\n</cde>, and the <cde>\r</cde> stays on the end of every line you read.
+                <cde>rtrim($line, "\r\n")</cde> takes off both.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Write next to it, then rename">
+            <p>
+                To replace a file safely, write the new version to a temp file in the same folder,
+                then <cde>rename()</cde> it over the old one. On the same disk, the rename happens
+                all at once: anyone reading the file gets the old version or the new one, never half
+                of each. If the script dies partway, the old file is still there, untouched.
+            </p>
+        </two-dollars>
+
+        <p>
+            A text file holds a list. When you need to find one line among millions, change one in
+            place, or have two people write at once, you want a database. Next: Working with a
+            Database: PDO and Prepared Statements.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/pdo"
+                >Next: Working with a Database: PDO and Prepared Statements &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

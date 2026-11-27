@@ -1,0 +1,214 @@
+<layout name="default" title="Output" />
+<page-head>
+    <meta
+        name="description"
+        content="How PHP sends things: echo, print, printf and sprintf for people, print_r, var_dump and var_export for you, why headers have to go first, and escaping everything that came from outside. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP echo, print, printf, sprintf, print_r, var_dump, var_export, headers already sent, htmlspecialchars, PHP output, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Every way PHP puts something on the page. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="output">Output</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A PHP file's text outside the tags goes out as it is. Everything else that goes out,
+            your code has to print. PHP has several ways to do it: some for the people reading your
+            page, and some for you, while you work out what your code is doing.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-output">What's Output?</heading>
+        <p>
+            Everything PHP sends: the text outside the tags, and whatever the code prints, in the
+            order it happens. On the web, it becomes the body of the response from Request and
+            Response. On the command line, it goes to your terminal. Same code, same output, just a
+            different place for it to land.
+        </p>
+
+        <heading h3 id="for-people">For People</heading>
+        <list>
+            <li>
+                <cde>echo</cde> prints one or more strings, separated by commas:
+                <cde>echo 'Hi, ', $name;</cde>. It's the one you'll use nearly all the time.
+            </li>
+            <li>
+                <cde>print</cde> is the same idea, for one thing at a time. Most code uses echo.
+            </li>
+            <li>
+                <cde>printf()</cde> prints a pattern with blanks filled in:
+                <cde>printf('%s costs %d cents', $item, $price)</cde>. <cde>%s</cde> is a string,
+                <cde>%d</cde> a whole number.
+            </li>
+            <li>
+                <cde>sprintf()</cde> does the same, but hands you the string instead of printing it,
+                so you can keep it for later.
+            </li>
+        </list>
+
+        <heading h3 id="for-you">For You</heading>
+        <list>
+            <li><cde>print_r()</cde> shows what's in an array, readably.</li>
+            <li>
+                <cde>var_dump()</cde> shows the type and value of anything: <cde>bool(false)</cde>,
+                <cde>string(3) "php"</cde>. When something is the wrong type, this is how you see
+                it.
+            </li>
+            <li><cde>var_export()</cde> writes a value as PHP code you could paste into a file.</li>
+        </list>
+
+        <side-story title="Hello, World">
+            The first known "hello, world" program is in Brian Kernighan's 1972 tutorial for B, the
+            language before C. It became famous in 1978, as the first example in The C Programming
+            Language, by Kernighan and Dennis Ritchie. Printing one line has been the first program
+            in nearly every language since. In PHP, it doesn't even need code: a file that says
+            <cde>hello, world</cde> prints it.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>On the web, a response is headers first, then the body. So:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Your code runs. While it hasn't printed anything, it can still set headers:
+                <cde>header()</cde>, <cde>http_response_code()</cde>, <cde>setcookie()</cde>.
+            </li>
+            <li>
+                The first byte of output, from an <cde>echo</cde> or from plain text outside the
+                tags, makes PHP send the headers, right then.
+            </li>
+            <li>The body follows, as your code prints it.</li>
+            <li>
+                Any header your code tries to set after that is too late. PHP warns "headers already
+                sent" and ignores it.
+            </li>
+        </ol>
+        <p>
+            PHP adds one header by itself: <cde>Content-Type: text/html; charset=UTF-8</cde>, unless
+            you send your own. The <cde>charset</cde> tells the browser how to read the bytes;
+            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> has the whole story.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>Every way to print, in one file. In a folder, make <cde>dump.php</cde>:</p>
+        <code-block example="output/dump.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dump.php</code-block>
+        <p>
+            Look at the line for <cde>false</cde>: echo printed nothing at all between the brackets.
+            <cde>var_dump()</cde> shows it as <cde>bool(false)</cde>. When you're checking what a
+            value really is, dump it.
+        </p>
+        <p>
+            Now on the web, where output comes from somewhere. Make <cde>index.php</cde>, which
+            greets whoever is named in the query string:
+        </p>
+        <code-block example="output/index.php" />
+        <p>And <cde>too-late.php</cde>, which tries to redirect after it's printed:</p>
+        <code-block example="output/too-late.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>From a second terminal:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?name=Alice'
+curl --get --data-urlencode 'name=&lt;b&gt;Alice&lt;/b&gt;' http://localhost:8000/
+curl -i http://localhost:8000/too-late.php</code-block>
+        <p>
+            The first says hello to Alice. The second sends HTML in the name, and gets back
+            <cde>&amp;lt;b&amp;gt;Alice&amp;lt;/b&amp;gt;</cde>: escaped, so the browser shows the
+            tags instead of obeying them. <strong>Never trust input,</strong> and anything that came
+            from outside gets <cde>htmlspecialchars()</cde> on its way into a page. The third shows
+            no <cde>Location</cde> header, only the warning: "Cannot modify header information -
+            headers already sent."
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>echo</cde>, <cde>print</cde>, <cde>printf()</cde>: print for people.</li>
+            <li><cde>sprintf()</cde>: build the string, print it later.</li>
+            <li>
+                <cde>print_r()</cde>, <cde>var_dump()</cde>, <cde>var_export()</cde>: print for you.
+            </li>
+            <li>
+                <cde>htmlspecialchars($value)</cde> on anything from outside that goes into HTML.
+                <lnk to="/php/xss">XSS and Escaping Output</lnk>, in Security, is why.
+            </li>
+            <li>
+                <cde>header('Content-Type: text/plain')</cde> when the output isn't HTML, so the
+                browser shows it as it is.
+            </li>
+            <li><cde>headers_sent()</cde> tells you whether it's too late for headers.</li>
+            <li>
+                <cde>"\n"</cde> is a new line (in double quotes); <cde>PHP_EOL</cde> is the same
+                thing, by name.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Headers already sent.</strong> A redirect, a cookie or a status code after
+                any output is ignored. The warning names the file and line where output started;
+                often it's a blank line before <cde>&lt;?php</cde> or after a <cde>?&gt;</cde>. Set
+                headers first, print second.
+            </li>
+            <li>
+                <strong>It works on one server and not another.</strong> The sample
+                <cde>php.ini</cde> files PHP ships turn on output buffering, which holds the first 4
+                KB of output and hides a late header. The Docker image has no <cde>php.ini</cde>, so
+                it doesn't. <lnk to="/php/output-buffering">Output Buffering</lnk> has more. Don't
+                rely on it to fix your order.
+            </li>
+            <li>
+                <strong>A new line in HTML is just a space.</strong> <cde>"\n"</cde> breaks lines in
+                the terminal and in page source. In the browser, you need <cde>&lt;p&gt;</cde> or
+                <cde>&lt;br&gt;</cde>, or a <cde>text/plain</cde> content type.
+            </li>
+            <li>
+                <strong>Echo hides the type.</strong> <cde>false</cde> and <cde>null</cde> print as
+                nothing, <cde>true</cde> prints <cde>1</cde>. Debug with <cde>var_dump()</cde>.
+            </li>
+            <li>
+                <strong>Escape on the way out, every time.</strong> Input that looks harmless in a
+                test is a script tag in an attack. <strong>Never trust input.</strong>
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Dump inside pre">
+            <p>
+                In a browser, <cde>print_r()</cde> and <cde>var_dump()</cde> come out as one long
+                line, because HTML ignores the new lines. Wrap them:
+                <cde>echo '&lt;pre&gt;'; var_dump($thing); echo '&lt;/pre&gt;';</cde>. Now it's laid
+                out the way the terminal shows it.
+            </p>
+        </two-dollars>
+
+        <p>
+            Everything you printed in this lesson was held in something first: a variable. Next:
+            Variables, Types and strict_types.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/variables-and-types">Next: Variables, Types and strict_types &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

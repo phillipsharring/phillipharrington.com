@@ -1,0 +1,171 @@
+<layout name="default" title="Return Early" />
+<page-head>
+    <meta
+        name="description"
+        content="Handle the cases that stop a function at the top, one at a time, and leave the main work at the bottom, unindented. Guard clauses, why they read better than nested ifs, and where returning early bites. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="return early, guard clauses, early return, nested if, arrow code, readable code, refactoring, PHP functions, exit after redirect, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Handle the stopping cases first, and get out. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="return-early">Return Early</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Defensive Programming checked its arguments at the top of the function and threw if they
+            were wrong. That shape works for more than errors. Any case that ends a function early,
+            "not logged in," "nothing to do," can be handled first and sent on its way, leaving the
+            real work at the bottom with nothing wrapped around it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-returning-early">What's Returning Early?</heading>
+        <p>
+            Writing a function as a list of checks, each with its own answer, followed by the main
+            path. Each check is a guard clause: if this, return that. Once you're past it, you never
+            think about it again.
+        </p>
+
+        <heading h3 id="the-arrow">The Arrow</heading>
+        <p>
+            The other way is to nest: if this is fine, then if that's fine, then if the next thing
+            is fine, do the work. Each condition pushes the code further right, and each answer for
+            "not fine" ends up in an <cde>else</cde> far below the <cde>if</cde> it belongs to. The
+            shape on screen is an arrowhead pointing right, and people call it arrow code.
+        </p>
+
+        <side-story title="A Refactoring With a Name">
+            Martin Fowler's <em>Refactoring</em>, first published in 1999, gave this change a name:
+            "Replace Nested Conditional with Guard Clauses." Naming refactorings was the point of
+            the book. "Extract Method" and "Rename Method" are in there too, which is where your
+            editor's menu got them.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Find the cases that stop the function: missing, invalid, not allowed, empty.</li>
+            <li>
+                For each, write the condition the way it fails (<cde>if ($user === null)</cde>, not
+                <cde>if ($user !== null)</cde>), and return or throw right there.
+            </li>
+            <li>Put them in order: the ones that make the later checks possible go first.</li>
+            <li>
+                Write the main work last, at one level of indent, knowing every check above has
+                passed.
+            </li>
+        </ol>
+        <p>
+            The reader reads it the same way it runs: top to bottom, one condition at a time, each
+            answer next to its question.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A checkout that has four reasons to say no. In a folder, make a <cde>before</cde> folder
+            with <cde>checkout.php</cde>, nested:
+        </p>
+        <code-block example="return-early/before/checkout.php" />
+        <p>
+            "Please log in" is the answer to the very first <cde>if</cde>, and it's the last line of
+            the function. Now an <cde>after</cde> folder, with the same function returning early:
+        </p>
+        <code-block example="return-early/after/checkout.php" />
+        <p>And <cde>run.php</cde>, which asks either one the same five questions:</p>
+        <code-block example="return-early/run.php" />
+        <p>Run both:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php before
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block>
+        <p>
+            Five identical answers. Then add a sixth rule to each version, say, "the store is closed
+            for maintenance," and see which one you'd rather add it to. In
+            <cde>after</cde>, it's three lines at the top. In <cde>before</cde>, it's a new level of
+            nesting and a new <cde>else</cde> somewhere near the bottom.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>return</cde> in a function, and <cde>throw</cde> for the cases that are errors.
+            </li>
+            <li>
+                <cde>continue</cde> in a loop: skip this item and go on to the next, like the
+                unknown status in <lnk to="/php/magic-numbers">Magic Numbers in Code</lnk>.
+                <cde>break</cde> to leave the loop.
+            </li>
+            <li>
+                <cde>exit</cde> in a script that has answered: after a redirect, a 404, a
+                <cde>422</cde> for bad input, as <cde>shop.php</cde> did in
+                <lnk to="/php/defensive-programming">Defensive Programming</lnk>.
+            </li>
+            <li>
+                <cde>??</cde> and <cde>?-&gt;</cde> handle some "missing" cases in a single
+                expression, with no <cde>if</cde> at all.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong><cde>header('Location: ...')</cde> doesn't stop the script.</strong> It sets
+                a header, and PHP carries on running the rest of the page, including whatever the
+                redirect was meant to protect. Follow it with <cde>exit</cde>.
+            </li>
+            <li>
+                <strong>A return in the middle can skip cleanup.</strong> If the function opened a
+                file or started a transaction, an early return can leave it open. Do the checks
+                before you open anything, or use <cde>try</cde>/<cde>finally</cde>. The next lesson
+                has another way.
+            </li>
+            <li>
+                <strong>Returns buried in the middle aren't guard clauses.</strong> Guards go at the
+                top, where a reader looks for them. A <cde>return</cde> deep inside a loop inside an
+                <cde>if</cde> is just hard to find.
+            </li>
+            <li>
+                <strong>The order of the guards matters.</strong> Check that the user exists before
+                you check whether they're verified, or the second check reads a property of
+                <cde>null</cde>.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Flip the if, swap the branches">
+            <p>
+                When you see <cde>if (ok) { thirty lines } else { one line }</cde>, flip the
+                condition, put the one line first with a <cde>return</cde>, and drop the
+                <cde>else</cde>. The thirty lines move left a level, and the short answer sits next
+                to its question.
+            </p>
+        </two-dollars>
+
+        <p>
+            Returning early has a famous rival: the rule that a function should have exactly one
+            <cde>return</cde>, at the end. They get along better than you'd think. Next: single
+            point of return.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/single-point-of-return">Next: Single Point of Return &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

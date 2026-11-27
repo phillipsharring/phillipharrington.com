@@ -1,0 +1,171 @@
+<layout name="default" title="Sessions" />
+<page-head>
+    <meta
+        name="description"
+        content="A shortlist kept in a PHP session: add and remove items, show a message exactly once after each change, look at the file the server keeps, and end the session properly. Started the careful way, with strict mode and cookie flags. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP sessions project, session_start, $_SESSION, flash messages, session cookie, use_strict_mode, session_destroy, session files, session locking, Post/Redirect/Get, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Remember each visitor on the server, in a session. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="sessions">Sessions</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The Cookies project kept a name in the browser, where the visitor could change it to
+            anything. A session keeps the data on the server instead, and gives the browser only a
+            long random id to bring back. The visitor can change the id, but all that gets them is
+            someone else's nothing.
+        </p>
+        <p>
+            You'll build a shortlist: pick things from a list, remove them, start over. Along the
+            way, a message that shows up exactly once after each change, a look at the file PHP
+            keeps for each visitor, and a session started with the settings that every login in the
+            next few projects depends on.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/sessions">Sessions</lnk>: a cookie with an id, a file on the server.
+            </li>
+            <li>
+                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>: strict
+                mode, <cde>HttpOnly</cde>, <cde>SameSite</cde>, <cde>Secure</cde>.
+            </li>
+            <li>
+                <lnk to="/php/request-and-response">Request and Response</lnk>: Post/Redirect/Get.
+            </li>
+            <li><lnk to="/php/never-trust-input">Never Trust Input</lnk>: the item picked.</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="starting-a-session">Starting a Session</heading>
+        <p><cde>src/session.php</cde> has three small functions:</p>
+        <code-block example="project-sessions/src/session.php" />
+        <list>
+            <li>
+                <strong><cde>start_session()</cde></strong> passes its settings straight to
+                <cde>session_start()</cde>. <cde>use_strict_mode</cde> is the one people miss: with
+                it off, which is PHP's default, a browser can show up with an id the server never
+                made, and PHP will start a session under it. The Login Form project shows why that's
+                dangerous. The cookie flags are the ones from the Cookies project.
+            </li>
+            <li>
+                <strong><cde>flash()</cde></strong> keeps a message for the next page and then
+                forgets it. After a POST, you redirect; the message rides across the redirect in the
+                session, is shown once, and is gone.
+            </li>
+            <li>
+                <strong><cde>end_session()</cde></strong> empties the data, deletes the cookie with
+                the same settings it was set with, and destroys the file on the server. All three;
+                any one alone leaves something behind.
+            </li>
+        </list>
+
+        <heading h3 id="the-shortlist">The Shortlist</heading>
+        <p><cde>public/index.php</cde>:</p>
+        <code-block example="project-sessions/public/index.php" />
+        <p>
+            The shortlist lives in <cde>$_SESSION['shortlist']</cde>, which PHP loads at
+            <cde>session_start()</cde> and saves when the script ends. Every POST changes it, sets a
+            flash message and redirects with a <cde>303</cde>, so reloading never adds the same
+            thing twice. <strong>Never trust input:</strong> the item has to be a key in
+            <cde>$fruit</cde>, and nothing else gets into the session.
+        </p>
+
+        <heading h3 id="run-it">Run It</heading>
+        <p>This time, give the container a name, so you can look inside it in a moment:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it --name sessions -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and add Cherry. "Added Cherry." appears once;
+            reload, and it's gone, but Cherry is still on the list. Open a private window: an empty
+            shortlist, because it's a different browser with a different id. Now look at what the
+            server keeps, from a second terminal:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker exec sessions sh -c 'ls /tmp/sess_*; cat /tmp/sess_*'</code-block>
+        <p>One file per session, named after the id, holding your data:</p>
+        <!-- prettier-ignore -->
+        <code-block>shortlist|a:1:{s:6:"cherry";b:1;}</code-block>
+        <p>
+            That's PHP's own format for <cde>$_SESSION</cde>: the key, a bar, and the value,
+            serialized. Your browser has only the id in its cookie. Then try a made-up id:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -si -b 'PHPSESSID=madeup123' http://localhost:8000</code-block>
+        <p>
+            Strict mode at work: there's no session called <cde>madeup123</cde>, so PHP ignores it
+            and sends a fresh id of its own in <cde>Set-Cookie</cde>. Press Start over in the
+            browser, and the cookie and the file are both gone.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A session is locked while a request uses it.</strong> With the default file
+                storage, PHP holds the session file locked from <cde>session_start()</cde> until the
+                script ends, so a second request from the same browser waits. One slow page can
+                stall every other tab. Call <cde>session_write_close()</cde> as soon as you're done
+                changing the session.
+            </li>
+            <li>
+                <strong>Sessions expire on their own schedule.</strong> PHP cleans up files that
+                haven't been touched for <cde>session.gc_maxlifetime</cde> seconds, 1440 by default,
+                which is 24 minutes. And the cleanup runs only now and then, so "expired" is
+                approximate. If a session must end at a certain time, store the time in it and check
+                it yourself.
+            </li>
+            <li>
+                <strong>Files only work on one server.</strong> Behind a load balancer, the next
+                request may go to a server that doesn't have the file. Several servers need shared
+                session storage: a database or Redis.
+            </li>
+            <li>
+                <strong>The session id is the key to everything in it.</strong> Anyone who has it is
+                that visitor, as far as your site knows. That's why it's <cde>HttpOnly</cde>, why it
+                should be <cde>Secure</cde>, and why it changes at login.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name your session cookie">
+            <p>
+                Cookies are kept per host, not per port, so every app you run on
+                <cde>localhost</cde> shares one <cde>PHPSESSID</cde>, and they log each other out.
+                Give each app its own with <cde>session_name('shortlist_session')</cde> before
+                <cde>session_start()</cde>, and the confusion stops. It also stops announcing to the
+                world that your site runs PHP.
+            </p>
+        </two-dollars>
+
+        <p>
+            The session remembers what each visitor picked. It can just as easily remember who the
+            visitor is, and keep everyone else out. Next: a protected page.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/protected-page">Next: Protected Page &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

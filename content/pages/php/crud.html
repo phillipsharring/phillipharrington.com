@@ -1,0 +1,213 @@
+<layout name="default" title="CRUD" />
+<page-head>
+    <meta
+        name="description"
+        content="Create, Read, Update, Delete: the four things almost every app does to its data, how they map to SQL and to HTTP, and a small notes page that does all four with PHP and MySQL. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="CRUD, create read update delete, INSERT SELECT UPDATE DELETE, PHP MySQL, PDO prepared statements, Post/Redirect/Get, 303 See Other, HTML forms, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The four things almost every app does to its data. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="crud">CRUD</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Single Point of Entry gave every page a row in a table of routes. Look at the routes of
+            almost any app, and most of them come in sets of four, one set for each kind of thing it
+            keeps: notes, users, orders, posts. Make one, show it, change it, delete it. That set
+            has a name.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-crud">What's CRUD?</heading>
+        <p>
+            Create, Read, Update, Delete. Each one has a SQL statement, from the
+            <lnk to="/php/sql">SQL</lnk> lessons, and a usual way to ask for it over HTTP:
+        </p>
+        <list>
+            <li>
+                <strong>Create</strong>: <cde>INSERT</cde>. A form that <cde>POST</cde>s to
+                <cde>/notes</cde>.
+            </li>
+            <li>
+                <strong>Read</strong>: <cde>SELECT</cde>. <cde>GET /</cde> for the list,
+                <cde>GET /notes/1/edit</cde> for one.
+            </li>
+            <li>
+                <strong>Update</strong>: <cde>UPDATE</cde>. A form that <cde>POST</cde>s to
+                <cde>/notes/1</cde>.
+            </li>
+            <li>
+                <strong>Delete</strong>: <cde>DELETE</cde>. A button that <cde>POST</cde>s to
+                <cde>/notes/1/delete</cde>.
+            </li>
+        </list>
+        <p>
+            HTML forms can only send <cde>GET</cde> and <cde>POST</cde>, so a page in a browser uses
+            <cde>POST</cde> for all three changes and tells them apart by URL. An API can use
+            <cde>PUT</cde>, <cde>PATCH</cde> and <cde>DELETE</cde> too; that's
+            <lnk to="/php/rest">REST</lnk>, two lessons from now.
+        </p>
+
+        <side-story title="SEQUEL">
+            The relational database comes from Edgar F. Codd's 1970 paper, "A Relational Model of
+            Data for Large Shared Data Banks," written at IBM. Donald Chamberlin and Raymond Boyce,
+            also at IBM, designed a language for it called SEQUEL. The name was already a trademark,
+            so it became SQL, which is why people still say it both ways.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <strong>Read</strong> is a <cde>GET</cde>. It changes nothing, so it's safe to
+                reload, bookmark and share.
+            </li>
+            <li>
+                <strong>Create, Update and Delete</strong> are <cde>POST</cde>s. Each checks its
+                input, runs one prepared statement, and answers with a <cde>303</cde> redirect back
+                to a <cde>GET</cde> page: Post/Redirect/Get, from
+                <lnk to="/php/request-and-response">Request and Response</lnk>.
+            </li>
+            <li>
+                <strong>Update and Delete</strong> first look the thing up. If it isn't there,
+                that's a <cde>404</cde>, not a quiet nothing.
+            </li>
+            <li>
+                <strong>Bad input</strong> gets the form back, with the reason and a <cde>422</cde>.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A notes page that does all four. It needs MySQL, so it runs with Docker Compose, as in
+            <lnk to="/php/pdo">Working with a Database</lnk>. In a folder, make
+            <cde>compose.yml</cde>:
+        </p>
+        <code-block example="crud/compose.yml" />
+        <p>The two-line <cde>Dockerfile</cde> that adds MySQL support to PHP:</p>
+        <code-block example="crud/Dockerfile" />
+        <p><cde>init.sql</cde>, the table and two notes to start with:</p>
+        <code-block example="crud/init.sql" />
+        <p><cde>src/db.php</cde>, the connection:</p>
+        <code-block example="crud/src/db.php" />
+        <p>
+            <cde>src/notes.php</cde>, one function per letter, plus the check every note has to
+            pass:
+        </p>
+        <code-block example="crud/src/notes.php" />
+        <p><cde>src/views.php</cde>, the two pages:</p>
+        <code-block example="crud/src/views.php" />
+        <p>
+            And <cde>public/index.php</cde>, the front door from the last lesson, with a route for
+            each letter:
+        </p>
+        <code-block example="crud/public/index.php" />
+        <p>Start it all:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>. Add a note, edit it, delete one. Every change
+            lands you back on the list, so reloading never sends it twice. Then from a second
+            terminal, try what a form would never send:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -d 'body=' http://localhost:8000/notes
+curl -i -d 'body=Hello' http://localhost:8000/notes/99
+curl -i -X DELETE http://localhost:8000/notes/1</code-block>
+        <p>
+            An empty note is a <cde>422</cde>, with the reason. Updating a note that isn't there is
+            a <cde>404</cde>. A method the app doesn't take is a <cde>405</cde>. The browser's
+            <cde>required</cde> and <cde>maxlength</cde> never ran, and the server caught it anyway:
+            <lnk to="/php/never-trust-input">never trust input</lnk>.
+            <cde>docker compose down -v</cde> stops it and throws the data away.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$db-&gt;prepare(...)-&gt;execute([...])</cde> for every statement with a value
+                from outside. Always. See <lnk to="/php/sql-injection">SQL Injection</lnk>.
+            </li>
+            <li>
+                <cde>$db-&gt;lastInsertId()</cde> after an <cde>INSERT</cde>, for the new row's id.
+            </li>
+            <li>
+                <cde>$statement-&gt;rowCount()</cde> after an <cde>UPDATE</cde> or
+                <cde>DELETE</cde>, for how many rows it touched. With MySQL, an update that changes
+                nothing counts 0 rows, even when the row exists, which is why the example looks the
+                note up first.
+            </li>
+            <li>
+                <cde>header('Location: /', true, 303)</cde> and <cde>exit</cde> after every change.
+            </li>
+            <li>
+                <cde>mb_strlen()</cde>, not <cde>strlen()</cde>, to count characters, so "café" is
+                four, matching the <cde>VARCHAR(500)</cde> limit in characters. See
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never delete with a link.</strong> A <cde>GET</cde> must not change
+                anything. Browsers prefetch links, crawlers follow them, and a "delete" link gets
+                clicked by things that aren't people. Delete is a <cde>POST</cde>, from a button.
+            </li>
+            <li>
+                <strong>This example leaves out CSRF protection.</strong> Any site could make your
+                browser submit these forms. A real app needs a token in every form that changes
+                something; see <lnk to="/php/csrf">CSRF</lnk>.
+            </li>
+            <li>
+                <strong>Anyone can change anything here.</strong> There are no users, so there's
+                nothing to check. In a real app, Update and Delete check that the note belongs to
+                whoever is asking, and answer <cde>404</cde> when it doesn't.
+            </li>
+            <li>
+                <strong>Delete is forever.</strong> Many apps "soft delete" instead: a
+                <cde>deleted_at</cde> column, set rather than removed, and every Read that leaves
+                those rows out. It's kinder to people who click the wrong button.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Write the four functions first">
+            <p>
+                When you add a new kind of thing to an app, write its create, find, update and
+                delete functions before any page, and try them from a small script. Every page after
+                that is just a form and a call, and the SQL is in one place when you need to change
+                it.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>src/notes.php</cde> mixes two jobs: talking to the <cde>notes</cde> table, and
+            passing around rows as plain arrays. Splitting those apart gives you three small classes
+            with clear names. Next: model, table, mapper.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/model-table-mapper">Next: Model, Table, Mapper &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

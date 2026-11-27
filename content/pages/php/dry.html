@@ -1,0 +1,181 @@
+<layout name="default" title="DRY" />
+<page-head>
+    <meta
+        name="description"
+        content="Don't Repeat Yourself: every rule in your code should live in one place, so changing it changes it everywhere. What DRY means, what it doesn't, and when a little repetition is the better choice. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="DRY, don't repeat yourself, duplication, refactoring, rule of three, wrong abstraction, The Pragmatic Programmer, PHP functions, includes, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Every rule in your code should live in one place. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="dry">DRY</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Defensive Programming put a rule in a function: a percentage is 0 to 100. Now picture
+            that check pasted into every page that takes a discount. It works, until the day the
+            rule changes and someone updates four of the five copies. DRY is the habit that stops
+            that day from coming.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-dry">What's DRY?</heading>
+        <p>
+            Don't Repeat Yourself. Each piece of knowledge in your program, a rule, a formula, a
+            limit, a query, lives in exactly one place, and everything that needs it asks that
+            place. Then a change is one edit, and there's no copy left behind to disagree.
+        </p>
+        <p>
+            It's about knowledge, not text. Two lines that look the same but mean different things
+            aren't duplication. Two lines that look different but both encode "free shipping starts
+            at 50.00" are.
+        </p>
+
+        <side-story title="Where the Name Came From">
+            Andy Hunt and Dave Thomas named it in <em>The Pragmatic Programmer</em>, in 1999: "Every
+            piece of knowledge must have a single, unambiguous, authoritative representation within
+            a system." People have been arguing over what counts as "knowledge" ever since, which is
+            a decent sign it's the right word.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Notice the same rule written in more than one place.</li>
+            <li>Move it somewhere that only declares things: a function, a constant, a class.</li>
+            <li>Replace each copy with a call to the one place.</li>
+            <li>Change the rule there, and every caller gets the change.</li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A shop works out an order total in three places: the cart page, the receipt email and
+            the invoice. Free shipping used to start at 50.00. It now starts at 40.00, and someone
+            updated the cart. In a folder, make a <cde>before</cde> folder, with
+            <cde>cart.php</cde>:
+        </p>
+        <code-block example="dry/before/cart.php" />
+        <p><cde>email.php</cde>:</p>
+        <code-block example="dry/before/email.php" />
+        <p>
+            And <cde>invoice.php</cde>, written by someone else on another day, the same rule
+            backwards:
+        </p>
+        <code-block example="dry/before/invoice.php" />
+        <p>Run all three:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli sh -c 'php before/cart.php; php before/email.php; php before/invoice.php'</code-block>
+        <p>
+            The cart says 45.00. The email and the invoice say 50.99. A customer who reads both will
+            write in, and they'll be right. Now put the rule in one place. In an
+            <cde>after</cde> folder, make <cde>pricing.php</cde>:
+        </p>
+        <code-block example="dry/after/pricing.php" />
+        <p>And <cde>cart.php</cde>, which asks it:</p>
+        <code-block example="dry/after/cart.php" />
+        <p>
+            <cde>email.php</cde> and <cde>invoice.php</cde> are the same, with their own label. Run
+            them:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli sh -c 'php after/cart.php; php after/email.php; php after/invoice.php'</code-block>
+        <p>
+            45.00, three times. When free shipping moves again, it's one line in
+            <cde>pricing.php</cde>, and nobody has to remember the invoice exists.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <strong>Functions</strong> for a rule or a formula; see
+                <lnk to="/php/functions">Functions</lnk>.
+            </li>
+            <li>
+                <strong>Constants and enums</strong> for a value or a set of values, from
+                <lnk to="/php/magic-numbers">Magic Numbers in Code</lnk>.
+            </li>
+            <li>
+                <strong>Includes</strong> for markup every page shares, like a header and footer;
+                see <lnk to="/php/includes">Includes</lnk>.
+            </li>
+            <li>
+                <strong>Classes</strong> for a rule and the data it works on, together. One
+                <cde>Pricing</cde> class, passed to whatever needs it.
+            </li>
+            <li>
+                <strong>The database</strong> for rules that are really data. If the shop owner
+                should be able to change free shipping, it's a row, not a constant.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Things that look alike aren't always the same thing.</strong> A username and
+                a product name might both be "1 to 50 characters" today. Tie them together with one
+                constant, and changing one changes the other. Same rule by coincidence, keep them
+                apart.
+            </li>
+            <li>
+                <strong>The wrong shared function is worse than two copies.</strong> When one shared
+                function grows a flag for each caller (<cde>$isInvoice</cde>, <cde>$skipTax</cde>),
+                it has stopped being one rule. Split it back up. Sandi Metz put it as "duplication
+                is far cheaper than the wrong abstraction."
+            </li>
+            <li>
+                <strong>Some repetition is on purpose.</strong> A form checks a field in the browser
+                and again on the server. That's two copies of a rule, and it's right: the browser's
+                is a courtesy, and the server's is the real one, because you never trust input. See
+                <lnk to="/php/forms">Forms</lnk>.
+            </li>
+            <li>
+                <strong>Tests can repeat themselves.</strong> A test that spells out its numbers is
+                easier to read than one that calls three helpers to build them. DRY matters most in
+                the code that runs your site.
+            </li>
+        </list>
+
+        <side-story title="Three Strikes">
+            Martin Fowler's <em>Refactoring</em> gives a rule of thumb he credits to Don Roberts:
+            the first time, just do it; the second time, wince and do it again; the third time,
+            refactor. Two copies might be a coincidence. Three is a pattern.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Search for the number before you change it">
+            <p>
+                Before you change any rule, search the project for its value in every form it could
+                take: <cde>5000</cde>, <cde>50.00</cde>, <cde>50</cde>. If it turns up in more than
+                one place, move it to one place first, then change it. That's two small commits, and
+                the second one is a single line.
+            </p>
+        </two-dollars>
+
+        <p>
+            With the rules in one place, the functions that hold them get read more than anything
+            else in the project. A little shape helps them read well. Next: return early.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/return-early">Next: Return Early &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

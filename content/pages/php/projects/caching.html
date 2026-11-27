@@ -1,0 +1,202 @@
+<layout name="default" title="Caching" />
+<page-head>
+    <meta
+        name="description"
+        content="Do slow work once and answer from a copy: a file cache on the server, written atomically, and HTTP caching in the browser with Cache-Control, ETag and 304 Not Modified. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP caching, file cache, cache key, TTL, atomic write rename, Cache-Control, max-age, ETag, If-None-Match, 304 Not Modified, cache invalidation, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Do slow work once, and answer from a copy. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="caching">Caching</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every reader of the blog and its comments makes the database do the same work again.
+            Most of the time, the answer hasn't changed since the last person asked. A cache keeps a
+            copy of the answer, and hands out the copy until it's too old to trust.
+        </p>
+        <p>
+            You'll take a report that takes a full second to make, and cache it in two places: in
+            files on your server, so the work happens once a minute instead of once a request; and
+            in the browser, so a visitor who already has the latest copy is told so in a few bytes.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/request-and-response">Request and Response</lnk>: headers both ways,
+                and the 304 status
+            </li>
+            <li>
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: the caches you don't
+                run
+            </li>
+            <li>
+                <lnk to="/php/working-with-files">Working with Files</lnk>: where the copies live
+            </li>
+            <li><lnk to="/php/classes-and-objects">Classes and Objects</lnk>: the cache itself</li>
+            <li><lnk to="/php/json">JSON</lnk>: what's in each file</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-something-slow">Step 1: Something Slow</heading>
+        <p>
+            In a project folder, <cde>src/report.php</cde> stands in for a big query or a call to
+            another site. It always takes a second, and it stamps the time it was made, so you can
+            see a copy when you get one:
+        </p>
+        <code-block example="project-caching/src/report.php" />
+
+        <heading h3 id="step-2-the-cache">Step 2: The Cache</heading>
+        <p>
+            <cde>src/FileCache.php</cde> is one class with one main method:
+            <cde>remember()</cde> takes a key, how long to keep the value, and a function that makes
+            it. If a fresh copy is on disk, it returns that. If not, it calls the function, saves
+            the result, and returns it.
+        </p>
+        <code-block example="project-caching/src/FileCache.php" />
+        <list>
+            <li>
+                <strong>The key is hashed</strong> into the file name, so any key, with any
+                characters, is a safe name.
+            </li>
+            <li>
+                <strong>The value is JSON,</strong> plain data. Never <cde>unserialize()</cde> a
+                cache file: if anyone can ever write one, they can make it build objects in your
+                code.
+            </li>
+            <li>
+                <strong>The write is atomic.</strong> It writes a temporary file, then renames it
+                into place. A request that reads at the same moment gets the old file or the new
+                one, never half of one.
+            </li>
+        </list>
+        <p>
+            Make an empty <cde>cache</cde> folder next to <cde>src</cde>, outside the web root, and
+            keep its contents out of git:
+        </p>
+        <code-block example="project-caching/.gitignore" />
+
+        <heading h3 id="step-3-the-page">Step 3: The Page</heading>
+        <p><cde>public/report.php</cde> uses both layers:</p>
+        <code-block example="project-caching/public/report.php" />
+        <p>
+            Layer one is the file cache, with an <cde>X-Cache</cde> header saying whether this one
+            was a hit. Layer two is HTTP. <cde>Cache-Control: public, max-age=60</cde> tells the
+            browser, and any cache in the middle, that this answer is the same for everyone and good
+            for a minute. The <cde>ETag</cde> is a fingerprint of the body. When the minute is up,
+            the browser asks again with <cde>If-None-Match</cde> and the fingerprint it has, and if
+            nothing changed, the answer is <cde>304 Not Modified</cde>, with no body at all.
+        </p>
+        <p>
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and that
+            includes what goes into a cache key. The region must be one of four. If any string were
+            allowed, anyone could ask for a million made-up regions, and you'd make a million slow
+            reports and keep a million files.
+        </p>
+
+        <heading h3 id="step-4-run-it">Step 4: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>From a second terminal, ask twice, and time it:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'
+curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'</code-block>
+        <p>
+            The first says <cde>X-Cache: MISS</cde> and takes a second. The second says
+            <cde>HIT</cde>, takes a few thousandths of one, and has the same <cde>made_at</cde>. Now
+            copy the <cde>ETag</cde> from either, quotes and all, and ask the way a browser would:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -H 'If-None-Match: "paste-the-etag-here"' 'http://localhost:8000/report.php?region=north'</code-block>
+        <p>
+            <cde>304 Not Modified</cde>, and nothing else. A minute later, the file cache expires,
+            the report is made again with a new <cde>made_at</cde>, the fingerprint changes, and the
+            same request gets the whole new report.
+        </p>
+        <p>
+            To throw everything away at once, after a deploy or when the numbers behind the report
+            change, <cde>clear-cache.php</cde>:
+        </p>
+        <code-block example="project-caching/clear-cache.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php clear-cache.php</code-block>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="The Two Hard Things">
+            "There are only two hard things in Computer Science: cache invalidation and naming
+            things." The line is usually credited to Phil Karlton, a programmer at Netscape in the
+            1990s. Knowing when a copy is no longer true is the whole difficulty of caching; making
+            the copy is the easy part.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never cache one person's page as public.</strong> A page with a name on it,
+                a cart, an account: <cde>Cache-Control: private, no-store</cde>, so no cache in the
+                middle keeps it and hands it to the next visitor.
+            </li>
+            <li>
+                <strong>The key must include everything the answer depends on.</strong> Language,
+                currency, page number, whether someone is logged in. Leave one out, and the first
+                visitor's version is everyone's.
+            </li>
+            <li>
+                <strong>When the cache expires, everyone misses at once.</strong> On a busy site, a
+                hundred requests arrive in the same second, all find nothing, and all start the slow
+                work together. A lock, so one request rebuilds while the others wait or use the old
+                copy, fixes it.
+            </li>
+            <li>
+                <strong>A cache you can't clear is a bug you can't fix.</strong> Always have a way
+                to throw it away, and keep <cde>max-age</cde> short for anything you might need to
+                change in a hurry. Once a browser has a copy, you can't take it back.
+            </li>
+            <li>
+                <strong>Files are the simplest cache, not the fastest.</strong> With more than one
+                server, each has its own files. A shared cache, like Redis or Memcached, is the next
+                step, and the <cde>remember()</cde> idea stays the same.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Cache-bust with the file name">
+            <p>
+                Give stylesheets and scripts a fingerprint in their name, like
+                <cde>style.3f9c.css</cde>, and cache them for a year. A change makes a new name, so
+                browsers fetch it at once, and nothing ever has to expire. The images in the CMS
+                project work the same way: a new upload is a new name.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>clear-cache.php</cde> ran in a terminal, not a browser. Next: PHP on the command
+            line, and writing scripts that are meant to run there.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/php-on-the-command-line"
+                >Next: PHP on the Command Line &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

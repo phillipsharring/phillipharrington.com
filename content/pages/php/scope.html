@@ -1,0 +1,197 @@
+<layout name="default" title="Scope" />
+<page-head>
+    <meta
+        name="description"
+        content="Where a variable can be seen: the global scope, each function's own scope, the superglobals that are everywhere, closures and use(), and the loop variable that outlives its loop. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP scope, variable scope, global scope, local variables, global keyword, superglobals, closures, use, arrow functions, foreach reference, register_globals, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Where a variable can be seen, and where it can't. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="scope">Scope</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A variable doesn't exist everywhere. Set one at the top of a file, and a function
+            further down can't see it. Set one inside a function, and it's gone when the function
+            returns. Where a variable can be seen is its scope, and PHP's rules for it are short.
+            They're also a feature: a function that can only see what you hand it is a function you
+            can understand.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-scope">What's Scope?</heading>
+        <p>The part of your code where a variable can be seen. PHP has a few:</p>
+
+        <heading h3 id="global-scope">The Global Scope</heading>
+        <p>
+            Variables set outside any function, at the top level of a file, are in the global scope.
+            Every file pulled in with an include shares it too, which
+            <lnk to="/php/includes">Includes</lnk> covers.
+        </p>
+
+        <heading h3 id="function-scope">A Function's Scope</heading>
+        <p>
+            Each function starts empty. It sees its own parameters and whatever it makes, and
+            nothing from outside. When it returns, its variables are thrown away. The next call
+            starts empty again.
+        </p>
+
+        <heading h3 id="superglobals">The Superglobals</heading>
+        <p>
+            A handful of variables PHP fills in for you are visible everywhere, inside functions
+            too: <cde>$_GET</cde>, <cde>$_POST</cde>, <cde>$_COOKIE</cde>, <cde>$_SERVER</cde>,
+            <cde>$_FILES</cde>, <cde>$_ENV</cde>, <cde>$_SESSION</cde>, and <cde>$GLOBALS</cde>.
+            Most of them are input, straight from the request.
+        </p>
+
+        <heading h3 id="closures">Closures</heading>
+        <p>
+            A function without a name, kept in a variable, is a closure. It can borrow variables
+            from the scope where it was made, but only ones you name with <cde>use</cde>:
+            <cde>function ($name) use ($greeting) { ... }</cde>. An arrow function,
+            <cde>fn($name) =&gt; $greeting . $name</cde>, borrows whatever it uses automatically.
+            Both take a copy of the value at the moment they're made.
+        </p>
+
+        <side-story title="register_globals">
+            Early PHP had a setting called <cde>register_globals</cde>, which turned every query
+            string and form field into a global variable. Visit <cde>?admin=1</cde>, and the script
+            started with <cde>$admin</cde> set to <cde>'1'</cde>. Code that checked
+            <cde>if ($admin)</cde> without ever setting it to false let anyone in. It was turned off
+            by default in PHP 4.2, in 2002, and removed entirely in PHP 5.4.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Your file starts running in the global scope.</li>
+            <li>
+                A function is called. PHP gives it a fresh, empty scope, and puts the arguments in
+                it as its parameters.
+            </li>
+            <li>
+                The function works with those and the superglobals. It can't reach the caller's
+                variables, and the caller can't reach its.
+            </li>
+            <li>It returns a value, and its scope is thrown away.</li>
+            <li>The caller carries on, with its own variables untouched.</li>
+        </ol>
+        <p>
+            Ifs and loops don't make a scope. A variable set inside a <cde>foreach</cde> is still
+            there after it, holding whatever it had last. That's different from many other
+            languages, and it's the source of the gotcha below.
+        </p>
+        <p>
+            A function can reach out with <cde>global $site;</cde> or <cde>$GLOBALS['site']</cde>.
+            Don't. A function that reads and writes globals can be changed by any line anywhere in
+            the program, so you can't understand it by reading it. Pass in what it needs; return
+            what it makes.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>Every rule above, one after another. In a folder, make <cde>scope.php</cde>:</p>
+        <code-block example="scope/scope.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php scope.php</code-block>
+        <p>
+            <cde>welcome()</cde> can't see <cde>$site</cde>; <cde>welcome_to()</cde> gets it as a
+            parameter. <cde>$visits</cde> never leaves <cde>count_visit()</cde>.
+            <cde>$_SERVER</cde> works anywhere. <cde>$size</cde> outlives its loop. And both
+            closures say "Hi," not "Goodbye," because they copied <cde>$greeting</cde> when they
+            were made.
+        </p>
+        <p>Now the trap a leftover loop variable sets. <cde>reference.php</cde>:</p>
+        <code-block example="scope/reference.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php reference.php</code-block>
+        <p>
+            The prices should be 200, 400, 600. The last one is 400. After the first loop,
+            <cde>$price</cde> is still a reference to the last item, so the second loop wrote each
+            price into it in turn, ending with the one before it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>Parameters in, <cde>return</cde> out: the normal way to share.</li>
+            <li>
+                <cde>function (...) use ($a, $b) { ... }</cde>: a closure, with the variables it
+                borrows named.
+            </li>
+            <li><cde>fn(...) =&gt; ...</cde>: an arrow function, which borrows what it uses.</li>
+            <li>
+                <cde>unset($x)</cde>: throw a variable away, which is how you end a loop's
+                reference.
+            </li>
+            <li>
+                <cde>static $count = 0;</cde> inside a function keeps a value between calls.
+                <lnk to="/php/constants-and-statics">Constants, Static Variables and Functions</lnk>
+                has more.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong
+                    >A <cde>foreach</cde> with <cde>&amp;</cde> leaves a reference behind.</strong>
+                Use the same name in a later loop, and you overwrite the last item.
+                <cde>unset()</cde> it right after the loop.
+            </li>
+            <li>
+                <strong>A loop variable keeps its last value.</strong> Code after the loop that uses
+                <cde>$item</cde> by accident gets the last one, not an error.
+            </li>
+            <li>
+                <strong>A missing variable is a warning, not a stop.</strong> Forget to pass
+                something in, and the function gets <cde>null</cde> and a warning, and keeps going.
+                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk> is about
+                seeing those.
+            </li>
+            <li>
+                <strong>The superglobals are input.</strong> Being visible everywhere makes
+                <cde>$_GET</cde> easy to use deep inside a function, where nobody remembers to check
+                it. <strong>Never trust input:</strong> read it in one place, check it there, and
+                pass the checked value in.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Wrap the script in a function">
+            <p>
+                A long script at the top level fills the global scope with every variable it ever
+                made, all visible to each other and to every file it includes. Put the work in a
+                <cde>function main(): void</cde> and call <cde>main();</cde> at the bottom. Nothing
+                leaks, and a typo in a variable name shows up as a warning instead of quietly
+                reading some leftover.
+            </p>
+        </two-dollars>
+
+        <p>
+            Half the variables in this lesson held text, and text is most of what a web app handles.
+            Next: Strings.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/strings">Next: Strings &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

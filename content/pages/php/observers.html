@@ -1,0 +1,193 @@
+<layout name="default" title="Observers" />
+<page-head>
+    <meta
+        name="description"
+        content="Let one part of your app announce that something happened, and let any number of other parts react, without the first knowing they exist. The observer pattern, events and listeners in PHP, and where it gets hard to follow. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="observer pattern, PHP events, event dispatcher, listeners, PSR-14, SplObserver, SplSubject, publish subscribe, decoupling, design patterns, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Announce that something happened, and let others react. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="observers">Observers</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Factories ended with a signup that keeps collecting jobs: send the welcome email, add to
+            the newsletter, write the audit log, tell the team. Each one is a reasonable thing to do
+            after a signup. None of them is the signup's business. The observer pattern lets the
+            signup say "this happened" and leave the rest to whoever is listening.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-observer">What's an Observer?</heading>
+        <p>
+            Code that has asked to be told when something happens, so it can react. You'll also hear
+            it called a listener or a subscriber. The thing being watched, the subject, keeps a list
+            of observers and calls each one when it has news. It doesn't know what they do.
+        </p>
+
+        <heading h3 id="events">Events</heading>
+        <p>
+            In most PHP code today, the news is an event: a small object that says what happened,
+            like <cde>UserSignedUp</cde>, with the details as properties. An event dispatcher keeps
+            the lists, one per kind of event, and passes each event to everything listening for it.
+        </p>
+
+        <side-story title="Changed and Update">
+            Smalltalk-80, the system MVC came from, built this in. Any object could have
+            "dependents." When a model changed, it sent itself <cde>changed:</cde>, and every
+            dependent, usually a view, got <cde>update:</cde> and redrew itself. That's how a
+            desktop MVC view kept up with its model: it was an observer.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                When the app starts, it registers listeners with the dispatcher: "when
+                <cde>UserSignedUp</cde> happens, call these."
+            </li>
+            <li>Someone signs up. <cde>Signup</cde> saves the account.</li>
+            <li>It makes a <cde>UserSignedUp</cde> event and hands it to the dispatcher.</li>
+            <li>
+                The dispatcher calls each listener for that event, in the order they were
+                registered, passing it the event.
+            </li>
+            <li>Each listener does its one job. <cde>Signup</cde> carries on, none the wiser.</li>
+        </ol>
+        <p>
+            A new job after signup is a new listener and one line of wiring. <cde>Signup</cde>
+            doesn't change, and doesn't need retesting.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            In a folder, make a <cde>before</cde> folder with <cde>Signup.php</cde>, which does
+            everything itself (the actions just print, to keep it short):
+        </p>
+        <code-block example="observers/before/Signup.php" />
+        <p>And <cde>app.php</cde>, which signs up two people:</p>
+        <code-block example="observers/before/app.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php before/app.php</code-block>
+        <p>
+            It works, and every new job means opening <cde>Signup.php</cde> again. Now the other
+            way. In an <cde>after</cde> folder, make the event, <cde>UserSignedUp.php</cde>:
+        </p>
+        <code-block example="observers/after/UserSignedUp.php" />
+        <p>The dispatcher, <cde>EventDispatcher.php</cde>:</p>
+        <code-block example="observers/after/EventDispatcher.php" />
+        <p><cde>Signup.php</cde>, which now only saves and announces:</p>
+        <code-block example="observers/after/Signup.php" />
+        <p>
+            Three listeners in <cde>listeners/</cde>, each an object you can call:
+            <cde>SendWelcomeEmail.php</cde>, <cde>AddToNewsletter.php</cde> and
+            <cde>WriteAuditLog.php</cde>:
+        </p>
+        <code-block example="observers/after/listeners/SendWelcomeEmail.php" />
+        <code-block example="observers/after/listeners/AddToNewsletter.php" />
+        <code-block example="observers/after/listeners/WriteAuditLog.php" />
+        <p>And <cde>app.php</cde>, which wires them up, plus a fourth added later:</p>
+        <code-block example="observers/after/app.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block>
+        <p>
+            The same work as before, plus the team hears about both signups, and
+            <cde>Signup.php</cde> has no idea any of it happened. Bob, who didn't want the
+            newsletter, isn't added: that decision lives in the newsletter's own listener, next to
+            the code it's about.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>__invoke()</cde> makes an object callable, so a listener can be a small class
+                with its own dependencies, passed in through its constructor, and still be called
+                like a function.
+            </li>
+            <li>
+                <cde>$event::class</cde> gives an object's class name, which is how the dispatcher
+                finds the right list.
+            </li>
+            <li>
+                PSR-14 is the standard interface for event dispatchers
+                (<cde>psr/event-dispatcher</cde>), and Symfony and Laravel both have one. Use theirs
+                in a real app; the idea is the one here.
+            </li>
+            <li>
+                PHP also ships <cde>SplSubject</cde> and <cde>SplObserver</cde>, the classic Gang of
+                Four version: <cde>attach()</cde>, <cde>detach()</cde>, <cde>notify()</cde> and
+                <cde>update()</cde>. You'll see them in older code more than new.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>It's harder to see what happens.</strong> Reading <cde>Signup.php</cde> no
+                longer tells you an email gets sent. Keep all the wiring in one file, like
+                <cde>app.php</cde>, so there's one place to look.
+            </li>
+            <li>
+                <strong>One listener's exception stops the rest.</strong> In this dispatcher, if the
+                welcome email throws, the newsletter and the audit log never run, and the error
+                reaches <cde>Signup</cde> anyway. Decide whether a listener's failure should stop
+                the signup, and catch it in the listener if not.
+            </li>
+            <li>
+                <strong>Slow listeners make slow requests.</strong> They run during the request.
+                Sending an email can take seconds; a listener that puts a job on a queue takes
+                milliseconds. The Queues project is about that.
+            </li>
+            <li>
+                <strong>Events are for things that happened.</strong> Name them in the past tense
+                (<cde>UserSignedUp</cde>, <cde>OrderShipped</cde>), and don't use them to ask a
+                question and wait for an answer. That's a method call.
+            </li>
+        </list>
+
+        <side-story title="The Welcome Email">
+            One of my apps sent a verification email the moment anyone signed up. Someone found that
+            useful: they signed up strangers' addresses, over and over, and each one got an email
+            from us they never asked for. The fix was to send nothing at signup, limit how much mail
+            the app would send, and put a bot check on the form. The listener that sends an email is
+            the one to look at hardest, because it's the one that reaches outside your app.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Log every dispatch while you build">
+            <p>
+                Add one line to the dispatcher during development: log the event's class and how
+                many listeners heard it. When "the email didn't go out," you'll know in seconds
+                whether the event was never dispatched or nobody was listening.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's the last of the lessons. From here, you build things, using everything so far, a
+            piece at a time. Next, the first project: a home page.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/home-page">Next: Home Page &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

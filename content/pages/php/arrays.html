@@ -1,0 +1,214 @@
+<layout name="default" title="Arrays" />
+<page-head>
+    <meta
+        name="description"
+        content="PHP's one collection type: lists and named keys in the same array, foreach, checking what's there, array_map and array_filter, sorting, and the arrays a query string can make out of thin air. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP arrays, associative arrays, foreach, isset vs array_key_exists, in_array strict, array_map, array_filter, sort, array_column, nested arrays, query string arrays, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Lists and named keys, in one type. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="arrays">Arrays</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Strings and numbers are one value each. Most of what a web app handles comes in groups:
+            the items in a cart, the fields of a form, the rows from a database. PHP has one type
+            for all of it, the array, and it does double duty as a list and as a set of named
+            values. You'll use it in nearly every file you write.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-array">What's an Array?</heading>
+        <p>
+            An ordered collection of values, each stored under a key. The key is an int or a string.
+            The value can be anything, another array included.
+        </p>
+
+        <heading h3 id="lists">Lists</heading>
+        <p>
+            Give PHP values with no keys, and it numbers them from 0:
+            <cde>$sizes = ['small', 'medium', 'large'];</cde> puts <cde>'small'</cde> at
+            <cde>$sizes[0]</cde>. <cde>$sizes[] = 'extra large';</cde> adds one on the end, as
+            number 3.
+        </p>
+
+        <heading h3 id="named-keys">Named Keys</heading>
+        <p>
+            Or name the keys yourself, with <cde>=&gt;</cde>:
+            <cde>['id' =&gt; 1001, 'email' =&gt; 'alice@example.com']</cde>. That's how one row of
+            data looks in PHP, and how <cde>$_GET</cde>, <cde>$_POST</cde> and
+            <cde>$_SERVER</cde> come to you. Other languages call this a map, a dictionary or a
+            hash. In PHP it's the same array.
+        </p>
+
+        <heading h3 id="nested">Arrays in Arrays</heading>
+        <p>
+            A value can be another array: an order with a list of items,
+            <cde>$order['items'][0]</cde>. A list of rows from a database is a list of named-key
+            arrays.
+        </p>
+
+        <side-story title="Why Start at Zero">
+            In 1982, Edsger Dijkstra wrote a short note called "Why numbering should start at zero."
+            His argument: with ranges written as "from the first, up to but not including the last,"
+            starting at 0 makes a list of N items run from 0 up to N, and the length is just the
+            difference. Most languages, PHP included, count from zero.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The things you do with arrays, in roughly the order you'll need them:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <strong>Make one</strong>, with <cde>[]</cde>, or get one from PHP:
+                <cde>$_GET</cde>, <cde>explode()</cde>, a database query.
+            </li>
+            <li>
+                <strong>Check what's there</strong> before you read it: <cde>isset()</cde>,
+                <cde>array_key_exists()</cde>, or <cde>??</cde> with a default.
+            </li>
+            <li>
+                <strong>Walk through it</strong> with <cde>foreach ($items as $item)</cde>, or
+                <cde>foreach ($order as $key =&gt; $value)</cde> for the keys too. It goes in the
+                order the items were added.
+            </li>
+            <li>
+                <strong>Make new arrays from it</strong>: <cde>array_filter()</cde> keeps the items
+                that pass a test, <cde>array_map()</cde> changes each one.
+            </li>
+            <li><strong>Sort it</strong>, or count it, or join it into a string.</li>
+        </ol>
+        <p>
+            Assigning an array to another variable, or passing it to a function, makes a copy.
+            Change the copy, and the original stays as it was. (PHP is clever about this and only
+            really copies when one of them changes.)
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>The everyday moves. In a folder, make <cde>arrays.php</cde>:</p>
+        <code-block example="arrays/arrays.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php arrays.php</code-block>
+        <p>
+            A few to look at closely. <cde>isset()</cde> says the <cde>theme</cde> isn't there,
+            because its value is <cde>null</cde>; <cde>array_key_exists()</cde> says it is. The key
+            <cde>'7'</cde> turned into the int <cde>7</cde>, and <cde>'07'</cde> stayed a string.
+            <cde>array_filter()</cde> kept the original keys. And the plain sort put
+            <cde>alice</cde> last, because capital letters come before lowercase ones in the byte
+            order.
+        </p>
+        <p>
+            Now the array you didn't ask for. Make <cde>query.php</cde>, which shows what a query
+            string turns into:
+        </p>
+        <code-block example="arrays/query.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>From a second terminal:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/query.php?tag=php'
+curl -g 'http://localhost:8000/query.php?tag[]=php&amp;tag[]=web&amp;size[shirt]=large'</code-block>
+        <p>
+            The second request made <cde>$_GET['tag']</cde> a list and <cde>$_GET['size']</cde> a
+            named-key array, just by putting brackets in the names. (<cde>-g</cde> tells curl to
+            leave the brackets alone.) Any visitor can do that to any field.
+            <strong>Never trust input:</strong> code that expects a string has to check it got one,
+            as <cde>query.php</cde> does, and refuse the rest.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>count($array)</cde>: how many.</li>
+            <li>
+                <cde>isset($a['key'])</cde>: there and not null.
+                <cde>array_key_exists('key', $a)</cde>: there at all.
+            </li>
+            <li>
+                <cde>in_array($value, $array, true)</cde>: is it in the list? Always pass the
+                <cde>true</cde>, as <lnk to="/php/operators">Operators</lnk> explained.
+            </li>
+            <li>
+                <cde>array_filter()</cde>, <cde>array_map()</cde>: new arrays from old.
+                <cde>array_values()</cde> renumbers a filtered list from 0.
+            </li>
+            <li>
+                <cde>array_keys()</cde>, <cde>array_merge()</cde>, <cde>array_slice()</cde>,
+                <cde>array_column()</cde>: pull out, combine, cut, and pick one field from every
+                row.
+            </li>
+            <li>
+                <cde>sort()</cde> and <cde>rsort()</cde> for lists, <cde>asort()</cde> and
+                <cde>ksort()</cde> to keep keys, <cde>usort()</cde> with your own comparison.
+            </li>
+            <li><cde>implode()</cde> and <cde>explode()</cde>: arrays to strings and back.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Any input can be an array.</strong> <cde>?email[]=x</cde> turns
+                <cde>$_GET['email']</cde> into one, and the string function you call next throws a
+                <cde>TypeError</cde>. Check with <cde>is_string()</cde>, or
+                <cde>is_array()</cde> when you do want a list.
+            </li>
+            <li>
+                <strong>The sort functions sort in place.</strong> <cde>sort($names)</cde> changes
+                <cde>$names</cde> and returns <cde>true</cde>.
+                <cde>$sorted = sort($names);</cde> gives you <cde>true</cde>.
+            </li>
+            <li>
+                <strong><cde>sort()</cde> throws the keys away.</strong> On a named-key array, use
+                <cde>asort()</cde> or <cde>ksort()</cde>.
+            </li>
+            <li>
+                <strong>Number-like keys become ints.</strong> <cde>'7'</cde> becomes <cde>7</cde>,
+                so a ZIP code like <cde>'02134'</cde> stays a string but <cde>'12345'</cde> doesn't.
+                Usually harmless, until you compare keys with <cde>===</cde>.
+            </li>
+            <li>
+                <strong>A filtered list has holes.</strong> <cde>array_filter()</cde> keeps the
+                keys, so the result might be 0, 2 and 5. Wrap it in <cde>array_values()</cde> if you
+                need 0, 1, 2.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Index rows by id">
+            <p>
+                <cde>array_column($rows, 'name', 'id')</cde> turns a list of database rows into
+                <cde>[id =&gt; name]</cde>, ready for a <cde>select</cde> menu. Pass
+                <cde>null</cde> as the middle argument, <cde>array_column($rows, null, 'id')</cde>,
+                and you get every whole row, keyed by its id, so finding one is
+                <cde>$byId[42]</cde> instead of a loop.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>array_map()</cde> and <cde>array_filter()</cde> each took a small function to do
+            their work. Next: Functions, and how to write your own.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/functions">Next: Functions &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

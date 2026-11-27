@@ -1,0 +1,233 @@
+<layout name="default" title="Queues" />
+<page-head>
+    <meta
+        name="description"
+        content="Move slow work out of the request: a job queue in a MySQL table, a worker that takes jobs with FOR UPDATE SKIP LOCKED, retries with backoff, gives up after three tries, and never runs a job twice. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP job queue, background jobs, worker, MySQL queue table, SELECT FOR UPDATE SKIP LOCKED, retries, backoff, failed jobs, Symfony Mailer, Mailpit, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Move slow work out of the request, into a queue and a worker. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="queues">Queues</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Cron runs work on a clock. Some work is set off by a visitor instead: a signup that
+            needs a welcome email, an upload that needs resizing, an order that needs a receipt.
+            Doing it during the request makes the visitor wait, and if the mail server is slow or
+            down, the signup fails along with the email.
+        </p>
+        <p>
+            A queue splits that in two. The page writes down what needs doing and answers at once. A
+            separate program, a worker, takes jobs off the list and does them, retrying the ones
+            that fail. You'll build both, with the queue in a MySQL table, then switch off the mail
+            server and watch the jobs wait for it.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/php-on-the-command-line">PHP on the Command Line</lnk>: the
+                worker is a command-line script
+            </li>
+            <li>
+                <lnk to="/php/projects/sending-email">Sending Email</lnk>: the job, and Mailpit to
+                catch it
+            </li>
+            <li><lnk to="/php/transactions">Transactions</lnk>: taking a job so no one else can</li>
+            <li>
+                <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk> and
+                <lnk to="/php/dependency-injection">Dependency Injection</lnk>: the classes, and
+                what they're given
+            </li>
+            <li><lnk to="/php/json">JSON</lnk>: what each job carries</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-containers">Step 1: The Containers</heading>
+        <p>
+            Four this time: MySQL; Mailpit, which pretends to be a mail server and shows what it
+            catches at <cde>http://localhost:8025</cde>; the web app; and the worker. The app and
+            the worker are the same code, started with different commands:
+        </p>
+        <code-block example="project-queues/compose.yml" />
+        <p>
+            The <cde>Dockerfile</cde> is the usual two lines. Sending mail uses Symfony Mailer, a
+            real dependency, so this project has a <cde>composer.json</cde>:
+        </p>
+        <code-block example="project-queues/composer.json" />
+        <p>
+            The <cde>platform</cde> setting tells Composer which PHP the code will run on, so the
+            Composer container, which may run a newer PHP, doesn't pick versions that need it.
+            Install, and keep <cde>vendor/</cde> out of git:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <code-block example="project-queues/.gitignore" />
+
+        <heading h3 id="step-2-the-jobs-table">Step 2: The Jobs Table</heading>
+        <code-block example="project-queues/init.sql" />
+        <p>
+            Each job has a type, which says what to do, and a JSON payload, which says to what.
+            <cde>status</cde> moves from <cde>queued</cde> to <cde>running</cde> to <cde>done</cde>,
+            or to <cde>failed</cde>. <cde>available_at</cde> is how a retry waits: a job isn't taken
+            before that time.
+        </p>
+
+        <heading h3 id="step-3-the-queue">Step 3: The Queue</heading>
+        <p>
+            <cde>src/Database.php</cde> makes the connection, as before, now as a class. The queue
+            itself, <cde>src/Queue.php</cde>, has four methods:
+        </p>
+        <code-block example="project-queues/src/Database.php" />
+        <code-block example="project-queues/src/Queue.php" />
+        <p>
+            <cde>reserve()</cde> is the one that matters. Two workers asking at the same moment must
+            never get the same job, or someone gets two welcome emails. Inside a transaction,
+            <cde>FOR UPDATE</cde> locks the row it finds, and <cde>SKIP LOCKED</cde> makes any other
+            worker pass over locked rows and take the next one instead of waiting. The row is marked
+            <cde>running</cde>, the transaction ends, and the job is this worker's alone.
+        </p>
+        <p>
+            It also takes back jobs that have been <cde>running</cde> for more than ten minutes.
+            That's a worker that crashed, or a server that restarted, halfway through. Without this,
+            those jobs would sit there forever.
+        </p>
+
+        <heading h3 id="step-4-the-job">Step 4: The Job</heading>
+        <p>
+            A handler is a class with one job to do. <cde>src/WelcomeEmail.php</cde> is given a
+            mailer, and sends one email:
+        </p>
+        <code-block example="project-queues/src/WelcomeEmail.php" />
+        <p>
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>, even when it comes back out of your own database. The address went in from a form; it
+            might have been written by a different version of your code, or by hand. Check it again
+            where it's used.
+        </p>
+
+        <heading h3 id="step-5-the-worker">Step 5: The Worker</heading>
+        <code-block example="project-queues/bin/worker.php" />
+        <p>
+            A loop: take a job, run its handler, mark it done. When there's nothing to do, wait a
+            second and ask again. When a job throws, catch it, so one bad job can never stop the
+            worker, and put it back with a delay that grows each time: 30 seconds after the first
+            failure, 60 after the second. After the third, it's marked <cde>failed</cde>, with the
+            last error kept, for a person to look at.
+        </p>
+
+        <heading h3 id="step-6-the-signup-page">Step 6: The Signup Page</heading>
+        <code-block example="project-queues/public/index.php" />
+        <p>
+            It checks the address, pushes a job, and redirects. It never talks to the mail server.
+            However slow or broken mail gets, signing up stays fast.
+        </p>
+
+        <heading h3 id="step-7-run-it">Step 7: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Sign up at <cde>http://localhost:8000</cde>, then open <cde>http://localhost:8025</cde>:
+            the welcome email is there, sent by the worker a moment after the page had already
+            answered. Now break the mail server, from a second terminal:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose stop mailpit</code-block>
+        <p>
+            Sign up again. The page is exactly as fast, and says thanks. In the first terminal, the
+            worker reports <cde>failed, attempt 1 ... Now queued.</cde> Start Mailpit again within
+            the next half minute or so:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose start mailpit</code-block>
+        <p>
+            At the next attempt, the email goes out. Nobody lost a signup because the mail server
+            had a bad minute. To see the table as it goes:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -uapp -papp app -e 'SELECT id, status, attempts, available_at, last_error FROM jobs'</code-block>
+        <p>
+            And to retry jobs that gave up, once you've fixed whatever was wrong, put them back in
+            the queue:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>UPDATE jobs SET status = 'queued', attempts = 0, available_at = NOW() WHERE status = 'failed';</code-block>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="Waiting in Line, Mathematically">
+            The mathematics of waiting in line started with telephones. In 1909, Agner Krarup
+            Erlang, an engineer at the Copenhagen Telephone Company, published a paper on how calls
+            arrive at an exchange, and went on to work out how many lines an exchange needs so that
+            few callers have to wait. Queueing theory grew from it, and the unit of telephone
+            traffic is still called the erlang.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Jobs can run more than once.</strong> A worker can send the email and crash
+                before marking the job done, and the job gets taken back and sent again. Make jobs
+                safe to repeat where you can, for example by recording that the welcome email went
+                out and checking before sending.
+            </li>
+            <li>
+                <strong>Put ids in the payload, not whole records.</strong> A job may run minutes
+                after it was queued. Carry the user's id and look them up when the job runs, so it
+                works with what's true now, not what was true then.
+            </li>
+            <li>
+                <strong>A long-running worker keeps old code.</strong> PHP loads your files once,
+                when the worker starts. After a deploy, restart the workers, or they'll go on
+                running yesterday's code.
+            </li>
+            <li>
+                <strong>Workers leak, slowly.</strong> A script meant to run for a second can run
+                for weeks as a worker, and small leaks add up. Many setups let a worker stop itself
+                after a few hundred jobs, and let something like Compose's
+                <cde>restart: unless-stopped</cde> start a fresh one.
+            </li>
+            <li>
+                <strong>Failed jobs are a to-do list.</strong> Look at them. A pile of
+                <cde>failed</cde> rows that nobody reads is the queue's version of an error log
+                nobody reads.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Add an --until-empty switch">
+            <p>
+                A worker that can stop when the queue is empty, like this one's
+                <cde>--until-empty</cde>, is easy to test, easy to run by hand while you debug, and
+                can be run from cron every minute on a server where you can't keep a process
+                running. One flag, and three problems go away.
+            </p>
+        </two-dollars>
+
+        <p>
+            One welcome email per signup is polite. One email to a whole list of people is a
+            newsletter, and the first question is whether they asked for it. Next: newsletter.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/newsletter">Next: Newsletter &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

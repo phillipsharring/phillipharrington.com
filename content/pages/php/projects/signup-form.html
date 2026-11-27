@@ -1,0 +1,240 @@
+<layout name="default" title="Signup Form" />
+<page-head>
+    <meta
+        name="description"
+        content="A signup form on MySQL, built naive with md5(), then cracked with a word list in a blink, then fixed: password_hash(), a length rule that knows about bcrypt's 72 bytes, a list of common passwords, and a UNIQUE index that catches duplicate addresses. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP signup form, password_hash, password_verify, bcrypt, md5 passwords, password cracking, salt, common passwords, 72 bytes, UNIQUE index, duplicate entry 1062, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A signup form, and why md5() isn't a password hash. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="signup-form">Signup Form</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Something Database-y ended with a stolen table of password hashes. Sooner or later,
+            somebody's table gets stolen; the question is what the thief can do with it. If the
+            hashes were made the right way, not much. If they were made the way a lot of tutorials
+            still show, the thief has the passwords, and because people reuse them, their email and
+            their bank too.
+        </p>
+        <p>
+            You'll build a signup form that stores passwords the naive way, crack them in a blink,
+            then fix it with the one function PHP gives you for this, and the few checks a signup
+            form actually needs.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/passwords">Passwords: password_hash() and Nothing Else</lnk>: the
+                lesson this project acts out.
+            </li>
+            <li>
+                <lnk to="/php/inserting-data">Inserting Data</lnk> and
+                <lnk to="/php/indexes">Indexes</lnk>: a <cde>UNIQUE</cde> index as the final word on
+                duplicates.
+            </li>
+            <li>
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: characters versus bytes, again.
+            </li>
+            <li>
+                <lnk to="/php/projects/something-database-y">Something Database-y</lnk>: the same
+                setup, and prepared statements.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-setup">The Setup</heading>
+        <p>
+            A new project folder with the same <cde>Dockerfile</cde>, <cde>src/db.php</cde> and
+            <cde>compose.yml</cde> as Something Database-y, with the database called <cde>app</cde>:
+        </p>
+        <code-block example="project-signup-form/compose.yml" />
+        <code-block example="project-signup-form/src/db.php" />
+        <p>This time, <cde>init.sql</cde> makes only the users table:</p>
+        <code-block example="project-signup-form/init.sql" />
+
+        <heading h3 id="the-naive-signup">The Naive Signup</heading>
+        <p>Build the naive signup as <cde>public/naive.php</cde>:</p>
+        <code-block example="project-signup-form/public/naive.php" />
+        <p>
+            It uses a prepared statement, so the SQL is safe. And it doesn't store the password, it
+            stores <cde>md5()</cde> of it, a jumble of 32 characters that can't be turned back into
+            the password. That looks like enough. Start it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up --build</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde> and sign up as
+            <cde>alice@example.com</cde> with the password <cde>password123</cde>. Then sign up as
+            <cde>bob@example.com</cde>, with the same password.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>Be the thief. Look at the table:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -uapp -papp-password app -e 'SELECT email, password_hash FROM users'</code-block>
+        <!-- prettier-ignore -->
+        <code-block>alice@example.com    482c811da5d5b4bc6d497ffa98491e38
+bob@example.com      482c811da5d5b4bc6d497ffa98491e38</code-block>
+        <p>
+            The first problem is right there: the same password makes the same hash, so you can see
+            that Alice and Bob share one, and crack them both at once. The second is that nobody
+            needs to turn an md5 back into a password. They hash guesses and compare.
+            <cde>crack.php</cde> does that with a short list of common passwords:
+        </p>
+        <code-block example="project-signup-form/crack.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec php php crack.php 482c811da5d5b4bc6d497ffa98491e38</code-block>
+        <p>
+            "Found it: password123." Instantly. The list doesn't need to be clever, because md5 is
+            fast, and fast is exactly wrong for this. <cde>speed.php</cde> counts how many guesses
+            one second buys:
+        </p>
+        <code-block example="project-signup-form/speed.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec php php speed.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>md5:            6,058,101 guesses a second
+password_hash:  6 guesses a second</code-block>
+        <p>
+            Your numbers will differ; the gap won't. That's one PHP process. Attackers use graphics
+            cards built for exactly this kind of arithmetic, and get billions of md5 guesses a
+            second, which tears through every common password and most uncommon ones before lunch.
+            <cde>sha1()</cde> and <cde>sha256</cde> are just as fast, and just as wrong.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            The fix is one function, <cde>password_hash()</cde>, and its partner
+            <cde>password_verify()</cde>. The fixed signup is <cde>public/index.php</cde>:
+        </p>
+        <code-block example="project-signup-form/public/index.php" />
+        <list>
+            <li>
+                <strong><cde>password_hash()</cde> is slow on purpose.</strong> With
+                <cde>PASSWORD_DEFAULT</cde>, it's bcrypt at a cost of 12, PHP 8.4's default. A
+                visitor waits a fraction of a second once, at signup; an attacker waits that long
+                for every guess.
+            </li>
+            <li>
+                <strong>It salts every hash.</strong> Each one gets its own random salt, stored
+                inside the hash, so two people with the same password get different hashes, and a
+                table of precomputed hashes is useless.
+            </li>
+            <li>
+                <strong>A length rule, not a recipe.</strong> At least 12 characters, and nothing
+                about capitals, digits or symbols. Rules like those mostly produce
+                <cde>Password1!</cde>. Length is what makes guessing slow. The form suggests a few
+                words in a row, which is long and easy to remember.
+            </li>
+            <li>
+                <strong>No more than 72 bytes.</strong> bcrypt only looks at the first 72 bytes of a
+                password and silently ignores the rest. Rather than let that happen, the form says
+                so. It counts bytes with <cde>strlen()</cde>, not characters, because that's what
+                bcrypt counts: <cde>é</cde> is two.
+            </li>
+            <li>
+                <strong>A list of common passwords.</strong> The passwords attackers try first are
+                no secret. Turn them down. A real site checks against a much longer list.
+            </li>
+            <li>
+                <strong>The database decides about duplicates.</strong> Checking "is this address
+                taken?" with a <cde>SELECT</cde> first leaves a gap: two signups at the same moment
+                both see "no." The <cde>UNIQUE</cde> index can't be raced, so the code just tries
+                the <cde>INSERT</cde> and catches MySQL's error 1062. The collation makes
+                <cde>CAROL@example.com</cde> the same address as <cde>carol@example.com</cde>.
+            </li>
+        </list>
+        <p>
+            Open <cde>http://localhost:8000</cde> and sign up as <cde>carol@example.com</cde> with
+            <cde>correct horse battery staple</cde>, then as <cde>dave@example.com</cde> with the
+            same password. Look at the table again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>carol@example.com    $2y$12$...
+dave@example.com     $2y$12$...</code-block>
+        <p>
+            Two long hashes, different from each other, for the same password. <cde>$2y$</cde> says
+            bcrypt, and <cde>12$</cde> says the cost. Point <cde>crack.php</cde> at one of those and
+            it can't even start, and if it could, it would manage a handful of guesses a second.
+            <strong>Never trust input</strong> still applies to the rest of the form: try
+            <cde>password1234</cde>, or Carol's address in capitals, and see what you get.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never trim, change or limit the characters of a password.</strong> Spaces,
+                accents, emoji: all fine, all part of it. The only cap is the 72 bytes bcrypt can
+                use.
+            </li>
+            <li>
+                <strong>The column must hold more than 60 characters.</strong> bcrypt hashes are 60
+                today, but <cde>PASSWORD_DEFAULT</cde> can change in a future PHP, and its hashes
+                may be longer. <cde>VARCHAR(255)</cde> is what the PHP manual recommends.
+            </li>
+            <li>
+                <strong>A signup form tells strangers who has an account.</strong> "That address
+                already has an account" is a way to test addresses. The careful alternative is to
+                always say "check your email," and send a message either way, but sending mail at
+                signup has its own problem, below. Decide which you'd rather have, and rate limit
+                the form either way.
+            </li>
+            <li>
+                <strong>Never send someone their password.</strong> Not in a welcome email, not in a
+                reset. You can't, if you stored it properly, and that's the point.
+            </li>
+        </list>
+
+        <side-story title="The Inbox Bomb">
+            One of my apps sent a verification email the moment anyone signed up. Someone noticed,
+            and used the signup form to bury strangers' inboxes: sign up with their address, over
+            and over, and our server sent each one an email every time. The fix was to send no email
+            at signup at all, to put rate limits on every kind of mail the app sends, and to add a
+            bot check.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Tell password managers what the field is">
+            <p>
+                <cde>autocomplete="new-password"</cde> on a signup's password field tells password
+                managers to offer a long random one and save it, and
+                <cde>autocomplete="current-password"</cde> on a sign-in tells them to fill it in.
+                Two attributes, and the people who use password managers end up with much better
+                passwords than any rule could get out of them.
+            </p>
+        </two-dollars>
+
+        <p>
+            The signup stores a good hash. Now someone has to type the password back in, and an
+            attacker would like to type a lot of them. Next: a login form.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/login-form">Next: Login Form &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

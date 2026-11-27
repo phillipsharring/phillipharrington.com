@@ -1,0 +1,190 @@
+<layout name="default" title="Layout" />
+<page-head>
+    <meta
+        name="description"
+        content="One layout file that wraps every page, opened and closed in one place: a render() function built on output buffering, page templates with only their own content, and a 404 that matches the rest of the site. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP layout, PHP templates, render function, output buffering, ob_start, ob_get_clean, extract, single point of entry, 404 page, PHP project, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="One layout file that wraps every page. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="layout">Layout</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Useful Includes ended with a header that opens <cde>&lt;main&gt;</cde> and a footer that
+            closes it. That works until someone edits one half and not the other. A layout turns it
+            inside out: one file holds the whole page around the content, start to finish, and each
+            page is just its own content, dropped into the middle.
+        </p>
+        <p>
+            You'll build a <cde>render()</cde> function that runs a template and hands back what it
+            printed, a layout that wraps every page, and one entry point that picks the page, or a
+            404 that looks like the rest of the site.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/output-buffering">Output Buffering</lnk>: catching what a template
+                prints, instead of sending it.
+            </li>
+            <li>
+                <lnk to="/php/projects/useful-includes">Useful Includes</lnk>: the bootstrap,
+                settings and helpers, carried over.
+            </li>
+            <li>
+                <lnk to="/php/single-point-of-entry">Single Point of Entry</lnk>: one
+                <cde>index.php</cde> answering every path.
+            </li>
+            <li>
+                <lnk to="/php/separating-concerns">Separating Concerns</lnk>: pages that hold
+                content, a layout that holds the page.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="carry-over">Carry Over the Basics</heading>
+        <p>
+            Start a new project folder with the settings and bootstrap from Useful Includes. The
+            settings change in one place, the About link, which is now <cde>/about</cde>:
+        </p>
+        <code-block example="project-layout/src/config.php" />
+        <code-block example="project-layout/src/bootstrap.php" />
+
+        <heading h3 id="render">A Render Function</heading>
+        <p>
+            Add <cde>render()</cde> to <cde>src/functions.php</cde>, under the two helpers you
+            already have:
+        </p>
+        <code-block example="project-layout/src/functions.php" />
+        <p>
+            It does three things. <cde>extract()</cde> turns the array's keys into variables, so a
+            template can say <cde>$title</cde> instead of <cde>$vars['title']</cde>.
+            <cde>ob_start()</cde> starts catching output, the template runs, and
+            <cde>ob_get_clean()</cde> hands back everything it printed, as a string, without sending
+            any of it. Because the template runs inside a function, nothing leaks in from the page
+            that called it: it gets the variables you passed, and none of the caller's.
+        </p>
+
+        <heading h3 id="the-layout">The Layout</heading>
+        <p>
+            <cde>templates/layout.php</cde> is the whole page, with one hole in the middle for
+            <cde>$content</cde>:
+        </p>
+        <code-block example="project-layout/templates/layout.php" />
+        <p>
+            Everything is escaped with <cde>e()</cde> except <cde>$content</cde>. That isn't a slip.
+            <cde>$content</cde> is HTML that another template already made, escaping its own output
+            as it went, and escaping it again would print the tags as text. The rule is "escape each
+            piece once, where it's made," not "escape everything twice."
+        </p>
+
+        <heading h3 id="the-pages">The Pages</heading>
+        <p>Each page is a template with only its own content. <cde>templates/home.php</cde>:</p>
+        <code-block example="project-layout/templates/home.php" />
+        <p><cde>templates/about.php</cde>, which uses a setting:</p>
+        <code-block example="project-layout/templates/about.php" />
+        <p>And <cde>templates/not-found.php</cde>, for everything else:</p>
+        <code-block example="project-layout/templates/not-found.php" />
+
+        <heading h3 id="the-entry-point">The Entry Point</heading>
+        <p>
+            <cde>public/index.php</cde> is the only PHP file in <cde>public</cde>. PHP's built-in
+            server hands it every path that isn't a real file, so it decides what each one means:
+        </p>
+        <code-block example="project-layout/public/index.php" />
+        <p>
+            It renders the page's template first, then renders the layout with that as
+            <cde>$content</cde>. <strong>Never trust input:</strong> the path comes from the
+            request, so it's only ever used to look something up in <cde>$routes</cde>. The template
+            names come from your array, not from the URL.
+        </p>
+
+        <heading h3 id="run-it">Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and <cde>/about</cde>: the same page around
+            different content. Then a path that doesn't exist:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/nowhere</code-block>
+        <p>
+            A <cde>404 Not Found</cde> status, and a page that still has your header, navigation and
+            footer. Add a page now, and it's one template and one line in <cde>$routes</cde>.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never <cde>extract()</cde> input.</strong> <cde>extract($_GET)</cde> lets
+                any visitor create or overwrite your variables by adding them to the URL. Only
+                extract arrays you built yourself. <cde>EXTR_SKIP</cde> is a second guard: it won't
+                overwrite a variable that already exists.
+            </li>
+            <li>
+                <strong>Never let the request name the template.</strong>
+                <cde>render($_GET['page'])</cde> is the view source trap again: a path built from
+                input. Look it up in a list you control.
+            </li>
+            <li>
+                <strong>A 404 page still needs a 404 status.</strong> A friendly "not found" page
+                sent with <cde>200 OK</cde> tells search engines it's a real page, and they'll keep
+                it. Set the code before you render.
+            </li>
+            <li>
+                <strong>Headers come before content, still.</strong> Because the page renders into a
+                string first, nothing is sent until the final <cde>echo</cde>. That's a bonus: a
+                template deep in the page can't trigger "headers already sent," and you can still
+                change the status after rendering.
+            </li>
+        </list>
+
+        <side-story title="register_globals">
+            Early PHP had a setting called <cde>register_globals</cde> that did what
+            <cde>extract($_REQUEST)</cde> does, for every request, before your code ran: add
+            <cde>?admin=1</cde> to a URL and your script had a variable <cde>$admin</cde> set to 1.
+            It was switched off by default in PHP 4.2, in 2002, and removed entirely in PHP 5.4, in
+            2012.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="A title is part of the content">
+            <p>
+                Let each route carry its own page title, as <cde>$routes</cde> does here, and have
+                the layout put it in <cde>&lt;title&gt;</cde>. Browser tabs, bookmarks and search
+                results all show it, and a site where every tab says the same thing is hard to find
+                your way around.
+            </p>
+        </two-dollars>
+
+        <p>
+            The site has a shape now. Before it gets any more moving parts, give it a way to tell
+            you what it's doing. Next: logging.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/logging">Next: Logging &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

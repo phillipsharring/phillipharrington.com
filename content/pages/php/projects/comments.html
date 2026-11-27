@@ -1,0 +1,242 @@
+<layout name="default" title="Comments" />
+<page-head>
+    <meta
+        name="description"
+        content="Comments on a post, attacked two ways: a stored script that runs for every reader, and a bot that posts twenty times a second. Fixed with escaping on the way out, and a honeypot, a signed form token, a rate limit and a moderation queue on the way in. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP comments, stored XSS, htmlspecialchars, comment spam, honeypot field, form timing token, hash_hmac, rate limiting, 429 Too Many Requests, moderation queue, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Comments that don't run scripts and don't fill with spam. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="comments">Comments</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The blog talks; comments let readers answer. A comment form is the most public input on
+            any site: no login, no account, anyone at all. Two things go wrong with it, and both go
+            wrong fast. Someone posts a script, and it runs in every reader's browser. And bots find
+            the form, and post advertisements into it all day.
+        </p>
+        <p>
+            You'll build comments on a post, then the naive version, and attack it both ways. The
+            fix for the first is one function used everywhere. The fix for the second is a few small
+            checks stacked up, because no single one stops every bot.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/xss">XSS and Escaping Output</lnk>: escape on the way out, every time
+            </li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: every field, checked on
+                the server
+            </li>
+            <li>
+                <lnk to="/php/rate-limiting">Rate Limiting</lnk>: so many per address per minute
+            </li>
+            <li>
+                <lnk to="/php/projects/guestbook">Guestbook</lnk>: the same stored-script attack,
+                met earlier
+            </li>
+            <li>
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: which address is the
+                visitor's
+            </li>
+            <li>
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: refusing bytes that aren't text
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-tables">Step 1: The Tables</heading>
+        <p>
+            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones from
+            <lnk to="/php/projects/translation">Translation</lnk>, with a database called
+            <cde>comments</cde> and a secret for signing form tokens:
+        </p>
+        <code-block example="project-comments/compose.yml" />
+        <p>
+            One post, and a table for its comments. Each comment keeps the address it came from, for
+            the rate limit, and whether a person has approved it:
+        </p>
+        <code-block example="project-comments/init.sql" />
+
+        <heading h3 id="step-2-the-spam-checks">Step 2: The Spam Checks</heading>
+        <p><cde>src/spam.php</cde> holds four small checks:</p>
+        <code-block example="project-comments/src/spam.php" />
+        <list>
+            <li>
+                <strong>The form token</strong> records when the form was shown, signed with
+                <cde>hash_hmac()</cde> and the secret so it can't be forged. A comment that comes
+                back in under three seconds came from a script; a person has to read first. One
+                older than an hour gets refused, so a bot can't keep one token forever.
+            </li>
+            <li>
+                <strong>The rate limit</strong> counts this address's comments in the last ten
+                minutes. Five is plenty for a person.
+            </li>
+            <li>
+                <strong>The link check</strong> holds back comments with more than one link. Links
+                are what most spam is for.
+            </li>
+            <li>
+                <strong>The honeypot</strong> is in the form itself, in Step 3: a field people never
+                see, that bots fill in because they fill in everything.
+            </li>
+        </list>
+
+        <heading h3 id="step-3-the-post-and-the-form">Step 3: The Post and the Form</heading>
+        <p>
+            <cde>public/index.php</cde> shows the post, its approved comments, and the form. Every
+            name and comment goes through <cde>htmlspecialchars()</cde> on the way out, and
+            <cde>nl2br()</cde> after, so line breaks survive and nothing else becomes HTML:
+        </p>
+        <code-block example="project-comments/public/index.php" />
+        <p>
+            The note at the top comes from a list of our own messages, picked by a word in the URL.
+            The URL never supplies the text itself, or anyone could send a link that puts their
+            words on your page.
+        </p>
+
+        <heading h3 id="step-4-taking-a-comment">Step 4: Taking a Comment</heading>
+        <p>
+            <cde>public/comment.php</cde> runs the checks in order, cheapest first, and stores the
+            comment exactly as typed. <strong>Never trust input,</strong> but don't change it on the
+            way in, either: storing it raw and escaping it on the way out means the same text works
+            on a page, in an email, or in a feed, each escaped its own way.
+        </p>
+        <code-block example="project-comments/public/comment.php" />
+        <p>
+            The honeypot answer is a success, on purpose. A bot that gets an error tries something
+            else; a bot that gets "thanks" moves on.
+        </p>
+
+        <heading h3 id="step-5-run-it">Step 5: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>, wait a few seconds, and post a comment. Post one
+            with two links in it, and it says it'll appear once someone has read it. Post a few
+            more, and the sixth in ten minutes gets <cde>429 Too Many Requests</cde>.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>The comments page most people write first:</p>
+        <code-block example="project-comments/public/naive.php" />
+        <p>First attack: a comment that's a script.</p>
+        <!-- prettier-ignore -->
+        <code-block>curl --data-urlencode 'name=Mallory' \
+     --data-urlencode 'body=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' \
+     http://localhost:8000/naive.php</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde> in a browser, and an alert pops up. The
+            script ran, in your page, with everything your page can reach. On a site with a login,
+            <cde>document.cookie</cde> holds the session, unless the cookie is HttpOnly. It'll pop
+            up for every reader, on every visit, until someone deletes the comment. An alert is the
+            polite version. The same spot could send each reader's cookies to another server,
+            rewrite the page, or submit forms as them. This is stored XSS: the attack is saved in
+            your database and served by your own site.
+        </p>
+        <p>Second attack: be a bot.</p>
+        <!-- prettier-ignore -->
+        <code-block>for i in $(seq 1 20); do
+    curl -s -o /dev/null -d name=Bot -d "body=Buy now $i http://spam.example" http://localhost:8000/naive.php
+done</code-block>
+        <p>Reload the naive page: twenty advertisements, posted in about a second, all live.</p>
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            Now open <cde>http://localhost:8000</cde>. The same comment, from the same table, shows
+            up as text: <cde>&lt;script&gt;alert(document.cookie)&lt;/script&gt;</cde>, harmless.
+            The fix was never about what's in the database. It's <cde>htmlspecialchars()</cde> on
+            every value, every time it goes into a page.
+        </p>
+        <p>
+            Then the bot. Point the same loop at <cde>comment.php</cde>, and none get through:
+            without the form's fields and token, each is refused before anything is saved. A smarter
+            bot that fetches the form first still has to wait three seconds per token, gets cut off
+            after five comments, and its links put every one in the moderation queue instead of on
+            the page. Fill in the honeypot, and it's told "thanks" while nothing is saved.
+        </p>
+        <p>
+            Each check stops some bots, and none stops all of them. Stacked, they stop most, and the
+            rest wait for a person.
+        </p>
+
+        <side-story title="The First Spam">
+            In 1978, Gary Thuerk, a marketer at Digital Equipment Corporation, sent one message to a
+            few hundred people on ARPANET, announcing a product demonstration. It's usually counted
+            as the first spam, and it drew complaints at once. The name came much later, from a
+            Monty Python sketch in which a café menu has Spam in nearly everything, and the word
+            drowns out the conversation.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Escape in the right place for the context.</strong>
+                <cde>htmlspecialchars()</cde> is right between tags and inside quoted attributes.
+                Inside a <cde>&lt;script&gt;</cde> block, a URL, or CSS, it isn't enough; each has
+                its own escaping. The XSS lesson has the list.
+            </li>
+            <li>
+                <strong>Making links clickable invites spam.</strong> If you turn URLs in comments
+                into links, add <cde>rel="ugc nofollow"</cde>, so search engines don't count them
+                and spammers gain less.
+            </li>
+            <li>
+                <strong>Behind a proxy, every comment has the same address.</strong> Then five per
+                ten minutes is five for the whole world. Use the address your own proxy reports, as
+                in <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+            </li>
+            <li>
+                <strong>Honeypots must be hidden from people, and from screen readers.</strong>
+                That's the <cde>aria-hidden</cde>, the <cde>tabindex="-1"</cde>, and
+                <cde>autocomplete="off"</cde>, so a browser doesn't fill it in for a real person.
+            </li>
+            <li>
+                <strong>Held comments need a person.</strong> A moderation queue nobody reads is a
+                slow way of deleting comments. Build the page that lists them, or don't hold them.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Keep a list of nasty test strings">
+            <p>
+                Keep a file of inputs that break things:
+                <cde>&lt;script&gt;alert(1)&lt;/script&gt;</cde>, <cde>"&gt;&lt;b&gt;</cde>,
+                <cde>' OR '1'='1</cde>, a 6,000-character line, an emoji, a right-to-left word, and
+                nothing at all. Paste every one into every new form before anyone else does.
+            </p>
+        </two-dollars>
+
+        <p>
+            Every comment means every reader's next page view hits the database again. Next:
+            caching, and how to answer without doing the work twice.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/caching">Next: Caching &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,201 @@
+<layout name="default" title="CSS" />
+<page-head>
+    <meta
+        name="description"
+        content="How a page gets its looks: selectors, properties, the cascade and specificity, the box model, linking a stylesheet, and a PHP trick that makes browsers drop an old copy. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="CSS, stylesheet, selectors, cascade, specificity, box model, link rel stylesheet, cache busting, filemtime, text/css, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How a page gets its looks. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="css">CSS</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            HTML says what each part of a page is. CSS, Cascading Style Sheets, says how it looks:
+            colors, fonts, spacing, layout. It usually lives in its own file, a stylesheet, that the
+            browser fetches and the server sends as it is. PHP's part is small: link to it properly,
+            and make sure browsers get the new copy when it changes.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-css">What's CSS?</heading>
+        <p>A list of rules. Each one is a selector, then properties in braces:</p>
+        <!-- prettier-ignore -->
+        <code-block>.note {
+    color: #555;
+    margin-top: 1rem;
+}</code-block>
+        <p>
+            The selector, <cde>.note</cde>, picks which elements the rule applies to. Each property,
+            like <cde>color</cde>, gets a value and ends with a semicolon.
+        </p>
+
+        <heading h3 id="selectors">Selectors</heading>
+        <list>
+            <li><cde>p</cde>: every element of that type.</li>
+            <li><cde>.note</cde>: every element with <cde>class="note"</cde>.</li>
+            <li><cde>#total</cde>: the one element with <cde>id="total"</cde>.</li>
+            <li><cde>.dark .note</cde>: a <cde>.note</cde> anywhere inside a <cde>.dark</cde>.</li>
+            <li><cde>a:hover</cde>: a link while the pointer is over it.</li>
+        </list>
+
+        <heading h3 id="the-cascade">The Cascade</heading>
+        <p>
+            When two rules set the same property on the same element, one has to win. The more
+            specific selector wins: an id beats a class, and a class beats a plain element.
+            <cde>.dark .note</cde>, two classes, beats <cde>.note</cde>, one. When they're equally
+            specific, the one that comes later wins. And some properties, like <cde>color</cde> and
+            <cde>font-family</cde>, are inherited: set them on <cde>body</cde>, and everything
+            inside follows. That's the "cascading" in the name.
+        </p>
+
+        <heading h3 id="the-box-model">The Box Model</heading>
+        <p>
+            Every element is a box: the content, then <cde>padding</cde> around it, then a
+            <cde>border</cde>, then <cde>margin</cde> outside that, keeping other boxes away. By
+            default, <cde>width</cde> is the content alone, so padding and border make the box wider
+            than you said. <cde>box-sizing: border-box</cde> makes <cde>width</cde> include them,
+            and most stylesheets set it on everything.
+        </p>
+
+        <side-story title="A Proposal from CERN">
+            Early web pages had almost no way to set their own looks, and browser makers were adding
+            presentation tags to HTML one at a time. In 1994, Håkon Wium Lie, working at CERN,
+            proposed style sheets for the web instead, and Bert Bos joined him on what became CSS.
+            The first version became a W3C recommendation in 1996.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The HTML names a stylesheet in its head:
+                <cde>&lt;link rel="stylesheet" href="/style.css"&gt;</cde>.
+            </li>
+            <li>
+                The browser asks for it: another request, answered from the
+                <lnk to="/php/document-root">document root</lnk> with <cde>text/css</cde>.
+            </li>
+            <li>It matches every rule against the elements in the page.</li>
+            <li>Where rules disagree, the cascade decides, and the browser draws the result.</li>
+            <li>
+                It keeps the file in its cache, so the next page doesn't ask again, sometimes for a
+                long time.
+            </li>
+        </ol>
+        <p>
+            Step five is why a change to your stylesheet sometimes doesn't show. The browser is
+            still using the copy it kept. The fix is to change the URL whenever the file changes: a
+            new URL is a new file, as far as any cache knows.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A page with a light and a dark theme, and a stylesheet URL that changes by itself. In a
+            folder, make a <cde>public</cde> folder, and in it, <cde>style.css</cde>:
+        </p>
+        <code-block example="css/public/style.css" />
+        <p>And <cde>public/index.php</cde>:</p>
+        <code-block example="css/public/index.php" />
+        <p>Start it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and switch between Light and Dark. The only thing
+            that changes is the body's class, and the cascade does the rest. In the dark theme the
+            note is lighter gray: <cde>.dark .note</cde> is more specific than <cde>.note</cde>, so
+            it wins.
+        </p>
+        <p>
+            View the source and find <cde>style.css?v=</cde> and a number. That's when the file last
+            changed. Edit <cde>style.css</cde>, reload, and the number changes too, so the browser
+            fetches the new copy. Then try to slip something in through the theme:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?theme=%22%3E%3Cscript%3E'</code-block>
+        <p>
+            The body's class is <cde>light</cde>. The theme goes into the page unescaped, so the
+            code takes only a value from its own list, and anything else gets the default.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> even when
+            it's only picking a color.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>filemtime($path)</cde> is when a file last changed, as a number. In the
+                stylesheet's URL, it's a version that updates itself.
+            </li>
+            <li>
+                <cde>in_array($value, $allowed, true)</cde> before any input goes into a class name,
+                a style or a stylesheet.
+            </li>
+            <li>
+                PHP doesn't send the stylesheet. The web server does, from the document root, with
+                the right content type, as in
+                <lnk to="/php/how-php-runs">How PHP Actually Runs</lnk>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>"It didn't change" is usually a cache.</strong> Before you debug a rule,
+                reload without the cache (<cde>Ctrl+Shift+R</cde>, or <cde>Cmd+Shift+R</cde> on a
+                Mac), or check the version in the URL.
+            </li>
+            <li>
+                <strong>Input in a style is still input.</strong> A color from a form, put in a
+                <cde>style</cde> attribute, can close the attribute and add anything. Allow-list it,
+                or check it against a strict pattern like <cde>#</cde> and six hex digits.
+            </li>
+            <li>
+                <strong><cde>!important</cde> wins, and then you're stuck.</strong> It jumps the
+                cascade, so the next fix needs another one. Make the selector more specific instead.
+            </li>
+            <li>
+                <strong>Styling ids makes rules hard to beat.</strong> An id is so specific that
+                overriding it takes another id. Style with classes.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Ask the browser which rule won">
+            <p>
+                Right-click any element and choose Inspect. The developer tools list every rule that
+                applies to it, in cascade order, with the losers crossed out. When something looks
+                wrong, that list tells you why faster than reading the stylesheet.
+            </p>
+        </two-dollars>
+
+        <p>
+            HTML for what things are, CSS for how they look, and one more language for what they do
+            in the browser. Next: JavaScript.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/javascript">Next: JavaScript &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

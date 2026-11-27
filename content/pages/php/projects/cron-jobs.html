@@ -1,0 +1,222 @@
+<layout name="default" title="Cron Jobs" />
+<page-head>
+    <meta
+        name="description"
+        content="Run a PHP script on a schedule with cron: the five-field crontab line, the nearly empty environment cron gives a job, a lock so runs never overlap, deleting in batches, and output you can find later. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="cron, crontab, cron job PHP, schedule a script, flock, lock file, batch delete, exit codes, cron environment PATH, UTC, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Run a PHP script on a schedule with cron. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="cron-jobs">Cron Jobs</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            PHP on the Command Line built a script you run by hand. Plenty of scripts should run
+            without anyone remembering to: clear out old data, send a daily summary, renew something
+            before it expires. On Linux and macOS, the program that runs things on a schedule is
+            cron, and each scheduled command is a cron job.
+        </p>
+        <p>
+            You'll write a cleanup job for the failed-login records a rate limit leaves behind, run
+            it by hand, then hand it to cron and watch it run on its own. The script is short. Most
+            of the project is the habits that keep a script safe to run unattended.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/php-on-the-command-line">PHP on the Command Line</lnk>:
+                options, <cde>STDERR</cde> and exit codes
+            </li>
+            <li>
+                <lnk to="/php/rate-limiting">Rate Limiting</lnk>: where the login attempts come from
+            </li>
+            <li>
+                <lnk to="/php/deleting-data">Deleting Data</lnk>: a <cde>DELETE</cde> with a
+                <cde>WHERE</cde>, and a <cde>LIMIT</cde>
+            </li>
+            <li>
+                <lnk to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</lnk>: where the settings come from
+            </li>
+            <li><lnk to="/php/indexes">Indexes</lnk>: on the date the job searches by</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-crontab-line">Step 1: The Crontab Line</heading>
+        <p>
+            A crontab is a list of jobs, one per line: five fields that say when, then the command.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block># minute  hour  day-of-month  month  day-of-week  command
+15 3 * * *  cd /var/www/app &amp;&amp; /usr/bin/php bin/prune.php &gt;&gt; var/prune.log 2&gt;&amp;1</code-block>
+        <p>
+            That's 3:15 every morning. A <cde>*</cde> means "every," so <cde>* * * * *</cde> is
+            every minute, and <cde>*/10</cde> in the first field is every ten minutes. On a server,
+            <cde>crontab -e</cde> opens your own list for editing, and <cde>crontab -l</cde> shows
+            it. The end of the line, <cde>&gt;&gt; var/prune.log 2&gt;&amp;1</cde>, adds both the
+            output and the errors to a log, so you can find out later what happened at 3:15.
+        </p>
+
+        <heading h3 id="step-2-something-to-clean-up">Step 2: Something to Clean Up</heading>
+        <p>
+            A table of failed logins, 2,500 of them more than 30 days old and 5 recent ones. The
+            index on <cde>attempted_at</cde> is what lets the job find the old ones without reading
+            every row:
+        </p>
+        <code-block example="project-cron-jobs/init.sql" />
+        <p>
+            The containers: MySQL, one called <cde>app</cde> for running the script by hand, and one
+            called <cde>cron</cde> that runs the cron daemon, standing in for a server's own:
+        </p>
+        <code-block example="project-cron-jobs/compose.yml" />
+        <p>
+            <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones, from
+            <lnk to="/php/projects/translation">Translation</lnk>.
+        </p>
+
+        <heading h3 id="step-3-the-job">Step 3: The Job</heading>
+        <code-block example="project-cron-jobs/bin/prune.php" />
+        <list>
+            <li>
+                <strong>A lock.</strong> <cde>flock()</cde> with <cde>LOCK_NB</cde> takes the lock
+                or fails at once. If yesterday's run is somehow still going, today's steps aside
+                instead of fighting it over the same rows.
+            </li>
+            <li>
+                <strong>Batches.</strong> Deleting a million rows in one statement can hold the
+                table for a long time. A thousand at a time, until a batch comes back short, lets
+                the site keep working in between.
+            </li>
+            <li>
+                <strong>Checked options.</strong>
+                <lnk to="/php/never-trust-input">Never trust input</lnk>, even from a crontab:
+                <cde>--days</cde> must be a whole number, 1 or more, or the job stops with exit code
+                2 before it deletes anything.
+            </li>
+            <li>
+                <strong>A dry run.</strong> <cde>--dry-run</cde> counts and changes nothing, for the
+                first time you point it at real data.
+            </li>
+            <li>
+                <strong>One line of output, in UTC.</strong> Easy to read in a log, and easy to
+                search.
+            </li>
+            <li>
+                <strong>An exit code.</strong> Any failure is caught, explained on
+                <cde>STDERR</cde>, and ends in <cde>exit(1)</cde>, so whatever watches the job
+                knows.
+            </li>
+        </list>
+        <p>Try it by hand first, the dry run, then the real one, then again:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm app php bin/prune.php --dry-run
+docker compose run --rm app php bin/prune.php
+docker compose run --rm app php bin/prune.php</code-block>
+        <p>
+            Would prune 2,500; pruned 2,500; pruned 0. Running it twice is harmless, which is
+            exactly what you want from anything cron runs.
+        </p>
+
+        <heading h3 id="step-4-hand-it-to-cron">Step 4: Hand It to Cron</heading>
+        <p>The crontab for the <cde>cron</cde> container:</p>
+        <code-block example="project-cron-jobs/crontab" />
+        <p>
+            Files in <cde>/etc/cron.d</cde>, like this one, have one more field than a personal
+            crontab: the user to run as, before the command. And look at the top. Cron starts each
+            job with almost no environment: not your settings, and a <cde>PATH</cde> of only
+            <cde>/usr/bin:/bin</cde>. In the PHP image, <cde>php</cde> lives in
+            <cde>/usr/local/bin</cde>, so a job that just says <cde>php</cde> would fail with
+            "command not found," every minute, quietly. So the settings are set in the file, and
+            <cde>php</cde> is named in full.
+        </p>
+        <p>
+            The cron container's <cde>Dockerfile.cron</cde> installs cron and puts the file in
+            place:
+        </p>
+        <code-block example="project-cron-jobs/Dockerfile.cron" />
+        <p>Start it, and watch the log:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose --profile cron up -d
+tail -f var/prune.log</code-block>
+        <p>
+            Within a minute, a line appears, and another every minute after:
+            <cde>Pruned 0 rows older than 30 days.</cde> Nobody ran it. <cde>Ctrl+C</cde> stops
+            <cde>tail</cde>, and <cde>docker compose --profile cron down -v</cde> stops the rest.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="Older Than the Web">
+            Cron has been part of Unix since the 1970s. The version most Linux systems run today
+            descends from Paul Vixie's rewrite, first released in 1987. The five-field line has
+            barely changed in all that time.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Cron isn't your terminal.</strong> No <cde>PATH</cde> beyond the basics, no
+                settings from your shell, and the working directory is the user's home. Use full
+                paths, <cde>cd</cde> first, and set what the script needs.
+            </li>
+            <li>
+                <strong>Output with nowhere to go becomes mail.</strong> Cron tries to email any
+                output to the job's owner. On most servers that mail goes nowhere, and the errors
+                with it. Send output to a log on purpose.
+            </li>
+            <li>
+                <strong>A missed run is just missed.</strong> If the server is off at 3:15, cron
+                doesn't catch up when it comes back. Write jobs that do "everything older than X,"
+                not "yesterday's," and a skipped night costs nothing.
+            </li>
+            <li>
+                <strong>The server's time zone decides what 3:15 means.</strong> Where clocks change
+                for summer, an hour is skipped in spring and repeated in the fall, and what happens
+                to a job scheduled in that hour depends on the cron. Run servers in UTC, and the
+                question never comes up.
+            </li>
+            <li>
+                <strong>Nobody notices a job that stopped.</strong> A job that fails quietly every
+                night looks exactly like one that works. Have it report somewhere you look, or use a
+                service that alerts you when an expected check-in doesn't arrive.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Run it the way cron will">
+            <p>
+                Before trusting a new cron line, run it with cron's nearly empty environment:
+                <cde>env -i /bin/sh -c 'the whole command'</cde>. If it fails there, it'll fail in
+                cron, and now you can see why instead of waiting for 3:15.
+            </p>
+        </two-dollars>
+
+        <p>
+            Cron runs things on a clock. Some work shouldn't wait for the clock, and shouldn't make
+            a visitor wait for it either. Next: queues.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/queues">Next: Queues &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

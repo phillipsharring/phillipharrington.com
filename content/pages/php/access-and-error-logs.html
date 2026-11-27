@@ -1,0 +1,261 @@
+<layout name="default" title="Access and Error Logs" />
+<page-head>
+    <meta
+        name="description"
+        content="The two files every server keeps: the access log, one line per request, and the error log, where things go when they go wrong. How to read them, where PHP's errors go, and why everything in them is input. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="access log, error log, nginx logs, combined log format, PHP error log, error_log, display_errors, log_errors, tail -f, log rotation, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="One line per request, and a place for what went wrong. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Web Server Basics
+        </p>
+        <heading h1 id="access-and-error-logs">Access and Error Logs</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Document Root ended with the server answering requests for files that were there and
+            files that weren't. It also wrote every one of them down. Servers keep two kinds of
+            diary: an access log, with a line for every request, and an error log, for when
+            something goes wrong. When a page breaks, they're the first place to look, and very
+            often the only place that knows what happened.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-access-log">What's an Access Log?</heading>
+        <p>
+            A text file with one line per request, written by the web server. Most servers use the
+            same layout, called the combined log format:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>192.0.2.10 - - [27/Nov/2026:19:51:44 +0000] "GET /nope HTTP/1.1" 404 24 "-" "curl/8.7.1"</code-block>
+        <list>
+            <li><strong>192.0.2.10</strong>: the address that connected.</li>
+            <li>
+                <strong>- -</strong>: two old fields that are almost always empty: an identity
+                nobody sends, and the user name from HTTP authentication.
+            </li>
+            <li><strong>[27/Nov/2026:19:51:44 +0000]</strong>: when, with the time zone.</li>
+            <li>
+                <strong>"GET /nope HTTP/1.1"</strong>: the request line, exactly as it arrived:
+                method, path and query string, and protocol.
+            </li>
+            <li>
+                <strong>404</strong>: the status code sent back. From
+                <lnk to="/php/request-and-response">Request and Response</lnk>.
+            </li>
+            <li><strong>24</strong>: the size of the response body, in bytes.</li>
+            <li>
+                <strong>"-"</strong>: the <cde>Referer</cde> header, the page that linked here, or
+                <cde>-</cde> for none.
+            </li>
+            <li><strong>"curl/8.7.1"</strong>: the <cde>User-Agent</cde> header.</li>
+        </list>
+
+        <side-story title="The Misspelled Header">
+            The header that says which page linked to this one is spelled <cde>Referer</cde>, with
+            one R in the middle. It was misspelled in the original proposal, and the misspelling
+            went into the HTTP/1.0 specification in 1996. By then the software already used it, so
+            it stayed. Log formats call the field "referer" too.
+        </side-story>
+
+        <heading h2 id="whats-an-error-log">What's an Error Log?</heading>
+        <p>
+            A file of things that went wrong, each with a time and a level: notice, warning, error.
+            There are usually two, and it matters which is which.
+        </p>
+
+        <heading h3 id="the-servers-error-log">The Server's Error Log</heading>
+        <p>
+            The web server's own problems: a file it couldn't open, a setting it didn't like, or,
+            most often, PHP not answering. When a visitor gets a <cde>502</cde> or
+            <cde>504</cde> from <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>, this
+            is where the server says why.
+        </p>
+
+        <heading h3 id="phps-error-log">PHP's Error Log</heading>
+        <p>
+            Your code's problems: warnings, errors, and anything you write there yourself. Two
+            settings decide where they go. <cde>display_errors</cde> prints them into the page, for
+            the visitor to see. <cde>log_errors</cde> writes them to the file named in
+            <cde>error_log</cde>. On your own computer, display is handy. On a live server, display
+            goes off and logging goes on, always: error messages show file paths and pieces of your
+            code to anyone who can trigger one.
+        </p>
+        <p>
+            The official PHP Docker images ship with no settings file at all, so PHP's defaults
+            apply: errors displayed, and not logged. The Try It turns that around. The full story of
+            errors is in <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>A request reaches the web server.</li>
+            <li>
+                The server hands it to PHP. If it can't reach PHP, it writes that to its error log
+                and answers with a 502 or 504.
+            </li>
+            <li>
+                PHP runs your code. Any warning or error goes to PHP's error log, or into the page,
+                depending on those two settings.
+            </li>
+            <li>The server sends the response.</li>
+            <li>
+                Then it writes the access log line. It waits until the end because that's when it
+                knows the status code and the size.
+            </li>
+        </ol>
+        <p>
+            So one bad request can leave a line in three files. The time is what ties them together:
+            find the request in the access log, then look at the same second in the error logs.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            nginx in front of PHP, as in What's in the Middle, with both writing their logs into a
+            <cde>logs</cde> folder, outside the web root. First the page,
+            <cde>public/index.php</cde>, with a bug in it on purpose:
+        </p>
+        <code-block example="access-and-error-logs/public/index.php" />
+        <p>Then <cde>nginx.conf</cde>, which names the two logs:</p>
+        <code-block example="access-and-error-logs/nginx.conf" />
+        <p>
+            And <cde>compose.yml</cde>. The PHP command turns display off, turns logging on, and
+            names the file:
+        </p>
+        <code-block example="access-and-error-logs/compose.yml" />
+        <p>Make an empty <cde>logs</cde> folder next to them, then start everything:</p>
+        <!-- prettier-ignore -->
+        <code-block>mkdir logs
+docker compose up</code-block>
+        <p>In a second terminal, follow the access log:</p>
+        <!-- prettier-ignore -->
+        <code-block>tail -f logs/access.log</code-block>
+        <p>And in a third, make some requests:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000/
+curl http://localhost:8000/nope
+curl http://localhost:8000/broken</code-block>
+        <p>
+            Each one appears in the access log as it happens: a 200, a 404, and another 200. The
+            third looks fine there, and the visitor got a page, but it said "Hello, ." with no name.
+            Look in <cde>logs/php-error.log</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>PHP Warning:  Undefined variable $name in /app/public/index.php on line 10</code-block>
+        <p>
+            The file, the line, and what was wrong, kept from the visitor and written down for you.
+            (The first terminal shows a third set of lines: PHP's built-in server keeps an access
+            log of its own.) Now lie about who you are:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -A 'Not a browser' http://localhost:8000/</code-block>
+        <p>
+            The log shows <cde>"Not a browser"</cde> as the user agent, because the log writes down
+            whatever the client said. Last, break the middle. Stop PHP and ask again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose stop php
+curl http://localhost:8000/</code-block>
+        <p>
+            After three seconds, nginx gives up and answers with a 504 (or a 502, depending on your
+            computer). The access log has the status; <cde>logs/error.log</cde> has the reason,
+            something like <cde>upstream timed out ... while connecting to upstream</cde>.
+            <cde>docker compose start php</cde> brings it back, and <cde>Ctrl+C</cde> in the first
+            terminal stops both.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>error_log('Something happened')</cde> writes your own line to PHP's error log.
+            </li>
+            <li>
+                <cde>display_errors</cde>: show errors in the page. On while you work, off on a live
+                server.
+            </li>
+            <li><cde>log_errors</cde>: write errors to the log. On, everywhere.</li>
+            <li>
+                <cde>error_log</cde>, the setting: the file to write to. With none set, PHP writes
+                to the web server's error log, or to the terminal, which in Docker means
+                <cde>docker logs</cde>.
+            </li>
+            <li><cde>ini_get('error_log')</cde> tells you where it's going right now.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Everything in a log line came from outside.</strong> The path, the query
+                string, the user agent and the referrer are whatever the client sent.
+                <strong>Never trust input,</strong> and a log is full of it: escape it before you
+                show a log in a page, and don't let it into anything that runs. The
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk> lesson, and the Log Viewer
+                project, come back to this.
+            </li>
+            <li>
+                <strong>Query strings are logged.</strong> Anything in a URL ends up in access logs,
+                yours and every server's in the middle. Never put a password or a key in one. That's
+                one more reason forms that send secrets use POST.
+            </li>
+            <li>
+                <strong>Logs grow until the disk is full.</strong> Servers rotate them: every day or
+                week, the log is renamed, compressed, and eventually deleted, and a new one starts.
+                On Linux, a tool called logrotate does it. A full disk takes the whole site down with it.
+            </li>
+            <li>
+                <strong>The address may not be the visitor's.</strong> Behind a proxy or a CDN, the
+                access log records the last hop, the same problem as <cde>REMOTE_ADDR</cde> in
+                What's in the Middle. Servers can be told to log <cde>X-Forwarded-For</cde> instead.
+            </li>
+            <li>
+                <strong>Logs hold personal data.</strong> Addresses, and anything you write about
+                your users. In some places, privacy law counts an IP address as personal data. Keep
+                logs only as long as you need them, and never write a password to one.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Count the status codes">
+            <p>
+                In the combined format, the status code is the ninth thing on each line. This counts
+                them, most common first:
+            </p>
+            <!-- prettier-ignore -->
+            <code-block>awk '{print $9}' logs/access.log | sort | uniq -c | sort -rn</code-block>
+            <p>
+                A pile of 404s you didn't expect is a broken link or a scanner. Any 500s at all are
+                a reason to open the error log.
+            </p>
+        </two-dollars>
+
+        <p>
+            In the Try It, nginx handed every request to PHP's built-in server, which is for
+            development only. Real servers do it differently. Next: How PHP Actually Runs: nginx and
+            PHP-FPM.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/how-php-runs">Next: How PHP Actually Runs: nginx and PHP-FPM &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

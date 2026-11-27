@@ -1,0 +1,245 @@
+<layout name="default" title="Contact Form" />
+<page-head>
+    <meta
+        name="description"
+        content="A contact form that emails you, built naive first, then turned into a spam cannon aimed at a stranger, then fixed: every field checked, mail only ever to you and from you, a honeypot for bots, and rate limits per visitor and for the whole site. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP contact form, never trust input, rate limiting, spam, honeypot, Reply-To, Symfony Mailer, Mailpit, 429 Too Many Requests, Retry-After, flock, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A contact form that emails you, and can't be turned on anyone else. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="contact-form">Contact Form</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Sending Email sent one message to an address you typed. A contact form does the same
+            thing with an address a stranger typed, as many times as the stranger likes. That's the
+            whole danger. A form that sends mail is a machine anyone on the internet can use to send
+            mail from your server, and if you're careless about what it sends and to whom, it will
+            be used for exactly that.
+        </p>
+        <p>
+            You'll build the friendly version first, with a "send me a copy" box, then use it to
+            bury a stranger's inbox, then fix it so it can only ever do one thing: send you a
+            message, at a pace a person would.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/sending-email">Sending Email</lnk>: Symfony Mailer and
+                Mailpit.
+            </li>
+            <li><lnk to="/php/forms">Forms</lnk>: fields, and checking them on the server.</li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: every field, every time.
+            </li>
+            <li>
+                <lnk to="/php/rate-limiting">Rate Limiting</lnk>: how many, how often, from whom.
+            </li>
+            <li>
+                <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>: a class of
+                your own in <cde>src</cde>.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-setup">The Setup</heading>
+        <p>
+            A new project folder with a <cde>.gitignore</cde> and a <cde>composer.json</cde> that
+            asks for the mailer and autoloads your own classes from <cde>src</cde>:
+        </p>
+        <code-block example="project-contact-form/.gitignore" />
+        <code-block example="project-contact-form/composer.json" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <p>
+            <cde>compose.yml</cde> runs the site and Mailpit together, the site on port 8000 and
+            Mailpit on 8025:
+        </p>
+        <code-block example="project-contact-form/compose.yml" />
+        <p><cde>src/bootstrap.php</cde> loads everything and makes the mailer:</p>
+        <code-block example="project-contact-form/src/bootstrap.php" />
+
+        <heading h3 id="the-naive-form">The Naive Form</heading>
+        <p>
+            Build the naive version as <cde>public/naive.php</cde>, so it can sit beside the fixed
+            one:
+        </p>
+        <code-block example="project-contact-form/public/naive.php" />
+        <p>
+            It takes the visitor's name, address and message, sends them to the owner from the
+            visitor's address, and, if they ticked the box, sends them a copy. Start it all:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde>, send yourself a message with the box
+            ticked, and look in Mailpit at <cde>http://localhost:8025</cde>: two emails, one to the
+            owner and one copy. Exactly what it says on the box.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            The copy goes to whatever address was typed. It doesn't have to be yours. From a second
+            terminal, point the form at someone else, five times, with a message of your choosing:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>for i in 1 2 3 4 5; do
+  curl -s -o /dev/null -d 'name=Prize&amp;email=victim@example.com&amp;copy=on&amp;message=You won! https://spam.example' http://localhost:8000/naive.php
+done</code-block>
+        <p>
+            Mailpit now has ten new messages. Five went to the owner. The other five went to
+            <cde>victim@example.com</cde>, who never visited your site, with "You won!" and a link,
+            sent by your server. Make it five thousand, from a few hundred machines, and your server
+            is a spam service, your domain's reputation is gone, and your real mail starts landing
+            in spam folders too.
+        </p>
+        <p>
+            Look at who the owner's copies claim to be from: <cde>victim@example.com</cde>. The form
+            put the visitor's address in <cde>From</cde>, so your server is also forging mail, which
+            is exactly what SPF and DMARC exist to catch.
+        </p>
+        <p>One more. Send an address that isn't one:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'name=x&amp;email=nope&amp;message=hi' http://localhost:8000/naive.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>&lt;b&gt;Fatal error&lt;/b&gt;:  Uncaught Symfony\Component\Mime\Exception\RfcComplianceException: Email &amp;quot;nope&amp;quot; does not comply with addr-spec of RFC 2822. in /app/vendor/symfony/mime/Address.php:58
+Stack trace:
+#0 /app/vendor/symfony/mime/Address.php(100): ...</code-block>
+        <p>
+            A crash, with your file paths and a stack trace, shown to whoever asked.
+            <strong>Never trust input</strong>, not even to be the shape the form said it would be.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+
+        <heading h3 id="a-rate-limiter">A Rate Limiter</heading>
+        <p>
+            First, a way to say "not so fast." <cde>src/FileRateLimiter.php</cde> allows a set
+            number of hits per key in a time window, keeping each key's recent hits in a small file:
+        </p>
+        <code-block example="project-contact-form/src/FileRateLimiter.php" />
+        <p>
+            <cde>flock()</cde> matters. Without the lock, ten requests arriving at once could all
+            read "zero so far" before any of them wrote, and all ten would get through. The key is
+            hashed for the file name, so whatever it is, it can't become a path.
+        </p>
+
+        <heading h3 id="the-fixed-form">The Fixed Form</heading>
+        <p>Then <cde>public/index.php</cde>:</p>
+        <code-block example="project-contact-form/public/index.php" />
+        <list>
+            <li>
+                <strong>Mail goes only to you.</strong> There's no copy box. A contact form sends
+                one message, to one address, and that address is in your code, not in the request.
+                That alone takes the cannon apart.
+            </li>
+            <li>
+                <strong>From you, not from them.</strong> <cde>From</cde> is the site's own address.
+                The visitor goes in <cde>Reply-To</cde>, so pressing Reply still reaches them.
+            </li>
+            <li>
+                <strong>Every field is checked.</strong> <cde>field()</cde> insists on a string,
+                valid UTF-8 and a length limit, and the address has to pass
+                <cde>FILTER_VALIDATE_EMAIL</cde> before it goes near the mailer. Bad input gets a
+                polite note and the form back, with what they typed escaped, never a stack trace.
+            </li>
+            <li>
+                <strong>A honeypot.</strong> The <cde>website</cde> field is hidden, so people never
+                fill it in. Simple bots fill in every field they find. If it has anything in it, the
+                form says "thanks" and sends nothing, so the bot learns nothing.
+            </li>
+            <li>
+                <strong>Two limits.</strong> Three messages per visitor every ten minutes, and
+                twenty an hour for the whole site. The first stops one sender. The second stops a
+                crowd of them, each staying under the first. Over either, the answer is
+                <cde>429 Too Many Requests</cde> with a <cde>Retry-After</cde> header.
+            </li>
+        </list>
+        <p>Run the attack again, at the fixed form:</p>
+        <!-- prettier-ignore -->
+        <code-block>for i in 1 2 3 4 5; do
+  curl -s -o /dev/null -w '%{http_code}\n' -d 'name=Prize&amp;email=victim@example.com&amp;copy=on&amp;message=You won!' http://localhost:8000/
+done</code-block>
+        <p>
+            <cde>303</cde>, <cde>303</cde>, <cde>303</cde>, <cde>429</cde>, <cde>429</cde>. Three
+            messages reach Mailpit, all to <cde>owner@example.com</cde>, from
+            <cde>hello@example.com</cde>, with the visitor in <cde>Reply-To</cde>. The stranger gets
+            nothing, ever. The bad address gets "An email address we can reply to, please."
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The limit is keyed on an address that may be your proxy's.</strong> Behind a
+                CDN or load balancer, every visitor has the same <cde>REMOTE_ADDR</cde>, and three
+                per ten minutes becomes three for the whole world. Use the address your own proxy
+                reports, as in <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+            </li>
+            <li>
+                <strong>The honeypot stops only simple bots.</strong> Anything that renders the page
+                like a browser skips hidden fields. It's a cheap filter, not a wall. The limits are
+                the wall; a bot check, like a CAPTCHA, is the next brick.
+            </li>
+            <li>
+                <strong>The message is still input when it reaches you.</strong> It's plain text
+                here, so it can't run anything in your mail program. Send it as HTML and you'd have
+                to escape it, or a stranger is writing HTML into your inbox.
+            </li>
+            <li>
+                <strong>Files fill up.</strong> One small file per visitor, forever. A real site
+                keeps limits in something that expires keys by itself, like Redis, or cleans the
+                folder on a schedule.
+            </li>
+        </list>
+
+        <side-story title="The First Spam">
+            In 1978, Gary Thuerk, a marketer at Digital Equipment Corporation, sent one message
+            announcing new computers to a few hundred people on the ARPANET, all at once. People
+            complained, loudly. The name "spam" came years later, from a Monty Python sketch in
+            which the word drowns out everything else.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Count what you send">
+            <p>
+                Put a hard daily cap on every kind of mail your site sends, and log a warning when
+                you're near it. Real traffic grows slowly. A form being abused jumps from twenty a
+                day to twenty thousand, and a cap turns that from a disaster into a log line you
+                read over coffee.
+            </p>
+        </two-dollars>
+
+        <p>
+            The fixed form checks every field by hand, and it's already getting long. The next
+            project pulls the checking out into something you can reuse and test. Next: form
+            validation.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/form-validation">Next: Form Validation &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,262 @@
+<layout name="default" title="Login Form" />
+<page-head>
+    <meta
+        name="description"
+        content="A sign-in form on MySQL, built naive, then attacked twice: a script that guesses until it gets in, and a session id chosen by the attacker that the victim signs in with. Then fixed: failure limits per address and per IP, strict session mode, and a new session id at sign-in. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP login form, rate limiting, brute force, session fixation, session_regenerate_id, use_strict_mode, password_verify, password_needs_rehash, timing attack, 429 Too Many Requests, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A sign-in that can't be guessed at forever or handed a session id. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="login-form">Login Form</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The Signup Form stored a hash that's slow to crack from a stolen table. But nobody needs
+            the table if your sign-in page will check guesses for them, as many as they like, as
+            fast as it can. And a sign-in that checks the password perfectly can still hand the
+            account to someone else, if it lets them choose the session id beforehand.
+        </p>
+        <p>
+            You'll build a sign-in on MySQL the naive way, break into it twice, with a guessing
+            script and with session fixation, then fix both. The Protected Page project had a
+            sign-in with one member in a file; this is the real one.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/rate-limiting">Rate Limiting</lnk>: the lesson behind the first fix.
+            </li>
+            <li>
+                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>: strict
+                mode, and the session id as the key to the account.
+            </li>
+            <li>
+                <lnk to="/php/passwords">Passwords: password_hash() and Nothing Else</lnk>:
+                <cde>password_verify()</cde> and <cde>password_needs_rehash()</cde>.
+            </li>
+            <li>
+                <lnk to="/php/projects/signup-form">Signup Form</lnk> and
+                <lnk to="/php/projects/protected-page">Protected Page</lnk>: the same setup and the
+                same habits.
+            </li>
+            <li>
+                <lnk to="/php/expressive-response-codes"
+                    >Expressive HTTP Response Codes, and When Not to Be</lnk>: one answer for a wrong address and a wrong password.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-database">The Database</heading>
+        <p>
+            A new project folder, with the <cde>Dockerfile</cde>, <cde>compose.yml</cde> and
+            <cde>src/db.php</cde> from the Signup Form. <cde>init.sql</cde> makes the users, a table
+            to count failed sign-ins in, and one member to sign in as:
+        </p>
+        <code-block example="project-login-form/init.sql" />
+
+        <heading h3 id="the-naive-sign-in">The Naive Sign-In</heading>
+        <p>Build the naive sign-in as <cde>public/naive-login.php</cde>:</p>
+        <code-block example="project-login-form/public/naive-login.php" />
+        <p>
+            It checks the password properly, with <cde>password_verify()</cde>, and records who
+            signed in. Then an account page, <cde>public/account.php</cde>, to show who the session
+            belongs to:
+        </p>
+        <code-block example="project-login-form/public/account.php" />
+        <p>And <cde>src/session.php</cde>, which the account page and the fixed sign-in use:</p>
+        <code-block example="project-login-form/src/session.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose up --build</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive-login.php</cde> and sign in as
+            <cde>alice@example.com</cde> with <cde>correct horse battery staple</cde>. The account
+            page says "Signed in as alice@example.com." It works.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+
+        <heading h3 id="guess-until-it-works">Guess Until It Works</heading>
+        <p>
+            <cde>guess.php</cde> is a guessing script: a list of passwords, tried one after another
+            against a sign-in page, stopping when one gets a redirect instead of the form:
+        </p>
+        <code-block example="project-login-form/guess.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec php php guess.php http://localhost:8000/naive-login.php alice@example.com</code-block>
+        <!-- prettier-ignore -->
+        <code-block> 1  123456                         HTTP/1.1 200 OK
+ 2  password                       HTTP/1.1 200 OK
+...
+14  master                         HTTP/1.1 200 OK
+15  correct horse battery staple   HTTP/1.1 303 See Other
+Got in.</code-block>
+        <p>
+            Fifteen guesses, and it's in. The list is short so the demo is short; a real one has
+            millions of entries, and the naive page will check every one. A slow hash makes each
+            guess cost a fraction of a second, which helps, but nothing here ever says "that's
+            enough."
+        </p>
+
+        <heading h3 id="session-fixation">Choose the Session Id</heading>
+        <p>
+            The second attack doesn't guess anything. The attacker picks a session id, gets the
+            victim's browser to use it, and waits for them to sign in. Getting the id into the
+            browser is the hard part, and there are ways: a sign-in on a shared computer that the
+            attacker used first, a cookie set by a page on a sibling subdomain, or a site that
+            accepts session ids in links. Here, curl plays the victim:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -b 'PHPSESSID=attacker-chosen-1' --data-urlencode 'password=correct horse battery staple' -d 'email=alice@example.com' http://localhost:8000/naive-login.php</code-block>
+        <p>
+            The naive page starts its session with PHP's defaults, so it accepted
+            <cde>attacker-chosen-1</cde>, an id it never made, and signed Alice in under it. Now the
+            attacker, who knows the id because they made it up, asks for the account page:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -b 'PHPSESSID=attacker-chosen-1' http://localhost:8000/account.php</code-block>
+        <p>
+            "Signed in as alice@example.com." No password, no guessing. The session id is the key to
+            the account, and the attacker chose the key.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+
+        <heading h3 id="count-failures">Count the Failures</heading>
+        <p>
+            <cde>src/LoginLimiter.php</cde> counts failed sign-ins in the last fifteen minutes, by
+            address and by IP:
+        </p>
+        <code-block example="project-login-form/src/LoginLimiter.php" />
+        <p>
+            Two limits, because there are two kinds of attack. Ten failures for one address stops
+            someone guessing at one account. Fifty from one IP, across any addresses, stops someone
+            trying one common password against every account they can think of. The database is
+            given to the class, not looked up inside it, so a test can hand it any connection it
+            likes. The times come from MySQL's own clock, <cde>NOW()</cde>, for both the writing and
+            the counting, so the two can't disagree.
+        </p>
+
+        <heading h3 id="the-fixed-sign-in">The Fixed Sign-In</heading>
+        <p><cde>public/login.php</cde>:</p>
+        <code-block example="project-login-form/public/login.php" />
+        <list>
+            <li>
+                <strong>The limit comes first.</strong> Over it, the answer is <cde>429</cde>,
+                before the password is even looked at, so the right password gets turned away too.
+                If it didn't, the attacker would just keep going until the right one came back
+                different.
+            </li>
+            <li>
+                <strong>Strict mode.</strong> <cde>start_session()</cde> refuses an id the server
+                didn't make, and sends a fresh one instead.
+            </li>
+            <li>
+                <strong>A new id at sign-in.</strong> <cde>session_regenerate_id(true)</cde> swaps
+                the id for a brand new one, and the <cde>true</cde> deletes the old session. Even an
+                id that got past strict mode, or one an attacker read before sign-in, is worthless
+                after it.
+            </li>
+            <li>
+                <strong>Every failure looks the same.</strong> Wrong address or wrong password: same
+                words, and about the same time, because a password is checked against a dummy hash
+                when there's no such user. Without that, a fast "no" would mean "no such account."
+            </li>
+            <li>
+                <strong><cde>password_needs_rehash()</cde>.</strong> When PHP's default gets
+                stronger, the hash is upgraded the next time the person signs in, the only moment
+                you have their password.
+            </li>
+        </list>
+        <p>
+            <strong>Never trust input,</strong> as always: the address and password are checked for
+            type before they go anywhere. Now run both attacks again. The guessing script:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec php php guess.php http://localhost:8000/login.php alice@example.com</code-block>
+        <p>
+            Ten <cde>200</cde>s, then <cde>429 Too Many Requests</cde> for the rest, the right
+            password included: "Didn't get in." And for the next fifteen minutes, Alice's account
+            turns away everyone, which is the trade a limit makes. Then the chosen id:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -si -b 'PHPSESSID=attacker-chosen-2' --data-urlencode 'password=correct horse battery staple' -d 'email=alice@example.com' http://localhost:8000/login.php
+curl -b 'PHPSESSID=attacker-chosen-2' http://localhost:8000/account.php</code-block>
+        <p>
+            Wait fifteen minutes first, or <cde>docker compose down -v</cde> and up again, since
+            Alice is still locked out. Then the sign-in works, but the <cde>Set-Cookie</cde> in the
+            answer has an id the server made, and the attacker's id gets "Not signed in."
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A lockout is a weapon too.</strong> Anyone who knows Alice's address can
+                keep her locked out by failing ten times every fifteen minutes. Keep the window
+                short, tell her by email when it happens, and consider limits that slow down rather
+                than stop.
+            </li>
+            <li>
+                <strong>The IP is whatever your server sees.</strong> Behind a proxy, it's the
+                proxy, and fifty failures locks out the whole world. Here, even Docker shows it: the
+                guessing script runs inside the container and arrives from <cde>127.0.0.1</cde>,
+                while your browser arrives from Docker's own network, so they're counted apart. See
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+            </li>
+            <li>
+                <strong>The failures table grows.</strong> Delete rows older than the window on a
+                schedule, as in the <lnk to="/php/projects/cron-jobs">Cron Jobs</lnk> project.
+            </li>
+            <li>
+                <strong>Regenerate at every change of privilege.</strong> Signing in, signing out,
+                becoming an admin: each one gets a new session id.
+            </li>
+        </list>
+
+        <side-story title="Ten, Fifty, Fifteen">
+            One of my apps went live with a sign-in that could be guessed at forever. The limits
+            came later, after the fact: ten failures per address and fifty per IP, in fifteen
+            minutes. They're the same numbers this project uses.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Run the attack in your tests">
+            <p>
+                Keep a script like <cde>guess.php</cde> next to your tests and run it against every
+                sign-in, reset and signup form you build. If it ever says "Got in," or never sees a
+                <cde>429</cde>, a limit is missing. It's the cheapest pen test you'll ever buy.
+            </p>
+        </two-dollars>
+
+        <p>
+            Alice can sign in, safely. The first thing she'll want is to change something about
+            herself, and that form is the next thing an attacker will aim at. Next: a profile page.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/profile-page">Next: Profile Page &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

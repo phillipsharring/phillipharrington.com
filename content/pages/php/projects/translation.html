@@ -1,0 +1,269 @@
+<layout name="default" title="Translation" />
+<page-head>
+    <meta
+        name="description"
+        content="One page in four languages, end to end: UTF-8 from the database to the browser, choosing a language from Accept-Language, lang attributes, translated content with a fallback, and plural rules that aren't English's. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP translation, i18n, localization, Accept-Language, Content-Language, lang attribute, hreflang, plural rules, CLDR, utf8mb4, UTF-8, Vary header, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="One page in four languages, UTF-8 the whole way. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="translation">Translation</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The log viewer only ever needed English. Most sites eventually need more. You'll build a
+            small shop page that speaks English, French, Polish and Japanese: it picks a language
+            from what the browser asks for, lets the visitor change it, pulls product names from the
+            database in that language, and counts things the way each language counts.
+        </p>
+        <p>
+            Translating the words is the easy part. The work is everything around them: text that
+            survives the trip from database to browser, a page that says which language it's in, and
+            plurals, which English makes look much simpler than they are.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: bytes, characters, and where
+                text gets mangled
+            </li>
+            <li>
+                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk>:
+                <cde>utf8mb4</cde> in MySQL
+            </li>
+            <li>
+                <lnk to="/php/request-and-response">Request and Response</lnk>: the
+                <cde>Accept-Language</cde>, <cde>Content-Language</cde> and <cde>Vary</cde> headers
+            </li>
+            <li><lnk to="/php/cookies">Cookies</lnk>: remembering the choice</li>
+            <li>
+                <lnk to="/php/pdo">Working with a Database: PDO and Prepared Statements</lnk> and
+                <lnk to="/php/selecting-data">Selecting Data</lnk>: the fallback join
+            </li>
+            <li><lnk to="/php/html">HTML</lnk>: the <cde>lang</cde> attribute</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-utf-8-everywhere">Step 1: UTF-8 Everywhere</heading>
+        <p>
+            Text crosses four boundaries on its way to the screen: from the file you typed it in,
+            into the database, out of the database into PHP, and from PHP to the browser. Every one
+            has to agree it's UTF-8, or <cde>Thé</cde> arrives as <cde>ThÃ©</cde> and
+            <cde>緑茶</cde> as question marks.
+        </p>
+        <p>
+            Start with the database. The tables say <cde>utf8mb4</cde>, MySQL's real UTF-8, and the
+            file starts with <cde>SET NAMES utf8mb4</cde> so the connection that loads it reads it
+            correctly. Translated names get a table of their own, one row per product per language:
+        </p>
+        <code-block example="project-translation/init.sql" />
+        <p>
+            Honey has no Japanese name on purpose. Translations are always behind; the page will
+            fall back to English rather than show nothing.
+        </p>
+        <p>
+            Then the connection from PHP, in <cde>src/db.php</cde>. <cde>charset=utf8mb4</cde> in
+            the DSN is the second boundary:
+        </p>
+        <code-block example="project-translation/src/db.php" />
+        <p>
+            The usual two containers: <cde>compose.yml</cde>, and a <cde>Dockerfile</cde> that adds
+            PHP's MySQL driver.
+        </p>
+        <code-block example="project-translation/compose.yml" />
+        <code-block example="project-translation/Dockerfile" />
+
+        <heading h3 id="step-2-the-words">Step 2: The Words</heading>
+        <p>
+            Each language gets a file in <cde>lang/</cde> that returns its messages. Save them as
+            UTF-8, which every modern editor does by default. English:
+        </p>
+        <code-block example="project-translation/lang/en.php" />
+        <p>French, which puts a space before <cde>!</cde>:</p>
+        <code-block example="project-translation/lang/fr.php" />
+        <p>Polish, with three forms for "products" where English has two:</p>
+        <code-block example="project-translation/lang/pl.php" />
+        <p>And Japanese, with one:</p>
+        <code-block example="project-translation/lang/ja.php" />
+        <p>
+            Every message is a whole sentence with a <cde>{count}</cde> in it, never pieces glued
+            together in English word order. Word order is one of the things that changes.
+        </p>
+
+        <heading h3 id="step-3-picking-a-language">Step 3: Picking a Language</heading>
+        <p>Browsers send the visitor's languages, in order of preference, in a header:</p>
+        <!-- prettier-ignore -->
+        <code-block>Accept-Language: fr-CA,fr;q=0.9,en;q=0.5</code-block>
+        <p>
+            Canadian French first, any French next, English if nothing else. The
+            <cde>q</cde> is a weight from 0 to 1; no <cde>q</cde> means 1. <cde>src/i18n.php</cde>
+            reads it, and holds the other two pieces of the project as well:
+        </p>
+        <code-block example="project-translation/src/i18n.php" />
+        <p>
+            <cde>negotiateLanguage()</cde> splits the header, skips any part that isn't shaped like
+            a language tag, sorts by weight, and takes the first one on our list, counting
+            <cde>fr-CA</cde> as <cde>fr</cde>.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> a header is
+            whatever the client typed, so the only languages that can come out are the four we put
+            in.
+        </p>
+
+        <heading h3 id="step-4-plural-rules">Step 4: Plural Rules</heading>
+        <p>
+            <cde>pluralCategory()</cde> is the part English hides. English has two forms: one, and
+            everything else, including zero. French uses the singular for zero too. Polish has three
+            for whole numbers: 1 is one form, numbers ending in 2, 3 or 4 are another (except 12, 13
+            and 14), and the rest are a third. Japanese doesn't change at all. The category names,
+            <cde>one</cde>, <cde>few</cde>, <cde>many</cde> and <cde>other</cde>, come from CLDR,
+            the Unicode project that collects these rules for hundreds of languages.
+        </p>
+        <p><cde>plurals.php</cde> prints the same message for a few numbers in each language:</p>
+        <code-block example="project-translation/plurals.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm app php plurals.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>en: 0 products | 1 product | 2 products | 5 products | 12 products | 22 products | 25 products
+fr: 0 produit | 1 produit | 2 produits | 5 produits | 12 produits | 22 produits | 25 produits
+pl: 0 produktów | 1 produkt | 2 produkty | 5 produktów | 12 produktów | 22 produkty | 25 produktów
+ja: 商品0点 | 商品1点 | 商品2点 | 商品5点 | 商品12点 | 商品22点 | 商品25点</code-block>
+        <p>
+            Look at Polish: 2 and 22 match, 5 and 12 match, and no rule about "more than one" gets
+            you there.
+        </p>
+
+        <heading h3 id="step-5-the-page">Step 5: The Page</heading>
+        <p><cde>public/index.php</cde> puts it together:</p>
+        <code-block example="project-translation/public/index.php" />
+        <list>
+            <li>
+                <strong>The language</strong> comes from a <cde>?lang=</cde> link first, then the
+                cookie that link sets, then <cde>Accept-Language</cde>, then English. A visitor's
+                own choice beats their browser's guess. All three are input, and all three are
+                checked against the list.
+            </li>
+            <li>
+                <strong>Product names</strong> come from one query: join the English row always, the
+                visitor's language if there is one, and <cde>COALESCE()</cde> takes the first that
+                isn't <cde>NULL</cde>.
+            </li>
+            <li>
+                <strong>The headers</strong> say UTF-8 (the last boundary), name the language with
+                <cde>Content-Language</cde>, and send <cde>Vary: Accept-Language, Cookie</cde>,
+                which tells every cache in the middle that this URL has more than one answer.
+            </li>
+            <li>
+                <strong>The HTML</strong> says <cde>&lt;html lang="fr"&gt;</cde>, so screen readers
+                pronounce it in French and browsers hyphenate and pick fonts correctly. Each
+                language's name in the switcher is written in that language, and carries its own
+                <cde>lang</cde>: "Français" is a French word even on the English page.
+            </li>
+        </list>
+
+        <heading h3 id="step-6-run-it">Step 6: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and switch languages with the links at the bottom.
+            Reload, and the choice sticks. Then, from a second terminal, be a few different
+            browsers:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -H 'Accept-Language: fr-CA,fr;q=0.9,en;q=0.5' http://localhost:8000
+curl -H 'Accept-Language: en;q=0.2, pl;q=0.8' http://localhost:8000
+curl -H 'Accept-Language: ja' http://localhost:8000
+curl -H 'Accept-Language: de' http://localhost:8000</code-block>
+        <p>
+            French, with <cde>Thé vert</cde> straight from the database. Polish, because 0.8 beats
+            0.2 whatever the order. Japanese, with <cde>緑茶</cde> and an English
+            <cde>Honey</cde> where the translation is missing. And German, which we don't speak, so
+            English. <cde>Ctrl+C</cde> stops it, and <cde>docker compose down -v</cde> throws away
+            the database.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="i18n">
+            Programmers abbreviate "internationalization" as <cde>i18n</cde>: the first letter, the
+            last letter, and the 18 letters in between. "Localization" is <cde>l10n</cde> the same
+            way. Internationalization is making the code able to speak any language; localization is
+            the work of making it speak a particular one.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>One boundary not in UTF-8 breaks them all.</strong> A table in
+                <cde>latin1</cde>, a connection without <cde>charset=utf8mb4</cde>, a page without a
+                charset: any one is enough. When text arrives garbled, check each boundary in order.
+            </li>
+            <li>
+                <strong>Don't pick the language from the address.</strong> Guessing from where a
+                visitor seems to be is wrong for travelers, for people who live in one country and
+                read another language, and for every country with more than one language.
+                <cde>Accept-Language</cde> is what the person actually set.
+            </li>
+            <li>
+                <strong>Strings get longer.</strong> German and French often run noticeably longer
+                than English, sometimes by a third or more. Leave room in buttons and menus, and
+                don't cut text to a fixed length with <cde>substr()</cde>, which can split a
+                character in half; use <cde>mb_substr()</cde>.
+            </li>
+            <li>
+                <strong>These plural rules are simplified.</strong> They're right for whole numbers
+                in these four languages. Decimals have rules of their own, and some languages have
+                six forms. For real work, PHP's <cde>intl</cde> extension has
+                <cde>MessageFormatter</cde>, which knows every CLDR rule, and
+                <cde>Locale::acceptFromHttp()</cde> for the header. It isn't in the
+                <cde>php:8.4-cli</cde> image; you add it in the <cde>Dockerfile</cde>, with the ICU
+                library it needs.
+            </li>
+            <li>
+                <strong>Without <cde>Vary</cde>, a cache picks one language for everyone.</strong>
+                The first visitor's French page gets kept and handed to the next visitor, who asked
+                for Japanese. A separate URL per language, like <cde>/fr/</cde>, avoids the problem
+                altogether, and search engines prefer it.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Test with a long, odd language">
+            <p>
+                Before any real translations exist, make a fake one: every English string wrapped in
+                brackets, padded by a third, with an accent or two, like
+                <cde>[Wélcome!!!!]</cde>. Switch to it and read every page. Anything still in plain
+                English was never run through a translation, and anything cut off or overflowing
+                won't fit in German either.
+            </p>
+        </two-dollars>
+
+        <p>
+            Product names in a table, edited by someone who isn't a programmer: that's a content
+            management system. Next: build one, with image uploads, and everything uploads bring
+            with them.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/cms">Next: Content Management System &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

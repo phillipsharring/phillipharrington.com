@@ -1,0 +1,205 @@
+<layout name="default" title="Classes and Objects" />
+<page-head>
+    <meta
+        name="description"
+        content="Keeping data and the code that works on it together: classes, objects, properties, methods, constructors, $this, private and public, and why a variable holds a handle, not a copy. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP classes, PHP objects, OOP, properties, methods, constructor, __construct, $this, public, private, protected, new, clone, object handles, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Data and the code that works on it, together. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="classes-and-objects">Classes and Objects</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            So far, data has lived in variables and arrays, and the code that works on it has lived
+            in <lnk to="/php/functions">functions</lnk>, and nothing kept the two together. Any code
+            anywhere could reach into a cart array and set a price to minus ten dollars. A class
+            puts the data and the code that's allowed to change it in one place, and keeps
+            everything else out.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-class">What's a Class?</heading>
+        <p>
+            A blueprint. It describes a kind of thing: what each one knows, and what each one can
+            do. It doesn't do anything by itself, the way a blueprint isn't a house.
+        </p>
+
+        <heading h3 id="properties-and-methods">Properties and Methods</heading>
+        <list>
+            <li>
+                <strong>Properties</strong> are the variables that belong to each object: a cart's
+                items, its currency.
+            </li>
+            <li>
+                <strong>Methods</strong> are the functions that belong to the class: add an item,
+                work out the total. Inside a method, <cde>$this</cde> is the object it was called
+                on.
+            </li>
+            <li>
+                <strong>The constructor</strong> is a method named <cde>__construct</cde>. It runs
+                once, when an object is made, to set it up.
+            </li>
+        </list>
+
+        <heading h3 id="visibility">Public and Private</heading>
+        <p>
+            Each property and method says who may use it. <cde>public</cde>: anyone.
+            <cde>private</cde>: only the class's own methods. <cde>protected</cde>: the class and
+            classes built on it, which is the next lesson. Make properties private, and the only way
+            to change a cart is through its methods, which can check what they're given.
+        </p>
+
+        <heading h2 id="whats-an-object">What's an Object?</heading>
+        <p>
+            One thing built from the blueprint. <cde>new Cart('USD')</cde> makes a cart. Make two,
+            and they're two separate carts: each has its own items, and the same methods.
+        </p>
+
+        <side-story title="Born in Oslo">
+            Objects and classes come from Simula, a language Ole-Johan Dahl and Kristen Nygaard
+            built at the Norwegian Computing Center in the 1960s, for writing simulations. Modeling
+            a program as a set of things that each keep their own data turned out to be a good way
+            to write programs in general. The two won the Turing Award for it in 2001. PHP got
+            proper objects much later, in PHP 5, in 2004.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <cde>new Cart('USD')</cde> makes a fresh object, with every property at its default.
+            </li>
+            <li>PHP runs the constructor, passing it <cde>'USD'</cde>.</li>
+            <li><cde>new</cde> hands back a handle to the object, which you keep in a variable.</li>
+            <li>
+                <cde>$cart-&gt;add(...)</cde> calls a method on that object. Inside it,
+                <cde>$this</cde> is that same cart.
+            </li>
+            <li>When nothing holds a handle to the object anymore, PHP frees it.</li>
+        </ol>
+        <p>
+            Step three is the surprise. A variable holds a handle, not the object, so
+            <cde>$b = $a</cde> gives you two handles to one cart. To get a second cart, use
+            <cde>clone</cde>.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The class goes in a file of its own, named after it. Make <cde>Cart.php</cde>. Prices
+            are whole cents, in an int, as in <lnk to="/php/types-of-types">Types of Types</lnk>:
+        </p>
+        <code-block example="classes-and-objects/Cart.php" />
+        <p>
+            If <cde>add()</cde> is given a quantity under one, it throws an exception, which stops
+            the program with a message.
+            <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk> covers what else you can do
+            with one. Now <cde>shop.php</cde>, which uses the class:
+        </p>
+        <code-block example="classes-and-objects/shop.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php shop.php</code-block>
+        <p>
+            Two carts, each with its own total. Then the hat: added through
+            <cde>$alsoMine</cde>, it lands in <cde>$mine</cde>, because they're the same cart. The
+            socks, added to a clone, don't. Now try to reach inside from outside, with
+            <cde>peek.php</cde>:
+        </p>
+        <code-block example="classes-and-objects/peek.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php peek.php</code-block>
+        <p>
+            <cde>Cannot access private property Cart::$items</cde>. The cart's items can only change
+            through <cde>add()</cde>, and <cde>add()</cde> checks.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>class Cart { ... }</cde> declares a class. Class names are
+                <cde>StudlyCaps</cde>, by convention.
+            </li>
+            <li>
+                <cde>private array $items = [];</cde> declares a property, with a type and a
+                default.
+            </li>
+            <li>
+                <cde>public function total(): int</cde> declares a method: a function with a
+                visibility.
+            </li>
+            <li>
+                <cde>$this-&gt;items</cde> inside a method; <cde>$cart-&gt;total()</cde> outside.
+            </li>
+            <li><cde>clone $cart</cde> copies an object.</li>
+            <li>
+                <cde>$cart instanceof Cart</cde> asks whether something is an object of that class.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Assigning an object doesn't copy it.</strong> Neither does passing it to a
+                function: the function gets a handle to your object, and can change it.
+            </li>
+            <li>
+                <strong><cde>clone</cde> is shallow.</strong> The copy gets the same values, but if
+                one of them is another object, both copies share that object. Write a
+                <cde>__clone()</cde> method to copy the insides too.
+            </li>
+            <li>
+                <strong>Forgetting <cde>$this-&gt;</cde>.</strong> Inside a method,
+                <cde>$items</cde> is a brand new local variable, not the property. You need
+                <cde>$this-&gt;items</cde>.
+            </li>
+            <li>
+                <strong><cde>==</cde> and <cde>===</cde> mean different things here.</strong>
+                <cde>==</cde> asks whether two objects are the same class with equal properties.
+                <cde>===</cde> asks whether they're the same object.
+            </li>
+            <li>
+                <strong>A public property is a promise you can't take back.</strong> Once other code
+                sets it directly, you can't add a check without changing all of that code too.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Private until proven otherwise">
+            <p>
+                Start every property private. Add a method when other code needs something, and make
+                it say what the caller wants, like <cde>total()</cde>, rather than handing out the
+                raw array. It's easy to open something up later, and very hard to close it again.
+            </p>
+        </two-dollars>
+
+        <p>
+            Classes can be built on other classes, including ones that are only half finished on
+            purpose. Next: abstract classes.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/abstract-classes">Next: Abstract Classes &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

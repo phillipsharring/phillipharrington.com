@@ -1,0 +1,235 @@
+<layout name="default" title="Constants, Static Variables and Functions" />
+<page-head>
+    <meta
+        name="description"
+        content="Names for values that never change, variables that remember between calls, and properties and methods that belong to a class instead of an object. What each is for, and why static methods make code hard to change and hard to test. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP constants, const, define, class constants, static variables, static properties, static methods, self::, static::, global state, testability, dependency injection, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Constants, statics, and when not to use them. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="constants-and-statics">Constants, Static Variables and Functions</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The bill splitter in the last lesson takes 1 to 50 people. Those numbers sit in the code
+            bare, and the next person to read it has to guess what 50 means, or find every other 50
+            when the limit changes. A constant gives a value a name. Then there's the other thing
+            PHP calls "static": values and methods that belong to a class, or a function, instead of
+            to any one object. Constants are an easy yes. Statics need more care.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-constant">What's a Constant?</heading>
+        <p>
+            A name for a value that can't change while the program runs. By convention it's in
+            capitals: <cde>MAX_PEOPLE</cde>. Three kinds:
+        </p>
+        <list>
+            <li>
+                <strong><cde>const MAX_PEOPLE = 50;</cde></strong> at the top of a file, or in a
+                namespace.
+            </li>
+            <li>
+                <strong><cde>define('APP_NAME', '...')</cde></strong>, which works anywhere, even inside an <cde>if</cde>, and can build the name at run
+                time.
+            </li>
+            <li>
+                <strong>A class constant</strong>, <cde>public const MIN_PEOPLE = 1;</cde> inside a
+                class, used as <cde>Bill::MIN_PEOPLE</cde>. Most of your constants should be these:
+                they live next to the code they're about.
+            </li>
+        </list>
+
+        <heading h2 id="whats-static">What's Static?</heading>
+        <p>The word means two related things in PHP.</p>
+        <heading h3 id="static-variables">A Static Variable</heading>
+        <p>
+            A variable inside a function, declared with <cde>static</cde>, that keeps its value from
+            one call to the next instead of starting over.
+        </p>
+        <heading h3 id="static-properties-and-methods">Static Properties and Methods</heading>
+        <p>
+            A property or method that belongs to the class, not to any object made from it. A static
+            property has one value, shared by every object of that class. A static method is called
+            on the class, <cde>Counter::everyone()</cde>, with no object, so it has no
+            <cde>$this</cde>. Inside the class, <cde>self::</cde> reaches them.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                A constant is set once. Try to set it again, and PHP warns you and keeps the first
+                value.
+            </li>
+            <li>A static variable is set the first time its function runs, and kept after that.</li>
+            <li>
+                A static property is set when the class loads, and every object, and every other
+                piece of code that can see it, shares the same one.
+            </li>
+            <li>
+                All three last until the end of the request, and no longer. The next request starts
+                PHP fresh.
+            </li>
+        </ol>
+        <p>
+            Step three is the catch. A static property is a global variable with a class name on it.
+            Any code anywhere can depend on it, or change it, and nothing in a function's signature
+            tells you that it does.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>All of them in one file, <cde>statics.php</cde>:</p>
+        <code-block example="constants-and-statics/statics.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php statics.php</code-block>
+        <p>
+            The constants read like words. The tickets count 1, 2, 3, because the static variable
+            remembered. And the counters: <cde>a</cde> counted 2, <cde>b</cde> counted 1, and the
+            static count, shared by both, says 3.
+        </p>
+        <p>
+            Now the trouble with a static method. <cde>why-not.php</cde> has two greetings, one that
+            calls a static <cde>Clock::hour()</cde>, and one that's handed the hour:
+        </p>
+        <code-block example="constants-and-statics/why-not.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php why-not.php</code-block>
+        <p>
+            The welded one can only tell you what it says right now. To check its afternoon
+            greeting, you wait until the afternoon, or change the computer's clock. The other one
+            says what it says at 9 and at 15, today, in one run. Same logic. The difference is
+            whether the code reaches out for what it needs, or is given it.
+        </p>
+        <p>
+            Last, the end of the request. <cde>request.php</cde> has the same ticket counter as a
+            web page:
+        </p>
+        <code-block example="constants-and-statics/request.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Ask for <cde>http://localhost:8000/request.php</cde> as many times as you like: ticket
+            1, every time. Each request gets a fresh PHP, statics and all.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- When not to -->
+        <heading h2 id="when-not-to-use-static">When Not to Use Static</heading>
+        <p>
+            Static methods are easy to call from anywhere, and that's the problem. A class that
+            calls <cde>Clock::hour()</cde>, <cde>Db::query()</cde> or <cde>Mail::send()</cde> has a
+            dependency you can't see from outside and can't swap out. To test it, you need the real
+            clock, the real database, the real mail server. To change it, you hunt down every call.
+        </p>
+        <p>
+            So in this course, and in code you'll be glad you wrote, the rule is: no static methods
+            on your own classes. Give an object what it needs, through its constructor, and call
+            methods on that.
+            <lnk to="/php/dependency-injection">Dependency Injection</lnk> is that whole idea.
+        </p>
+        <p>
+            You'll still see statics everywhere. Plenty of libraries and frameworks use them,
+            especially for "named constructors," like <cde>Money::fromCents(500)</cde>, a static
+            method that just makes an object. Read them, use them where a library gives you no
+            choice, and don't write your own. Constants are fine. A static variable inside a small
+            function, for something like caching a value you worked out once, is usually fine.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>const</cde> and <cde>define()</cde> for constants; <cde>defined('NAME')</cde>
+                asks whether one exists.
+            </li>
+            <li>
+                <cde>Bill::MIN_PEOPLE</cde> from outside a class; <cde>self::MIN_PEOPLE</cde> from
+                inside.
+            </li>
+            <li>
+                Class constants can have a visibility, <cde>private const</cde>, and, since PHP 8.3,
+                a type: <cde>public const int MIN_PEOPLE = 1;</cde>
+            </li>
+            <li><cde>static $number = 0;</cde> inside a function.</li>
+            <li>
+                <cde>self::</cde> means the class the code is written in; <cde>static::</cde> means
+                the class it was actually called on, which matters once children are involved.
+            </li>
+            <li>
+                PHP's own constants are worth knowing: <cde>PHP_EOL</cde>, <cde>PHP_INT_MAX</cde>,
+                <cde>M_PI</cde>, <cde>__DIR__</cde>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Statics don't remember visitors.</strong> They reset every request, so
+                they're no place for a hit counter or a cart. That's what
+                <lnk to="/php/sessions">sessions</lnk> and databases are for.
+            </li>
+            <li>
+                <strong>Except when they do.</strong> Some servers, like FrankenPHP's worker mode,
+                RoadRunner and Swoole, keep PHP running between requests. There, a static set during
+                one visitor's request is still there for the next visitor's.
+            </li>
+            <li>
+                <strong>Static state leaks between tests.</strong> Tests run one after another in
+                the same PHP process. A static set in one test is still set in the next, and tests
+                that pass alone fail together.
+            </li>
+            <li>
+                <strong>A constant is not a secret.</strong> <cde>const API_KEY = '...'</cde> puts
+                the key in your code, and your code goes in git.
+                <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk> has the fix.
+            </li>
+        </list>
+
+        <side-story title="Pi by Law">
+            In 1897, the Indiana House of Representatives passed a bill, without a vote against it,
+            that would have given pi a wrong value in state law. A mathematics professor from Purdue
+            happened to be at the statehouse that day, and helped talk the Senate out of it. The
+            Senate put the bill off indefinitely. Constants are constant, whatever the paperwork
+            says.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name it where you use it">
+            <p>
+                When you catch yourself typing a bare number, like 50, 900 or 3, stop and give it a
+                class constant: <cde>private const MAX_LOGIN_ATTEMPTS = 10;</cde>. The name explains
+                it, the next change is one line, and a search finds every use.
+                <lnk to="/php/magic-numbers">Magic Numbers in Code</lnk> has more.
+            </p>
+        </two-dollars>
+
+        <p>
+            Typed class constants are one of the newer things in PHP, and there's a whole set of
+            them worth knowing. Next: modern PHP.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/modern-php">Next: Modern PHP &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

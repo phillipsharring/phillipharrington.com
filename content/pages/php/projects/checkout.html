@@ -1,0 +1,258 @@
+<layout name="default" title="Checkout" />
+<page-head>
+    <meta
+        name="description"
+        content="Turn a cart into an order: prices and names copied at that moment, stock checked under a lock, one order per form however many clicks, and no card fields anywhere. Break It builds the checkout that takes card numbers, and finds them in the log and the database. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP checkout, place an order, order items, price snapshot, SELECT FOR UPDATE, stock, idempotency, double submit, PCI DSS, don't store card numbers, card data in logs, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Turn a cart into an order, without ever touching a card number. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="checkout">Checkout</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The cart knows what someone wants. Checkout makes it an order: a fixed record of what
+            was bought, at what price, by whom, that will still be true next year when the prices
+            and the products have changed. Then it hands off to payment.
+        </p>
+        <p>
+            And the hand-off is the point of this project. The obvious checkout has a card number
+            field. Yours won't. You'll build the obvious one first, take a test card through it, and
+            then find that card number sitting in your log file and your database, where anyone who
+            ever reads either can copy it.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/shopping-cart">Shopping Cart</lnk>: the cart, the pricing,
+                and the pages, copied in
+            </li>
+            <li>
+                <lnk to="/php/dont-touch-cards">Don't Touch Cards</lnk>: why no card number should
+                ever reach your server
+            </li>
+            <li><lnk to="/php/transactions">Transactions</lnk>: an order is all or nothing</li>
+            <li>
+                <lnk to="/php/inserting-data">Inserting Data</lnk>: a row, its id, and the rows that
+                belong to it
+            </li>
+            <li>
+                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>: what ends up
+                in it
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-start-from-the-cart">Step 1: Start from the Cart</heading>
+        <p>
+            Copy the <lnk to="/php/projects/shopping-cart">Shopping Cart</lnk> project: its
+            containers, <cde>composer.json</cde> and lock file, <cde>src/</cde>, the test, and both
+            pages. The cart page gets one more line under the table, a link to
+            <cde>/checkout.php</cde>. Then install:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+
+        <heading h3 id="step-2-the-orders-tables">Step 2: The Orders Tables</heading>
+        <p>Add these to the end of <cde>init.sql</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block>CREATE TABLE orders (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    public_id CHAR(32) NOT NULL UNIQUE,
+    checkout_token CHAR(64) NOT NULL UNIQUE,
+    email VARCHAR(254) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'awaiting_payment',
+    total_cents INT UNSIGNED NOT NULL,
+    currency CHAR(3) NOT NULL DEFAULT 'usd',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE order_items (
+    order_id INT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    unit_cents INT UNSIGNED NOT NULL,
+    quantity INT UNSIGNED NOT NULL,
+    line_cents INT UNSIGNED NOT NULL,
+    PRIMARY KEY (order_id, product_id),
+    FOREIGN KEY (order_id) REFERENCES orders (id),
+    FOREIGN KEY (product_id) REFERENCES products (id)
+);</code-block>
+        <p>The whole file, with comments and one more table for Break It:</p>
+        <code-block example="project-checkout/init.sql" />
+        <list>
+            <li>
+                <strong>Order items copy the name and price.</strong> This is the place to break the
+                "say it once" rule from <lnk to="/php/normalization">Normalization</lnk> on purpose:
+                the order must say what was paid, even after the mug costs $16.
+            </li>
+            <li>
+                <strong><cde>public_id</cde> is random.</strong> Order 41 in a URL invites someone
+                to try 40.
+            </li>
+            <li>
+                <strong><cde>checkout_token</cde> is unique.</strong> One per checkout form, so
+                pressing the button twice can't make two orders.
+            </li>
+            <li><strong>There's no card column.</strong> There never will be.</li>
+        </list>
+
+        <heading h3 id="step-3-placing-an-order">Step 3: Placing an Order</heading>
+        <p>
+            <cde>src/Orders.php</cde> does it in one transaction. It locks the products' rows with
+            <cde>FOR UPDATE</cde>, so two people buying the last mug take turns. It prices the cart
+            fresh, refuses if anything ran out, writes the order and its items, takes the stock, and
+            commits. If anything fails, it rolls back, and it's as if nothing happened.
+        </p>
+        <code-block example="project-checkout/src/Orders.php" />
+        <p>
+            Problems the customer can fix are a <cde>CheckoutProblem</cde>, with a message meant for
+            them. Anything else, like the database going away, is a different exception and stays
+            out of the page.
+        </p>
+        <code-block example="project-checkout/src/CheckoutProblem.php" />
+
+        <heading h3 id="step-4-the-checkout-page">Step 4: The Checkout Page</heading>
+        <code-block example="project-checkout/public/checkout.php" />
+        <p>
+            An email for the receipt, a name, and a button.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> it reads
+            those two fields and the tokens, and nothing else. If someone adds
+            <cde>total_cents=1</cde> or a card number to the request, nothing ever looks at it.
+        </p>
+        <p>
+            Then the order page, which only the browser that placed the order can see. An order that
+            isn't yours gets the same 404 as one that doesn't exist:
+        </p>
+        <code-block example="project-checkout/public/order.php" />
+
+        <heading h3 id="step-5-run-it">Step 5: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Add a few things at <cde>http://localhost:8000</cde>, open the cart, and check out. The
+            order page shows what you bought and <cde>Status: awaiting payment</cde>. Press the
+            browser's back button and Place Order again: you land on the same order, and there's
+            still only one. Open the order's URL in a private window: 404.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>Here's the checkout that asks for the card itself:</p>
+        <code-block example="project-checkout/public/naive-checkout.php" />
+        <p>
+            Nothing in it is unusual. Logging every request while you build is a common habit, and
+            saving the card "to charge it later" sounds reasonable. Pay with Stripe's best-known
+            test card number, which is not a real card:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d email=bo@example.com -d card_number=4242424242424242 -d card_expiry=12/34 \
+     -d card_cvc=123 -d total_cents=2800 http://localhost:8000/naive-checkout.php</code-block>
+        <p>Now be anyone who can read your log, or a backup of your database:</p>
+        <!-- prettier-ignore -->
+        <code-block>grep 4242 logs/app.log
+docker compose exec db mysqldump --no-tablespaces -uapp -papp shop | grep 4242</code-block>
+        <!-- prettier-ignore -->
+        <code-block>[27-Nov-2026 20:30:00 UTC] checkout: {"email":"bo@example.com","card_number":"4242424242424242","card_expiry":"12\/34","card_cvc":"123","total_cents":"2800"}
+INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34','123',2800);</code-block>
+        <p>
+            Number, expiry and security code: everything needed to use the card, in two places, in
+            plain text. Think about who can read those. Everyone with access to the server. Every
+            backup, wherever it's copied. Whatever service you send logs to. And anyone who finds a
+            hole like the one in <lnk to="/php/projects/log-viewer">Log Viewer</lnk>. Card rules,
+            the PCI DSS, forbid keeping the security code at all after a payment is authorized, and
+            holding card numbers puts your whole server under a long list of audits.
+        </p>
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            The fix isn't encrypting the column or filtering the log. It's not having the card. Look
+            at the real checkout again: no card fields, nothing read but an email and a name. Send
+            it the same card anyway:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysqldump --no-tablespaces -uapp -papp shop | grep -c 4242424242424242</code-block>
+        <p>
+            The only match is the naive table. The real orders have no card in them, because the
+            real checkout never read one. The customer types their card on the payment provider's
+            page, on the provider's servers, and your server is only ever told whether the payment
+            worked. That's the next project. Then drop the <cde>naive_orders</cde> table, delete
+            <cde>naive-checkout.php</cde> and <cde>logs/app.log</cde>.
+        </p>
+
+        <side-story title="Forty Million Cards">
+            In late 2013, attackers got into the network of Target, the US retailer, using login
+            details stolen from a heating and refrigeration contractor. They put malware on the
+            checkout terminals in its stores, and over the holiday shopping weeks it collected the
+            details of about 40 million cards as they were swiped. Card data is worth stealing
+            wherever it passes through. The only safe amount to have is none.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Logs collect what you'd never store on purpose.</strong> A debug line that
+                dumps <cde>$_POST</cde> logs passwords and card numbers the moment a form has them.
+                Log what happened, an order id and a status, not what was sent.
+            </li>
+            <li>
+                <strong>Taking stock at order time means giving it back.</strong> This checkout
+                takes stock when the order is placed, before payment. Orders that are never paid
+                hold stock forever, unless a <lnk to="/php/projects/cron-jobs">cron job</lnk>
+                cancels old unpaid orders and returns it.
+            </li>
+            <li>
+                <strong>Double submits are normal.</strong> Slow connections, impatient fingers, the
+                back button. Without the checkout token, each is a second order and a second charge.
+            </li>
+            <li>
+                <strong>Sequential ids leak more than you think.</strong> Two orders a week apart
+                tell anyone how many orders you take a week. Random public ids say nothing.
+            </li>
+            <li>
+                <strong>Totals belong to the server.</strong> Shipping, tax, discounts: all computed
+                from your data at the moment of the order, never accepted from the form.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Grep your logs for card numbers">
+            <p>
+                Now and then, search your logs and database dumps for the shape of a card:
+                <cde>grep -E '\b[0-9]{13,19}\b'</cde>. Most matches will be ids and timestamps, and
+                that's fine. The one that's a card number is a bug you found before anyone else did.
+            </p>
+        </two-dollars>
+
+        <p>
+            The order is waiting for its money. Next: taking a payment with Stripe Checkout, where
+            the card goes to Stripe and never to you.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/stripe-checkout"
+                >Next: Taking a Payment with Stripe Checkout &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

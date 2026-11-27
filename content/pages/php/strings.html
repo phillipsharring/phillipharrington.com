@@ -1,0 +1,197 @@
+<layout name="default" title="Strings" />
+<page-head>
+    <meta
+        name="description"
+        content="Text in PHP: single and double quotes, filling in variables, heredocs, and the everyday string functions: trim, strlen, str_contains, str_replace, substr, explode, implode and sprintf. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP strings, single quotes vs double quotes, string interpolation, heredoc, nowdoc, trim, strlen, str_contains, str_replace, substr, explode, implode, sprintf, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Text in PHP, and the functions you'll use every day. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="strings">Strings</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A web app is mostly text going in and out: names, emails, comments, URLs, the HTML
+            itself. In PHP, text is a string, and PHP has more functions for strings than for
+            anything else. You need about a dozen of them most days. This lesson is those, and the
+            ways of writing a string down.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-string">What's a String?</heading>
+        <p>
+            A row of bytes, usually text. PHP doesn't care what the bytes are, so a string can hold
+            a name, a whole HTML page, or the contents of an image. For text, those bytes are nearly
+            always UTF-8, where one letter can take more than one byte.
+            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>, next, is about that. This lesson
+            sticks to plain English, where a byte and a letter are the same.
+        </p>
+
+        <heading h3 id="quotes">Single and Double Quotes</heading>
+        <list>
+            <li>
+                <strong>Single quotes</strong> mean exactly what you typed:
+                <cde>'Hello, $name\n'</cde> is those characters, dollar sign and backslash included.
+                Only <cde>\'</cde> and <cde>\\</cde> are special.
+            </li>
+            <li>
+                <strong>Double quotes</strong> fill things in: <cde>"Hello, $name\n"</cde> puts the
+                value of <cde>$name</cde> in, and <cde>\n</cde> becomes a new line. Wrap the
+                variable in braces, <cde>"{$count} items"</cde>, when it's next to other letters or
+                it's an array item, like <cde>"{$order['id']}"</cde>.
+            </li>
+        </list>
+        <p>
+            Use single quotes unless you want something filled in. Then nobody has to wonder whether
+            a <cde>$</cde> is meant.
+        </p>
+
+        <heading h3 id="heredoc">Heredoc and Nowdoc</heading>
+        <p>
+            For several lines, a heredoc: <cde>&lt;&lt;&lt;TEXT</cde>, the lines, then
+            <cde>TEXT;</cde>. It follows double-quote rules. A nowdoc,
+            <cde>&lt;&lt;&lt;'TEXT'</cde>, with the marker in single quotes, follows single-quote
+            rules. Indent the closing marker, and that much indent is taken off every line.
+        </p>
+
+        <side-story title="Here Documents">
+            The heredoc comes from the Unix shell, where <cde>&lt;&lt;EOF</cde> means "the input is
+            right here, in the script, until a line that says EOF." It's been in shells since the
+            Bourne shell of the late 1970s. Perl borrowed it, and so did PHP. The name is just that:
+            a document that's here.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>Nearly every string from outside goes through the same few steps:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>It arrives as input: a form field, a query string, a header, a line in a file.</li>
+            <li>
+                You check it's a string at all, then clean it: <cde>trim()</cde> takes the spaces
+                off both ends, because people paste them in.
+            </li>
+            <li>
+                You test it: not empty, not too long, the right shape. <cde>str_contains()</cde>,
+                <cde>strlen()</cde> and friends, or <cde>filter_var()</cde> for things like email
+                addresses.
+            </li>
+            <li>You work with it: change case, replace, split, join.</li>
+            <li>
+                You send it out, escaped for wherever it's going: <cde>htmlspecialchars()</cde> for
+                HTML, a prepared statement for SQL.
+            </li>
+        </ol>
+        <p>
+            Steps two and three are the ones people skip. <strong>Never trust input:</strong> a
+            string from outside can be empty, a megabyte long, full of HTML, or not a string at all.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The quotes, a heredoc, and the everyday functions. In a folder, make
+            <cde>strings.php</cde>:
+        </p>
+        <code-block example="strings/strings.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php strings.php</code-block>
+        <p>
+            Match each line of output to the line that made it. The first shows single quotes
+            leaving <cde>$name\n</cde> alone. The email, typed with stray spaces and capitals, comes
+            out trimmed and lowercased. And the <cde>sprintf()</cde> line shows its patterns at
+            work: <cde>%-8s</cde> pads a string to eight on the right, <cde>%6.2f</cde> rounds to
+            two decimals in six spaces, and <cde>%03d</cde> pads a number with zeros.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>trim()</cde>, <cde>ltrim()</cde>, <cde>rtrim()</cde>: take whitespace off the
+                ends.
+            </li>
+            <li><cde>strlen()</cde>: the length, in bytes.</li>
+            <li>
+                <cde>str_contains()</cde>, <cde>str_starts_with()</cde>, <cde>str_ends_with()</cde>:
+                yes-or-no questions, since PHP 8.0.
+            </li>
+            <li>
+                <cde>strpos()</cde>: where something is, or <cde>false</cde>. Compare with
+                <cde>!== false</cde>, as in <lnk to="/php/documentation">Documentation</lnk>.
+            </li>
+            <li><cde>str_replace($find, $replace, $text)</cde>: every match, replaced.</li>
+            <li><cde>substr($text, $start, $length)</cde>: a piece.</li>
+            <li><cde>strtolower()</cde>, <cde>strtoupper()</cde>, <cde>ucfirst()</cde>: case.</li>
+            <li>
+                <cde>explode($separator, $text)</cde> and <cde>implode($glue, $array)</cde>: split
+                and join.
+            </li>
+            <li>
+                <cde>sprintf()</cde>, <cde>str_pad()</cde>, <cde>number_format()</cde>: laying
+                things out.
+            </li>
+            <li><cde>htmlspecialchars()</cde>: on the way into HTML, every time.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong><cde>'\n'</cde> isn't a new line.</strong> In single quotes it's a backslash
+                and an n. You want <cde>"\n"</cde>.
+            </li>
+            <li>
+                <strong>These functions count bytes, not letters.</strong> <cde>strlen()</cde>,
+                <cde>substr()</cde> and <cde>strtoupper()</cde> are fine for English and wrong for
+                "café." The next lesson has the functions that count letters.
+            </li>
+            <li>
+                <strong>A string from input might not be a string.</strong>
+                <cde>?name[]=x</cde> makes <cde>$_GET['name']</cde> an array, and
+                <cde>trim()</cde> on an array is a <cde>TypeError</cde>. Check with
+                <cde>is_string()</cde> first, as the Forms example does.
+            </li>
+            <li>
+                <strong>Don't build HTML or SQL by gluing input into strings.</strong> Escape it for
+                HTML, and put it in a prepared statement for SQL. Gluing is how
+                <lnk to="/php/xss">XSS</lnk> and <lnk to="/php/sql-injection">SQL injection</lnk>
+                happen.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Number the blanks">
+            <p>
+                <cde>sprintf()</cde> can say which argument goes where: <cde>%1$s</cde> is the
+                first, <cde>%2$s</cde> the second, and you can use one twice or out of order.
+                <cde>sprintf('%2$s, %1$s', 'Ada', 'Lovelace')</cde> is "Lovelace, Ada." It's what
+                makes one pattern work in languages that put words in a different order.
+            </p>
+        </two-dollars>
+
+        <p>
+            Everything here assumed one byte is one letter. For "café," "naïve," or anyone's name
+            that isn't English, it isn't. Next: Text and UTF-8.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/text-and-utf-8">Next: Text and UTF-8 &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

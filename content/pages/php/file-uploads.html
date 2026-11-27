@@ -1,0 +1,272 @@
+<layout name="default" title="File Uploads" />
+<page-head>
+    <meta
+        name="description"
+        content="An upload is a file a stranger puts on your server. How PHP receives one, how a PHP file uploaded to the web root becomes a way to run any command, and the checks and storage that stop it. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="file uploads, $_FILES, move_uploaded_file, finfo, MIME type, getimagesize, web shell, upload outside web root, X-Content-Type-Options nosniff, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="An upload is a file a stranger puts on your server. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="file-uploads">File Uploads</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk> was about files you should
+            never let out. Uploads are the other direction: files a stranger puts on your server. A
+            profile photo, a PDF, a spreadsheet.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>, and an upload is input all the way through: the bytes, the file's name, and the type
+            the browser says it is. Get it wrong in the worst way, and the stranger can run any
+            command on your server.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-upload">What's an Upload?</heading>
+        <p>
+            A form field of <cde>type="file"</cde>, in a form with <cde>method="post"</cde> and
+            <cde>enctype="multipart/form-data"</cde>. The browser sends the file's bytes in the
+            request body, with two labels that it, or whoever sent the request, chose: a file name
+            and a content type. See <lnk to="/php/forms">Forms</lnk> and
+            <lnk to="/php/content-types">Content Types</lnk>.
+        </p>
+
+        <heading h3 id="files">$_FILES</heading>
+        <p>PHP saves the file to a temporary folder and describes it in <cde>$_FILES</cde>:</p>
+        <list>
+            <li><cde>name</cde>: the name the sender gave it. Input.</li>
+            <li><cde>type</cde>: the content type the sender claimed. Input.</li>
+            <li><cde>tmp_name</cde>: where PHP put it. This one is PHP's.</li>
+            <li><cde>error</cde>: <cde>UPLOAD_ERR_OK</cde> (0) if it arrived whole.</li>
+            <li><cde>size</cde>: how many bytes arrived.</li>
+        </list>
+        <p>
+            If your code doesn't move the temporary file somewhere, PHP deletes it at the end of the
+            request.
+        </p>
+
+        <heading h3 id="whats-a-web-shell">What's a Web Shell?</heading>
+        <p>
+            A small script that runs whatever command it's sent, and sends back the result. Three
+            lines of PHP. If someone can get one onto your server, somewhere the web server will run
+            it, they can do anything your app can do: read its files and secrets, reach its
+            database, and use the machine for whatever they like.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The file arrives. PHP stores it in a temporary file.</li>
+            <li>
+                Your code checks that it arrived, that it's not too big, and what it really is, from
+                its bytes, with <cde>finfo</cde>. Never from its name or its claimed type.
+            </li>
+            <li>
+                If it isn't one of the types you accept, refuse it. An allow list: PNG, JPEG, GIF,
+                say, and nothing else.
+            </li>
+            <li>
+                Give it a name you make up, with an extension from your own list. Never the name it
+                came with.
+            </li>
+            <li>
+                Move it to a folder outside the web root, where the web server can't hand it out or
+                run it. See <lnk to="/php/document-root">Document Root</lnk>.
+            </li>
+            <li>
+                To show it, a PHP script reads it and sends it back, with a content type you chose
+                and <cde>X-Content-Type-Options: nosniff</cde>, so the browser takes your word for
+                it.
+            </li>
+        </ol>
+        <p>
+            Steps four and five matter most. A file named with your own extension, stored where
+            nothing runs it, stays a file, even if every other check misses something.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A photo upload, built the right way. The project has a <cde>public</cde> folder, the web
+            root, and a <cde>storage</cde> folder beside it, for the uploads. First,
+            <cde>public/uploads.php</cde>, the settings the upload page and the image page share:
+        </p>
+        <code-block example="file-uploads/public/uploads.php" />
+        <p>Then the upload page, <cde>public/index.php</cde>:</p>
+        <code-block example="file-uploads/public/index.php" />
+        <p>And <cde>public/image.php</cde>, which sends a stored photo back:</p>
+        <code-block example="file-uploads/public/image.php" />
+        <p>
+            Make an empty <cde>storage</cde> folder, and start the server with <cde>-t public</cde>,
+            so only <cde>public</cde> is served:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and upload a photo. The page gives you its
+            address, like <cde>/image.php?id=ff7b4be21b021b50fd640cc52c23dcd2.png</cde>. Open that,
+            and there's your photo. Look in <cde>storage</cde>, and it's there under that name,
+            whatever it was called on your computer. Then try uploading a text file, or a PDF: "That
+            is not a PNG, JPEG or GIF."
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$_FILES['photo']['error'] === UPLOAD_ERR_OK</cde> first. Other values say why
+                it failed: too big (<cde>UPLOAD_ERR_INI_SIZE</cde>), only part of it arrived, no
+                file chosen.
+            </li>
+            <li>
+                <cde>(new finfo(FILEINFO_MIME_TYPE))-&gt;file($tmp)</cde> for what the bytes say the
+                file is.
+            </li>
+            <li>
+                <cde>getimagesize($tmp)</cde> returns <cde>false</cde> if the file can't be read as
+                an image at all.
+            </li>
+            <li>
+                <cde>move_uploaded_file($tmp, $destination)</cde>, which only moves files PHP
+                received as uploads in this request.
+            </li>
+            <li><cde>bin2hex(random_bytes(16))</cde> for a name nobody can guess.</li>
+            <li>
+                <cde>upload_max_filesize</cde> and <cde>post_max_size</cde> in
+                <cde>php.ini</cde> cap the size before your code runs. The defaults are 2 MB and 8
+                MB.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A file can be two things at once.</strong> The six bytes
+                <cde>GIF89a</cde> followed by PHP code is a valid GIF to <cde>finfo</cde> and
+                <cde>getimagesize()</cde>, and valid PHP to PHP. Break It uploads one. Type checks
+                aren't enough on their own; your own name and storage outside the web root are what
+                make it harmless.
+            </li>
+            <li>
+                <strong>The claimed type is just a label.</strong> <cde>$_FILES[...]['type']</cde>
+                is whatever the sender wrote. So is the extension in the name. Ignore both.
+            </li>
+            <li>
+                <strong>Too big can mean empty.</strong> If a request is over
+                <cde>post_max_size</cde>, PHP throws the whole body away, and <cde>$_POST</cde> and
+                <cde>$_FILES</cde> arrive empty, with only a warning in the log. Your form says
+                "choose a photo" to someone who did.
+            </li>
+            <li>
+                <strong>Images can carry more than pictures.</strong> Photos from phones often
+                include the location they were taken. Re-encoding an image with an image library,
+                like GD or Imagick, drops that and anything else hidden in the file, but the image
+                library is code that reads hostile files, so keep it updated.
+            </li>
+            <li>
+                <strong>SVG is not a safe image.</strong> An SVG is XML, and it can contain scripts.
+                Served from your site, a script in it runs on your site. Leave SVG off the allow
+                list unless you sanitize it.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            The naive upload keeps the file's own name, in a folder inside the web root. Make
+            <cde>public/naive.php</cde>, and an empty <cde>public/uploads</cde> folder:
+        </p>
+        <code-block example="file-uploads/public/naive.php" />
+        <p>
+            Now the attacker's upload, <cde>shell.php</cde>, a web shell. Put it in an
+            <cde>attack</cde> folder:
+        </p>
+        <code-block example="file-uploads/attack/shell.php" />
+        <p>Upload it:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -F 'photo=@attack/shell.php' http://localhost:8000/naive.php</code-block>
+        <p>
+            "Saved. It's at /uploads/shell.php." The <cde>accept="image/*"</cde> on the form never
+            came into it; curl isn't a browser. Now visit it, with a command:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/uploads/shell.php?cmd=id'</code-block>
+        <!-- prettier-ignore -->
+        <code-block>uid=0(root) gid=0(root) groups=0(root)</code-block>
+        <p>
+            That's the output of the <cde>id</cde> command, run on your server, as root (the
+            container runs as root). The web server saw a <cde>.php</cde> file in its web root and
+            ran it, as it would any other. Try <cde>cmd=ls%20/app</cde>, and you get a listing of
+            the project, <cde>storage</cde> and all. Anything your app can read, they can read.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            The fixed page is the one from Try It. Send it the same shell, then the same shell
+            pretending to be a PNG:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -F 'photo=@attack/shell.php' http://localhost:8000/
+curl -F 'photo=@attack/shell.php;type=image/png;filename=cat.png' http://localhost:8000/</code-block>
+        <p>
+            Both get "That is not a PNG, JPEG or GIF," with a 422. The name and type were lies, and
+            <cde>finfo</cde> read the bytes instead: <cde>text/x-php</cde>. Then the harder one,
+            <cde>attack/polyglot.gif</cde>: the six bytes <cde>GIF89a</cde>, then a line of PHP.
+            Make it with:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>printf 'GIF89a&lt;?php echo shell_exec($_GET["cmd"] ?? "id"); ?&gt;\n' &gt; attack/polyglot.gif
+curl -F 'photo=@attack/polyglot.gif' http://localhost:8000/</code-block>
+        <p>
+            "Saved." It got through: to <cde>finfo</cde> and <cde>getimagesize()</cde>, it's a GIF.
+            Now open the address it gave you, with <cde>&amp;cmd=id</cde> on the end. You get the
+            file's bytes back, PHP code and all, as an image that won't display. Nothing ran. The
+            file is in <cde>storage</cde>, which the web server doesn't serve, under a name ending
+            in <cde>.gif</cde>, and <cde>image.php</cde> only ever reads it. The checks caught the
+            obvious attack; the storage made the clever one harmless.
+        </p>
+
+        <side-story title="ImageTragick">
+            In 2016, researchers found that ImageMagick, the image library behind countless upload
+            features, could be made to run shell commands by a specially crafted image file. Sites
+            that did everything right with uploads, and then resized them with ImageMagick, were
+            open to it. The bug got a name, ImageTragick, and a logo. The code that processes
+            uploads is as exposed as the code that receives them.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Make the uploads folder unable to run anything">
+            <p>
+                Even with uploads outside the web root, tell the web server never to run PHP from
+                any folder that holds user files. In nginx, a <cde>location</cde> block for the
+                folder with no PHP handler in it; on Apache running PHP as a module, an
+                <cde>.htaccess</cde> with <cde>php_flag engine off</cde>. Then a mistake in one
+                place, a misplaced folder or a bad deploy, doesn't become the Break It above.
+            </p>
+        </two-dollars>
+
+        <p>
+            An upload is a file a stranger hands you. A card number is something you should refuse
+            to be handed at all. Next: don't touch cards.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/dont-touch-cards">Next: Don't Touch Cards &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

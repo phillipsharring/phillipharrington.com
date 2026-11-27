@@ -1,0 +1,182 @@
+<layout name="default" title="Interfaces" />
+<page-head>
+    <meta
+        name="description"
+        content="A list of methods with no code: a promise a class makes about what it can do, so code can ask for the promise instead of a particular class. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP interface, implements, type declarations, Countable, Stringable, JsonSerializable, polymorphism, TypeError, abstract class vs interface, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A promise a class makes about what it can do. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="interfaces">Interfaces</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            An abstract class shares code. Sometimes there's no code to share, only an agreement.
+            The code that sends a reminder doesn't care whether it goes by email, by text, or onto
+            the screen while you're testing. It cares that whatever it's handed can send. An
+            interface is that agreement, written down where PHP can check it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-interface">What's an Interface?</heading>
+        <p>
+            A named list of public methods, with their signatures and no bodies. A class that says
+            <cde>implements Notifier</cde> promises to have every method on the list, and PHP holds
+            it to that.
+        </p>
+        <p>
+            Then a function can ask for a <cde>Notifier</cde> instead of a particular class. Any
+            object whose class implements it will do, including classes written years later.
+        </p>
+
+        <heading h3 id="interface-or-abstract-class">Interface or Abstract Class?</heading>
+        <list>
+            <li>
+                <strong>An interface</strong> has no code and no properties. A class can implement
+                as many as it likes.
+            </li>
+            <li><strong>An abstract class</strong> can have both. A class can extend only one.</li>
+        </list>
+        <p>
+            When you only need to say what something can do, use an interface. Most of the time,
+            that's all you need.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                When PHP loads a class that implements an interface, it checks every method is
+                there, with a compatible signature. If one is missing, the class doesn't load.
+            </li>
+            <li>
+                A function that declares <cde>Notifier $notifier</cde> gets checked on every call:
+                is this object's class one that implements <cde>Notifier</cde>?
+            </li>
+            <li>
+                If it is, the function calls <cde>$notifier-&gt;send()</cde>, and whichever class it
+                is runs its own <cde>send()</cde>.
+            </li>
+            <li>If it isn't, PHP throws a <cde>TypeError</cde> before the function starts.</li>
+        </ol>
+        <p>
+            The check in step two is by name, not by shape. A class with exactly the right methods
+            that never says <cde>implements</cde> doesn't count.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>The interface, <cde>Notifier.php</cde>:</p>
+        <code-block example="interfaces/Notifier.php" />
+        <p>
+            Two classes that keep the promise. <cde>ScreenNotifier.php</cde> prints, and
+            <cde>MemoryNotifier.php</cde> keeps the messages instead of sending them, and also
+            implements PHP's own <cde>Countable</cde>:
+        </p>
+        <code-block example="interfaces/ScreenNotifier.php" />
+        <code-block example="interfaces/MemoryNotifier.php" />
+        <p>A function that takes any <cde>Notifier</cde>, in <cde>remind-all.php</cde>:</p>
+        <code-block example="interfaces/remind-all.php" />
+        <p>And <cde>remind.php</cde>, which hands it one of each:</p>
+        <code-block example="interfaces/remind.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php remind.php</code-block>
+        <p>
+            Two lines on the screen, then <cde>Kept 2 messages instead of sending them.</cde> Same
+            function, two behaviors, and <cde>remindAll()</cde> didn't change. Now
+            <cde>wrong.php</cde>, with a class that has the right method and never says so:
+        </p>
+        <code-block example="interfaces/wrong.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php wrong.php</code-block>
+        <p>
+            <cde>Argument #1 ($notifier) must be of type Notifier, Pager given</cde>. Having a
+            <cde>send()</cde> isn't the promise. Saying <cde>implements Notifier</cde> is.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>interface Notifier { ... }</cde> declares one. Every method in it is public.
+            </li>
+            <li>
+                <cde>class ScreenNotifier implements Notifier</cde> keeps the promise;
+                <cde>implements Notifier, Countable</cde> keeps two.
+            </li>
+            <li><cde>interface Alerts extends Notifier</cde>: an interface can build on others.</li>
+            <li><cde>$x instanceof Notifier</cde> asks whether an object keeps the promise.</li>
+            <li>
+                PHP's own interfaces plug your objects into the language: <cde>Countable</cde> for
+                <cde>count()</cde>, <cde>IteratorAggregate</cde> for <cde>foreach</cde>,
+                <cde>JsonSerializable</cde> for <cde>json_encode()</cde>, <cde>Stringable</cde> for
+                anything with a <cde>__toString()</cde>.
+            </li>
+            <li>Interfaces can hold constants, too: <cde>Notifier::MAX_LENGTH</cde>.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>An interface checks names and types, not behavior.</strong> A
+                <cde>send()</cde> that does nothing keeps the promise as far as PHP knows. What it
+                actually does is for your tests, at the end of this section.
+            </li>
+            <li>
+                <strong>Adding a method breaks every class that implements it.</strong> Each one is
+                now missing a method. Keep interfaces small, so they rarely need to change.
+            </li>
+            <li>
+                <strong>One class, one interface, no reason.</strong> An interface with exactly one
+                class behind it, and no second one coming, is just another file to open. Add the
+                interface when the second kind shows up, or when a test needs a stand-in.
+            </li>
+        </list>
+
+        <side-story title="A Standard Thread">
+            In the early 1800s, every machine shop cut screw threads its own way, so a bolt from one
+            shop rarely fit a nut from another. In 1841, the English engineer Joseph Whitworth
+            proposed one standard: a fixed thread angle, and a fixed number of threads per inch for
+            each size. Once a bolt promised to be Whitworth, any Whitworth nut would do. That's an
+            interface.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Write it from the caller's side">
+            <p>
+                Write the interface for the code that uses it, not the class that implements it.
+                <cde>remindAll()</cde> needs <cde>send()</cde>, so <cde>Notifier</cde> has
+                <cde>send()</cde>, and nothing about SMTP servers or retries. The smaller it is, the
+                easier it is to write a second one, a fake one for tests included.
+            </p>
+        </two-dollars>
+
+        <p>
+            Every example so far has started with a row of <cde>require</cde> lines, one for each
+            class. PHP can find the files by itself. Next: autoloading with Composer and PSR-4.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/autoloading">Next: Autoloading with Composer and PSR-4 &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

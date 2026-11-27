@@ -1,0 +1,162 @@
+<layout name="default" title="Home Page" />
+<page-head>
+    <meta
+        name="description"
+        content="The first project: a home page with a little PHP in it. A greeting by the time of day, links from an array, and a footer year that never goes stale. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP home page, first PHP project, php -S, document root, htmlspecialchars, date(), timezone, PHP arrays, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A home page with a little PHP in it. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="home-page">Home Page</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The lessons are done. From here on, you build things. The first one is the page most
+            sites start with: a home page. It's mostly HTML, with just enough PHP to do what plain
+            HTML can't: greet the visitor by the time of day, build a list from data, and keep the
+            year in the footer right without you ever touching it.
+        </p>
+        <p>
+            Every project after this one adds to the same habits, so they start here: the code lives
+            in a project folder, only <cde>public</cde> is served, and anything PHP prints into the
+            page gets escaped.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/document-root">Document Root</lnk>: serving only <cde>public</cde>.
+            </li>
+            <li>
+                <lnk to="/php/php-files">PHP Files, Escaping into PHP, and phpinfo()</lnk> and
+                <lnk to="/php/output">Output</lnk>: mixing PHP into HTML.
+            </li>
+            <li>
+                <lnk to="/php/variables-and-types">Variables, Types and strict_types</lnk> and
+                <lnk to="/php/arrays">Arrays</lnk>: the data the page is built from.
+            </li>
+            <li><lnk to="/php/modern-php">Modern PHP</lnk>: <cde>match</cde>.</li>
+            <li>
+                <lnk to="/php/xss">XSS and Escaping Output</lnk>: <cde>htmlspecialchars()</cde> on
+                the way out.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-folders">The Folders</heading>
+        <p>
+            Make a project folder, and in it a folder called <cde>public</cde>. That's the web root.
+            Everything in this project is small enough to live in <cde>public</cde>, but start the
+            habit now: later projects keep their code and settings outside it.
+        </p>
+
+        <heading h3 id="the-page">The Page</heading>
+        <p>In <cde>public</cde>, make <cde>index.php</cde>:</p>
+        <code-block example="project-home-page/public/index.php" />
+        <p>What each piece is doing:</p>
+        <list>
+            <li>
+                <strong>The data comes first.</strong> The name, the about line and the links sit at
+                the top, in variables and an array. The HTML below only arranges them. Change a
+                link, and you change one line, not a tag in the middle of the markup.
+            </li>
+            <li>
+                <strong>The greeting.</strong> <cde>date('G')</cde> is the hour, 0 to 23, and
+                <cde>match (true)</cde> picks the first line that's true.
+            </li>
+            <li>
+                <strong>The footer.</strong> <cde>date('Y')</cde> is this year, worked out on every
+                request, so the copyright line is right on January 1st with nobody awake.
+                <cde>filemtime(__FILE__)</cde> is when this file last changed, which makes an honest
+                "Updated" date.
+            </li>
+            <li>
+                <strong>Everything printed is escaped.</strong> The name and links are yours today,
+                but data has a way of coming from somewhere else later: a settings file, a database,
+                a form. <cde>htmlspecialchars()</cde> costs nothing and makes that safe when it
+                happens.
+            </li>
+        </list>
+
+        <heading h3 id="a-stylesheet">A Stylesheet</heading>
+        <p>
+            Also in <cde>public</cde>, <cde>style.css</cde>, so the page is readable. The server
+            sends it as a plain file, because it isn't PHP:
+        </p>
+        <code-block example="project-home-page/public/style.css" />
+
+        <heading h3 id="run-it">Run It</heading>
+        <p>From the project folder, serve <cde>public</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>Open <cde>http://localhost:8000</cde>. Then look at what the browser actually got:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000</code-block>
+        <p>
+            Plain HTML, with the greeting, the year and the links filled in, and not a trace of PHP.
+            The browser never sees your code, only what it printed. Reload a few hours later, and
+            the greeting changes on its own.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The server's clock may not be yours.</strong> Containers and most servers
+                run on UTC, so "Good morning" can arrive at 9 p.m. Set the time zone on purpose,
+                with <cde>date_default_timezone_set()</cde> or <cde>date.timezone</cde> in the
+                settings, and say which one on the page if it matters.
+            </li>
+            <li>
+                <strong>A page that ends in <cde>.php</cde> isn't always run.</strong> Open the file
+                straight from your disk, by double-clicking it, and the browser shows the raw code
+                or downloads it. PHP only runs when a server hands the file to PHP. Always go
+                through <cde>http://localhost:8000</cde>.
+            </li>
+            <li>
+                <strong>Forgetting <cde>charset</cde>.</strong> Without
+                <cde>&lt;meta charset="utf-8"&gt;</cde>, a browser may guess the wrong encoding and
+                show accented letters as junk. <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>
+                has the whole story.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Let the file date the page">
+            <p>
+                <cde>filemtime(__FILE__)</cde> gives every page an "Updated" line that's always
+                true, with nothing to remember. Readers trust a page more when they can see it's
+                been looked after, and you'll stop finding "Updated 2019" on a page you changed last
+                week.
+            </p>
+        </two-dollars>
+
+        <p>
+            Your visitors only ever see what the PHP printed. Sometimes you want to show them the
+            code itself, safely. Next: a view source link.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/view-source-link">Next: View Source Link &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

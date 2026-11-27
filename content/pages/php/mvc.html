@@ -1,0 +1,206 @@
+<layout name="default" title="MVC" />
+<page-head>
+    <meta
+        name="description"
+        content="Model, View, Controller: the data and its rules, the HTML, and the code that takes a request and connects the two. What each part does in a PHP app, and what belongs in none of them. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="MVC, model view controller, PHP MVC, controller, model, view, templates, Smalltalk, Trygve Reenskaug, PHP frameworks, separation of concerns, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Model, View, Controller in a PHP app. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="mvc">MVC</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Separating Concerns split a page into reading, deciding and showing, joined by a few
+            lines of glue. MVC is that same split with names, and with the glue promoted to a part
+            of its own. Nearly every PHP framework is organized around it, so it's worth knowing
+            what each letter is for.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-model">What's the Model?</heading>
+        <p>
+            The data and the rules about it: what a menu item is, which items are in a category, how
+            to find one. Reading and deciding, from the last lesson, live here. The model knows
+            nothing about HTTP or HTML. You could use it from a command-line script unchanged.
+        </p>
+
+        <heading h2 id="the-view">What's the View?</heading>
+        <p>
+            What goes back to the client: an HTML template, or JSON. It's handed what to show, loops
+            over it, and escapes everything it prints. It doesn't fetch anything or decide anything.
+        </p>
+
+        <heading h2 id="the-controller">What's the Controller?</heading>
+        <p>
+            The part that handles a request. It reads the input, checks it, asks the model for
+            what's needed, picks a view, and returns the response with its status code. It should be
+            short. When a controller grows long, the extra code is usually a rule that belongs in
+            the model.
+        </p>
+
+        <side-story title="Thing-Model-View-Editor">
+            Trygve Reenskaug came up with MVC in 1978 and 1979, while visiting Xerox PARC, for
+            Smalltalk. His first notes called it Thing-Model-View-Editor. Smalltalk itself came from
+            the group around Alan Kay, Adele Goldberg and Dan Ingalls; Goldberg co-wrote the books
+            that taught Smalltalk-80 to the world. MVC was designed for desktop programs, where a
+            view watched its model and redrew itself when the model changed. The web version, with a
+            request coming in and a page going out, came much later.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>A request arrives, and an entry point builds the parts and calls a controller.</li>
+            <li>
+                The controller reads the input it needs and checks it.
+                <lnk to="/php/never-trust-input">Never trust input</lnk>: this is the edge.
+            </li>
+            <li>It asks the model: "the drinks," "item 2."</li>
+            <li>It hands the model's answer to a view, and gets back the page.</li>
+            <li>
+                It returns the page with a status code: 200, or 404 if there was nothing to find.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A café menu, in three parts, with Composer's autoloader (from
+            <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>) finding the
+            classes. In a folder, make <cde>composer.json</cde>:
+        </p>
+        <code-block example="mvc/composer.json" />
+        <p>
+            The model first: <cde>src/Model/MenuItem.php</cde>, one item, and
+            <cde>src/Model/Menu.php</cde>, the menu and its rules:
+        </p>
+        <code-block example="mvc/src/Model/MenuItem.php" />
+        <code-block example="mvc/src/Model/Menu.php" />
+        <p>The menu's contents, in <cde>data/menu.php</cde>:</p>
+        <code-block example="mvc/data/menu.php" />
+        <p>
+            The views: <cde>src/View/View.php</cde> runs a template and keeps what it printed (see
+            <lnk to="/php/output-buffering">Output Buffering</lnk>), and the templates go in
+            <cde>views/</cde>. <cde>list.php</cde>:
+        </p>
+        <code-block example="mvc/src/View/View.php" />
+        <code-block example="mvc/views/list.php" />
+        <p><cde>item.php</cde> and <cde>not-found.php</cde>:</p>
+        <code-block example="mvc/views/item.php" />
+        <code-block example="mvc/views/not-found.php" />
+        <p>
+            The controller, <cde>src/Controller/MenuController.php</cde>, with a small
+            <cde>Response</cde> to carry the status and the body:
+        </p>
+        <code-block example="mvc/src/Controller/Response.php" />
+        <code-block example="mvc/src/Controller/MenuController.php" />
+        <p>
+            And the entry points, in <cde>public/</cde>. <cde>index.php</cde> builds the parts and
+            calls <cde>list()</cde>:
+        </p>
+        <code-block example="mvc/public/index.php" />
+        <p>
+            <cde>public/item.php</cde> is the same file, calling <cde>show($_GET)</cde> instead.
+            Generate the autoloader and serve <cde>public/</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install
+docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>: the whole menu. Click "drinks," then an item.
+            Then try what a visitor might type:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/?category=%3Cb%3E'
+curl -i 'http://localhost:8000/item.php?id=99'</code-block>
+        <p>
+            A category that isn't on the menu is ignored, and never printed. An item that isn't
+            there is a <cde>404</cde> with its own page. Each of those decisions is in the
+            controller; the model never saw the bad input, and the view never had to wonder.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Controllers and models are classes, one per file, found by Composer's PSR-4
+                autoloader. Views are plain PHP templates.
+            </li>
+            <li>
+                The controller gets what it needs through its constructor, here the
+                <cde>Menu</cde> and the <cde>View</cde>, rather than reaching for them. That's
+                <lnk to="/php/dependency-injection">Dependency Injection</lnk>, and it's why the
+                controller can be tested with a made-up menu.
+            </li>
+            <li>
+                Pass the controller <cde>$_GET</cde> as an argument instead of reading the
+                superglobal inside it. Then it works the same in a test.
+            </li>
+            <li>
+                <cde>ob_start()</cde> and <cde>ob_get_clean()</cde> turn a template's output into a
+                string the controller can return.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Fat controllers.</strong> Pricing rules, discount math and SQL in the
+                controller mean they can only run during a request. Move them to the model, and the
+                controller goes back to being glue.
+            </li>
+            <li>
+                <strong>Views that fetch.</strong> A template that queries the database is a model
+                hiding in a view. Give it what it needs instead.
+            </li>
+            <li>
+                <strong>"Model" means more than the database table.</strong> It's all the rules and
+                data of the app. Some of it maps to tables; some is plain classes with no storage at
+                all. The next few lessons split it further.
+            </li>
+            <li>
+                <strong>Two entry points that are nearly the same file.</strong>
+                <cde>index.php</cde> and <cde>item.php</cde> repeat their setup line for line, which
+                is exactly what <lnk to="/php/dry">DRY</lnk> warned about. With twenty pages,
+                someone will forget a line in one.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Read a controller out loud">
+            <p>
+                A good controller method reads like a sentence: "check the category, get the items
+                in it, show the list." If yours needs a paragraph, find the part that isn't about
+                the request and move it into the model, where it can be named and tested.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>index.php</cde> and <cde>item.php</cde> each build the same parts before they do
+            their one different thing. There's a better way to start every request. Next: single
+            point of entry.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/single-point-of-entry">Next: Single Point of Entry &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

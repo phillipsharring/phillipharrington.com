@@ -1,0 +1,229 @@
+<layout name="default" title="Log Viewer" />
+<page-head>
+    <meta
+        name="description"
+        content="A staff page that shows your logs in the browser, and the path traversal hole that comes with it: what ../ does to a file name, and the allow list that closes it. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="log viewer, path traversal, directory traversal, ../, allow list, basename, realpath, SplFileObject, tail a log, escape log output, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Show your logs in the browser, then close the path traversal hole. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="log-viewer">Log Viewer</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            HTTP Authentication put a page behind a password. Here's something worth hiding: your
+            logs. You'll build a staff page that lists the files in a <cde>logs</cde> folder and
+            shows the last lines of whichever one you pick. Handy on a server where you can't easily
+            get a terminal.
+        </p>
+        <p>
+            It's also the classic place for a hole called path traversal. A page that takes a file
+            name from the URL will open any file it's told to, unless you stop it. You'll build it
+            the naive way first, read the server's secrets with it, and then fix it.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>: the lock on
+                the door
+            </li>
+            <li>
+                <lnk to="/php/access-and-error-logs">Access and Error Logs</lnk>: what's in the
+                files
+            </li>
+            <li><lnk to="/php/working-with-files">Working with Files</lnk>: reading them</li>
+            <li><lnk to="/php/query-strings">Query Strings</lnk>: which file to show</li>
+            <li>
+                <lnk to="/php/document-root">Document Root</lnk>: why the logs and secrets live
+                outside <cde>public</cde>
+            </li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk> and
+                <lnk to="/php/xss">XSS and Escaping Output</lnk>
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-project">Step 1: The Project</heading>
+        <p>The layout, with the web root kept small:</p>
+        <!-- prettier-ignore -->
+        <code-block>project-log-viewer/
+    .env             a pretend secret
+    auth.php         from HTTP Authentication
+    users.php        from HTTP Authentication
+    logs/
+        access.log
+        app.log
+    public/          the web root
+        index.php    the viewer
+        naive.php    the broken one, for Break It</code-block>
+        <p>
+            Copy <cde>auth.php</cde> and <cde>users.php</cde> from the
+            <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk> project. Make a
+            <cde>.env</cde> with something to steal:
+        </p>
+        <code-block example="project-log-viewer/.env" />
+        <p>And two logs to read. An app log:</p>
+        <code-block example="project-log-viewer/logs/app.log" />
+        <p>
+            And an access log. Look at the third line: someone asked for <cde>/.env</cde> with a
+            script for a user agent. Visitors choose what goes in your logs.
+        </p>
+        <code-block example="project-log-viewer/logs/access.log" />
+
+        <heading h3 id="step-2-the-viewer">Step 2: The Viewer</heading>
+        <p><cde>public/index.php</cde> does four things, top to bottom:</p>
+        <list>
+            <li>Asks for a login, with the function from HTTP Authentication.</li>
+            <li>
+                Builds its allow list: the names of the <cde>.log</cde> files actually in the
+                folder.
+            </li>
+            <li>
+                Checks the requested name against that list, exactly, and answers 404 for anything
+                else.
+            </li>
+            <li>
+                Shows the last lines, read one at a time with <cde>SplFileObject</cde> so a gigabyte
+                log doesn't have to fit in memory, and escapes every one.
+            </li>
+        </list>
+        <code-block example="project-log-viewer/public/index.php" />
+        <p>Start it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>, log in as <cde>editor</cde> with
+            <cde>correct horse battery staple</cde>, and click <cde>access.log</cde>. The script in
+            the third line shows up as text. It never runs, because every line went through
+            <cde>htmlspecialchars()</cde>. Add <cde>&amp;lines=2</cde> to the URL, and you get just
+            the last two.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            Here's the viewer most people write first. It takes the name from the query string,
+            sticks it on the end of the logs folder, and sends the file:
+        </p>
+        <code-block example="project-log-viewer/public/naive.php" />
+        <p>It works for the files you meant:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/naive.php?file=app.log'</code-block>
+        <p>
+            Now ask for a name with <cde>../</cde> in it. In a path, <cde>..</cde> means "the folder
+            above," so <cde>logs/../.env</cde> is the <cde>.env</cde> next to <cde>logs</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/naive.php?file=../.env'</code-block>
+        <p>
+            Out comes <cde>API_KEY="not-a-real-key-but-pretend-it-is"</cde>. Keep climbing, and it's
+            any file the server can read:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/naive.php?file=../../../../../etc/passwd'
+curl 'http://localhost:8000/naive.php?file=../users.php'</code-block>
+        <p>
+            The machine's list of accounts, and your password hashes, as plain text, with no login
+            asked. Putting the secrets outside the web root didn't help, because the hole is in your
+            code, and your code can read everything.
+        </p>
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            The fix is already in <cde>index.php</cde>: <strong>never trust input</strong>, so don't
+            use the name to build a path at all. Use it to pick from a list you made yourself. Try
+            the same attacks on the real viewer:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -u 'editor:correct horse battery staple' 'http://localhost:8000/?file=../.env'
+curl -u 'editor:correct horse battery staple' 'http://localhost:8000/?file=app.log/../../.env'</code-block>
+        <p>
+            Both get <cde>No such log.</cde> and a 404. Neither is in the list, and nothing else
+            matters. Encoded dots, <cde>%2e%2e%2f</cde>, get the same answer: PHP decodes the query
+            string before your code sees it, and <cde>../.env</cde> still isn't on the list.
+        </p>
+        <p>
+            Then delete <cde>naive.php</cde>. A broken file left in the web root is still a broken
+            file in the web root.
+        </p>
+
+        <side-story title="Two Dots in Disguise">
+            In 2000, Microsoft's IIS web server had a traversal hole of exactly this kind. It
+            checked request paths for <cde>../</cde>, but a slash written in an unusual, overlong
+            UTF-8 form got past the check and was decoded into a real slash afterward. The Nimda
+            worm used it in 2001 to spread. The lesson stuck: check the name you'll actually use,
+            after all decoding, or better, don't build paths from input at all.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Checking for <cde>../</cde> isn't enough.</strong> There are too many ways
+                to write it: encoded, doubled, with backslashes on Windows, through a symbolic link.
+                An allow list doesn't care how the attack is spelled.
+            </li>
+            <li>
+                <strong
+                    >When you can't list the files ahead of time, check where the path
+                    lands.</strong>
+                <cde>realpath()</cde> resolves every <cde>..</cde> and link into the real location;
+                then make sure it starts with your folder plus a slash, and refuse it otherwise.
+            </li>
+            <li>
+                <strong><cde>basename()</cde> helps, but read what it does.</strong> It keeps only
+                the part after the last slash, so <cde>../.env</cde> becomes <cde>.env</cde>. That
+                stops the climbing, but a <cde>.env</cde> inside the logs folder would still be
+                served. The allow list is stricter.
+            </li>
+            <li>
+                <strong>Logs are full of input.</strong> User agents, URLs, form fields that got
+                logged: anyone can put HTML there. Show a log in a page, and you escape it like
+                anything else. A viewer that doesn't is an XSS hole aimed at your own staff.
+            </li>
+            <li>
+                <strong>Logs hold secrets too.</strong> Email addresses, tokens in URLs, the odd
+                password someone typed in the wrong field. A log viewer is a staff-only page, behind
+                a login, over HTTPS, with no cache keeping a copy.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Grep your own access log for ../">
+            <p>
+                <cde>grep -c '\.\./' access.log</cde> on a public site's access log often finds
+                someone trying this already. Scanners try <cde>../</cde> on every parameter they
+                see. Knowing it's being tried makes it much easier to remember to test for it.
+            </p>
+        </two-dollars>
+
+        <p>
+            The viewer's labels are all in English. Next: translation, and what it takes to serve
+            the same page in more than one language.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/translation">Next: Translation &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

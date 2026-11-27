@@ -1,0 +1,268 @@
+<layout name="default" title="Working with a Database: PDO and Prepared Statements" />
+<page-head>
+    <meta
+        name="description"
+        content="Talking to MySQL from PHP with PDO: connecting with utf8mb4, the three options to set, and prepared statements from the very first query, so input is always a value and never part of the SQL. With MySQL and PHP in Docker Compose. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP PDO, prepared statements, PDO MySQL, pdo_mysql, DSN, utf8mb4, ERRMODE_EXCEPTION, FETCH_ASSOC, EMULATE_PREPARES, named placeholders, SQL injection, lastInsertId, Docker Compose MySQL, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="PHP and MySQL, with prepared statements from the very first query. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="pdo">Working with a Database: PDO and Prepared Statements</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/working-with-files">Working with Files</lnk> ended at the limits of a text
+            file. A database is the next step: a separate server that stores your data, finds any
+            piece of it fast, and lets many requests read and write at once. PHP talks to it with
+            PDO. This lesson is about the connection and the one habit that matters from the very
+            first query: the query and the input travel separately, always.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-database">What's a Database?</heading>
+        <p>
+            For this course, MySQL: a server, like a web server, that PHP connects to over the
+            network. It keeps data in tables of rows and columns, and you ask it for things in a
+            language called SQL. <lnk to="/php/sql">SQL</lnk>, next, and the whole Database section
+            after it, are about that language and those tables. This lesson is just getting PHP and
+            MySQL talking.
+        </p>
+
+        <heading h2 id="whats-pdo">What's PDO?</heading>
+        <p>
+            PHP Data Objects: PHP's built-in way to talk to databases. The same functions work with
+            MySQL, PostgreSQL, SQLite and others, each through a driver. PHP's Docker image comes
+            with the SQLite one; MySQL's, <cde>pdo_mysql</cde>, takes one line to add.
+        </p>
+
+        <heading h3 id="the-connection">The Connection</heading>
+        <p>
+            <cde>new PDO($dsn, $user, $password, $options)</cde>. The DSN, a data source name, says
+            which driver, where, and which database:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>mysql:host=db;dbname=library;charset=utf8mb4</code-block>
+        <p>
+            <cde>charset=utf8mb4</cde> makes the connection itself UTF-8, real UTF-8, emoji
+            included, as <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> said. Recent versions
+            default to it, older ones don't, so say it, and the connection is never the place text
+            gets mangled. The user and password come from the environment, never from the code, as
+            in
+            <lnk to="/php/configuration-and-the-environment">Configuration and the Environment</lnk>.
+        </p>
+
+        <heading h3 id="the-options">The Options</heading>
+        <list>
+            <li>
+                <cde>PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION</cde>: a failed query throws an
+                exception instead of quietly returning <cde>false</cde>. It's the default since PHP
+                8.0; say it anyway.
+            </li>
+            <li>
+                <cde>PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC</cde>: each row comes back
+                as an array with the column names as keys.
+            </li>
+            <li>
+                <cde>PDO::ATTR_EMULATE_PREPARES =&gt; false</cde>: prepared statements are done by
+                MySQL itself, not imitated by PHP.
+            </li>
+        </list>
+
+        <heading h3 id="prepared-statements">Prepared Statements</heading>
+        <p>A query with blanks in it, called placeholders, and the values sent separately:</p>
+        <!-- prettier-ignore -->
+        <code-block>$insert = $pdo-&gt;prepare('INSERT INTO books (title, author) VALUES (:title, :author)');
+$insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block>
+        <p>
+            <cde>:title</cde> is a named placeholder. A plain <cde>?</cde> works too, with the
+            values in order. Either way, whatever is in <cde>$title</cde>, quotes, SQL, anything, is
+            stored as a title. It can't become part of the query, because the query was already
+            settled before the value arrived. That's the defense against
+            <lnk to="/php/sql-injection">SQL injection</lnk>, and it's the only way this course ever
+            puts a value into SQL.
+        </p>
+
+        <side-story title="The Functions That Went Away">
+            PHP's first MySQL functions, <cde>mysql_connect()</cde> and <cde>mysql_query()</cde>,
+            took a query as one string, so the natural way to add a value was to glue it in. A
+            generation of tutorials did exactly that, and a generation of sites were open to SQL
+            injection. PDO arrived in PHP 5.1, in 2005, with prepared statements. The old functions
+            were deprecated in PHP 5.5 and removed in PHP 7.0.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <cde>new PDO(...)</cde> connects to MySQL over the network and logs in. In Docker
+                Compose, the host is the database service's name, <cde>db</cde>.
+            </li>
+            <li>
+                <cde>prepare()</cde> sends the SQL, placeholders and all. MySQL reads it and works
+                out what it will do, before it has seen a single value.
+            </li>
+            <li>
+                <cde>execute()</cde> sends the values. MySQL drops them into the blanks as data, and
+                runs the query.
+            </li>
+            <li><cde>fetch()</cde> or <cde>fetchAll()</cde> brings the rows back, as arrays.</li>
+            <li>The connection closes when the script ends.</li>
+        </ol>
+        <p>
+            So the attacker's favorite trick, a quote that ends your string and starts their SQL,
+            has nothing to work on: by step three, there's no SQL left to change.
+            <strong>Never trust input,</strong> and never glue it into a query, not once, not even a
+            number you've checked.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A small library you can search and add to, with MySQL and PHP in two containers. In a
+            folder, start with the database's first contents, <cde>init.sql</cde>, which MySQL runs
+            the first time it starts:
+        </p>
+        <code-block example="pdo/init.sql" />
+        <p>A <cde>Dockerfile</cde>, which is PHP's image plus the MySQL driver for PDO:</p>
+        <code-block example="pdo/Dockerfile" />
+        <p>
+            And <cde>compose.yml</cde>, which starts both and hands PHP the connection settings in
+            its environment. PHP waits until MySQL reports it's ready:
+        </p>
+        <code-block example="pdo/compose.yml" />
+        <p>The connection lives in one file, <cde>db.php</cde>, outside the web root:</p>
+        <code-block example="pdo/db.php" />
+        <p>And the page, <cde>public/index.php</cde>:</p>
+        <code-block example="pdo/public/index.php" />
+        <p>
+            Start them. The first time, it builds the PHP image and loads the books, so give it a
+            minute:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up --build</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>. Four books. Search for "austen," then add a book
+            of your own, with an accent or an apostrophe in it, like "O'Brien": it goes in, and
+            comes back out, exactly as typed. Then, from a second terminal, search the way an
+            attacker would:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl --get --data-urlencode "q=' OR '1'='1" http://localhost:8000/</code-block>
+        <p>
+            "0 books." The quotes and the <cde>OR</cde> went to MySQL as a value, so it looked for a
+            book with <cde>' OR '1'='1</cde> in its title, and there isn't one. Glued into the SQL
+            instead, the same text would have rewritten the query. The search box also shows your
+            search back to you through <cde>htmlspecialchars()</cde>, and every title on the page
+            goes through it too: what comes out of the database was input once.
+        </p>
+        <p>
+            <cde>Ctrl+C</cde> stops both. <cde>docker compose down -v</cde> deletes the database
+            too, so the next start loads <cde>init.sql</cde> fresh.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>new PDO($dsn, $user, $password, $options)</cde>, with
+                <cde>charset=utf8mb4</cde> in the DSN and the three options above.
+            </li>
+            <li>
+                <cde>$pdo-&gt;prepare($sql)</cde> then <cde>$statement-&gt;execute($values)</cde>:
+                every query with a value in it.
+            </li>
+            <li>
+                <cde>fetch()</cde> for one row (or <cde>false</cde> if there isn't one),
+                <cde>fetchAll()</cde> for all of them, <cde>fetchColumn()</cde> for one value.
+            </li>
+            <li><cde>$pdo-&gt;lastInsertId()</cde>: the id MySQL just gave a new row.</li>
+            <li>
+                <cde>$statement-&gt;rowCount()</cde>: how many rows an <cde>UPDATE</cde> or
+                <cde>DELETE</cde> changed.
+            </li>
+            <li><cde>getenv('DB_PASSWORD')</cde>: the settings, from the environment.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never glue input into SQL.</strong> Not "just this once," not a number you
+                cast, not an id from your own link. Placeholders, every time, so you never have to
+                decide whether this one was safe.
+            </li>
+            <li>
+                <strong>Placeholders are for values only.</strong> A table name, a column name, or
+                <cde>ASC</cde> and <cde>DESC</cde> can't be placeholders. When those come from a
+                visitor, like a "sort by" link, pick from an allow list of your own exact strings.
+            </li>
+            <li>
+                <strong>LIKE has its own wildcards.</strong> <cde>%</cde> and <cde>_</cde> in a
+                search mean "anything," so a search for <cde>%</cde> matches every row. Escape them,
+                as the example does with <cde>addcslashes()</cde>.
+            </li>
+            <li>
+                <strong>A named placeholder can't be used twice.</strong> With real prepared
+                statements, <cde>:pattern</cde> twice in one query is an error. Give each its own
+                name, like <cde>:in_title</cde> and <cde>:in_author</cde>.
+            </li>
+            <li>
+                <strong>What comes out of the database is input.</strong> It got in from somewhere.
+                Escape it on the way into HTML, every time, or the database delivers a stored attack
+                to every visitor: <lnk to="/php/xss">XSS</lnk>.
+            </li>
+            <li>
+                <strong>Connection errors can leak.</strong> A failed <cde>new PDO()</cde> throws an
+                exception whose message names the database user, and sometimes the host. With
+                display_errors off, as
+                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk> said, it goes
+                to the log, not the page.
+            </li>
+        </list>
+
+        <side-story title="admin@example.com">
+            One of my apps had seed scripts: SQL that fills a fresh database with starting data,
+            like <cde>init.sql</cde> here. One of them created an admin account,
+            <cde>admin@example.com</cde>, with the password <cde>password</cde>. Handy on a laptop.
+            But the seeds ran on production deploys too, until they were stopped. Starting data is
+            code that runs against your real database, so check where it runs.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Two columns, one array">
+            <p>
+                <cde
+                    >$pdo-&gt;query('SELECT id, title FROM books ORDER BY
+                    title')-&gt;fetchAll(PDO::FETCH_KEY_PAIR)</cde>
+                gives you <cde>[id =&gt; title]</cde>, ready for a <cde>select</cde> menu. (Plain
+                <cde>query()</cde> is fine here because there's no value in the SQL. The moment
+                there is one, <cde>prepare()</cde>.)
+            </p>
+        </two-dollars>
+
+        <p>
+            PHP and MySQL are talking. Next, the language they talk in, the start of the Database
+            section: SQL.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/sql">Next: SQL &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

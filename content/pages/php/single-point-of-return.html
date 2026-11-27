@@ -1,0 +1,195 @@
+<layout name="default" title="Single Point of Return" />
+<page-head>
+    <meta
+        name="description"
+        content="One way out of a function: build the result, then return it once, at the bottom. Where the rule comes from, what it's good for, and how it gets along with returning early from guard clauses. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="single point of return, single exit, single entry single exit, structured programming, guard clauses, return early, Dijkstra, readable code, PHP functions, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="One way out of a function, and how it gets along with returning early. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="single-point-of-return">Single Point of Return</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Return Early said: answer the stopping cases first and get out. There's an older rule
+            that sounds like its opposite: a function gets one <cde>return</cde>, at the end. I
+            wrote code that way, strictly, for a few years, and I still think the rule is mostly
+            right. It just needs one exception, and the exception is Return Early.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-single-point-of-return">What's a Single Point of Return?</heading>
+        <p>
+            A function with exactly one way out. It works out its answer into a variable, and the
+            last line returns that variable. However the answer was reached, it leaves through the
+            same door.
+        </p>
+
+        <heading h3 id="what-its-good-for">What It's Good For</heading>
+        <list>
+            <li>
+                <strong>One place to look.</strong> Every answer the function gives passes one line.
+                Log it there, or put a breakpoint there, and you see all of them.
+            </li>
+            <li>
+                <strong>One place to finish.</strong> Anything that has to happen after the work,
+                logging, closing, counting, happens once, above the <cde>return</cde>, and can't be
+                skipped.
+            </li>
+            <li>
+                <strong>A result with a name.</strong> <cde>return $cents;</cde> says what comes
+                back. Six scattered returns of six expressions don't.
+            </li>
+        </list>
+
+        <side-story title="Single Entry, Single Exit">
+            The rule comes from structured programming, in the 1960s and 70s. In languages of that
+            era, a subroutine could be entered at more than one point, and FORTRAN even let a
+            subroutine return to different places in its caller. "Single entry, single exit" meant
+            one way in and one way back. Edsger Dijkstra's 1968 letter "Go To Statement Considered
+            Harmful" was part of the same push: code you can follow from top to bottom.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>Here's how the two rules share a function:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <strong>Guards at the top return early.</strong> Bad arguments, nothing to do, not
+                allowed. They leave before any work starts, so there's nothing to finish and nothing
+                to log.
+            </li>
+            <li>
+                <strong>The work builds one result.</strong> One variable, named for what it is, set
+                and adjusted as the function goes.
+            </li>
+            <li>
+                <strong>Anything that has to happen to every result happens next</strong>, once.
+            </li>
+            <li>
+                <strong>One <cde>return</cde>, at the bottom.</strong>
+            </li>
+        </ol>
+        <p>
+            Early returns are for the cases where the function never really started. A single return
+            is for everything that did. What you avoid is the third kind: a
+            <cde>return</cde> in the middle of the work, which leaves without doing the finishing.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A shipping quote, where every quote is supposed to be logged. In a folder, make
+            <cde>rates.php</cde>, the rates and a stand-in logger:
+        </p>
+        <code-block example="single-point-of-return/rates.php" />
+        <p>
+            Then a <cde>before</cde> folder with <cde>shipping.php</cde>, which returns from
+            wherever it knows the answer:
+        </p>
+        <code-block example="single-point-of-return/before/shipping.php" />
+        <p>
+            And an <cde>after</cde> folder with its own <cde>shipping.php</cde>: guards that return
+            early, then one result and one return:
+        </p>
+        <code-block example="single-point-of-return/after/shipping.php" />
+        <p><cde>run.php</cde> gets the same five quotes from either one:</p>
+        <code-block example="single-point-of-return/run.php" />
+        <p>Run both:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php before
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block>
+        <p>
+            The prices are the same. The log isn't. <cde>before</cde> logged two of the four real
+            quotes: the light US parcel and the Canadian one left through returns that came before
+            the logging, and nobody noticed, because the prices were right. <cde>after</cde> logged
+            all four. The download, at 0g, isn't logged by either, and that's the guard doing its
+            job: there was no quote to log.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>match</cde> is a single point of return in one expression:
+                <cde>$cents = match (true) { ... };</cde> picks one result, then you carry on.
+            </li>
+            <li>
+                <cde>??</cde> and <cde>+=</cde> let you start with a default and adjust it, like
+                <cde>after/shipping.php</cde>, instead of branching to separate returns.
+            </li>
+            <li>
+                <cde>try</cde>/<cde>finally</cde> runs the <cde>finally</cde> block on every way
+                out, returns and exceptions included. It's the tool for cleanup when a function
+                can't be shaped this way.
+            </li>
+            <li>
+                A <cde>void</cde> function has no result, so the rule there is simply: no
+                <cde>return</cde> in the middle of the work.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Strict single return brings back the arrow.</strong> With no early returns
+                at all, every guard becomes an <cde>if</cde> wrapping the rest, and you're back to
+                the nesting from <lnk to="/php/return-early">Return Early</lnk>. That's why the
+                guards get their exception.
+            </li>
+            <li>
+                <strong>Don't fake it with a flag.</strong> <cde>$done = true;</cde> and an
+                <cde>if (!$done)</cde> around every later step is a return in disguise, and harder
+                to read than the real thing.
+            </li>
+            <li>
+                <strong>A guard that does work isn't a guard.</strong> If the early case needs
+                logging too, it's part of the work. Let it set the result and fall through to the
+                bottom with the rest.
+            </li>
+            <li>
+                <strong>Exceptions are another way out.</strong> Code above the
+                <cde>return</cde> doesn't run when something throws. If it must run no matter what,
+                it goes in <cde>finally</cde>.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name the result after the answer">
+            <p>
+                Call the variable you return what it is: <cde>$cents</cde>, <cde>$user</cde>,
+                <cde>$isAllowed</cde>. Never <cde>$result</cde> or <cde>$ret</cde>. Then the last
+                line of every function tells you what it gives back, and a reader skimming for the
+                return finds it at once.
+            </p>
+        </two-dollars>
+
+        <p>
+            Functions return values. A web app also returns something to the browser: a status code,
+            and it has a lot of them to choose from. Next: expressive HTTP response codes, and when
+            not to be.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/expressive-response-codes"
+                >Next: Expressive HTTP Response Codes, and When Not to Be &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,243 @@
+<layout name="default" title="Migrations" />
+<page-head>
+    <meta
+        name="description"
+        content="Changing a database that already has data in it: migrations, numbered files of changes, applied in order and recorded so each runs once. They only go forward: no down(), and a reversal is just another migration. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="database migrations, schema migrations, ALTER TABLE, roll forward, no down migration, migration runner, schema changes, deploy, seed data, MySQL, PHP migrations, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Changing a database that already has data in it. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="migrations">Migrations</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every Try It in this section started from an empty database, with an
+            <cde>init.sql</cde> that built the tables from scratch. That only works once. A real
+            app's database is full of rows that have to survive, and the tables still have to
+            change: a new column, a new index, a new table, a column that turned out to be a
+            mistake. And the change has to happen the same way on your laptop, on everyone else's,
+            and on the live server. Migrations are how.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-migration">What's a Migration?</heading>
+        <p>
+            One change to the database, written down in a file, with a name that sorts in the order
+            the changes were made:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>migrations/
+    2026_11_01_0900_create_users.sql
+    2026_11_08_1400_add_phone_to_users.sql</code-block>
+        <p>
+            The files live in git, next to the code that needs them. Together they're the whole
+            history of the database's shape: start with nothing, apply them all in order, and you
+            get today's tables.
+        </p>
+
+        <heading h3 id="the-runner">The Runner</heading>
+        <p>
+            A small script that brings a database up to date. The database keeps its own list, in a
+            <cde>migrations</cde> table, of which files it has had. The runner applies every file
+            that isn't on the list, in order, and adds each one to the list as it goes. Run it
+            twice, and the second time it does nothing.
+        </p>
+
+        <heading h3 id="forward-only">Forward Only</heading>
+        <p>
+            Many migration tools have each migration come in two halves: <cde>up()</cde>, which
+            makes the change, and <cde>down()</cde>, which undoes it, so you can roll back. This
+            course doesn't write <cde>down()</cde>. Migrations go forward, and when a change has to
+            be undone, the undoing is a new migration.
+        </p>
+        <list>
+            <li>
+                <strong>Nobody runs the downs.</strong> They're written once, rarely tested, and run
+                for the first time on the worst day, against production.
+            </li>
+            <li>
+                <strong>Undoing isn't free.</strong> The <cde>down()</cde> of "add a column" drops
+                it, along with everything people typed into it since. That should be a decision you
+                make and write down, not a side effect of a rollback.
+            </li>
+            <li>
+                <strong>The history stays true.</strong> Every database got every change in the same
+                order, and the files say exactly what happened, including the mistakes and their
+                fixes.
+            </li>
+        </list>
+
+        <side-story title="Seeds Aren't Migrations">
+            Seed scripts fill a new database with sample rows, so there's something to click on in
+            development. One of my apps had seeds that created an admin account,
+            <cde>admin@example.com</cde>, with the password <cde>password</cde>, and the deploy ran
+            them on production, every time, until we caught it and stopped it. Migrations change the
+            shape of every database the same way. Seeds are for your laptop, and never go near the
+            live one.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                You need a change. You write a new file, named with the date and time and what it
+                does, and commit it with the code that uses it.
+            </li>
+            <li>
+                Everyone who pulls your code runs the runner, and their database gets the change.
+            </li>
+            <li>
+                The deploy runs the runner on the live database, before the new code starts taking
+                requests.
+            </li>
+            <li>
+                If the change was wrong, you write another file that fixes it, and it goes out the
+                same way.
+            </li>
+        </ol>
+        <p>
+            Step three means that for a moment, the old code runs against the new tables. So make
+            changes the old code can live with: add a column that can be <cde>NULL</cde>, deploy,
+            fill it in, and only then make it <cde>NOT NULL</cde>, in a later migration.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A runner, two migrations, and a third that undoes the second. The same
+            <cde>compose.yml</cde>, <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL. This
+            time, <cde>init.sql</cde> is empty on purpose:
+        </p>
+        <code-block example="migrations/init.sql" />
+        <p>Make a <cde>migrations</cde> folder, with the first two changes in it:</p>
+        <code-block example="migrations/migrations/2026_11_01_0900_create_users.sql" />
+        <code-block example="migrations/migrations/2026_11_08_1400_add_phone_to_users.sql" />
+        <p>Then the runner, <cde>migrate.php</cde>:</p>
+        <code-block example="migrations/migrate.php" />
+        <p>Start the database, and bring it up to date, twice:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose run --rm php php migrate.php
+docker compose run --rm php php migrate.php</code-block>
+        <p>
+            The first run applies both, in order. The second says there's nothing to do, because the
+            <cde>migrations</cde> table already lists them. Add a user, with a phone number, from
+            the <cde>mysql</cde> command:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `users` (`email`, `name`, `phone`)
+VALUES ('alice@example.com', 'Alice', '555-0100');
+
+SELECT *
+FROM `migrations`;</code-block>
+        <p>
+            Type <cde>exit</cde>. Now, it turns out, the phone column was a mistake. Don't edit or
+            delete the migration that added it: it has already run, here and, in real life, on every
+            other database. Undo it going forward, with a new migration. Make it in a
+            <cde>later</cde> folder:
+        </p>
+        <code-block example="migrations/later/2026_11_27_1000_drop_phone_from_users.sql" />
+        <p>
+            Then move it into <cde>migrations</cde>, the way it would arrive in a pull, and migrate:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>cp later/2026_11_27_1000_drop_phone_from_users.sql migrations/
+docker compose run --rm php php migrate.php</code-block>
+        <p>
+            Only the new one runs. Look at <cde>users</cde> again, and the phone column is gone,
+            Alice's number with it. That's what undoing it means, and now it's a decision written
+            down in a file, not something a rollback did on its own. The <cde>migrations</cde> table
+            lists all three, in the order they happened. When you're done, take the copy back out,
+            so the example starts clean next time, and throw the data away:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>rm migrations/2026_11_27_1000_drop_phone_from_users.sql
+docker compose down -v</code-block>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>glob(__DIR__ . '/migrations/*.sql')</cde> lists the files, and
+                <cde>sort()</cde> puts them in order, which is why the names start with the date.
+            </li>
+            <li>
+                <cde>$pdo-&gt;exec($sql)</cde> runs a statement with no values in it, like an
+                <cde>ALTER TABLE</cde>. A migration is your own file, not input, which is the only
+                reason it can be run without placeholders.
+            </li>
+            <li>
+                Real projects often use a library for this, like Phinx or Doctrine Migrations, or
+                the one that comes with their framework. They do the same thing: a list of files, a
+                table of what's been applied, and a command that applies the rest. You can use them
+                forward only, too: leave <cde>down()</cde> empty.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never edit a migration that has run anywhere else.</strong> Every database
+                that already had it skips it, by name, so your edit only reaches new databases, and
+                the two drift apart. Write a new one.
+            </li>
+            <li>
+                <strong>One change per file.</strong> In MySQL, <cde>CREATE</cde>,
+                <cde>ALTER</cde> and <cde>DROP</cde> commit on their own, so they can't be wrapped
+                in a transaction (that was in <lnk to="/php/transactions">Transactions</lnk>). A
+                file with three changes that fails on the second leaves the first done and the file
+                not recorded. With one change per file, a failure leaves nothing half-done.
+            </li>
+            <li>
+                <strong>Big tables take time.</strong> An <cde>ALTER TABLE</cde> on a table with
+                millions of rows can take minutes, and some changes block writes while they run. Try
+                it on a copy of production-sized data before you run it on the real thing.
+            </li>
+            <li>
+                <strong>Seeds and test data stay out.</strong> Migrations change the shape of every
+                database, including the live one. Sample rows, test users and admin accounts with
+                known passwords don't belong in them.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name it with the time, not a number">
+            <p>
+                Name migrations with the date and time, like <cde>2026_11_27_1000_...</cde>, not
+                <cde>003_...</cde>. Two people working on two branches will both write
+                <cde>003</cde>, and the order their changes run in comes down to the alphabet. Two
+                people almost never pick the same minute, and the names still sort in the order the
+                changes were written.
+            </p>
+        </two-dollars>
+
+        <p>
+            The database holds what an app knows for good: users, orders, posts. Between one request
+            and the next, an app also needs to remember who's clicking, for a little while. Next, in
+            PHP Not So Basics: sessions.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/sessions">Next: Sessions &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

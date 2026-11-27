@@ -1,0 +1,209 @@
+<layout name="default" title="Single Point of Entry" />
+<page-head>
+    <meta
+        name="description"
+        content="Send every request through one file, public/index.php, which sets up once, checks once and picks the page from a list. Why one front door beats a file per page, and how to set it up in PHP's server and nginx. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="single point of entry, front controller, index.php, router, routing, php -S router script, nginx try_files, FallbackResource, local file inclusion, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Every request through one front door. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="single-point-of-entry">Single Point of Entry</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            MVC ended with two entry points, <cde>index.php</cde> and <cde>item.php</cde>, that
+            repeated the same setup line for line. Two is annoying. Twenty is a security problem,
+            because the setup is where the login check lives, and one of the twenty will forget it.
+            The fix is to have one entry point, and send every request through it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-single-point-of-entry">What's a Single Point of Entry?</heading>
+        <p>
+            One PHP file, usually <cde>public/index.php</cde>, that every request goes to, whatever
+            its URL. It's also called a front controller. It does the setup once, looks the path up
+            in a list of routes, checks whether this visitor may see it, and only then runs the code
+            for that page. The pages themselves move out of the web root, where no URL can reach
+            them directly.
+        </p>
+
+        <heading h3 id="routes">Routes</heading>
+        <p>
+            The list that maps a URL, like <cde>/account</cde>, to the code that handles it, and
+            often to who may use it. Because the list is yours, the URL can only ever pick one of
+            your rows. It never gets to name a file.
+        </p>
+
+        <side-story title="A Pattern With a Book">
+            Martin Fowler gave "Front Controller" its name in
+            <em>Patterns of Enterprise Application Architecture</em>, in 2002, alongside many of the
+            other patterns in this section. PHP sites were mostly a file per page then. The PHP
+            frameworks that arrived over the next few years, like Symfony, CakePHP and CodeIgniter,
+            sent everything through one <cde>index.php</cde>.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The web server is told: if the URL is a real file in <cde>public/</cde>, like a
+                stylesheet, send it; otherwise, run <cde>index.php</cde>.
+            </li>
+            <li>
+                <cde>index.php</cde> does the setup every page needs: settings, autoloader, user.
+            </li>
+            <li>It looks up the path in the routes. No route, <cde>404</cde>.</li>
+            <li>
+                It checks the route's rules against the visitor: logged in, the right role. One
+                check, for every page, written once.
+            </li>
+            <li>It runs the page's code, often a controller method, and sends the result.</li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A café with three pages, built the old way first. In a folder, make
+            <cde>before/includes/bootstrap.php</cde>, with pretend logins:
+        </p>
+        <code-block example="single-point-of-entry/before/includes/bootstrap.php" />
+        <p><cde>before/includes/auth.php</cde>, which every protected page must require:</p>
+        <code-block example="single-point-of-entry/before/includes/auth.php" />
+        <p>And three pages in <cde>before/public/</cde>: <cde>index.php</cde>,</p>
+        <code-block example="single-point-of-entry/before/public/index.php" />
+        <p><cde>account.php</cde>,</p>
+        <code-block example="single-point-of-entry/before/public/account.php" />
+        <p>and <cde>admin.php</cde>, where someone forgot a line:</p>
+        <code-block example="single-point-of-entry/before/public/admin.php" />
+        <p>Serve it, and visit the admin page as nobody at all:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t before/public
+curl http://localhost:8000/admin.php</code-block>
+        <p>
+            Everyone's email addresses, for anyone who asks. Nothing warned you, because nothing
+            knew the page was meant to be protected. Now one front door. Copy
+            <cde>bootstrap.php</cde> to <cde>after/src/app.php</cde>, then make
+            <cde>after/src/routes.php</cde>:
+        </p>
+        <code-block example="single-point-of-entry/after/src/routes.php" />
+        <p>
+            The pages go in <cde>after/pages/</cde>, outside the web root, and only print.
+            <cde>home.php</cde>, <cde>account.php</cde> and <cde>admin.php</cde>:
+        </p>
+        <code-block example="single-point-of-entry/after/pages/home.php" />
+        <code-block example="single-point-of-entry/after/pages/account.php" />
+        <code-block example="single-point-of-entry/after/pages/admin.php" />
+        <p>
+            And the front door, <cde>after/public/index.php</cde>, with a stylesheet,
+            <cde>after/public/style.css</cde>, beside it to show real files still work:
+        </p>
+        <code-block example="single-point-of-entry/after/public/style.css" />
+        <code-block example="single-point-of-entry/after/public/index.php" />
+        <p>
+            Start PHP's server with <cde>index.php</cde> named at the end, which makes it the router
+            script for every request:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t after/public after/public/index.php</code-block>
+        <p>Then try the admin page three ways:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/admin
+curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/admin
+curl -i -H 'Authorization: Bearer root-token' http://localhost:8000/admin</code-block>
+        <p>
+            A stranger gets <cde>404</cde>. So does Alice, who is logged in but isn't an admin: from
+            <lnk to="/php/expressive-response-codes">Expressive HTTP Response Codes</lnk>, a page
+            you can't have doesn't admit it exists. Only Ada, the admin, gets in.
+            <cde>/account</cde> asks for a login, <cde>/admin.php</cde> is a <cde>404</cde> because
+            there's no such route, and <cde>/style.css</cde> comes back as a stylesheet. A new page
+            is a row in <cde>routes.php</cde>, and it can't forget its check, because it never had
+            one of its own.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>php -S 0.0.0.0:8000 -t public public/index.php</cde>: a router script for the
+                built-in server. Returning <cde>false</cde> from it tells the server to send the
+                file itself.
+            </li>
+            <li>
+                In nginx: <cde>try_files $uri /index.php?$query_string;</cde>. In Apache:
+                <cde>FallbackResource /index.php</cde>. Both mean "the file if it exists, otherwise
+                the front door."
+            </li>
+            <li>
+                <cde>parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)</cde> gets the path without
+                the query string, ready to look up.
+            </li>
+            <li>
+                Real routers, like <cde>nikic/fast-route</cde> through Composer, add placeholders
+                (<cde>/notes/{id}</cde>) and methods. The idea is the same table.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never let the URL name the file.</strong>
+                <cde>require "pages/{$_GET['page']}.php"</cde> looks like a shortcut to the same
+                thing, and it lets a visitor pick any file on the server, with <cde>../</cde> to
+                climb out. That's called local file inclusion.
+                <lnk to="/php/never-trust-input">Never trust input</lnk>: the URL picks a row in
+                your table, and your table names the file.
+            </li>
+            <li>
+                <strong>The "is it a real file" check is input handling too.</strong> The path in it
+                came from the visitor. <cde>index.php</cde> resolves it with
+                <cde>realpath()</cde> and makes sure it's still inside <cde>public/</cde> before it
+                hands anything to the server.
+            </li>
+            <li>
+                <strong>Old pages left in the web root still answer.</strong> Moving to a front
+                controller means deleting the old <cde>admin.php</cde>, not just no longer linking
+                to it. A forgotten file is a second door.
+            </li>
+            <li>
+                <strong>The 404 has to come from you.</strong> With every unknown URL sent to
+                <cde>index.php</cde>, nothing else will send one. Make sure "no route" really
+                answers <cde>404</cde>, or every typo is a <cde>200</cde>.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Print your routes">
+            <p>
+                Keep the routes in one file you can read top to bottom, with who may see each one on
+                the same line. Every so often, read the whole list. It's the map of your app's
+                doors, and it's the fastest way to spot the one that's missing its lock.
+            </p>
+        </two-dollars>
+
+        <p>
+            Most of the routes in most apps do the same four things to different kinds of data: make
+            one, show it, change it and delete it. Next: CRUD.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/crud">Next: CRUD &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

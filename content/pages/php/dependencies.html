@@ -1,0 +1,270 @@
+<layout name="default" title="Your Dependencies Are Your Code Too" />
+<page-head>
+    <meta
+        name="description"
+        content="Most of the code your site runs was written by someone else, and its holes are yours. Lock files, composer audit, npm audit, and updating an old package with known vulnerabilities. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="dependencies, composer audit, npm audit, composer.lock, security advisories, CVE, composer update, supply chain attacks, xz backdoor, left-pad, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Most of the code your site runs isn't yours, and its holes are. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="dependencies">Your Dependencies Are Your Code Too</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/security-headers">Security Headers</lnk> finished the work on your own
+            code. But on most sites, your own code is the small part. One
+            <cde>composer require</cde> brings in a package, and the packages it needs, and the ones
+            they need. Every one of them runs with all the access your app has. When one of them has
+            a hole, your site has the hole. Nobody visiting can tell whose code it was.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-dependency">What's a Dependency?</heading>
+        <p>
+            Code your project uses that someone else wrote and maintains: a library you installed
+            with <lnk to="/php/autoloading">Composer</lnk>, or with npm for JavaScript. The ones you
+            asked for are direct dependencies. The ones they brought with them are transitive, and
+            there are usually more of those.
+        </p>
+
+        <heading h3 id="whats-a-lock-file">What's a Lock File?</heading>
+        <p>
+            <cde>composer.json</cde> says what you'll accept:
+            <cde>"guzzlehttp/guzzle": "^7.4"</cde> means any 7.x from 7.4 up.
+            <cde>composer.lock</cde> records exactly which version of every package was installed,
+            transitive ones included. Commit both. <cde>composer install</cde> installs what the
+            lock file says, so every machine gets the same code. <cde>composer update</cde> picks
+            new versions within your rules and rewrites the lock file.
+        </p>
+        <p>
+            That's the catch. A lock file keeps you on the versions you had the day you made it,
+            forever, until someone runs an update.
+        </p>
+
+        <heading h3 id="whats-an-advisory">What's an Advisory?</heading>
+        <p>
+            A published notice that some versions of a package have a known security hole: which
+            versions, how bad, and which version fixes it. Many get a CVE number, a public id for
+            the vulnerability. Packagist, Composer's package list, collects them for PHP packages,
+            and <cde>composer audit</cde> checks your lock file against them.
+        </p>
+
+        <side-story title="Half a Second">
+            In March 2024, Andres Freund, a Microsoft engineer who works on PostgreSQL, noticed that
+            SSH logins on a test machine were using more processor time than they should, about half
+            a second slower. He followed it into xz, a compression library almost every Linux system
+            has, and found a backdoor. A contributor had spent around two years earning the
+            project's trust before slipping it in. It was caught weeks before it would have reached
+            the stable releases of the major Linux distributions.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>You require a package. Composer picks a version and writes it in the lock file.</li>
+            <li>Months pass. The lock file keeps installing that same version, everywhere.</li>
+            <li>
+                Someone finds a hole in it. The maintainers fix it in a new version, and an advisory
+                is published.
+            </li>
+            <li>
+                Your site is now running code with a published hole: published means attackers can
+                read about it too.
+            </li>
+            <li>
+                <cde>composer audit</cde> compares your lock file with the advisories and lists what
+                it finds. <cde>composer require</cde> and <cde>composer update</cde> mention it too.
+            </li>
+            <li>
+                You update the package, run your <lnk to="/php/testing">tests</lnk>, and deploy. The
+                audit comes back clean.
+            </li>
+        </ol>
+        <p>
+            Steps two to four happen without you. Only five and six take any effort, and they only
+            happen if you make them a habit.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A project that depends on Guzzle, a popular HTTP client, and was set up a while ago. In
+            a folder, make <cde>composer.json</cde>:
+        </p>
+        <code-block example="dependencies/composer.json" />
+        <p>
+            You also need its <cde>composer.lock</cde>, which pins Guzzle at 7.4.0, from October
+            2021. Copy it from the examples repo, from the same folder as <cde>composer.json</cde>;
+            it's long, and you'd never write one by hand. Then <cde>version.php</cde>, which reports
+            what's installed:
+        </p>
+        <code-block example="dependencies/version.php" />
+        <p>Install from the lock file, and run it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
+        <p>
+            <cde>Guzzle 7.4.0</cde>, after a screenful of warnings: "Implicitly marking parameter
+            ... as nullable is deprecated." Code from 2021 uses a style PHP 8.4 has started to
+            complain about. Old dependencies don't stay still; the language moves on around them.
+            Two more questions worth asking any project:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer outdated --direct
+docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</code-block>
+        <p>
+            The first lists what's behind, and by how much. The second says why a package you never
+            asked for is installed: Guzzle requires it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>composer audit</cde>: known advisories for what's in the lock file. It exits
+                non-zero if it finds any, so a script or a CI job can stop on it.
+            </li>
+            <li>
+                <cde>composer outdated --direct</cde>: your direct dependencies with newer versions.
+            </li>
+            <li><cde>composer why vendor/package</cde>: what pulled a package in.</li>
+            <li>
+                <cde>composer update vendor/package --with-all-dependencies</cde>: update one
+                package, and whatever it needs updated along with it.
+            </li>
+            <li>
+                <cde>composer install --no-dev</cde> in production, from the committed lock file.
+                Never <cde>composer update</cde> on a server.
+            </li>
+            <li>For JavaScript, <cde>npm audit</cde> does the same against npm's advisories.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Your version rules can hide a major upgrade.</strong>
+                <cde>^7.4</cde> never installs 8.0. When the fixes only come in a new major version,
+                <cde>composer update</cde> says nothing; <cde>composer outdated</cde> shows it, and
+                the upgrade takes real work.
+            </li>
+            <li>
+                <strong>Installing a package runs its code.</strong> Composer plugins and scripts
+                run at install time, which is why Composer asks before allowing a plugin
+                (<cde>allow-plugins</cde>). Read what you're allowing. A package name one letter off
+                from a popular one is a classic trap.
+            </li>
+            <li>
+                <strong>Copied files aren't audited.</strong> A JavaScript library downloaded into
+                <cde>public/js</cde> years ago isn't in any lock file, so no audit will ever warn
+                you about it.
+            </li>
+            <li>
+                <strong>Abandoned packages get no fixes.</strong> If nobody maintains it, the next
+                hole stays open. Composer marks packages their authors have abandoned; plan to
+                replace them.
+            </li>
+            <li>
+                <strong>Data from a library is still input.</strong> A response parsed by Guzzle, a
+                value decoded by a JSON library, a header from an API: it came from outside your
+                code. <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>, whoever's code carried it in.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            Your project installed cleanly, and it works. Ask Composer what's known to be wrong with
+            it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer audit</code-block>
+        <!-- prettier-ignore -->
+        <code-block>Found 14 security vulnerability advisories affecting 1 package:
+...
+| Package           | guzzlehttp/guzzle                                     |
+| Severity          | high                                                  |
+| CVE               | CVE-2022-29248                                        |
+| Title             | Cross-domain cookie leakage                           |
+| Affected versions | &gt;=7,&lt;7.4.3|&gt;=4,&lt;6.5.6                                 |
+...</code-block>
+        <p>
+            Fourteen when this was written; more will have been found by the time you run it. That
+            one from 2022 means Guzzle 7.4.0 could send cookies set by one site to another. Others
+            leak <cde>Authorization</cde> headers when a request is redirected. No attack on your
+            code needed: your site would do it for the attacker, on its own, through a library you
+            installed once and forgot. Each advisory has a link with the details, which attackers
+            read too.
+        </p>
+        <p>
+            Notice also how you got here: <cde>composer install</cde> installed it without a fuss,
+            because the lock file asked for it. Recent versions of Composer refuse to pick a version
+            with known advisories when resolving a new one, but a lock file made before the
+            advisories were published installs exactly as written.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>Update Guzzle:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer update guzzlehttp/guzzle</code-block>
+        <p>
+            It refuses: the newer Guzzle needs a newer version of one of its own dependencies, which
+            the lock file is holding back, and the message suggests
+            <cde>--with-all-dependencies</cde>. So:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer update guzzlehttp/guzzle --with-all-dependencies
+docker run --rm -v "$PWD":/app -w /app composer:2 composer audit
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
+        <p>
+            Guzzle and two of its dependencies upgrade, the lock file is rewritten, and the audit
+            says "No security vulnerability advisories found." <cde>version.php</cde> reports the
+            new 7.x version, without the warnings. In a real project, the next step is your test
+            suite, then committing the new <cde>composer.lock</cde>, then deploying it.
+        </p>
+
+        <side-story title="Eleven Lines">
+            In March 2016, a developer removed all of his packages from npm after a dispute over a
+            package name. One was left-pad, eleven lines that added spaces to the start of a string.
+            Thousands of projects depended on it, most without knowing, through other packages, and
+            their builds broke all at once. npm restored it within hours, and changed its rules so
+            that a package others depend on can't simply be withdrawn.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Audit on a schedule, not on a whim">
+            <p>
+                Add <cde>composer audit</cde> to your CI, and run it on a timer as well as on every
+                push: once a week, on a project nobody has touched, is when it earns its keep.
+                Advisories are published about code you haven't changed, so a project that passed
+                last month can fail today. A failing build in your inbox beats finding out from
+                someone else.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's the end of Security. Next, the technologies the web itself is built from,
+            starting with the one every page is made of: HTML.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/html">Next: HTML &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

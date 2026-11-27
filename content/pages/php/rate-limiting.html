@@ -1,0 +1,273 @@
+<layout name="default" title="Rate Limiting" />
+<page-head>
+    <meta
+        name="description"
+        content="A login form with no limit lets anyone guess forever. Counting failures per account and per address, answering 429, and the other forms that need a limit just as much. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="rate limiting, brute force, login attempts, 429 Too Many Requests, Retry-After, credential stuffing, account lockout, REMOTE_ADDR, spam, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The login form that lets you guess forever, and how to stop it. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="rate-limiting">Rate Limiting</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk> protected the
+            login once someone has it. But a login form, out of the box, answers every guess as
+            happily as the first, as fast as anyone can send them. Every password is guessable given
+            enough tries. A rate limit decides how many tries "enough" is.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-rate-limit">What's a Rate Limit?</heading>
+        <p>
+            A cap on how often something can happen in a stretch of time: ten failed logins per
+            account in fifteen minutes, five password reset emails per address per hour, a hundred
+            API requests per key per minute. Under the cap, everything works. Over it, the server
+            stops doing the work and says so.
+        </p>
+
+        <heading h3 id="what-to-count-by">What to Count By</heading>
+        <list>
+            <li>
+                <strong>The account</strong>, like the email address being logged in to. It stops
+                many guesses at one person's password, from anywhere.
+            </li>
+            <li>
+                <strong>The IP address</strong> the request came from. It stops one machine guessing
+                at many accounts.
+            </li>
+            <li>
+                <strong>Both</strong>, which is the usual answer, with a higher limit for the
+                address, since a whole office or school can share one.
+            </li>
+        </list>
+
+        <heading h3 id="whats-a-429">What's a 429?</heading>
+        <p>
+            <cde>429 Too Many Requests</cde>, the status code for "slow down." It can come with a
+            <cde>Retry-After</cde> header saying how many seconds to wait. See
+            <lnk to="/php/request-and-response">Request and Response</lnk> for the rest of the
+            codes.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>A login arrives, with an email address, a password, and an IP address.</li>
+            <li>
+                Before checking the password, count the failures for that email, and for that
+                address, in the last fifteen minutes.
+            </li>
+            <li>
+                If either count is at its limit, answer <cde>429</cde> and stop. Don't check the
+                password at all, so a locked-out guess learns nothing, not even whether it was
+                right.
+            </li>
+            <li>
+                Otherwise, check the password. If it's wrong, record a failure: the email, the
+                address, the time. If it's right, clear that email's failures and log them in.
+            </li>
+            <li>
+                Old failures fall out of the window on their own. After fifteen quiet minutes, the
+                count is back to zero.
+            </li>
+        </ol>
+        <p>
+            Ten guesses every fifteen minutes is under a thousand a day. The hundred-word list that
+            takes eight seconds in Break It would take ten hours against one account, and a list of
+            a million would take years. The per-address limit makes spreading out across accounts
+            slow too.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A login with one member, Alice, whose password is bad on purpose. Failures get counted
+            in the database, so this is a Compose project. In a folder, make
+            <cde>compose.yml</cde>:
+        </p>
+        <code-block example="rate-limiting/compose.yml" />
+        <p>
+            The two-line <cde>Dockerfile</cde> and <cde>db.php</cde> are the same as in
+            <lnk to="/php/sql-injection">SQL Injection</lnk>. Then <cde>init.sql</cde>, with Alice
+            and a table for failed logins, indexed by email and by address, then time, because those
+            are the two questions it answers:
+        </p>
+        <code-block example="rate-limiting/Dockerfile" />
+        <code-block example="rate-limiting/db.php" />
+        <code-block example="rate-limiting/init.sql" />
+        <p>Then <cde>members.php</cde>, the password check both versions share:</p>
+        <code-block example="rate-limiting/members.php" />
+        <p>And the login, with no limit at all. Make <cde>naive.php</cde>:</p>
+        <code-block example="rate-limiting/naive.php" />
+        <p>Start everything, and log in once with a wrong password and once with the right one:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --build --wait
+curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=sunshine' http://localhost:8000/naive.php
+curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigger' http://localhost:8000/naive.php</code-block>
+        <p>"Wrong email or password," then "Welcome back." It works. Now pretend you don't know.</p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde
+                    >SELECT COUNT(*) ... WHERE `email` = ? AND `failed_at` &gt; NOW() - INTERVAL 15
+                    MINUTE</cde>, with an index that starts with the column you count by.
+            </li>
+            <li>
+                <cde>http_response_code(429)</cde> and <cde>header('Retry-After: 900')</cde> when
+                someone's over the limit.
+            </li>
+            <li>
+                <cde>$_SERVER['REMOTE_ADDR']</cde> for the address, when PHP faces visitors
+                directly. Behind a proxy or CDN, take the entry your own layer added to
+                <cde>X-Forwarded-For</cde>, as in
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+            </li>
+            <li><cde>VARCHAR(45)</cde> holds any IPv4 or IPv6 address as text.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Behind a proxy, everyone has the same address.</strong> Count by
+                <cde>REMOTE_ADDR</cde> behind a CDN, and fifty failures from anyone locks out
+                everyone. Count by the first <cde>X-Forwarded-For</cde> entry, and anyone can claim
+                a new address with every guess.
+                <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>; headers are input.
+            </li>
+            <li>
+                <strong>A per-account limit is also a way to lock someone out.</strong> Anyone can
+                send ten wrong passwords for Alice and keep her out for fifteen minutes. Keep the
+                window short, let it expire on its own, never lock an account for good, and consider
+                a bot check after a few failures instead of a hard stop.
+            </li>
+            <li>
+                <strong>Attackers spread out.</strong> Credential stuffing tries passwords leaked
+                from other sites, one or two per account, across thousands of accounts and
+                addresses. Limits slow it down;
+                <lnk to="/php/passwords">checking new passwords against leaks</lnk> and offering a
+                second factor do more.
+            </li>
+            <li>
+                <strong>Parallel requests can slip past.</strong> Twenty guesses sent at the same
+                instant can all count zero failures before any of them records one. For a login, a
+                few extra guesses rarely matter. For something like redeeming a code, lock the row
+                or count in a <lnk to="/php/transactions">transaction</lnk>.
+            </li>
+            <li>
+                <strong>The same answer, the same time.</strong> "Wrong email or password" for both
+                cases, as here. But looking up a missing email is faster than checking a bcrypt
+                hash, and the difference can be measured. Careful logins verify against a dummy hash
+                when the email doesn't exist.
+            </li>
+            <li>
+                <strong>Logins aren't the only thing.</strong> Anything that sends an email or a
+                text message, costs you money, or is slow, needs a limit: signups, password resets,
+                contact forms, search.
+            </li>
+        </list>
+
+        <side-story title="The Inbox Bomb">
+            One of my apps had a signup form that sent a verification email straight away. Someone
+            found it and started signing up strangers' addresses, so each stranger got an email they
+            never asked for, from my app. The form had become a way to flood other people's inboxes.
+            The fix was three things: no email at signup at all, rate limits on every email the app
+            sends, and a bot check on the form.
+        </side-story>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            Play the attacker. Copy <cde>words.txt</cde>, the hundred common passwords from
+            <lnk to="/php/passwords">Passwords</lnk>, into the folder, and make <cde>guess.sh</cde>,
+            which tries each one against Alice's account and prints the status code it gets back:
+        </p>
+        <code-block example="rate-limiting/guess.sh" />
+        <!-- prettier-ignore -->
+        <code-block>sh guess.sh http://localhost:8000/naive.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>401 123456
+401 password
+401 123456789
+...
+401 harley
+401 ranger
+200 tigger</code-block>
+        <p>
+            Forty-three wrong answers and one right one, in about eight seconds. Nothing stopped it,
+            nothing slowed it, and nothing anywhere noticed. With a bigger list and a few hours,
+            almost any account with a weak password falls the same way.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            Count failures before checking the password, and stop at the limit: ten per email, fifty
+            per address, in fifteen minutes. Make <cde>index.php</cde>:
+        </p>
+        <code-block example="rate-limiting/index.php" />
+        <p>Send the same guesses:</p>
+        <!-- prettier-ignore -->
+        <code-block>sh guess.sh http://localhost:8000/</code-block>
+        <!-- prettier-ignore -->
+        <code-block>401 123456
+...
+401 abc123
+429 password1
+429 1234567890
+...
+429 tigger
+...</code-block>
+        <p>
+            Ten 401s, then a 429 for everything else, including "tigger." The right password was in
+            the list, and it didn't matter: once the account was over its limit, the page stopped
+            checking. The loop runs to the end of the list without getting in. Ask with
+            <cde>curl -i</cde> to see the <cde>Retry-After: 900</cde>. To start over,
+            <cde>docker compose down -v</cde> deletes the database, failures and all.
+        </p>
+
+        <side-story title="After the Fact">
+            One of my apps got its login limit after the fact, not at launch: 10 failures per email
+            address and 50 per IP, in 15 minutes, the same numbers as this lesson. Until then, its
+            login was the naive one in Break It. That's the trouble with guessing: when it works, it
+            looks like any other login.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Log the 429s">
+            <p>
+                Write a line to your log every time a limit trips: what was limited, by which key,
+                and the count. Most days there are none. When there are suddenly hundreds, someone
+                is trying, and you find out from your own log instead of from a member whose account
+                was taken.
+            </p>
+        </two-dollars>
+
+        <p>
+            The database in this lesson had a password in <cde>compose.yml</cde>, which is fine on
+            your own computer and nowhere else. Next: secrets out of code.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/secrets-out-of-code">Next: Secrets Out of Code &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

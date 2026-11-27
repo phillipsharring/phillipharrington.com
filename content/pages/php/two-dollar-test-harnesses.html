@@ -1,0 +1,206 @@
+<layout name="default" title="Two-Dollar Test Harnesses" />
+<page-head>
+    <meta
+        name="description"
+        content="Before any testing framework: a short script that loads one piece of your code and calls it. If proving your change works means running the whole stack, the piece is too big. Pull it out until it fits in one file. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="test harness, testing PHP without a framework, small functions, testable code, email verification link, hash_hmac, hash_equals, exit codes, separating concerns, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A short script that loads one function and calls it. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="two-dollar-test-harnesses">Two-Dollar Test Harnesses</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            You changed the code that makes the "verify your email" link. Does it still work? One
+            way to find out: start the site, the database and a mail server, fill in the signup
+            form, open the email, click the link. Ten minutes, if nothing else is broken, and you'll
+            do it once and hope. The other way takes a second, and you'll run it every time you
+            save: a short script that loads that one piece and calls it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-test-harness">What's a Test Harness?</heading>
+        <p>
+            Code whose only job is to run other code and check what it does. It sets up the inputs,
+            calls the piece, and says whether the answer was right. Frameworks like PHPUnit, in the
+            next lesson, are test harnesses with a lot of conveniences. A two-dollar one is the same
+            idea with none: a plain PHP file, a <cde>require</cde>, a few calls, and
+            <cde>ok</cde> or <cde>FAIL</cde>.
+        </p>
+
+        <heading h3 id="too-big">When a Piece Is Too Big</heading>
+        <p>
+            The harness is also a test of the code's shape. Here's a signup page that does
+            everything in one place:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>$pdo = new PDO($dsn, $user, $password);
+$stmt = $pdo-&gt;prepare('INSERT INTO users (email) VALUES (?)');
+$stmt-&gt;execute([$_POST['email']]);
+$sig = hash_hmac('sha256', $_POST['email'] . '|' . (time() + 3600), getenv('LINK_SECRET'));
+$link = 'https://example.com/verify?email=' . urlencode($_POST['email']) . '&amp;sig=' . $sig;
+mail($_POST['email'], 'Verify your email', "Click here: {$link}");</code-block>
+        <p>
+            The link code is in there, but you can't reach it. To run it, you need a database to
+            insert into, a mail server to send through, a form to post, and the clock to be whatever
+            time it is. If proving one change works means running the whole stack, the mail server
+            included, the piece is too big. Pull it out until it fits in one file.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Find the piece you want to prove. Here, making the link and checking it.</li>
+            <li>
+                Move it into a function, in a file of its own, that takes everything it needs as
+                arguments: the email, the expiry time, the secret. No <cde>$_POST</cde>, no
+                <cde>time()</cde>, no <cde>getenv()</cde> inside.
+            </li>
+            <li>
+                Have the page call the function, passing in the real values. The page still does the
+                database and the mail; the function only does the link.
+            </li>
+            <li>
+                Write a harness that requires the function's file, calls it with made-up values, and
+                checks the answers.
+            </li>
+            <li>Run it after every change.</li>
+        </ol>
+        <p>
+            Step two is the same move as
+            <lnk to="/php/dependency-injection">Dependency Injection</lnk>: anything the piece used
+            to go and get, it's now given. That's what lets the harness hand it a fixed time and a
+            fake secret.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The link code, pulled out of the signup, in <cde>src/verification.php</cde>. Two
+            functions: one makes a signed link, the other checks one.
+        </p>
+        <code-block example="two-dollar-test-harnesses/src/verification.php" />
+        <p>
+            The link will come back to your site in a request, and
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: anyone can edit a URL. The signature, made with a secret only the server knows, is
+            what proves the server wrote it. Now the harness, <cde>harness.php</cde>:
+        </p>
+        <code-block example="two-dollar-test-harnesses/harness.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php harness.php</code-block>
+        <p>
+            The link, then five lines of <cde>ok</cde>: a good link works; a changed email, an
+            expired link, the wrong secret and junk are all refused. No database, no mail server, no
+            browser, and it took about as long as it took you to press Enter.
+        </p>
+        <p>Now break it on purpose. In <cde>src/verification.php</cde>, change the expiry check:</p>
+        <!-- prettier-ignore -->
+        <code-block>if ((int) $expires &lt; $now) {      // before
+if (false) {                        // after: expired links now work</code-block>
+        <p>Run the harness again, then ask for its exit code:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php harness.php
+echo $?</code-block>
+        <p>
+            <cde>FAIL an expired link is refused</cde>, and an exit code of 1 instead of 0. The
+            harness caught the bug the moment it was made. Put the line back.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>require __DIR__ . '/src/verification.php';</cde>: load only the piece, nothing
+                else.
+            </li>
+            <li>
+                Pass the time in, as <cde>int $now</cde>, and let the page call <cde>time()</cde>. A
+                fixed time makes every run of the harness the same.
+            </li>
+            <li>
+                <cde>===</cde> for the checks, so <cde>null</cde>, <cde>false</cde> and
+                <cde>''</cde> don't pass for each other.
+            </li>
+            <li>
+                <cde>exit(1)</cde> when anything fails. Other tools, and the shell's
+                <cde>&amp;&amp;</cde>, read the exit code: 0 means it worked.
+            </li>
+            <li>
+                <cde>hash_equals()</cde> compares secrets in the same time whether they match early
+                or late, so an attacker can't learn the signature a character at a time.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A harness that needs the database isn't two dollars.</strong> If yours needs
+                anything running besides PHP, the piece still has something in it that doesn't
+                belong. Pull that out too, or hand it in.
+            </li>
+            <li>
+                <strong><cde>time()</cde> inside the function makes it a moving target.</strong>
+                An expiry check that reads the clock itself can only be tested by waiting. Pass the
+                time in.
+            </li>
+            <li>
+                <strong>Keep harnesses out of the web root.</strong> A harness in
+                <cde>public/</cde> is a page anyone can run. They belong next to <cde>src/</cde>,
+                like everything else from <lnk to="/php/document-root">Document Root</lnk>.
+            </li>
+            <li>
+                <strong>Keep it, and keep running it.</strong> A harness you wrote once and deleted
+                proved the code worked once. Leave it in the project. When there are a lot of them,
+                that's when a framework earns its place.
+            </li>
+        </list>
+
+        <side-story title="Nobody Would Do That">
+            Margaret Hamilton led the team that wrote the onboard flight software for Apollo. She
+            has told how her young daughter, playing in a simulator, picked a prelaunch program in
+            the middle of a simulated flight and crashed it. Hamilton wanted to add a check for
+            that. She was told astronauts were too well trained to make that mistake. On Apollo 8,
+            Jim Lovell made it, and the navigation data had to be sent up again from the ground. The
+            mistake nobody would make is the first one to write a check for.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Make it a gate">
+            <p>
+                Because the harness exits 1 on any failure, you can chain it:
+                <cde>php harness.php &amp;&amp; git commit</cde>. If anything fails, the commit
+                never happens. Or put it in <cde>composer.json</cde>'s scripts, from
+                <lnk to="/php/autoloading">Autoloading</lnk>, as <cde>composer run check</cde>, so
+                there's one command to remember.
+            </p>
+        </two-dollars>
+
+        <p>
+            Five checks in an array is fine. Fifty, with setup, failures that show what came back
+            instead, and a report at the end, is a framework. Next: testing.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/testing">Next: Testing &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

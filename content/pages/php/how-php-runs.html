@@ -1,0 +1,229 @@
+<layout name="default" title="How PHP Actually Runs: nginx and PHP-FPM" />
+<page-head>
+    <meta
+        name="description"
+        content="How a real server runs PHP: nginx sends the files it can, and hands the rest to a pool of PHP-FPM workers over FastCGI. Why every request starts fresh, and what happens when the pool is full. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP-FPM, nginx PHP, FastCGI, fastcgi_pass, php -S, built-in server, PHP SAPI, worker pool, pm.max_children, mod_php, shared nothing, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="nginx, PHP-FPM, and what happens to a request between them. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Web Server Basics
+        </p>
+        <heading h1 id="how-php-runs">How PHP Actually Runs: nginx and PHP-FPM</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every Try It so far has used PHP's built-in server, <cde>php -S</cde>, sometimes with
+            nginx in front of it. That's the right tool on your own computer, and the wrong one on a
+            live server. Most real PHP sites run two programs: a web server, usually nginx, and
+            PHP-FPM, which keeps PHP ready to run. Document Root said a <cde>.php</cde> file gets
+            run instead of sent. This is how.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-pieces">The Pieces</heading>
+
+        <heading h3 id="the-built-in-server">PHP's Built-in Server</heading>
+        <p>
+            One program that does everything: listens for requests, sends files, runs PHP. By
+            default it handles one request at a time. PHP's own documentation says it's for
+            development and shouldn't be used on a public network. Keep it for that.
+        </p>
+
+        <heading h3 id="php-fpm">PHP-FPM</heading>
+        <p>
+            The FastCGI Process Manager. It's a master process that starts a pool of PHP workers and
+            keeps them waiting. Each worker runs one request at a time, then waits for the next. The
+            master starts more when it's busy, up to a limit, and stops some when it's quiet.
+            PHP-FPM doesn't speak HTTP at all. It only talks to a web server.
+        </p>
+
+        <heading h3 id="fastcgi">FastCGI</heading>
+        <p>
+            The protocol a web server uses to hand a request to PHP-FPM and get the answer back,
+            usually on port 9000. The request arrives as a set of named values: the script to run,
+            the method, the query string, the headers. PHP turns those into <cde>$_SERVER</cde>,
+            <cde>$_GET</cde> and the rest.
+        </p>
+
+        <heading h3 id="mod-php">Apache and mod_php</heading>
+        <p>
+            The older way, still common on shared hosting: PHP built into Apache itself, as a
+            module, so every Apache process can run PHP. Apache can also use PHP-FPM, the same way
+            nginx does.
+        </p>
+
+        <side-story title="From CGI to FPM">
+            The first way to run a program from a web server was CGI, from the NCSA server team in
+            1993: start a new program for every request, hand it the request, and send whatever it
+            prints. That's slow when the program is PHP, which has to start up every time. FastCGI,
+            from the mid-1990s, keeps the program running between requests. PHP-FPM began as a
+            separate patch, and became part of PHP itself in 2010, in PHP 5.3.3.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>A request reaches nginx.</li>
+            <li>
+                If it asks for a file that exists in the web root and isn't PHP, like
+                <cde>style.css</cde>, nginx sends it and is done. PHP never hears about it.
+            </li>
+            <li>
+                Otherwise, nginx connects to PHP-FPM and sends the request over FastCGI, including
+                which script to run: <cde>index.php</cde>, for most apps.
+            </li>
+            <li>The master gives it to a free worker, which runs the script from the top.</li>
+            <li>
+                What the script prints goes back to nginx, which sends it to the visitor. The worker
+                waits for the next request.
+            </li>
+        </ol>
+        <p>
+            The worker is reused, but nothing your code made survives. Variables, objects, open
+            database connections: all of it is gone when the request ends, and the next request
+            starts with nothing. That's why sessions and databases exist. It's also why one bad
+            request can't leave a mess behind for the next one.
+        </p>
+        <p>
+            The pool has a limit, <cde>pm.max_children</cde>. When every worker is busy, new
+            requests wait in line. If they wait long enough, nginx gives up, and the visitor gets
+            the 504 from <lnk to="/php/access-and-error-logs">Access and Error Logs</lnk>.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            nginx and PHP-FPM, each in its own container. In a folder, make a
+            <cde>public</cde> folder, and in it, <cde>index.php</cde>, which reports how it was run:
+        </p>
+        <code-block example="how-php-runs/public/index.php" />
+        <p>And a stylesheet, <cde>public/style.css</cde>, for nginx to send by itself:</p>
+        <code-block example="how-php-runs/public/style.css" />
+        <p>
+            Then <cde>nginx.conf</cde>, next to <cde>public</cde>. Files that exist go out as they
+            are; <cde>.php</cde> goes to PHP-FPM:
+        </p>
+        <code-block example="how-php-runs/nginx.conf" />
+        <p>
+            And <cde>compose.yml</cde>. It uses <cde>php:8.4-fpm</cde>, PHP-FPM's image, instead of
+            the usual <cde>php:8.4-cli</cde>:
+        </p>
+        <code-block example="how-php-runs/compose.yml" />
+        <p>Start them:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>From a second terminal:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000/</code-block>
+        <p>
+            PHP says it's running as <cde>fpm-fcgi</cde>, behind nginx. Run it a few more times and
+            watch the worker number: it switches between a few of them, the pool taking turns. Now
+            compare the headers of the page and the stylesheet:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -I http://localhost:8000/
+curl -I http://localhost:8000/style.css</code-block>
+        <p>
+            The page has <cde>X-Powered-By: PHP/8.4</cde> and more, because PHP made it. The
+            stylesheet doesn't: nginx sent it alone. Last, look at the processes:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose top php</code-block>
+        <p>
+            One <cde>php-fpm: master process</cde>, and its workers, each
+            <cde>php-fpm: pool www</cde>. <cde>Ctrl+C</cde> in the first terminal stops both.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>PHP_SAPI</cde> (or <cde>php_sapi_name()</cde>) says how PHP is running:
+                <cde>fpm-fcgi</cde>, <cde>cli-server</cde> for <cde>php -S</cde>, <cde>cli</cde> in
+                a terminal, <cde>apache2handler</cde> for mod_php.
+            </li>
+            <li>
+                <cde>$_SERVER['SCRIPT_FILENAME']</cde> is the file the web server told PHP to run.
+            </li>
+            <li>
+                <cde>fastcgi_finish_request()</cde>, under PHP-FPM only, sends the response to the
+                visitor and lets the script keep working afterward. Handy for a slow job the visitor
+                doesn't need to wait for.
+            </li>
+            <li>
+                <cde>max_execution_time</cde> limits how long a script may run. PHP-FPM has its own
+                limit too, <cde>request_terminate_timeout</cde>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Forget the PHP block, and nginx sends your source code.</strong> Without the
+                <cde>location ~ \.php$</cde> part, <cde>index.php</cde> is just a file that exists,
+                and nginx sends it as a download, every line of it. Test a new server with
+                <cde>curl</cde> before anything else.
+            </li>
+            <li>
+                <strong>Both sides need the files, at the same path.</strong> nginx tells PHP-FPM a
+                path to run. If PHP-FPM sees the files somewhere else, it can't find the script, and
+                the visitor gets "File not found." That's why both containers mount the code at
+                <cde>/app</cde>.
+            </li>
+            <li>
+                <strong>Only run PHP files that exist.</strong> <cde>try_files $uri =404</cde> in
+                the PHP block stops an old trick, where a path like
+                <cde>/uploads/cat.jpg/x.php</cde> got an uploaded image run as PHP. Uploads are
+                input, and <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>; this one line keeps them from running.
+            </li>
+            <li>
+                <strong>The pool size is a memory budget.</strong> Every worker uses memory, so
+                <cde>pm.max_children</cde> times the memory per worker has to fit on the server. Too
+                few workers, and visitors wait; too many, and the server runs out of memory.
+            </li>
+            <li>
+                <strong>PHP-FPM reads its settings when it starts.</strong> Change
+                <cde>php.ini</cde> or a pool file, and nothing happens until it reloads.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Hide the version">
+            <p>
+                <cde>X-Powered-By: PHP/8.4.28</cde> tells every scanner which version you run, and
+                so which bugs to try. <cde>expose_php = Off</cde> in <cde>php.ini</cde> removes it,
+                and <cde>server_tokens off;</cde> in nginx drops the version from its
+                <cde>Server</cde> header. It doesn't fix anything, but there's no reason to
+                advertise.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>pm.max_children</cde>, <cde>expose_php</cde>, <cde>display_errors</cde>: PHP is run
+            by settings, and so is your app. Next: Configuration and the Environment.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/configuration-and-the-environment"
+                >Next: Configuration and the Environment &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

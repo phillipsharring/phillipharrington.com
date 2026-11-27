@@ -1,0 +1,193 @@
+<layout name="default" title="Separating Concerns" />
+<page-head>
+    <meta
+        name="description"
+        content="Keep reading data, deciding what to do with it, and showing it in separate places, so each can change, be tested and be understood on its own. The idea underneath every pattern that follows. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="separation of concerns, PHP templates, business logic, presentation logic, data access, spaghetti code, testable code, Dijkstra, PHP project structure, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Reading, deciding and showing, each in its own place. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="separating-concerns">Separating Concerns</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The Style section was about making each piece of code read well. This section is about
+            how the pieces fit together. Almost every pattern in it starts from one idea: a page
+            does several different jobs, and each job belongs in its own place.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-concern">What's a Concern?</heading>
+        <p>
+            One kind of job your code does, with its own reasons to change. A typical page has
+            three:
+        </p>
+        <list>
+            <li>
+                <strong>Reading</strong>: where the data comes from. A file, a database, an API.
+                Changes when the storage changes.
+            </li>
+            <li>
+                <strong>Deciding</strong>: the rules. Which posts are published, what a shirt costs,
+                who's allowed in. Changes when the business does.
+            </li>
+            <li>
+                <strong>Showing</strong>: the HTML, or JSON, that goes back. Changes when the design
+                does.
+            </li>
+        </list>
+        <p>
+            Separating them means each lives in its own function, file or class, and talks to the
+            others through plain values. The rules don't know there's a database. The template
+            doesn't know there are rules.
+        </p>
+
+        <side-story title="Where the Phrase Comes From">
+            Edsger Dijkstra used "the separation of concerns" in a 1974 essay, "On the role of
+            scientific thought." His point was about thinking, not code: you can only study one
+            aspect of a problem well at a time, so you deliberately set the others aside while you
+            do. Code that's separated lets the reader do the same.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The entry point reads: it asks a function for the data, and gets back plain arrays
+                or objects.
+            </li>
+            <li>It decides: it hands that data to the rules, and gets back what to show.</li>
+            <li>It shows: it hands the result to a template, which only prints.</li>
+        </ol>
+        <p>
+            The entry point becomes a few lines of glue. Each concern can be read without the others
+            in your head, swapped without touching the others, and tested with no server, no file
+            and no HTML.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A café's recent-posts page. In a folder, make <cde>posts.json</cde>, with a draft, a
+            post from the future, a title in UTF-8 and one that's trying something:
+        </p>
+        <code-block example="separating-concerns/posts.json" />
+        <p>
+            Then a <cde>before</cde> folder with <cde>index.php</cde>, where everything happens at
+            once:
+        </p>
+        <code-block example="separating-concerns/before/index.php" />
+        <p>
+            It works. But to change the sort, you edit the template. To test the draft rule, you
+            need the file and a browser. Now separate it. Make an <cde>after</cde> folder, and in it
+            <cde>src/data.php</cde>, which reads:
+        </p>
+        <code-block example="separating-concerns/after/src/data.php" />
+        <p><cde>src/rules.php</cde>, which decides:</p>
+        <code-block example="separating-concerns/after/src/rules.php" />
+        <p><cde>views/posts.php</cde>, which shows:</p>
+        <code-block example="separating-concerns/after/views/posts.php" />
+        <p>And <cde>public/index.php</cde>, the only file in the web root, which joins them up:</p>
+        <code-block example="separating-concerns/after/public/index.php" />
+        <p>Serve each in turn:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t before
+docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t after/public</code-block>
+        <p>
+            <cde>http://localhost:8000</cde> shows the same three posts both times: newest first, no
+            draft, nothing from the future, the café spelled right (UTF-8 in the file and in the
+            page's <cde>meta charset</cde>; see <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>),
+            and the script tag printed as harmless text. The difference is what you can do now. Make
+            <cde>after/check.php</cde>:
+        </p>
+        <code-block example="separating-concerns/after/check.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/check.php</code-block>
+        <p>
+            <cde>ok</cde>. The rules, checked on their own, in a fraction of a second, with made-up
+            posts. You couldn't do that with <cde>before/index.php</cde> without a file, a server
+            and something to read the HTML.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <strong>Functions or classes</strong> for reading and deciding, in files that only
+                declare (see
+                <lnk to="/php/declaring-vs-causing">Declaring Symbols vs. Causing Changes</lnk>).
+            </li>
+            <li>
+                <strong>A plain PHP file as a template</strong>, using <cde>&lt;?= ?&gt;</cde> and
+                the <cde>foreach: ... endforeach;</cde> form, with <cde>htmlspecialchars()</cde> on
+                everything it prints. PHP was a template language first.
+            </li>
+            <li>
+                <strong><cde>public/</cde> for the entry point only</strong>, and everything else
+                beside it, out of reach, as in <lnk to="/php/document-root">Document Root</lnk>.
+            </li>
+            <li>
+                <strong>Check the data where it's read.</strong> <cde>loadPosts()</cde> treats the
+                file as input: a row without a title is skipped, and a missing
+                <cde>draft</cde> counts as a draft.
+                <lnk to="/php/never-trust-input">Never trust input</lnk>, even a file you wrote.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Rules creep into templates.</strong> An
+                <cde>&lt;?php if ($post['draft'] ...) ?&gt;</cde> in the view is a rule in the wrong
+                place. A view can loop and choose how to show things; it shouldn't decide what to
+                show.
+            </li>
+            <li>
+                <strong>Escaping belongs to showing.</strong> Don't store titles pre-escaped, or
+                escape them in the rules. The template knows it's writing HTML, so the template
+                escapes, every time; see <lnk to="/php/xss">XSS and Escaping Output</lnk>.
+            </li>
+            <li>
+                <strong>More files isn't the goal.</strong> A twenty-line page doesn't need three
+                folders. Separate when a concern grows, changes on its own schedule, or needs
+                testing.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Ask where the change goes">
+            <p>
+                Before you put code somewhere, imagine the next change to it: a new database, a new
+                rule, a new design. If any one of those would make you edit this file and two
+                others, or edit one file in three unrelated places, the concerns are tangled. Fix
+                that while it's small.
+            </p>
+        </two-dollars>
+
+        <p>
+            Showing has a more famous name, and so does the glue. They're two thirds of a pattern
+            from the late 1970s. Next: MVC.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/mvc">Next: MVC &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

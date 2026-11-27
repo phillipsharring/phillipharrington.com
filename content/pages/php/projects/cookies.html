@@ -1,0 +1,229 @@
+<layout name="default" title="Cookies" />
+<page-head>
+    <meta
+        name="description"
+        content="A page that remembers your name in a cookie, built naive first, then attacked with a planted cookie and a line of JavaScript, then fixed: one function that sets every cookie with HttpOnly, SameSite and Secure, and a cookie read like the input it is. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP cookies project, setcookie, cookie flags, HttpOnly, Secure, SameSite, document.cookie, never trust a cookie, XSS, Post/Redirect/Get, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Remember a visitor in a cookie, then break it and fix it. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="cookies">Cookies</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A page that remembers you: type your name once, and from then on it says "Welcome back,
+            Alice." The name lives in a cookie, in your browser, and comes back with every request.
+            It takes about ten lines to build, and the ten-line version has two problems, one in how
+            the cookie is set and one in how it's read.
+        </p>
+        <p>
+            You'll build it naive, attack it with a planted cookie and a line of JavaScript, then
+            fix it the way every cookie on a real site should be set: through one function that
+            never forgets the flags.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/cookies">Cookies</lnk>: <cde>setcookie()</cde> and
+                <cde>$_COOKIE</cde>.
+            </li>
+            <li>
+                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>:
+                <cde>HttpOnly</cde>, <cde>Secure</cde> and <cde>SameSite</cde>.
+            </li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk> and
+                <lnk to="/php/xss">XSS and Escaping Output</lnk>: a cookie is input.
+            </li>
+            <li>
+                <lnk to="/php/request-and-response">Request and Response</lnk>: Post/Redirect/Get.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+        <p>
+            Make a project folder with a <cde>public</cde> folder in it. Build the naive version
+            first, as <cde>public/naive.php</cde>, so you can keep it beside the fixed one and
+            compare:
+        </p>
+        <code-block example="project-cookies/public/naive.php" />
+        <p>
+            When the form is posted, it sets the cookie and redirects with a <cde>303</cde>, so a
+            reload doesn't post again. On every other visit, it reads the cookie and says hello. Run
+            it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde>, type your name, and press the button.
+            Welcome back. Close the tab, come back, and it still knows you. It works.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>First, look at the cookie it sets:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -si -d 'name=Alice' http://localhost:8000/naive.php</code-block>
+        <p>
+            The header is <cde>Set-Cookie: name=Alice</cde>, and nothing else. No
+            <cde>HttpOnly</cde>, so any JavaScript in the page can read it. No <cde>SameSite</cde>,
+            so you're relying on each browser's default for whether other sites can make it send the
+            cookie. No <cde>Secure</cde>, so on a live site it would also go over plain HTTP,
+            readable and changeable by anyone in between. And no expiry, so it's a session cookie,
+            gone whenever the browser decides the session is over.
+        </p>
+        <p>
+            See the first one for yourself. On the naive page, open your browser's developer tools,
+            go to the Console, and type:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>document.cookie</code-block>
+        <p>
+            It answers <cde>"name=Alice"</cde>. Any script that runs in the page can do the same and
+            send the answer anywhere: an injected script, or a third-party script that was
+            compromised. Here it's a name. On most sites, it's the cookie that keeps someone logged
+            in.
+        </p>
+        <p>
+            Now the second problem. <strong>Never trust input</strong>, and a cookie is input: it's
+            whatever the browser sends, and anything that can write to the browser's cookies can put
+            anything there. A page on a sibling subdomain can set a cookie for the whole domain, and
+            so can anyone in the middle of a plain HTTP request. Plant one:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -b 'name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' http://localhost:8000/naive.php</code-block>
+        <p>The page comes back with this in it:</p>
+        <!-- prettier-ignore -->
+        <code-block>&lt;p&gt;Welcome back, &lt;script&gt;alert(document.cookie)&lt;/script&gt;.&lt;/p&gt;</code-block>
+        <p>
+            In a browser, that's a script running on your site, reading the cookies the first
+            problem left readable. The two bugs help each other.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            First, the setting. Every cookie the site sets goes through one function, so none can go
+            out without its flags. Make <cde>src/cookies.php</cde>:
+        </p>
+        <code-block example="project-cookies/src/cookies.php" />
+        <list>
+            <li>
+                <strong><cde>httponly</cde></strong>: JavaScript can't read it. <cde>document.cookie</cde> no longer shows it.
+            </li>
+            <li>
+                <strong><cde>samesite</cde> set to <cde>Lax</cde></strong>: the browser sends it when someone follows a link to your site, but not with forms
+                other sites post to you or requests they make in the background. Set it yourself
+                rather than trusting each browser's default.
+            </li>
+            <li>
+                <strong><cde>secure</cde></strong>, whenever the request came over HTTPS: the browser will only send it back over
+                HTTPS. On <cde>http://localhost</cde> it's left off, so the cookie still works while
+                you develop.
+            </li>
+            <li>
+                <strong><cde>expires</cde></strong>: a real lifetime, so "remember me" means 30 days, not "until the browser feels
+                like it."
+            </li>
+        </list>
+        <p>
+            <cde>cookie_text()</cde> is the reading half. It treats the cookie like any other input:
+            it has to be a string, valid UTF-8, and short enough. Anything else counts as no cookie
+            at all.
+        </p>
+        <p>Then the page, <cde>public/index.php</cde>:</p>
+        <code-block example="project-cookies/public/index.php" />
+        <p>
+            It checks the name before it goes into a cookie, reads it back through
+            <cde>cookie_text()</cde>, and escapes it with <cde>htmlspecialchars()</cde> on the way
+            out, every time. There's a Forget me button too, which deletes the cookie.
+        </p>
+        <p>Run the same attacks against the fixed page:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -si -d 'name=Alice' http://localhost:8000/
+curl -b 'name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' http://localhost:8000/</code-block>
+        <p>The cookie now goes out with everything it needs:</p>
+        <!-- prettier-ignore -->
+        <code-block>Set-Cookie: name=Alice; expires=Sun, 27 Dec 2026 19:56:52 GMT; Max-Age=2592000; path=/; HttpOnly; SameSite=Lax</code-block>
+        <p>
+            And the planted script comes back as text:
+            <cde
+                >Welcome back,
+                &amp;lt;script&amp;gt;alert(document.cookie)&amp;lt;/script&amp;gt;.</cde>
+            In the browser, set your name on the fixed page and type <cde>document.cookie</cde> in
+            the console again: <cde>""</cde>. The cookie is still there, in the Application or
+            Storage tab, and still sent with every request. Scripts just can't see it.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Deleting a cookie needs the same path and domain.</strong> A cookie set with
+                <cde>path=/</cde> is only deleted by one with <cde>path=/</cde>. That's why
+                <cde>forget_cookie()</cde> repeats the settings. PHP sends the deletion as
+                <cde>name=deleted</cde> with a date in 1970, and the browser throws it away.
+            </li>
+            <li>
+                <strong>HttpOnly doesn't make a cookie secret.</strong> It hides it from JavaScript,
+                not from the person whose browser it's in. They can still see it and change it in
+                their developer tools. The value is input, every time.
+            </li>
+            <li>
+                <strong>Not every cookie needs HttpOnly.</strong> A theme setting your own
+                JavaScript reads is fine without it. Anything that identifies a person never is.
+            </li>
+            <li>
+                <strong>Secure has to know about HTTPS.</strong> Behind a CDN or proxy, PHP may only
+                ever see plain HTTP, so <cde>is_https()</cde> says no forever. Have the proxy tell
+                you, with <cde>X-Forwarded-Proto</cde>, and trust that header only from your own
+                proxy, as in <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+            </li>
+        </list>
+
+        <side-story title="Months Without Secure">
+            One of my apps sent its login cookies without the Secure flag for months. The code set
+            it whenever the request was HTTPS, which looked right. But the app sat behind a CDN that
+            handled HTTPS and talked to the server over plain HTTP, so PHP never saw
+            <cde>$_SERVER['HTTPS']</cde> set, and never added the flag.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Read your Set-Cookie headers">
+            <p>
+                Every so often, <cde>curl -sI</cde> your live login page and read the
+                <cde>Set-Cookie</cde> lines. You're looking for three words: <cde>Secure</cde>,
+                <cde>HttpOnly</cde> and <cde>SameSite</cde>. It takes ten seconds, and it catches
+                exactly the kind of mistake that looks right in the code.
+            </p>
+        </two-dollars>
+
+        <p>
+            A cookie tells your site about a visitor. Sometimes your site needs to reach the visitor
+            when they aren't on it. Next: sending email.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/sending-email">Next: Sending Email &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

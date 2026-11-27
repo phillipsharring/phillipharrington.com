@@ -1,0 +1,281 @@
+<layout name="default" title="Sessions and Cookie Flags" />
+<page-head>
+    <meta
+        name="description"
+        content="A session cookie is the login. The three flags that protect it (Secure, HttpOnly, SameSite), the settings PHP doesn't turn on for you, and session fixation, broken and fixed. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="session cookie, Secure, HttpOnly, SameSite, session_set_cookie_params, session.use_strict_mode, session_regenerate_id, session fixation, session hijacking, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The session cookie is the login. Protect it. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="sessions-and-cookie-flags">Sessions and Cookie Flags</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/passwords">Passwords</lnk> got someone logged in. From then on, the
+            password doesn't matter. <lnk to="/php/sessions">Sessions</lnk> showed how PHP remembers
+            them: a random id in a cookie, and a file on the server. Whoever has that id is logged
+            in. So the session cookie is the login, and it's worth as much as the password. PHP's
+            defaults don't protect it. This lesson does.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-flags">The Flags</heading>
+        <p>
+            <lnk to="/php/cookies">Cookies</lnk> listed the settings that can follow a cookie's
+            value. Three of them are security, and a session cookie needs all three:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>Set-Cookie: PHPSESSID=3486811b0a2015badabda8c561951706; path=/; secure; HttpOnly; SameSite=Lax</code-block>
+
+        <heading h3 id="secure">Secure</heading>
+        <p>
+            Only send the cookie over HTTPS. Without it, the browser also sends it with any plain
+            <cde>http://</cde> request to your site, and anyone on the same network, like a café's
+            Wi-Fi, can read it off the wire. See <lnk to="/php/http">HTTP, HTTPS and TLS</lnk>.
+        </p>
+
+        <heading h3 id="httponly">HttpOnly</heading>
+        <p>
+            JavaScript in the page can't read the cookie. The browser still sends it with every
+            request; only <cde>document.cookie</cde> leaves it out. If an
+            <lnk to="/php/xss">XSS</lnk> hole ever lets a script onto your page, that script can't
+            simply send your visitors' session ids somewhere else.
+        </p>
+
+        <heading h3 id="samesite">SameSite</heading>
+        <p>
+            Whether the cookie goes with requests that another site starts. <cde>Lax</cde> sends it
+            when someone follows a link to your site, but not with a form another site POSTs to
+            yours, which is most of <lnk to="/php/csrf">CSRF</lnk>. <cde>Strict</cde> never sends it
+            from another site, even on a link, so people arriving from a link look logged out.
+            <cde>None</cde> always sends it, and requires <cde>Secure</cde>.
+        </p>
+
+        <heading h3 id="whats-session-fixation">What's Session Fixation?</heading>
+        <p>
+            An attack on the id itself. Instead of stealing your session id, the attacker picks one,
+            gets your browser to use it, and waits for you to log in. If your site keeps the same id
+            across the login, the attacker's copy is now logged in as you. The way in can be a
+            cookie set from a sibling subdomain, an XSS hole, or a link, on old sites that accepted
+            the id in the URL.
+        </p>
+
+        <side-story title="Firesheep">
+            In 2010, Eric Butler released Firesheep, a Firefox add-on. On an open Wi-Fi network, it
+            listened for other people's session cookies from sites like Facebook and Twitter, which
+            used HTTPS for the login page and plain HTTP after it. One click, and you were logged in
+            as the person at the next table. Nothing about the attack was new. Making it one click
+            was, and within a few years the big sites had moved to HTTPS for everything.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Before <cde>session_start()</cde>, your code sets the cookie's flags with
+                <cde>session_set_cookie_params()</cde>, and turns on strict mode.
+            </li>
+            <li>
+                A visitor arrives with a session id in a cookie. In strict mode, if PHP has no
+                session with that id, it ignores it and makes a new one. Without strict mode, PHP
+                accepts any id it's given and starts a session under it.
+            </li>
+            <li>
+                They log in. Your code calls <cde>session_regenerate_id(true)</cde>: same session
+                data, new id, old one deleted. Then it records who they are.
+            </li>
+            <li>
+                The response carries the new id in a <cde>Set-Cookie</cde>, with all three flags.
+            </li>
+            <li>
+                When they log out, your code empties the session, destroys it, and tells the browser
+                to delete the cookie.
+            </li>
+        </ol>
+        <p>
+            The new id at login is the part people miss. Whoever knew the id before login, through
+            fixation or anything else, has an id that now leads nowhere.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A members page with one pretend member, Alice. In a folder, make <cde>login.php</cde>,
+            the login check both versions share. Her password is "correct horse battery staple,"
+            stored as a hash:
+        </p>
+        <code-block example="sessions-and-cookie-flags/login.php" />
+        <p>
+            Then the members page, with PHP's default session settings. Make <cde>naive.php</cde>:
+        </p>
+        <code-block example="sessions-and-cookie-flags/naive.php" />
+        <p>Start the server, and look at the cookie it hands out:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <!-- prettier-ignore -->
+        <code-block>curl -I http://localhost:8000/naive.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>Set-Cookie: PHPSESSID=f909e14acf6cf4361cf1f3a071d3573c; path=/</code-block>
+        <p>
+            No <cde>secure</cde>, no <cde>HttpOnly</cde>, no <cde>SameSite</cde>. That's what PHP
+            sends unless you say otherwise. Open the page in a browser and log in as
+            alice@example.com, then run <cde>document.cookie</cde> in the developer tools' console:
+            there's your session id, readable by any script on the page.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde
+                    >session_set_cookie_params(['secure' =&gt; true, 'httponly' =&gt; true,
+                    'samesite' =&gt; 'Lax', ...])</cde>, before <cde>session_start()</cde>. Or the same in <cde>php.ini</cde>:
+                <cde>session.cookie_secure</cde>, <cde>session.cookie_httponly</cde>,
+                <cde>session.cookie_samesite</cde>.
+            </li>
+            <li>
+                <cde>session.use_strict_mode = 1</cde>, so PHP refuses ids it didn't make. It's off
+                by default.
+            </li>
+            <li>
+                <cde>session_regenerate_id(true)</cde> at login, and whenever someone's access
+                changes, like becoming an admin. The <cde>true</cde> deletes the old session.
+            </li>
+            <li>
+                To log out: <cde>$_SESSION = [];</cde>, <cde>session_destroy();</cde>, and a
+                <cde>setcookie()</cde> with the session's name and a time in the past.
+            </li>
+            <li>
+                <cde
+                    >setcookie('name', $value, ['secure' =&gt; true, 'httponly' =&gt; true,
+                    'samesite' =&gt; 'Lax'])</cde>
+                for any other cookie that matters.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Don't decide Secure from the request.</strong> Code like
+                <cde>'secure' =&gt; isset($_SERVER['HTTPS'])</cde> looks right, and goes wrong the
+                day there's a CDN or proxy in front, because the last hop to PHP is plain HTTP. See
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>. Turn it on in
+                configuration, and leave it on.
+            </li>
+            <li>
+                <strong>Secure on localhost.</strong> Chrome and Firefox treat
+                <cde>http://localhost</cde> as secure and accept the cookie anyway, so it works
+                while you develop. Other browsers may not. That's a reason to develop on HTTPS, not
+                a reason to turn the flag off.
+            </li>
+            <li>
+                <strong>Flags must be set before the session starts.</strong>
+                <cde>session_set_cookie_params()</cde> after <cde>session_start()</cde> does nothing
+                for this request, and PHP warns.
+            </li>
+            <li>
+                <strong>The session id is input.</strong> It arrives in a cookie, so anyone can send
+                any id. Strict mode and a new id at login are how you
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong> here:
+                don't let the visitor choose it.
+            </li>
+            <li>
+                <strong>Sessions end late by default.</strong> PHP cleans up idle sessions after
+                <cde>session.gc_maxlifetime</cde> (1440 seconds), but only now and then, and a
+                cookie with no lifetime lasts until the browser closes, which on many phones is
+                never. If a login should expire, store the time it started in the session and check
+                it yourself.
+            </li>
+        </list>
+
+        <side-story title="Months Without Secure">
+            One of my apps sent its login cookies without the Secure flag for months. The code set
+            the flag only when <cde>$_SERVER['HTTPS']</cde> was on, and behind the CDN it never was:
+            the CDN talked HTTPS to visitors and plain HTTP to the server. Nothing looked wrong,
+            because everything worked. The fix was to stop asking the request and set the flag in
+            configuration.
+        </side-story>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            Session fixation, against your own copy. You'll play both parts with curl, using the
+            <cde>-b</cde> flag to send a cookie. First, the attacker picks an id and gets the
+            victim's browser to use it. Then the victim logs in with it, as usual:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -b 'PHPSESSID=attacker-picked-1' --data-urlencode 'email=alice@example.com' \
+    --data-urlencode 'password=correct horse battery staple' http://localhost:8000/naive.php</code-block>
+        <p>
+            <cde>Logged in as alice@example.com.</cde> Now the attacker, who never knew the
+            password, visits with the id they picked:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -b 'PHPSESSID=attacker-picked-1' http://localhost:8000/naive.php</code-block>
+        <p>
+            <cde>Logged in as alice@example.com.</cde> PHP accepted an id it had never made, and the
+            login didn't change it, so the attacker's id became Alice's login.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            Set the flags, turn on strict mode, and regenerate the id at login. Make
+            <cde>index.php</cde>:
+        </p>
+        <code-block example="sessions-and-cookie-flags/index.php" />
+        <p>Look at the cookie first:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -I http://localhost:8000/</code-block>
+        <!-- prettier-ignore -->
+        <code-block>Set-Cookie: PHPSESSID=3486811b0a2015badabda8c561951706; path=/; secure; HttpOnly; SameSite=Lax</code-block>
+        <p>Then the same attack, with a fresh id, against the fixed page:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -b 'PHPSESSID=attacker-picked-2' --data-urlencode 'email=alice@example.com' \
+    --data-urlencode 'password=correct horse battery staple' http://localhost:8000/
+curl -b 'PHPSESSID=attacker-picked-2' http://localhost:8000/</code-block>
+        <p>
+            Alice is logged in, and the attacker gets <cde>Not logged in.</cde> Strict mode refused
+            the made-up id, and the login moved Alice to a brand-new one that only her browser has.
+            In the browser, log in on <cde>http://localhost:8000/</cde> and try
+            <cde>document.cookie</cde> again: the session id isn't there.
+        </p>
+
+        <!-- $2 tip -->
+        <two-dollars title="Read your own Set-Cookie">
+            <p>
+                After any deploy that touches login, run
+                <cde>curl -sI https://your-site/login | grep -i set-cookie</cde> against the real
+                site, through the CDN, the way visitors reach it. If <cde>secure</cde>,
+                <cde>HttpOnly</cde> and <cde>SameSite</cde> aren't all there, something in the chain
+                is deciding for you.
+            </p>
+        </two-dollars>
+
+        <p>
+            Your login now holds up once someone's in. Getting in is still a form anyone can submit
+            as many times as they like, with a new guess at the password each time. Next: rate
+            limiting.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/rate-limiting">Next: Rate Limiting &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

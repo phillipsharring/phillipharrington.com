@@ -1,0 +1,223 @@
+<layout name="default" title="Includes" />
+<page-head>
+    <meta
+        name="description"
+        content="Building a page from several PHP files: include, require, and their _once versions, paths from __DIR__, a config file that returns its settings, shared scope, and why an include path is never built from input. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP include, require, require_once, include_once, __DIR__, PHP templates, header and footer, config file return array, local file inclusion, allow list, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="One page, many files, and the include you must never build from input. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="includes">Includes</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A site with ten pages has one header and one footer, not ten copies of each. Put them in
+            their own files, and have each page pull them in. That's an include. It's also how your
+            functions, your settings, and eventually your whole app get split into files you can
+            find things in.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-include">What's an Include?</heading>
+        <p>
+            A line that tells PHP to run another file, right there, as if its contents were pasted
+            in at that spot. PHP has four ways to say it:
+        </p>
+        <list>
+            <li>
+                <cde>require 'file.php';</cde>: run it, and if it's missing, stop with a fatal
+                error. Use this one for anything the page can't do without, which is nearly
+                everything.
+            </li>
+            <li><cde>include 'file.php';</cde>: run it, and if it's missing, warn and carry on.</li>
+            <li>
+                <cde>require_once</cde> and <cde>include_once</cde>: the same, but skip the file if
+                it's already been run. Use them for files that define functions, since defining a
+                function twice is a fatal error.
+            </li>
+        </list>
+
+        <heading h3 id="paths">Paths</heading>
+        <p>
+            Build every include path from <cde>__DIR__</cde>, the folder the current file is in, as
+            <lnk to="/php/document-root">Document Root</lnk> did:
+            <cde>require __DIR__ . '/functions.php';</cde>. A bare <cde>'functions.php'</cde> is
+            looked up through a setting called <cde>include_path</cde> and the current directory,
+            which can be anything depending on how PHP was started.
+        </p>
+
+        <heading h3 id="a-file-that-returns">A File That Returns</heading>
+        <p>
+            An included file can end with <cde>return</cde>, and the include gives you that value.
+            So a settings file can be just <cde>return ['site_name' =&gt; 'Example Shop'];</cde>,
+            and <cde>$config = require __DIR__ . '/config.php';</cde> hands it to you, with no
+            global variable involved.
+        </p>
+
+        <side-story title="Server Side Includes">
+            Before PHP, early web servers like NCSA HTTPd had Server Side Includes: a comment in an
+            HTML page, like <cde>&lt;!--#include virtual="/footer.html" --&gt;</cde>, which the
+            server replaced with the other file before sending the page. Shared headers and footers
+            were one of the first things anyone wanted from a web server, and it's one of the first
+            things PHP made easy.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>PHP reaches the <cde>require</cde> line and works out the path.</li>
+            <li>
+                It reads that file from disk. Not through a URL: the file can be, and should be,
+                outside the document root.
+            </li>
+            <li>
+                It runs the file in the same scope as the line that included it. The included file
+                sees the same variables, and any it sets are there afterward.
+            </li>
+            <li>
+                The included file's output goes into the page at that spot, like everything else.
+            </li>
+            <li>
+                When the file ends, or returns, PHP carries on from the line after the
+                <cde>require</cde>.
+            </li>
+        </ol>
+        <p>
+            Shared scope is handy for templates: the header can print
+            <cde>$config['site_name']</cde> without being handed it. It's also why a big include can
+            quietly overwrite a variable you were using. Files of functions don't have that problem,
+            because each function gets its own scope, as <lnk to="/php/scope">Scope</lnk> showed.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A small site, from pieces. Only one file goes in <cde>public/</cde>, the web root. In a
+            folder, make <cde>public/index.php</cde>:
+        </p>
+        <code-block example="includes/public/index.php" />
+        <p>Next to <cde>public/</cde>, the settings, <cde>config.php</cde>:</p>
+        <code-block example="includes/config.php" />
+        <p>A function every template uses, <cde>functions.php</cde>:</p>
+        <code-block example="includes/functions.php" />
+        <p>
+            The header and footer, in <cde>templates/header.php</cde> and
+            <cde>templates/footer.php</cde>:
+        </p>
+        <code-block example="includes/templates/header.php" />
+        <code-block example="includes/templates/footer.php" />
+        <p>
+            And three pages, in <cde>pages/</cde>: <cde>home.php</cde>, <cde>about.php</cde>, and
+            <cde>not-found.php</cde>:
+        </p>
+        <code-block example="includes/pages/home.php" />
+        <code-block example="includes/pages/about.php" />
+        <code-block example="includes/pages/not-found.php" />
+        <p>Serve <cde>public/</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and click between Home and About. Same header,
+            same footer, a different middle. Now ask it to include something else:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i 'http://localhost:8000/?page=../config'</code-block>
+        <p>
+            A <cde>404</cde> and "Not found." The page name has to be one on the list, so nothing a
+            visitor sends ever becomes part of a path. Without that check, <cde>?page=</cde> would
+            be a way to run any <cde>.php</cde> file on the server, inside your page and with your
+            variables. <strong>Never trust input,</strong> and never let it near an include.
+        </p>
+        <p>
+            Last, the difference between <cde>include</cde> and <cde>require</cde>. Make
+            <cde>missing.php</cde>:
+        </p>
+        <code-block example="includes/missing.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php missing.php</code-block>
+        <p>
+            The <cde>include</cde> warns and keeps going. The <cde>require</cde> stops the script
+            cold.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>require</cde>, for what the page needs; <cde>require_once</cde>, for files of
+                functions.
+            </li>
+            <li><cde>include</cde>, only when the page really can go on without the file.</li>
+            <li>
+                <cde>__DIR__</cde> and <cde>dirname(__DIR__)</cde>: this file's folder, and the one
+                above, to build paths from.
+            </li>
+            <li><cde>$value = require 'file.php';</cde>: take what a file returns.</li>
+            <li><cde>get_included_files()</cde>: every file run so far, in order.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never build an include path from input.</strong>
+                <cde>require "pages/$page.php"</cde> with <cde>$page</cde> straight from the query
+                string lets a visitor climb out with <cde>../</cde> and run files you never meant to
+                be pages. Check against an allow list, as the example does.
+                <lnk to="/php/projects/log-viewer">The Log Viewer project</lnk> attacks this kind of
+                path on purpose.
+            </li>
+            <li>
+                <strong>Relative paths depend on where PHP started.</strong>
+                <cde>require 'functions.php'</cde> works when you run it from one folder and fails
+                from another. <cde>__DIR__</cde> every time.
+            </li>
+            <li>
+                <strong>Included files should be outside the web root.</strong> A
+                <cde>config.php</cde> inside <cde>public/</cde> can be requested by URL. It's run,
+                not shown, so usually nothing leaks, until a server is set up wrong and sends it as
+                text.
+            </li>
+            <li>
+                <strong>"Cannot redeclare."</strong> Including a file of functions twice, from two
+                different places, is fatal. <cde>require_once</cde> it, or later, let an autoloader
+                handle it: <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Ask what got included">
+            <p>
+                When a page acts as if it's using the wrong settings or an old copy of a function,
+                put <cde>error_log(print_r(get_included_files(), true));</cde> at the bottom. It
+                lists every file PHP actually ran, with full paths. More than once, the answer is a
+                file with the right name in the wrong folder.
+            </p>
+        </two-dollars>
+
+        <p>
+            An include reads a PHP file from disk and runs it. Reading and writing every other kind
+            of file is next: Working with Files.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/working-with-files">Next: Working with Files &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

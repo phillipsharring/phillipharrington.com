@@ -1,0 +1,248 @@
+<layout name="default" title="Transactions" />
+<page-head>
+    <meta
+        name="description"
+        content="Several changes that happen together or not at all: BEGIN, COMMIT and ROLLBACK, what ACID means in plain words, what other connections see while a transaction is open, and how to use them from PHP with PDO. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="database transactions, MySQL transaction, START TRANSACTION, COMMIT, ROLLBACK, ACID, isolation, autocommit, PDO beginTransaction, rollBack, SELECT FOR UPDATE, deadlock, implicit commit, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Changes that happen together, or not at all. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="transactions">Transactions</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/deleting-data">Deleting Data</lnk> used one as an undo button. That's the
+            smaller half of what a transaction is for. The bigger half: most real changes take more
+            than one statement. Moving money takes two updates, placing an order takes an insert and
+            a stock change. If the first one runs and the second one doesn't, because of an error, a
+            crash or a bug, the data is left half-changed. A transaction makes the statements one
+            change: all of them happen, or none do.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-transaction">What's a Transaction?</heading>
+        <p>A group of statements the database treats as one:</p>
+        <!-- prettier-ignore -->
+        <code-block>START TRANSACTION;
+
+UPDATE `accounts`
+SET `balance_cents` = `balance_cents` - 2500
+WHERE `id` = 1;
+
+UPDATE `accounts`
+SET `balance_cents` = `balance_cents` + 2500
+WHERE `id` = 2;
+
+COMMIT;</code-block>
+        <list>
+            <li><strong>START TRANSACTION</strong> (or <cde>BEGIN</cde>) opens it.</li>
+            <li><strong>COMMIT</strong> makes every change in it permanent, at once.</li>
+            <li><strong>ROLLBACK</strong> throws every change in it away, as if none had run.</li>
+        </list>
+        <p>
+            Outside a transaction, MySQL commits each statement the moment it finishes. That's
+            called autocommit, and it's the default.
+        </p>
+
+        <heading h3 id="acid">ACID</heading>
+        <p>The four promises a transaction makes, by their initials:</p>
+        <list>
+            <li><strong>Atomic</strong>: all of it happens, or none of it. No half-transfers.</li>
+            <li>
+                <strong>Consistent</strong>: it takes the data from one valid state to another, with
+                every rule (types, keys, constraints) still holding.
+            </li>
+            <li>
+                <strong>Isolated</strong>: other connections don't see its changes until it commits.
+            </li>
+            <li>
+                <strong>Durable</strong>: once it's committed, it stays committed, even if the
+                server loses power a moment later.
+            </li>
+        </list>
+
+        <side-story title="Jim Gray">
+            Much of how databases do transactions comes from Jim Gray, who worked out how to make
+            them reliable and fast, at IBM, Tandem and later Microsoft, and won the Turing Award for
+            it in 1998. The name ACID came from two German researchers, Theo Härder and Andreas
+            Reuter, in 1983, building on his work. Gray went sailing alone off San Francisco in 2007
+            and was never found. Thousands of volunteers searched satellite photos online for any
+            sign of his boat.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Your connection starts a transaction.</li>
+            <li>
+                Each statement in it changes rows as usual, but the changes are visible only to your
+                connection. The rows you changed are locked: another connection that tries to change
+                them waits.
+            </li>
+            <li>
+                On <cde>COMMIT</cde>, the database writes all the changes to its log in one go, and
+                releases the locks. Everyone sees them from then on.
+            </li>
+            <li>
+                On <cde>ROLLBACK</cde>, or if the connection drops before committing, the database
+                undoes every change, and releases the locks.
+            </li>
+        </ol>
+        <p>
+            Step four includes crashes. If PHP dies halfway through, its connection closes, and the
+            database rolls the open transaction back on its own. Half a change never lands.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Two bank accounts, Alice with 100.00 and Bo with 50.00, kept in cents. The same
+            <cde>compose.yml</cde>, <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL, and this
+            <cde>init.sql</cde>:
+        </p>
+        <code-block example="transactions/init.sql" />
+        <p>
+            Every script here takes the same arguments, and checks them the same way, so they live
+            in one file, <cde>args.php</cde>:
+        </p>
+        <code-block example="transactions/args.php" />
+        <p>And <cde>balances.php</cde> shows the accounts and their total:</p>
+        <code-block example="transactions/balances.php" />
+        <p>First, the naive transfer, with no transaction. <cde>transfer-naive.php</cde>:</p>
+        <code-block example="transactions/transfer-naive.php" />
+        <p>Start the database, and send 25.00 from Alice to an account that doesn't exist:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose run --rm php php balances.php
+docker compose run --rm php php transfer-naive.php 1 99 2500
+docker compose run --rm php php balances.php</code-block>
+        <p>
+            It says it transferred, and the total went from 15000 to 12500. The first update took
+            Alice's money. The second matched no account, changed nothing, and didn't fail, so
+            nothing noticed. The money is just gone. Now <cde>transfer.php</cde>, which checks each
+            step, inside a transaction:
+        </p>
+        <code-block example="transactions/transfer.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php transfer.php 1 99 2500
+docker compose run --rm php php balances.php</code-block>
+        <p>
+            <cde>Nothing transferred.</cde> The debit ran, the credit found no account, the script
+            threw, and the rollback put Alice's money back. The total is still 12500 (the naive
+            script's loss is permanent). A real transfer works as you'd expect:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php transfer.php 2 1 1000
+docker compose run --rm php php transfer.php 2 1 999999</code-block>
+        <p>
+            The first moves 10.00 from Bo to Alice. The second asks for more than Bo has, so the
+            debit's <cde>WHERE</cde> matches nothing, and nothing changes. Last, what other
+            connections see. <cde>isolation.php</cde> opens two at once:
+        </p>
+        <code-block example="transactions/isolation.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php isolation.php</code-block>
+        <p>
+            Inside its transaction, A sees its own change. B, at the same moment, sees the old
+            balance. Only after A commits does B see the new one. <cde>docker compose down -v</cde>
+            when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$pdo-&gt;beginTransaction()</cde>, <cde>$pdo-&gt;commit()</cde> and
+                <cde>$pdo-&gt;rollBack()</cde>.
+            </li>
+            <li>
+                The pattern: begin, then <cde>try</cde> every step, <cde>commit()</cde> at the end
+                of the <cde>try</cde>, and <cde>rollBack()</cde> in the <cde>catch</cde>.
+                <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk> has the rest of how
+                <cde>try</cde> works.
+            </li>
+            <li>
+                Check <cde>rowCount()</cde> after each step that has to change a row, and throw if
+                it didn't. A statement that matches nothing isn't an error to the database.
+            </li>
+            <li>
+                <cde>SELECT ... FOR UPDATE</cde>, inside a transaction, reads a row and locks it, so
+                nobody else can change it until you commit. Use it when you have to read a value,
+                decide in PHP, and then write.
+            </li>
+            <li><cde>$pdo-&gt;inTransaction()</cde> says whether one is open.</li>
+            <li>
+                The amounts and account ids are input. <strong>Never trust input</strong>: a
+                transfer of <cde>-2500</cde> from Bo to Alice is a transfer from Alice to Bo, which
+                is why <cde>args.php</cde> wants 1 or more.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A statement that matches nothing isn't a failure.</strong> The naive
+                transfer "succeeded." Only your own checks can tell "it ran" from "it did what I
+                meant."
+            </li>
+            <li>
+                <strong>Changing the shape of a table commits.</strong> <cde>CREATE</cde>,
+                <cde>ALTER</cde>, <cde>DROP</cde> and <cde>TRUNCATE</cde> commit any open
+                transaction first, then run on their own. A rollback after one of them has nothing
+                to roll back. That matters in the next lesson.
+            </li>
+            <li>
+                <strong>Long transactions hold locks.</strong> Every row a transaction changes stays
+                locked until it ends, and everyone who wants those rows waits. Keep transactions
+                short.
+            </li>
+            <li>
+                <strong>Deadlocks happen.</strong> Two transactions each lock a row the other needs,
+                and MySQL breaks the tie by rolling one of them back with error 1213. That's normal
+                under load, not a bug: catch it and run the whole transaction again.
+            </li>
+            <li>
+                <strong>The rest of the world doesn't roll back.</strong> An email sent, a file
+                written or a payment taken inside a transaction stays done when the transaction is
+                rolled back.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Commit, then tell people">
+            <p>
+                Do only database work between <cde>beginTransaction()</cde> and <cde>commit()</cde>.
+                Send the confirmation email, call the other API and write the log after the commit
+                has succeeded. The transaction stays short, and nobody ever gets an email about an
+                order that was rolled back.
+            </p>
+        </two-dollars>
+
+        <p>
+            Every table in this section was made by an <cde>init.sql</cde> that ran once, on an
+            empty database. Real databases are never empty, and their tables still have to change.
+            Next: migrations.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/migrations">Next: Migrations &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

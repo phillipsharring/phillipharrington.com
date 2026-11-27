@@ -1,0 +1,187 @@
+<layout name="default" title="fetch() and AJAX" />
+<page-head>
+    <meta
+        name="description"
+        content="How a page asks the server for more without loading a new page: fetch(), what AJAX means, a PHP endpoint that answers in JSON, and why fetch() calls a 404 a success. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="fetch, AJAX, XMLHttpRequest, JSON endpoint, response.ok, FormData, URLSearchParams, live search, PHP API, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Asking the server for more, while the page stays put. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="fetch">fetch() and AJAX</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            In JavaScript, the data came with the page. Often a page needs more after it's loaded:
+            search results as you type, the next set of comments, a check that a username is free.
+            JavaScript can make its own request, get the answer, and change just part of the page,
+            while the rest stays where it is. On the server, that request is a request like any
+            other.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-fetch">What's fetch()?</heading>
+        <p>
+            The browser's JavaScript function for making an HTTP request. You give it a URL, and
+            optionally a method, headers and a body, and it gives you back the response:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>const response = await fetch('/search.php?q=blue');
+const body = await response.json();</code-block>
+        <p>
+            <cde>await</cde> means wait for the answer without freezing the page. The response has a
+            status, headers and a body, exactly the ones from
+            <lnk to="/php/request-and-response">Request and Response</lnk>.
+        </p>
+
+        <heading h3 id="whats-ajax">What's AJAX?</heading>
+        <p>
+            The name for the idea: a page that talks to the server in the background and updates
+            itself. It stood for Asynchronous JavaScript and XML, from when the answers were usually
+            XML. Now they're almost always JSON, and the tool is <cde>fetch()</cde>, but people
+            still say AJAX.
+        </p>
+
+        <side-story title="Outlook on the Web">
+            The way to make background requests, <cde>XMLHttpRequest</cde>, came from Microsoft, for
+            the web version of Outlook, and shipped in Internet Explorer 5 in 1999. Other browsers
+            copied it. It got its famous name in 2005, when Jesse James Garrett called the approach
+            "Ajax" in an essay, around the time Gmail and Google Maps showed what it could do.
+            <cde>fetch()</cde> is the modern replacement.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Something happens on the page: the visitor types a letter.</li>
+            <li>JavaScript calls <cde>fetch()</cde> with a URL on your server.</li>
+            <li>
+                The browser sends the request, with your site's cookies, as it would for a page.
+            </li>
+            <li>
+                PHP answers, usually with JSON and <cde>Content-Type: application/json</cde>,
+                instead of a page.
+            </li>
+            <li>JavaScript reads the answer and changes the part of the page that needs it.</li>
+        </ol>
+        <p>
+            From PHP's side, nothing is new. It's a request, with a method, a query string, maybe a
+            body. Your JavaScript made it, but nothing proves that: anyone can call the same URL
+            with curl and send whatever they like.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> even from
+            your own scripts. An endpoint checks everything a form handler checks.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A search box that shows matching colors as you type. In a folder, make a
+            <cde>public</cde> folder, and in it, the endpoint, <cde>search.php</cde>:
+        </p>
+        <code-block example="fetch/public/search.php" />
+        <p>The page, <cde>public/index.html</cde>. Plain HTML: no PHP needed.</p>
+        <code-block example="fetch/public/index.html" />
+        <p>And the script, <cde>public/search.js</cde>:</p>
+        <code-block example="fetch/public/search.js" />
+        <p>Start it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and type <cde>b</cde>: Black, Blue, Brown, and the
+            page never reloads. Open the developer tools' Network tab and type again: each letter is
+            a request to <cde>search.php</cde>. Then make the same request yourself:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/search.php?q=b'</code-block>
+        <p>
+            The same JSON the page got. Now type more than 50 letters into the box. The server
+            answers with a 400 and a reason, and the page shows the reason, because the script
+            checked <cde>response.ok</cde> instead of assuming.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>header('Content-Type: application/json')</cde> and
+                <cde>echo json_encode($data)</cde>: an endpoint's answer.
+            </li>
+            <li>
+                <cde>http_response_code(400)</cde> and the rest still matter. Send a real status
+                with an error, so scripts can tell success from failure.
+            </li>
+            <li>
+                A <cde>fetch()</cde> that sends a <cde>FormData</cde> body arrives in
+                <cde>$_POST</cde>, like a form. One that sends JSON doesn't: it's in
+                <cde>php://input</cde>, and the <lnk to="/php/json">JSON</lnk> lesson reads it.
+            </li>
+            <li>
+                A <cde>fetch()</cde> that changes something is a request that changes something:
+                POST, and the same <lnk to="/php/csrf">CSRF</lnk> protection as a form.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong><cde>fetch()</cde> only fails when the network does.</strong> A 404 or a 500
+                is still a response, and <cde>fetch()</cde> hands it over as if all went well. Check
+                <cde>response.ok</cde>, or <cde>response.status</cde>, every time.
+            </li>
+            <li>
+                <strong>Answers can arrive out of order.</strong> Type fast, and the answer for
+                <cde>bl</cde> can land after the one for <cde>blu</cde>, showing the wrong results.
+                Real search boxes cancel the old request with an <cde>AbortController</cde>, or wait
+                until typing stops.
+            </li>
+            <li>
+                <strong>A PHP error in the middle breaks the JSON.</strong> A warning printed into
+                the response turns it into text that isn't JSON, and
+                <cde>response.json()</cde> throws. Keep <cde>display_errors</cde> off, and read the
+                error log instead.
+            </li>
+            <li>
+                <strong>Another site's URL is a different matter.</strong> <cde>fetch()</cde> to
+                your own site just works. To another origin, the browser asks that server's
+                permission first. That's CORS, two lessons from now.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Copy as cURL">
+            <p>
+                In the developer tools' Network tab, right-click any request and choose Copy, then
+                Copy as cURL. You get a curl command with the same URL, headers, cookies and body.
+                Paste it into a terminal, and you can replay the request, change it, and see what
+                the server does, without the page in the way.
+            </p>
+        </two-dollars>
+
+        <p>
+            The endpoint answered in JSON, and the script read it without a second thought. Next:
+            JSON itself, and reading it in PHP.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/json">Next: JSON &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

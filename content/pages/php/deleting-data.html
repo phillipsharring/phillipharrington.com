@@ -1,0 +1,248 @@
+<layout name="default" title="Deleting Data" />
+<page-head>
+    <meta
+        name="description"
+        content="DELETE from PHP: removing the rows you meant to, the DELETE without a WHERE, what foreign keys do when a parent goes (RESTRICT, CASCADE, SET NULL), and soft deletes, which keep the row and mark it gone. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="MySQL DELETE, DELETE without WHERE, ON DELETE CASCADE, ON DELETE SET NULL, RESTRICT, soft delete, deleted_at, TRUNCATE, rowCount, foreign keys, right to erasure, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Removing rows, and the ones that go with them. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="deleting-data">Deleting Data</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/updating-data">Updating Data</lnk> ended with every price in the shop set
+            to zero, and a <cde>ROLLBACK</cde> to put them back. <cde>DELETE</cde> has the same
+            missing-<cde>WHERE</cde> mistake, and a worse result: the rows are gone, along with
+            anything set up to go with them. This lesson is about deleting exactly what you mean to,
+            and about the times you shouldn't delete at all.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-delete">What's DELETE?</heading>
+        <p>The statement that removes rows:</p>
+        <!-- prettier-ignore -->
+        <code-block>DELETE FROM `posts`
+WHERE `id` = 1;</code-block>
+        <p>
+            Which table, and which rows. Like <cde>UPDATE</cde>, it does every row that matches the
+            <cde>WHERE</cde>, and every row in the table if there isn't one.
+        </p>
+
+        <heading h3 id="what-happens-to-the-children">What Happens to the Children</heading>
+        <p>
+            When a row has other rows pointing at it with a foreign key, as in
+            <lnk to="/php/relating-tables">Relating Tables</lnk>, the key says what happens when
+            it's deleted:
+        </p>
+        <list>
+            <li>
+                <strong>RESTRICT</strong>, the default: the delete is refused while anything points
+                at the row. A user with posts can't be deleted.
+            </li>
+            <li>
+                <strong>CASCADE</strong>: the rows pointing at it are deleted too. Delete a post,
+                and its comments go with it.
+            </li>
+            <li>
+                <strong>SET NULL</strong>: the rows pointing at it stay, with their foreign key set
+                to <cde>NULL</cde>. The column has to allow it.
+            </li>
+        </list>
+        <p>
+            Pick per key, by asking whether the child means anything without its parent. A comment
+            on a deleted post doesn't. An order from a deleted customer still does, to your
+            accountant.
+        </p>
+
+        <heading h3 id="whats-a-soft-delete">What's a Soft Delete?</heading>
+        <p>
+            Not deleting the row at all, but marking it: a <cde>deleted_at</cde> column that's
+            <cde>NULL</cde> until the moment it's "deleted." Nothing pointing at it breaks, and you
+            can undo it. The price is that every query has to leave the marked rows out, forever.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The database finds the rows that match the <cde>WHERE</cde>.</li>
+            <li>
+                For each one, it checks the foreign keys pointing at it. If any is
+                <cde>RESTRICT</cde> and has rows, the whole delete is refused.
+            </li>
+            <li>
+                It removes the rows, and does what each <cde>CASCADE</cde> or <cde>SET NULL</cde>
+                says to the rows pointing at them, and to the rows pointing at those, all the way
+                down.
+            </li>
+            <li>
+                It answers with the number of rows deleted from the table you named. The cascaded
+                ones aren't counted.
+            </li>
+        </ol>
+        <p>
+            Step three is why cascades need care. One <cde>DELETE</cde> of one row can empty half
+            the database, if the keys are set up that way, and report that it deleted 1.
+        </p>
+
+        <side-story title="Toy Story 2, Nearly">
+            In 1998, during the making of Toy Story 2 at Pixar, a delete command, run by accident,
+            started removing the film's files, and kept going until most of them were gone. The
+            backups turned out not to have been working. What saved the film was a copy on a
+            computer in the home of Galyn Susman, its supervising technical director, who had been
+            working from home after having a baby. It's been told many times since, as a story about
+            backups. It's also a story about a delete that nobody could take back.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Users, posts and comments, with each kind of key. The same <cde>compose.yml</cde>,
+            <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL, and this <cde>init.sql</cde>:
+        </p>
+        <code-block example="deleting-data/init.sql" />
+        <p>Then <cde>delete-post.php</cde>:</p>
+        <code-block example="deleting-data/delete-post.php" />
+        <p>Start the database, and delete Alice's first post, the one with three comments:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose run --rm php php delete-post.php 1</code-block>
+        <p>
+            <cde>Posts deleted: 1</cde>, and of the four comments, one is left. The cascade deleted
+            three more rows, and the count didn't mention them. Now try to delete a whole user, in
+            the <cde>mysql</cde> command:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
+        <!-- prettier-ignore -->
+        <code-block>DELETE FROM `users`
+WHERE `id` = 1;</code-block>
+        <p>
+            Refused: Alice still has a post, and that key is <cde>RESTRICT</cde>. Good. Then the
+            mistake, safely, inside a transaction:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>START TRANSACTION;
+
+DELETE FROM `comments`;
+
+SELECT COUNT(*)
+FROM `comments`;
+
+ROLLBACK;
+
+SELECT COUNT(*)
+FROM `comments`;</code-block>
+        <p>
+            Zero, then one again. Without the <cde>START TRANSACTION</cde>, there would be nothing
+            to roll back to. Type <cde>exit</cde>. Last, the soft delete.
+            <cde>close-account.php</cde> marks a user as gone, and lists who's left:
+        </p>
+        <code-block example="deleting-data/close-account.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php close-account.php 2</code-block>
+        <p>
+            Bo's account is closed, and only Alice is listed. Bo's row, his post, and the comment on
+            it are all still in the database, so nothing broke, and the account could be reopened.
+            Try to sign him up again, from the <cde>mysql</cde> command:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `users` (`email`, `name`)
+VALUES ('bo@example.com', 'Bo');</code-block>
+        <p>
+            <cde>Duplicate entry</cde>. His closed row still holds the email address. That's the
+            other price of soft deletes. <cde>docker compose down -v</cde> when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$statement-&gt;rowCount()</cde> after a <cde>DELETE</cde> is the number of rows
+                removed from the table you named, not counting cascades.
+            </li>
+            <li>
+                The id to delete is input. <strong>Never trust input</strong>: check that it's a
+                whole number, then check that the row belongs to whoever is asking, in the same
+                <cde>WHERE</cde>: <cde>WHERE `id` = ? AND `user_id` = ?</cde>. Otherwise anyone can
+                delete anyone's post by changing a number in a URL.
+            </li>
+            <li>
+                Deletes change things, so they come from a <cde>POST</cde> form, never a link.
+                <lnk to="/php/csrf">CSRF</lnk>, in Security, is why.
+            </li>
+            <li>
+                With soft deletes, add <cde>WHERE `deleted_at` IS NULL</cde> to every query. A view
+                or a single function that every query goes through makes it harder to forget.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A DELETE without a WHERE empties the table.</strong> Every row, at once, and
+                with <cde>CASCADE</cde>, every row in the tables below it too. The same
+                <cde>--safe-updates</cde> option from Updating Data refuses it.
+            </li>
+            <li>
+                <strong>Cascades are quiet.</strong> The count says 1, the database removed 300. Use
+                <cde>CASCADE</cde> where the children truly belong to the parent, and
+                <cde>RESTRICT</cde> everywhere else, so a surprising delete is refused rather than
+                done.
+            </li>
+            <li>
+                <strong>Soft deletes leak.</strong> Forget the <cde>deleted_at IS NULL</cde> in one
+                query, and closed accounts show up in a list, a count, or a search. And a unique
+                column still sees the closed rows, as Bo found out.
+            </li>
+            <li>
+                <strong>Soft deleted isn't deleted.</strong> When someone asks you to delete their
+                data, keeping it with a mark on it may not be enough. Privacy laws, like the
+                European Union's GDPR, can require that it's really gone.
+            </li>
+            <li>
+                <strong>TRUNCATE isn't a fast DELETE.</strong> <cde>TRUNCATE TABLE</cde> empties a
+                table by recreating it: it can't be rolled back, it resets
+                <cde>AUTO_INCREMENT</cde>, and MySQL refuses it on a table that other tables point
+                at.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Start a transaction first">
+            <p>
+                Before any <cde>DELETE</cde> or <cde>UPDATE</cde> you type by hand on a real
+                database, type <cde>START TRANSACTION;</cde>. Run the statement, read the row count,
+                and <cde>SELECT</cde> to check. Then <cde>COMMIT;</cde> if it's right, or
+                <cde>ROLLBACK;</cde> if it isn't. It costs two lines, and it's the only undo button
+                SQL has.
+            </p>
+        </two-dollars>
+
+        <p>
+            That undo button has come up in several lessons now, without being explained. Next:
+            transactions.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/transactions">Next: Transactions &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

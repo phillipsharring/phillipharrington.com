@@ -1,0 +1,199 @@
+<layout name="default" title="CSV" />
+<page-head>
+    <meta
+        name="description"
+        content="The spreadsheet's format: rows, commas, and the quoting rules that make commas inside fields work. Reading a CSV in PHP and checking every row, writing one as a download, Excel and UTF-8, and formulas in cells. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="CSV, comma separated values, fgetcsv, fputcsv, str_getcsv, RFC 4180, CSV download, text/csv, Excel UTF-8 BOM, CSV injection, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Rows, commas, quotes, and the spreadsheet on the other end. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="csv">CSV</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            JSON is how programs talk to programs. When the data is for a person, it usually goes
+            into a spreadsheet, and the format for that is CSV. Sooner or later someone asks for an
+            export of the orders, or hands you a file of products to import. Both are easy in PHP,
+            as long as you let PHP do the quoting, and check every row that comes in.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-csv">What's CSV?</heading>
+        <p>
+            Comma-separated values: a table as plain text. One line per row, commas between the
+            fields, and usually a first row naming the columns:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>sku,name,price_cents
+TS-01,Plain tee,1500
+TS-02,"Tee, with pocket",1800
+TS-03,"The ""Classic"" tee",2000</code-block>
+        <p>The quoting rules are what make it work:</p>
+        <list>
+            <li>A field with a comma, a quote or a line break in it goes in double quotes.</li>
+            <li>A quote inside a quoted field is written twice: <cde>""</cde>.</li>
+            <li>Everything is text. Nothing in the file says a column is a number or a date.</li>
+        </list>
+        <p>
+            That's most of the standard, RFC 4180, which was written in 2005 to describe what
+            programs were already doing. Many programs still do it a little differently: semicolons
+            instead of commas in countries that write decimals with a comma, different line endings,
+            different character sets.
+        </p>
+
+        <side-story title="Older Than the PC">
+            Comma-separated data is older than personal computers. IBM's FORTRAN compilers in the
+            early 1970s already read values separated by commas. The name came later than the habit.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>Reading one:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Open the file, and read the first row as the column names.</li>
+            <li>Check they're the columns you expect, in the order you expect.</li>
+            <li>
+                Read the rest one row at a time with <cde>fgetcsv()</cde>, which handles the quotes
+                and gives you an array of strings.
+            </li>
+            <li>Check each row: the right number of fields, and each field valid.</li>
+            <li>Use the good rows, and report the bad ones by line number.</li>
+        </ol>
+        <p>
+            Writing one is the same in reverse: <cde>fputcsv()</cde> for each row, which adds
+            whatever quotes a field needs. For a download, write to <cde>php://output</cde> with the
+            headers from <lnk to="/php/sending-a-file">Sending a File</lnk>.
+        </p>
+        <p>
+            A file someone hands you is input, every row of it. It can have missing fields, extra
+            fields, prices that say "free," and text that isn't
+            <lnk to="/php/text-and-utf-8">UTF-8</lnk>.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> even in a
+            file from a colleague.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            First, reading. In a folder, make <cde>shirts.csv</cde>, with a few rows that are fine
+            and two that aren't:
+        </p>
+        <code-block example="csv/shirts.csv" />
+        <p>Then <cde>import.php</cde>:</p>
+        <code-block example="csv/import.php" />
+        <p>Run it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php import.php shirts.csv</code-block>
+        <p>
+            Four shirts, with the comma and the quotes back where they belong, and two lines
+            skipped, each with its line number and the reason. The copy in the examples repo also
+            starts with an invisible byte order mark, the way Excel saves UTF-8, and the import
+            skips it.
+        </p>
+        <p>Now writing. Make a <cde>public</cde> folder, and in it, <cde>export.php</cde>:</p>
+        <code-block example="csv/public/export.php" />
+        <p>Start the server and ask for it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/export.php</code-block>
+        <p>
+            The quotes are there only where a field needs them. Open the same URL in a browser, and
+            it downloads as <cde>shirts.csv</cde>, because of <cde>Content-Disposition</cde>.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>fgetcsv($file, escape: '')</cde> reads one row as an array of strings, or
+                <cde>false</cde> at the end.
+            </li>
+            <li><cde>fputcsv($file, $fields, escape: '')</cde> writes one, quoted as needed.</li>
+            <li><cde>str_getcsv($line, escape: '')</cde> parses a single line you already have.</li>
+            <li>
+                <cde>escape: ''</cde> on all three turns off PHP's own backslash escaping, which
+                isn't part of the standard. PHP 8.4 warns when you leave it out, because the default
+                is going to change.
+            </li>
+            <li>
+                <cde>array_combine($header, $fields)</cde> turns a row into an array keyed by column
+                name.
+            </li>
+            <li>
+                <cde>mb_check_encoding($text, 'UTF-8')</cde> before you trust any text from a file.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never build a CSV line with <cde>implode(',', ...)</cde>.</strong> The first
+                name with a comma in it shifts every column after it. Use <cde>fputcsv()</cde>.
+            </li>
+            <li>
+                <strong>Excel and UTF-8 don't always agree.</strong> On many setups, Excel opens a
+                plain UTF-8 CSV as if it were an older character set, and "Café" turns into
+                nonsense. Starting the file with a byte order mark, <cde>"\xEF\xBB\xBF"</cde>, tells
+                it otherwise. Then every program reading the file has to skip the mark, like the
+                import does.
+            </li>
+            <li>
+                <strong>A cell can be a formula.</strong> A field starting with <cde>=</cde>,
+                <cde>+</cde>, <cde>-</cde> or <cde>@</cde> is run as a formula when a spreadsheet
+                opens the file. If a visitor's name ends up in your export, they can put a formula
+                in someone else's spreadsheet. That's CSV injection, and the
+                <lnk to="/php/projects/exporting-data">Exporting Data</lnk> project breaks it and
+                fixes it.
+            </li>
+            <li>
+                <strong>Spreadsheets "help" with your data.</strong> Open a CSV and save it again,
+                and long numbers can turn into scientific notation, leading zeros vanish from codes
+                like <cde>00742</cde>, and things that look like dates become dates. Check a file
+                after a round trip through a spreadsheet.
+            </li>
+            <li>
+                <strong>Big files, one row at a time.</strong> <cde>fgetcsv()</cde> reads a row and
+                lets it go, so a million rows use the memory of one. Reading the whole file into an
+                array first uses the memory of all of them.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Line numbers in every error">
+            <p>
+                When an import rejects a row, say which line, like the example does. "Line 6: bad
+                price" gets fixed in a minute. "Import failed" gets an email thread. Count the
+                header as line 1, so the numbers match what a spreadsheet shows.
+            </p>
+        </two-dollars>
+
+        <p>
+            The last technology in this section goes back to the start: HTML, sent in pieces, with
+            hardly any JavaScript. Next: HTMX.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/htmx">Next: HTMX &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

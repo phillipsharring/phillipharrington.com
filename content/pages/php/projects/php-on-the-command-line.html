@@ -1,0 +1,195 @@
+<layout name="default" title="PHP on the Command Line" />
+<page-head>
+    <meta
+        name="description"
+        content="PHP isn't only for web pages. Build a command-line tool: arguments with getopt(), input from files or a pipe, results on STDOUT, errors on STDERR, and exit codes that scripts can check. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP CLI, command line, getopt, argv, STDIN, STDOUT, STDERR, exit codes, PHP_SAPI, pipes, stream_isatty, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Build a command-line tool in PHP. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="php-on-the-command-line">PHP on the Command Line</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Caching ended with a script you ran in a terminal. Every <cde>docker run ... php</cde>
+            in this course has been PHP on the command line, with no web server anywhere. A lot of
+            real PHP runs this way: imports, reports, cleanups, queue workers, anything that happens
+            without a visitor waiting for a page.
+        </p>
+        <p>
+            You'll build a small tool that prints the most common words in some text. It's a normal
+            citizen of the terminal: it takes options, reads files or whatever is piped into it,
+            prints results where other tools can use them, prints errors somewhere else, and says
+            with its exit code whether it worked.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li><lnk to="/php/tools#terminal">The Terminal</lnk>: pipes and redirects</li>
+            <li><lnk to="/php/working-with-files">Working with Files</lnk>: reading a stream</li>
+            <li>
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: <cde>mb_strtolower()</cde> and
+                Unicode in a regular expression
+            </li>
+            <li><lnk to="/php/functions">Functions</lnk> and <lnk to="/php/arrays">Arrays</lnk></li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: arguments are input too
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-counting">Step 1: The Counting</heading>
+        <p>
+            Keep the work apart from the terminal. <cde>src/words.php</cde> counts words in a
+            stream, a line at a time, so a file of any size fits in memory. It doesn't know or care
+            where the stream came from:
+        </p>
+        <code-block example="project-php-on-the-command-line/src/words.php" />
+        <p>
+            <cde>\p{L}</cde> is any letter in any language and <cde>\p{N}</cde> any digit, and the
+            <cde>u</cde> at the end tells PCRE the text is UTF-8. Without it, <cde>é</cde> is two
+            bytes that aren't letters, and <cde>café</cde> splits in half.
+        </p>
+
+        <heading h3 id="step-2-the-command">Step 2: The Command</heading>
+        <p><cde>bin/top-words.php</cde> is the part that talks to the terminal:</p>
+        <code-block example="project-php-on-the-command-line/bin/top-words.php" />
+        <list>
+            <li>
+                <strong><cde>PHP_SAPI</cde></strong> says how PHP is running: <cde>cli</cde> in a
+                terminal. If the script is ever reached through a web server, it refuses.
+            </li>
+            <li>
+                <strong><cde>getopt()</cde></strong> reads the options, and its third argument says
+                where they stop, so everything after is a file name. <cde>$argv</cde> is the whole
+                command line as an array.
+            </li>
+            <li>
+                <strong><cde>STDIN</cde>, <cde>STDOUT</cde> and <cde>STDERR</cde></strong> are
+                streams PHP opens for you. Results go to <cde>STDOUT</cde>; complaints go to
+                <cde>STDERR</cde>, so they show on the screen but don't end up in a file or a pipe
+                with the results.
+            </li>
+            <li>
+                <strong><cde>exit()</cde></strong> with a number is the exit code: 0 for success,
+                anything else for failure. Here, 1 means a file couldn't be read, and 2 means the
+                options were wrong, which is a common habit among command-line tools.
+            </li>
+        </list>
+        <p>Some <cde>sample.txt</cde> to count:</p>
+        <code-block example="project-php-on-the-command-line/sample.txt" />
+
+        <heading h3 id="step-3-run-it">Step 3: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php bin/top-words.php --top=5 sample.txt</code-block>
+        <!-- prettier-ignore -->
+        <code-block>    5  café
+    5  the
+    2  at
+    2  coffee
+    1  any</code-block>
+        <p>
+            <cde>Café</cde>, <cde>CAFÉ</cde> and <cde>café</cde> counted as one word. Now pipe text
+            in instead of naming a file. Docker needs <cde>-i</cde> to pass the pipe through:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>cat sample.txt | docker run --rm -i -v "$PWD":/app -w /app php:8.4-cli php bin/top-words.php --top=3 --min-length=4</code-block>
+        <p>Then get it wrong, and check the exit code with <cde>echo $?</cde> right after:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php bin/top-words.php nope.txt; echo $?
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php bin/top-words.php --top=lots; echo $?</code-block>
+        <p>
+            <cde>Can't read nope.txt</cde> and <cde>1</cde>; then the usage and <cde>2</cde>. Add
+            <cde>&gt; out.txt</cde> to the first one, and the message still shows on your screen,
+            while <cde>out.txt</cde> stays empty: the error went to <cde>STDERR</cde>, and only
+            <cde>STDOUT</cde> was sent to the file.
+        </p>
+        <p>
+            <strong>Never trust input</strong> on the command line either. A person typing
+            <cde>--top=lots</cde> is the friendly case. The unfriendly one is a script that builds
+            the command from something a visitor sent, which is why every option is checked here,
+            and why your PHP should never pass input to a shell command without
+            <cde>escapeshellarg()</cde>.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="Do One Thing Well">
+            Standard input, output and error come from Unix, built at Bell Labs in the early 1970s.
+            Doug McIlroy pushed for pipes, so the output of one small program could flow straight
+            into the next, and they arrived in 1973. In 1978 he wrote down the habits that grew from
+            them, starting with "Make each program do one thing well" and "Expect the output of
+            every program to become the input to another, as yet unknown, program." A tool that
+            prints plain lines to <cde>STDOUT</cde> can be piped into <cde>sort</cde>,
+            <cde>head</cde> or <cde>grep</cde> without knowing they exist.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The command line has its own <cde>php.ini</cde>.</strong> Settings like
+                memory and time limits can differ from the web's, and <cde>max_execution_time</cde>
+                is 0, no limit, on the command line. A script that's fine in a terminal can be cut
+                off on a web page, and the other way around.
+            </li>
+            <li>
+                <strong>There's no <cde>$_GET</cde>, no headers, no session.</strong> Input is
+                <cde>$argv</cde>, <cde>STDIN</cde> and the environment, with <cde>getenv()</cde>.
+            </li>
+            <li>
+                <strong>Keep command-line scripts out of the web root.</strong> The
+                <cde>PHP_SAPI</cde> check is a backstop. A <cde>bin</cde> folder next to
+                <cde>public</cde>, never inside it, is the real protection.
+            </li>
+            <li>
+                <strong>A shebang line only works in a terminal.</strong>
+                <cde>#!/usr/bin/env php</cde> on the first line lets you run a script as
+                <cde>./top-words.php</cde>. Only the command line skips that line, though: through a
+                web server, it's printed as text, and with <cde>declare(strict_types=1)</cde>
+                after it, the script won't even compile.
+            </li>
+            <li>
+                <strong>Exit codes are how scripts talk to scripts.</strong> Cron, deploy tools and
+                CI all check them. A script that prints "failed" and exits 0 has succeeded, as far
+                as they know.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Write a --dry-run first">
+            <p>
+                Any command-line script that changes things, deletes rows, sends mail or moves
+                files, should take a <cde>--dry-run</cde> that prints what it would do and does
+                nothing. Write that path first. You'll use it every time you run the script against
+                real data for the first time.
+            </p>
+        </two-dollars>
+
+        <p>
+            A script nobody has to remember to run is better still. Next: cron jobs, and running
+            scripts like this one on a schedule.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/cron-jobs">Next: Cron Jobs &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

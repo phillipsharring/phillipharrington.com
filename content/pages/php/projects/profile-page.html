@@ -1,0 +1,221 @@
+<layout name="default" title="Profile Page" />
+<page-head>
+    <meta
+        name="description"
+        content="A profile page a signed-in member can edit, built naive, then changed from someone else's site with a form that submits itself, then fixed with a CSRF token: one secret per session, in every form, checked with hash_equals() on every change. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP profile page, CSRF, cross-site request forgery, CSRF token, hash_equals, random_bytes, SameSite cookies, same-site vs same-origin, 403 Forbidden, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A profile page, and the other site that edits it for you. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="profile-page">Profile Page</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Alice can sign in. Now she wants a profile: a display name and a few lines about
+            herself, that she can change whenever she likes. The page checks that she's signed in,
+            takes the form, and saves it. Everything you've learned says that's enough.
+        </p>
+        <p>
+            It isn't, because her browser will send her cookie with any form aimed at your site,
+            including a form on someone else's page. That's cross-site request forgery, CSRF. You'll
+            build the profile page naive, change Alice's profile from a second site she merely
+            visits, then fix it with a token that only your own pages know.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li><lnk to="/php/csrf">CSRF</lnk>: the lesson this project acts out.</li>
+            <li>
+                <lnk to="/php/projects/login-form">Login Form</lnk>: the sign-in, carried over
+                whole.
+            </li>
+            <li>
+                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>:
+                <cde>SameSite</cde>, and why it isn't enough here.
+            </li>
+            <li>
+                <lnk to="/php/updating-data">Updating Data</lnk>: an <cde>UPDATE</cde> with a
+                <cde>WHERE</cde>, always.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-setup">The Setup</heading>
+        <p>
+            A new project folder with everything from the Login Form: the <cde>Dockerfile</cde>,
+            <cde>src/db.php</cde>, <cde>src/LoginLimiter.php</cde> and <cde>public/login.php</cde>,
+            which now sends people to <cde>/profile.php</cde>. <cde>init.sql</cde> adds two columns
+            to the users:
+        </p>
+        <code-block example="project-profile-page/init.sql" />
+        <p>
+            <cde>src/session.php</cde> gets a guard, like the one in Protected Page, that returns
+            the member's id:
+        </p>
+        <code-block example="project-profile-page/src/session.php" />
+        <p>
+            And <cde>compose.yml</cde> runs one more thing: a second web server on port 8001,
+            serving a folder called <cde>attacker</cde>. That's someone else's site.
+        </p>
+        <code-block example="project-profile-page/compose.yml" />
+
+        <heading h3 id="the-naive-profile">The Naive Profile</heading>
+        <p>Build the naive profile as <cde>public/naive-profile.php</cde>:</p>
+        <code-block example="project-profile-page/public/naive-profile.php" />
+        <p>
+            Signed in or sent away, a prepared <cde>UPDATE</cde> limited to the member's own row,
+            and every value escaped on the way out. Start it all:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up --build</code-block>
+        <p>
+            Sign in at <cde>http://localhost:8000/login.php</cde> as
+            <cde>alice@example.com</cde> with <cde>correct horse battery staple</cde>, then open
+            <cde>http://localhost:8000/naive-profile.php</cde>. Change the bio and save. It works.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            Now be the other site. Make <cde>attacker/index.html</cde>, a page that promises a prize
+            and contains a form aimed at your profile page, sent the moment it loads:
+        </p>
+        <code-block example="project-profile-page/attacker/index.html" />
+        <p>
+            In the same browser, still signed in to your site, visit
+            <cde>http://localhost:8001</cde>. The page flashes "Claiming your prize..." and lands on
+            your profile page, which now says:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>Hacked
+Buy cheap watches at https://spam.example</code-block>
+        <p>
+            Alice never touched your form. The other site's form posted to your page, and her
+            browser, as it always does, attached her cookie for your site. The naive page saw a
+            signed-in member posting a profile, and saved it. It can't tell the difference between a
+            form on your page and a form on anyone's.
+        </p>
+        <p>
+            Here it's a profile. The same trick works on any form that changes something: an email
+            address, a shipping address, a "delete my account" button, a transfer. The attacker
+            never sees the response; they don't need to.
+        </p>
+        <p>
+            Why didn't <cde>SameSite=Lax</cde> stop it? Because <cde>localhost:8001</cde> and
+            <cde>localhost:8000</cde> are the same site. Ports don't count, and on the real web,
+            neither do subdomains: <cde>blog.example.com</cde> and <cde>example.com</cde> are one
+            site, so a hole in one is a launch pad for the other. SameSite is a good second defense.
+            It isn't the first.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            The fix is a secret that your pages put in every form, and that the other site can't
+            know. <cde>src/csrf.php</cde>:
+        </p>
+        <code-block example="project-profile-page/src/csrf.php" />
+        <list>
+            <li>
+                <strong>One token per session,</strong> 32 random bytes from
+                <cde>random_bytes()</cde>, written as 64 hex characters, made the first time a form
+                asks for it and kept in the session.
+            </li>
+            <li>
+                <strong><cde>csrf_field()</cde> puts it in a form,</strong> as a hidden field. Your
+                own pages can read the session; the attacker's page can't, and it can't read your
+                page either, because the browser won't let one site read another's responses.
+            </li>
+            <li>
+                <strong><cde>csrf_check()</cde> compares it</strong> with <cde>hash_equals()</cde>,
+                and stops with a <cde>403</cde> if it's missing, wrong, or not a string at all.
+            </li>
+        </list>
+        <p>Then the fixed page, <cde>public/profile.php</cde>:</p>
+        <code-block example="project-profile-page/public/profile.php" />
+        <p>
+            The token check is the first thing a POST does, before anything is read or changed. Then
+            <strong>never trust input</strong>, as always: the name and bio are checked for type,
+            encoding and length, and escaped when they're shown. Point the attacker's form at the
+            fixed page, by changing <cde>naive-profile.php</cde> to <cde>profile.php</cde> in its
+            <cde>action</cde>, and visit <cde>http://localhost:8001</cde> again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>That form had expired. Go back, reload the page, and try again.</code-block>
+        <p>
+            A <cde>403</cde>, and Alice's profile is untouched. The other site sent everything but
+            the token, because it had no way to know it. Your own form, with the token in it, saves
+            as before.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Every form that changes something needs the token.</strong> Saving a
+                profile, changing an email, signing out, deleting a thing. Forget one, and that one
+                is the hole. A site with many forms should check the token in one place every POST
+                passes through.
+            </li>
+            <li>
+                <strong>GET must never change anything.</strong> The token protects forms. A link
+                that deletes something can be triggered by an image tag on any page, token or not.
+            </li>
+            <li>
+                <strong>An XSS hole beats any token.</strong> A script running on your own page can
+                read the token out of the form and post it. That's one more reason to escape
+                everything, as in the <lnk to="/php/projects/guestbook">Guestbook</lnk>.
+            </li>
+            <li>
+                <strong>The browser tells you where a request came from, too.</strong> Modern
+                browsers send <cde>Sec-Fetch-Site</cde> and <cde>Origin</cde> with form posts, and
+                refusing posts that say <cde>cross-site</cde> is a good extra check. They're
+                headers, which makes them input, so they back the token up and never replace it.
+            </li>
+        </list>
+
+        <side-story title="One Click Away">
+            CSRF was also called "session riding" and "one-click attacks," which describes it well:
+            the victim does nothing but visit a page while signed in somewhere else. It was on the
+            OWASP Top Ten list of web application risks for years, until frameworks with tokens
+            built in made it rare enough to drop off.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Make the expired form forgivable">
+            <p>
+                Honest people hit the token check too: a form left open overnight in a tab whose
+                session has expired. Make the <cde>403</cde> say what happened and what to do, as
+                this one does, rather than a bare "Forbidden." It turns a mystery into a reload.
+            </p>
+        </two-dollars>
+
+        <p>
+            The profile is safe from other sites. One change still needs more than a token, because
+            it's the change that locks Alice out of her own account. Next: a change password form.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/change-password-form">Next: Change Password Form &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

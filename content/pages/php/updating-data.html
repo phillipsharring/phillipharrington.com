@@ -1,0 +1,230 @@
+<layout name="default" title="Updating Data" />
+<page-head>
+    <meta
+        name="description"
+        content="UPDATE from PHP: changing the rows you meant to and no others, the UPDATE without a WHERE, what the affected row count does and doesn't tell you, and changing a value in one statement so two requests can't trip over each other. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="MySQL UPDATE, UPDATE without WHERE, safe updates, i-am-a-dummy, affected rows, rowCount, rows matched, lost update, atomic update, stock decrement, PDO, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Changing the rows you meant to, and no others. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="updating-data">Updating Data</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/selecting-data">Selecting Data</lnk> read rows and left them alone.
+            <cde>UPDATE</cde> changes them: a new price, a new email address, one fewer in stock.
+            It's the statement with the most famous mistake in SQL, and the mistake is a missing
+            line. Leave off the <cde>WHERE</cde>, and it changes every row in the table, instantly,
+            with no question asked.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-update">What's UPDATE?</heading>
+        <p>The statement that changes rows already in a table:</p>
+        <!-- prettier-ignore -->
+        <code-block>UPDATE `products`
+SET `price_cents` = 1800
+WHERE `id` = 2;</code-block>
+        <list>
+            <li><strong>UPDATE</strong>: which table.</li>
+            <li>
+                <strong>SET</strong>: which columns get which values. Several can change at once,
+                separated by commas.
+            </li>
+            <li>
+                <strong>WHERE</strong>: which rows. The same <cde>WHERE</cde> as in a
+                <cde>SELECT</cde>, and the same rules. Leave it off, and the answer is "all of
+                them."
+            </li>
+        </list>
+
+        <heading h3 id="relative-updates">Changing a Value Relative to Itself</heading>
+        <p>
+            <cde>SET</cde> can use the row's current values: <cde>SET `stock` = `stock` - 1</cde>.
+            The database reads and writes the row in one step, so two sales at the same moment take
+            two off the stock, not one. Add a condition to the <cde>WHERE</cde>, like
+            <cde>AND `stock` &gt; 0</cde>, and the check and the change happen together too.
+        </p>
+
+        <side-story title="--i-am-a-dummy">
+            The <cde>mysql</cde> command has an option, <cde>--safe-updates</cde>, that refuses any
+            <cde>UPDATE</cde> or <cde>DELETE</cde> whose <cde>WHERE</cde> doesn't use a key, and so
+            refuses the ones with no <cde>WHERE</cde> at all. It has had a second name for decades,
+            and it's still in the manual: <cde>--i-am-a-dummy</cde>.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The database finds the rows that match the <cde>WHERE</cde>, using an index if it
+                can.
+            </li>
+            <li>It works out each row's new values from the <cde>SET</cde>.</li>
+            <li>
+                It checks them against the table's rules, the same ones an insert has to pass, and
+                writes the rows whose values actually changed.
+            </li>
+            <li>
+                It answers with two numbers: rows matched, and rows changed. PHP's
+                <cde>rowCount()</cde> gets the second.
+            </li>
+        </ol>
+        <p>
+            So a <cde>rowCount()</cde> of 0 means one of two things: no row matched, or the row
+            matched and already had those values. If the difference matters to you, you have to ask.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A shop with three products. The same <cde>compose.yml</cde>, <cde>Dockerfile</cde> and
+            <cde>db.php</cde> as in SQL, and this <cde>init.sql</cde>:
+        </p>
+        <code-block example="updating-data/init.sql" />
+        <p>
+            Then <cde>set-price.php</cde>, which changes one price and tells the two kinds of 0
+            apart:
+        </p>
+        <code-block example="updating-data/set-price.php" />
+        <p>
+            Start the database, and change the T-shirt's price twice, then a product that isn't
+            there:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose run --rm php php set-price.php 2 1800
+docker compose run --rm php php set-price.php 2 1800
+docker compose run --rm php php set-price.php 99 100</code-block>
+        <p>
+            Changed, then "nothing changed," then "no such product." The second and third both had a
+            <cde>rowCount()</cde> of 0. Now <cde>sell.php</cde>, which takes one off the stock in a
+            single statement:
+        </p>
+        <code-block example="updating-data/sell.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php sell.php 2
+docker compose run --rm php php sell.php 2</code-block>
+        <p>
+            There was one T-shirt. The first sale takes it. The second matches no row, because the
+            stock is no longer above 0, and says sold out. No two customers can buy the last one.
+        </p>
+        <p>
+            Now the famous mistake, with the safety on. Open the <cde>mysql</cde> command with
+            <cde>--safe-updates</cde>, and forget the <cde>WHERE</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql --safe-updates -u app -papp-password course</code-block>
+        <!-- prettier-ignore -->
+        <code-block>UPDATE `products`
+SET `price_cents` = 0;</code-block>
+        <p>
+            Refused: <cde>You are using safe update mode</cde>. Type <cde>exit</cde>, and open it
+            again without the option. This time, start a transaction first, which holds the change
+            until you say otherwise (<lnk to="/php/transactions">Transactions</lnk> has the
+            details):
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
+        <!-- prettier-ignore -->
+        <code-block>START TRANSACTION;
+
+UPDATE `products`
+SET `price_cents` = 0;
+
+SELECT `name`, `price_cents`
+FROM `products`;</code-block>
+        <p>
+            <cde>3 rows affected</cde>, and everything in the shop is free. That's the mistake,
+            exactly as it happens on a live site. Undo it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>ROLLBACK;
+
+SELECT `name`, `price_cents`
+FROM `products`;</code-block>
+        <p>
+            The prices are back. On a live site, without the transaction, they wouldn't be. Type
+            <cde>exit</cde>, and <cde>docker compose down -v</cde> when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$statement-&gt;rowCount()</cde> after an <cde>UPDATE</cde> is the number of
+                rows changed, not matched. Connect with
+                <cde>PDO::MYSQL_ATTR_FOUND_ROWS =&gt; true</cde> if you'd rather have the number
+                matched.
+            </li>
+            <li>
+                Put the id in the <cde>WHERE</cde> as a placeholder, like every other value, and
+                check it first: <strong>never trust input</strong>, and an id is input. Then check
+                that the row belongs to whoever is asking, by adding it to the <cde>WHERE</cde>:
+                <cde>AND `owner_id` = ?</cde>.
+            </li>
+            <li>Do arithmetic in the SQL, <cde>SET `stock` = `stock` - 1</cde>, not in PHP.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>An UPDATE without a WHERE changes every row.</strong> No warning, no undo.
+                In PHP it's usually a <cde>WHERE</cde> that was built in pieces and came out empty.
+                Never let code build an <cde>UPDATE</cde> that can lose its <cde>WHERE</cde>.
+            </li>
+            <li>
+                <strong>Read, change, write loses updates.</strong> Two requests read a stock of 5,
+                each subtracts one in PHP, and each writes 4. Two sold, one counted. Let the
+                database do it in one statement, as <cde>sell.php</cde> does.
+            </li>
+            <li>
+                <strong>0 rows doesn't mean not found.</strong> It can mean "already that value."
+                Treating it as an error turns a harmless double-click into a failure page.
+            </li>
+            <li>
+                <strong>Strict mode catches some bad ids, and not others.</strong> An
+                <cde>UPDATE ... WHERE `id` = '2abc'</cde> is refused in strict mode, but the same
+                <cde>WHERE</cde> in a <cde>SELECT</cde> quietly finds row 2. Don't count on either.
+                Check the id in PHP.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="SELECT it first">
+            <p>
+                Before you run an <cde>UPDATE</cde> by hand, write it as a <cde>SELECT</cde> with
+                the same <cde>WHERE</cde>, and run that. If it shows the three rows you meant,
+                change <cde>SELECT ... FROM</cde> to <cde>UPDATE ... SET</cde> and leave the
+                <cde>WHERE</cde> exactly as it is. If it shows three thousand, you've just saved
+                your afternoon.
+            </p>
+        </two-dollars>
+
+        <p>
+            Changing every row by mistake is bad. There's one statement that's worse, because the
+            rows don't come back changed. They don't come back at all. Next: deleting data.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/deleting-data">Next: Deleting Data &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

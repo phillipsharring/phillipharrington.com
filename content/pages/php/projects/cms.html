@@ -1,0 +1,277 @@
+<layout name="default" title="Content Management System" />
+<page-head>
+    <meta
+        name="description"
+        content="A small content management system: pages in MySQL, an admin form behind a login, and image uploads done safely. Break It uploads a PHP file and runs it; Fix It checks the bytes, picks the name, and keeps uploads out of the web root. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP CMS, content management system, file uploads, move_uploaded_file, finfo, getimagesize, upload a web shell, polyglot file, X-Content-Type-Options nosniff, CSRF token, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Pages in a database, an admin form, and image uploads done safely. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="content-management-system">Content Management System</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Translation kept product names in a table so someone could change them without touching
+            code. A content management system, a CMS, does that for whole pages. You'll build a
+            small one: each page is a row in MySQL, an address like <cde>/about</cde> shows it, and
+            an admin form behind a login edits it, picture and all.
+        </p>
+        <p>
+            The picture is the dangerous part. An upload form lets strangers put files on your
+            server, and the naive version lets them run those files as code. You'll build that
+            version, use it to run your own PHP on the server, and then build the one that can't be
+            used that way.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/file-uploads">File Uploads</lnk>: <cde>$_FILES</cde>, and why every
+                part of it is a claim
+            </li>
+            <li>
+                <lnk to="/php/document-root">Document Root</lnk>: what's in the web root can be run
+            </li>
+            <li>
+                <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>: the lock on
+                the admin
+            </li>
+            <li>
+                <lnk to="/php/csrf">CSRF</lnk> and <lnk to="/php/sessions">Sessions</lnk>: a token
+                on every admin form
+            </li>
+            <li>
+                <lnk to="/php/inserting-data">Inserting Data</lnk>: one query that creates or
+                updates
+            </li>
+            <li><lnk to="/php/xss">XSS and Escaping Output</lnk>: the page text</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-project">Step 1: The Project</heading>
+        <!-- prettier-ignore -->
+        <code-block>project-cms/
+    compose.yml, Dockerfile, init.sql
+    auth.php, users.php      from HTTP Authentication
+    src/
+        db.php               the connection
+        csrf.php             form tokens
+        uploads.php          the upload checks
+    storage/uploads/         where images go: not in the web root
+    public/                  the web root
+        index.php            shows a page
+        admin.php            edits pages
+        image.php            sends an uploaded image
+        upload-naive.php     the broken one, for Break It
+        uploads/             where the broken one puts files</code-block>
+        <p>
+            <cde>compose.yml</cde>, the <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the same
+            as in <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <cde>cms</cde>. Copy <cde>auth.php</cde> and <cde>users.php</cde> from
+            <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>. A
+            <cde>.gitignore</cde> keeps uploads out of git, since they're data, not code:
+        </p>
+        <code-block example="project-cms/.gitignore" />
+
+        <heading h3 id="step-2-the-pages-table">Step 2: The Pages Table</heading>
+        <code-block example="project-cms/init.sql" />
+        <p>
+            The <cde>image</cde> column holds a name your code makes up. Never the name the file
+            arrived with.
+        </p>
+
+        <heading h3 id="step-3-showing-a-page">Step 3: Showing a Page</heading>
+        <p>
+            PHP's built-in server hands any path that isn't a real file to
+            <cde>public/index.php</cde>, so <cde>/about</cde> arrives there. It turns the path into
+            a slug, checks its shape, and looks it up with a prepared statement:
+        </p>
+        <code-block example="project-cms/public/index.php" />
+        <p>
+            The body is plain text. A blank line starts a paragraph, and every paragraph is escaped,
+            so an editor who types <cde>&lt;script&gt;</cde> gets the word on the page, not a
+            script.
+        </p>
+
+        <heading h3 id="step-4-the-form-tokens">Step 4: The Form Tokens</heading>
+        <p>
+            The browser sends Basic authentication with every request to the site, including
+            requests another site tricks it into making. So every admin form carries a token from
+            the session, and every POST must bring it back:
+        </p>
+        <code-block example="project-cms/src/csrf.php" />
+
+        <heading h3 id="step-5-the-upload-checks">Step 5: The Upload Checks</heading>
+        <p>
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and an upload
+            is input from top to bottom. The file name in <cde>$_FILES</cde> is whatever the client
+            said. So is the type. The only thing you can examine is the bytes, and even those were
+            chosen by someone else. <cde>src/uploads.php</cde> does five things:
+        </p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Checks that the upload arrived, and isn't too big.</li>
+            <li>Asks <cde>finfo</cde> what the bytes are, ignoring the type the browser sent.</li>
+            <li>
+                Asks <cde>getimagesize()</cde> to read it as an image, and checks the two agree.
+            </li>
+            <li>Allows only PNG, JPEG and WebP.</li>
+            <li>
+                Moves it into <cde>storage/uploads</cde>, outside the web root, under a random name
+                with an extension picked from the type it really is.
+            </li>
+        </ol>
+        <code-block example="project-cms/src/uploads.php" />
+
+        <heading h3 id="step-6-the-admin">Step 6: The Admin</heading>
+        <p>
+            <cde>public/admin.php</cde> lists the pages, shows a form to edit one or make a new one,
+            and saves it. <cde>enctype="multipart/form-data"</cde> on the form is what lets it carry
+            a file. After a save, it redirects, so a reload doesn't send the form again.
+        </p>
+        <code-block example="project-cms/public/admin.php" />
+
+        <heading h3 id="step-7-sending-the-images">Step 7: Sending the Images</heading>
+        <p>
+            Images in <cde>storage/uploads</cde> can't be reached by URL, which is the point. This
+            script sends them, only if the name is one of ours, and only ever as an image:
+        </p>
+        <code-block example="project-cms/public/image.php" />
+
+        <heading h3 id="step-8-run-it">Step 8: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> for the home page and
+            <cde>http://localhost:8000/about</cde> for the other one. Then
+            <cde>http://localhost:8000/admin.php</cde>, log in as <cde>editor</cde> with
+            <cde>correct horse battery staple</cde>, and edit About: change the text, pick a photo,
+            save, and look at the page.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>Here's the uploader most people write first:</p>
+        <code-block example="project-cms/public/upload-naive.php" />
+        <p>
+            It keeps the file's own name, drops it in the web root, and never looks at it. Make a
+            file that isn't a picture at all:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>printf '&lt;?php echo "ran: " . (6 * 7);' &gt; shell.php
+curl -F 'image=@shell.php' http://localhost:8000/upload-naive.php
+curl http://localhost:8000/uploads/shell.php</code-block>
+        <p>
+            The last line prints <cde>ran: 42</cde>. That multiplication happened on your server.
+            Anything PHP can do, the uploader can now do: read <cde>.env</cde>, query the database,
+            delete files. A file like this is called a web shell, and an upload form like this one
+            is how a lot of them get onto servers.
+        </p>
+        <p>
+            Checking the type isn't enough on its own. Make a tiny real PNG, one dot, put the same
+            line of PHP on the end, and name it <cde>.php</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' | base64 -d &gt; dot.png
+cat dot.png shell.php &gt; sneaky.php
+curl -F 'image=@sneaky.php' http://localhost:8000/upload-naive.php
+curl -s http://localhost:8000/uploads/sneaky.php | tail -c 20</code-block>
+        <p>
+            <cde>ran: 42</cde> again. The file is a valid image; image viewers open it, and
+            <cde>getimagesize()</cde> would accept it. It's also valid PHP, because PHP runs
+            whatever is between <cde>&lt;?php</cde> and the end, and passes the rest through as
+            output.
+        </p>
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>Now send both to the real admin form, at <cde>/admin.php</cde>:</p>
+        <list>
+            <li>
+                <cde>shell.php</cde> gets <cde>PNG, JPEG or WebP images only.</cde> Rename it
+                <cde>cat.png</cde> first and it still does; the name was never asked.
+            </li>
+            <li>
+                <cde>sneaky.php</cde> gets in: the bytes really are a PNG. But it's stored as
+                <cde>3f9c...e1.png</cde>, in a folder no URL reaches, and <cde>image.php</cde> sends
+                it as <cde>image/png</cde>. Ask for it, and the PHP comes back as bytes. It never
+                runs.
+            </li>
+        </list>
+        <p>
+            That's the fix in layers. Check what the bytes are, so most junk never lands. Choose the
+            name and extension yourself, so nothing arrives as <cde>.php</cde>. Keep uploads out of
+            the web root, so even a file that slips through can't be visited, let alone run. Then
+            delete <cde>upload-naive.php</cde> and anything in <cde>public/uploads</cde>.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A blocked-extensions list loses.</strong> Refuse <cde>.php</cde>, and
+                someone tries <cde>.phtml</cde>, <cde>.php5</cde>, <cde>.PHP</cde>, or
+                <cde>.php.jpg</cde> on a server set up to run anything with <cde>.php</cde> in the
+                name. Allow a short list of types, and pick the extension yourself.
+            </li>
+            <li>
+                <strong>Too big can mean empty.</strong> If a POST is bigger than PHP's
+                <cde>post_max_size</cde>, PHP throws the whole body away: <cde>$_POST</cde> and
+                <cde>$_FILES</cde> are both empty, so here the token check fails first. A file over
+                <cde>upload_max_filesize</cde> arrives with an error code instead. Both settings
+                live in <cde>php.ini</cde>.
+            </li>
+            <li>
+                <strong>Images can carry more than a picture.</strong> Photos straight off a phone
+                often hold the location they were taken in. Resizing every upload, with GD or
+                Imagick, makes a fresh file and drops the rest along the way.
+            </li>
+            <li>
+                <strong>SVG is a picture made of code.</strong> An SVG file can contain JavaScript,
+                and opened directly it runs on your site. Leave it off the allow list unless you
+                clean it first.
+            </li>
+            <li>
+                <strong>An image served from your site is served as your site.</strong> That's why
+                <cde>image.php</cde> sends <cde>X-Content-Type-Options: nosniff</cde>: without it,
+                some browsers look at a file's bytes and decide for themselves what it is.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Turn PHP off in the uploads folder">
+            <p>
+                When uploads have to live in the web root, tell the web server never to run PHP
+                there. In nginx, a <cde>location</cde> block for the uploads folder that doesn't
+                pass to PHP-FPM; in Apache, a <cde>&lt;Directory&gt;</cde> block that does the same.
+                It's one more layer, and it catches the day someone else adds an uploader without
+                reading this page.
+            </p>
+        </two-dollars>
+
+        <p>
+            Pages that stay put are half of what a CMS holds. The other half is dated, listed newest
+            first, and fed to readers. Next: a blog.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/blog">Next: Blog &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

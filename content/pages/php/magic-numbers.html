@@ -1,0 +1,187 @@
+<layout name="default" title="Magic Numbers in Code" />
+<page-head>
+    <meta
+        name="description"
+        content="A number in the middle of your code that means something only to whoever typed it. How to spot them, and how to name them with constants and enums. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="magic numbers, PHP constants, const, define, backed enums, tryFrom, readable code, numeric literal separator, configuration, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Numbers that mean something only to whoever typed them. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="magic-numbers">Magic Numbers in Code</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Good Variable Names left a <cde>7</cde> in the middle of its tidy code. You can guess it
+            means a week, from the line around it. But you had to guess, and the next number won't
+            be that easy. A number like that, with no name, is a magic number: it works, and nobody
+            can say why.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-magic-number">What's a Magic Number?</heading>
+        <p>
+            A literal value in code whose meaning isn't in the code. <cde>if ($status === 3)</cde>.
+            <cde>$total * 0.0725</cde>. <cde>86400 * 30</cde>. Each is a fact about your business or
+            the world, written as if it were obvious, in a place where nobody will find it when it
+            changes.
+        </p>
+        <p>
+            The fix is a name: a constant for a fixed value, an enum for a set of choices. Then
+            <cde>$status === 3</cde> becomes <cde>$status === OrderStatus::Shipped</cde>, and the
+            line explains itself.
+        </p>
+
+        <heading h3 id="what-isnt-magic">What Isn't Magic</heading>
+        <p>
+            Numbers whose meaning is the number itself. <cde>0</cde> and <cde>1</cde> as starting
+            points, <cde>/ 100</cde> to turn cents into dollars, <cde>2</cde> in "split in half." If
+            a reader would never ask "why that number?", it doesn't need a name. The same goes for
+            strings: <cde>'admin'</cde> scattered through the code is a magic string, and gets the
+            same fix.
+        </p>
+
+        <side-story title="0xCAFEBABE">
+            Files have magic numbers too, on purpose. Every Java class file starts with the bytes
+            <cde>CA FE BA BE</cde>. A PNG starts with <cde>89 50 4E 47</cde> (the last three are
+            "PNG" in ASCII), a PDF with <cde>%PDF-</cde>, a GIF with <cde>GIF87a</cde> or
+            <cde>GIF89a</cde>. The Unix <cde>file</cde> command, and PHP's <cde>finfo</cde>, read
+            those first bytes to tell what a file really is, whatever its name says.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Find a literal whose meaning you had to work out.</li>
+            <li>
+                Give it a name that says what it is, units included:
+                <cde>RETURN_WINDOW_DAYS</cde>, not <cde>THIRTY</cde>.
+            </li>
+            <li>
+                Declare it once, in a place made for declaring things. Use the name everywhere the
+                number was.
+            </li>
+            <li>
+                When the number changes, change it there. Every use follows, including the ones you
+                forgot existed.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A script that works out shipping, tax and a return date for some orders. In a folder,
+            make <cde>before.php</cde>:
+        </p>
+        <code-block example="magic-numbers/before.php" />
+        <p>
+            Seven magic numbers in a dozen lines, and nothing says what statuses 1 and 3 are, or
+            whether 599 is a price or a code. Now name them. Make <cde>rules.php</cde>, which only
+            declares things:
+        </p>
+        <code-block example="magic-numbers/rules.php" />
+        <p>And <cde>after.php</cde>, which uses them:</p>
+        <code-block example="magic-numbers/after.php" />
+        <p>Run both:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php before.php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
+        <p>
+            The first three orders come out the same. Order 104 doesn't. Its status is
+            <cde>9</cde>, which isn't anything, and <cde>before.php</cde> calls it "paid" anyway,
+            because "not 3" was all it checked. <cde>after.php</cde> asks the enum, gets
+            <cde>null</cde> back from <cde>tryFrom()</cde>, and says so. Rows from the database are
+            input like any other: <lnk to="/php/never-trust-input">never trust input</lnk>, even
+            your own.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>const NAME = value;</cde> declares a constant at the top level of a file or in
+                a class. <cde>define('NAME', value)</cde> does the same at run time, for the rare
+                constant whose name or value isn't known until then.
+            </li>
+            <li>
+                Backed enums (PHP 8.1) for a fixed set of choices.
+                <cde>OrderStatus::from(3)</cde> throws on an unknown value;
+                <cde>OrderStatus::tryFrom(3)</cde> returns <cde>null</cde>, for when you'd rather
+                decide yourself.
+            </li>
+            <li>
+                Store the enum's value in an ordinary column, an <cde>INT</cde> or a
+                <cde>VARCHAR</cde>, and let the PHP enum hold the list of what's allowed. Not a
+                MySQL <cde>ENUM</cde> column: changing its list means altering the table.
+            </li>
+            <li>
+                PHP's own functions do this already: <cde>JSON_THROW_ON_ERROR</cde>,
+                <cde>E_ALL</cde>, <cde>PHP_INT_MAX</cde>. Nobody writes the numbers they stand for.
+            </li>
+            <li>
+                Underscores in numbers (PHP 7.4) make long ones readable:
+                <cde>1_000_000</cde> is a million, at a glance.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A constant named after its value isn't a fix.</strong>
+                <cde>const SEVEN = 7;</cde> says nothing <cde>7</cde> didn't. Name the meaning.
+            </li>
+            <li>
+                <strong>Some "constants" are really settings.</strong> A tax rate depends on where
+                you are and changes when the law does. Values like that belong in configuration, not
+                in code; see
+                <lnk to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</lnk>.
+            </li>
+            <li>
+                <strong>86400 isn't always a day.</strong> In a time zone with daylight saving time,
+                two days a year are 23 or 25 hours long. <cde>-&gt;modify('+30 days')</cde> on a
+                <cde>DateTimeImmutable</cde> counts calendar days, which is usually what you meant.
+            </li>
+            <li>
+                <strong>The same number can mean two things.</strong> A 30-day return window and a
+                30-day trial are different constants that happen to agree today. Give them two
+                names, so changing one doesn't change both.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Let PHP do the arithmetic">
+            <p>
+                Write <cde>const SESSION_LIFETIME_SECONDS = 30 * 24 * 60 * 60;</cde>, not
+                <cde>2592000</cde>. PHP works it out once, when the file loads, and anyone reading
+                it can see it's 30 days without reaching for a calculator.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>rules.php</cde> only declares things, and <cde>after.php</cde> only does things.
+            That split isn't an accident. Next: declaring symbols vs. causing changes.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/declaring-vs-causing"
+                >Next: Declaring Symbols vs. Causing Changes &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

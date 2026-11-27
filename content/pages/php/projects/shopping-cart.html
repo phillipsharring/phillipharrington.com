@@ -1,0 +1,206 @@
+<layout name="default" title="Shopping Cart" />
+<page-head>
+    <meta
+        name="description"
+        content="A shopping cart in the session that holds only product ids and quantities, with prices looked up from the database every time, quantities capped by stock, CSRF tokens on every form, and PHPUnit tests for the cart. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP shopping cart, cart in session, never trust the price from the form, quantity validation, stock, CSRF token, PHPUnit, Composer, PSR-4, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A cart that holds what you want, and never what it costs. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="shopping-cart">Shopping Cart</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The store front shows what's for sale. A cart remembers what someone wants while they
+            keep looking: add a mug, change it to two, take out the shirt. It lives in the session,
+            from one page to the next, until they check out or wander off.
+        </p>
+        <p>
+            The one rule that matters: the cart holds product ids and quantities, and nothing else.
+            Not names, and above all not prices. Every time the cart is shown, the prices come from
+            the database. A cart that trusts a price someone sent is a shop that sells at whatever
+            price the customer likes.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/store-front">Store Front</lnk>: the same products, and prices
+                in cents
+            </li>
+            <li><lnk to="/php/sessions">Sessions</lnk>: where the cart lives between pages</li>
+            <li><lnk to="/php/csrf">CSRF</lnk>: a token on every form that changes the cart</li>
+            <li>
+                <lnk to="/php/classes-and-objects">Classes and Objects</lnk> and
+                <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>
+            </li>
+            <li><lnk to="/php/testing">Testing</lnk>: PHPUnit, on the part with the rules</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-setup">Step 1: The Setup</heading>
+        <p>
+            The containers, <cde>Dockerfile</cde> and <cde>init.sql</cde> are the ones from
+            <lnk to="/php/projects/store-front">Store Front</lnk>, with the database called
+            <cde>shop</cde>. This time there's a <cde>composer.json</cde>, for the autoloader and
+            for PHPUnit, which is only needed while developing, so it goes in
+            <cde>require-dev</cde>:
+        </p>
+        <code-block example="project-shopping-cart/composer.json" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <p>
+            <cde>src/Database.php</cde> is the connection class from
+            <lnk to="/php/projects/queues">Queues</lnk>, in the <cde>Shop</cde> namespace.
+        </p>
+
+        <heading h3 id="step-2-the-cart">Step 2: The Cart</heading>
+        <p>
+            <cde>src/Cart.php</cde> knows the rules and nothing about the web: whole numbers only,
+            zero removes a line, never more than 99 of a thing or 50 lines in all.
+        </p>
+        <code-block example="project-shopping-cart/src/Cart.php" />
+        <p>
+            The constructor rebuilds a cart from whatever was saved in the session, and drops
+            anything that isn't an integer id and an integer quantity. The session is stored on your
+            server, but what went into it came from requests. Treat it as input that has been
+            through one check already, not as proof.
+        </p>
+
+        <heading h3 id="step-3-test-it">Step 3: Test It</heading>
+        <p>
+            Because <cde>Cart</cde> doesn't touch the database or the session, it can be tested on
+            its own, in a few milliseconds. <cde>tests/CartTest.php</cde>:
+        </p>
+        <code-block example="project-shopping-cart/tests/CartTest.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm app vendor/bin/phpunit tests</code-block>
+        <p>
+            <cde>OK (6 tests, ...)</cde>. Negative quantities, a million mugs, junk in the session:
+            each is a rule, and each rule has a test that says so.
+        </p>
+
+        <heading h3 id="step-4-prices-from-the-database">Step 4: Prices from the Database</heading>
+        <p>
+            <cde>src/Pricing.php</cde> turns a cart into lines a person can read. It looks up every
+            product in it, leaves out any that are inactive or sold out, cuts each quantity to
+            what's in stock, and multiplies, in cents:
+        </p>
+        <code-block example="project-shopping-cart/src/Pricing.php" />
+        <p>
+            The <cde>IN (?, ?, ?)</cde> list has one placeholder per product, built from the number
+            of items, never from their values.
+        </p>
+
+        <heading h3 id="step-5-the-pages">Step 5: The Pages</heading>
+        <p>
+            <cde>src/helpers.php</cde> holds money formatting, escaping, the session and the CSRF
+            token:
+        </p>
+        <code-block example="project-shopping-cart/src/helpers.php" />
+        <p>The shop, with an Add to Cart form on each product:</p>
+        <code-block example="project-shopping-cart/public/index.php" />
+        <p>
+            And the cart. A POST changes it and redirects; a GET shows it, priced fresh. It's about
+            one person, so it's marked <cde>private, no-store</cde> for every cache in the middle.
+        </p>
+        <code-block example="project-shopping-cart/public/cart.php" />
+
+        <heading h3 id="step-6-run-it">Step 6: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>. Add two black mugs, then a big mug, then open the
+            cart. Change a quantity to 0 and press Update, and the line goes. Try to add 50 big
+            mugs: the cart says <cde>only 8 left</cde> and charges for 8.
+        </p>
+        <p>
+            Now be the customer who wants a discount. Get a session and its token, add a mug with a
+            price of your own, and look at the cart:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -s -c jar http://localhost:8000 | grep -o 'name="csrf" value="[a-f0-9]*"' | head -1
+curl -b jar -d csrf=PASTE_TOKEN -d action=add -d product=1 -d price_cents=1 http://localhost:8000/cart.php
+curl -b jar http://localhost:8000/cart.php</code-block>
+        <p>
+            The mug is in at $14.00.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> the cart
+            reads the three fields it needs, checks each one, and never even looks at the rest.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="The Cart Came First">
+            The wheeled shopping cart came long before the online one. Sylvan Goldman, who owned a
+            chain of grocery stores in Oklahoma City, introduced it in 1937: a folding chair with
+            wheels and two baskets. Shoppers were reluctant at first, and he reportedly hired people
+            to push carts around his stores until customers followed. The web borrowed the name, and
+            the little icon, almost as soon as there were web shops.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A price in a hidden field is a suggestion.</strong> Any value the browser
+                sends can be changed. Prices, discounts, totals and shipping are all computed on the
+                server, from your own data, every time.
+            </li>
+            <li>
+                <strong>Prices change while carts wait.</strong> The cart shows today's price
+                because it never stored one. When the order is placed, that's when the price gets
+                copied and fixed. That's Checkout.
+            </li>
+            <li>
+                <strong>Stock in the cart isn't stock reserved.</strong> Two people can each have
+                the last mug in their cart. Check stock again when the order is placed, and decide
+                then who gets it.
+            </li>
+            <li>
+                <strong>Sessions expire.</strong> A cart in the session vanishes when the session
+                does. Logged-in customers expect a cart to follow them between devices; that means a
+                carts table, keyed to the user.
+            </li>
+            <li>
+                <strong>Every cart-changing form needs the token.</strong> Without it, another site
+                could fill a visitor's cart, or empty it, with a form that posts to yours.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Test the rules, not the page">
+            <p>
+                Pull the rules out of the page into a class that takes plain values and returns
+                plain values, like <cde>Cart</cde>. Then a test is three lines and runs in a
+                millisecond, and nobody has to click through the shop to find out whether
+                <cde>-5</cde> breaks the total.
+            </p>
+        </two-dollars>
+
+        <p>
+            The cart knows what they want. Next: checkout, where it becomes an order, and where the
+            one thing your server must never see is the card number.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/checkout">Next: Checkout &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

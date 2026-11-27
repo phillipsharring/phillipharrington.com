@@ -1,0 +1,292 @@
+<layout name="default" title="Expressive HTTP Response Codes, and When Not to Be" />
+<page-head>
+    <meta
+        name="description"
+        content="Pick the status code that says exactly what happened, so clients and people know what to do next. Then the exception: anything an attacker could learn from gets the vague answer. Wrong email or password, never which; 404 for not yours. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="HTTP status codes, 401 vs 403, 404 instead of 403, 422 Unprocessable Content, 201 Created, 405 Allow, user enumeration, login error messages, timing attack, http_response_code, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Expressive to your users, vague to your attackers. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="expressive-response-codes">
+            Expressive HTTP Response Codes, and When Not to Be
+        </heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every response starts with a status code, from
+            <lnk to="/php/request-and-response">Request and Response</lnk>. It's the first thing a
+            browser, a script or a CDN reads, and often the only thing. A good one tells the client
+            exactly what happened, so it knows what to do next. Then there's the other half of the
+            lesson: some clients are attackers, and some exact answers are exactly what they came
+            for.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-expressive-code">What's an Expressive Code?</heading>
+        <p>
+            The most specific code that's true. Not <cde>200</cde> with
+            <cde>{"error": "..."}</cde> in the body, and not <cde>400</cde> for every kind of
+            mistake. The ones you'll use most:
+        </p>
+        <list>
+            <li><strong>200 OK</strong>: here's what you asked for.</li>
+            <li>
+                <strong>201 Created</strong>: it's made, and the <cde>Location</cde> header says
+                where.
+            </li>
+            <li><strong>204 No Content</strong>: done, and there's nothing to send back.</li>
+            <li>
+                <strong>400 Bad Request</strong>: the request itself is broken, like JSON that won't
+                parse.
+            </li>
+            <li>
+                <strong>401 Unauthorized</strong>: who are you? Not logged in, or the credentials
+                didn't work. Despite the name, it's about authentication.
+            </li>
+            <li><strong>403 Forbidden</strong>: I know who you are, and you can't do this.</li>
+            <li><strong>404 Not Found</strong>: there's nothing here.</li>
+            <li>
+                <strong>405 Method Not Allowed</strong>: this URL exists, but not for that method.
+                The <cde>Allow</cde> header lists the ones that work.
+            </li>
+            <li>
+                <strong>409 Conflict</strong>: it clashes with what's there, like a username that's
+                taken.
+            </li>
+            <li>
+                <strong>422 Unprocessable Content</strong>: well-formed, but the values are wrong.
+                The usual answer to a form that doesn't validate.
+            </li>
+            <li>
+                <strong>429 Too Many Requests</strong>: slow down. <cde>Retry-After</cde> says for
+                how long; see <lnk to="/php/rate-limiting">Rate Limiting</lnk>.
+            </li>
+            <li>
+                <strong>500 Internal Server Error</strong>: our fault.
+                <strong>503 Service Unavailable</strong>: our fault, and temporary.
+            </li>
+        </list>
+
+        <heading h2 id="when-not-to-be">When Not to Be</heading>
+        <p>
+            An exact answer helps whoever asked, and you don't choose who asks. Anything that tells
+            a stranger whether an account or a record exists is information they can collect, one
+            request at a time. So for those, and only those, be vague on purpose:
+        </p>
+        <list>
+            <li>
+                <strong>A failed login says "Wrong email or password,"</strong> never which one. "No
+                account with that email" turns your login form into a free tool for checking which
+                addresses are your customers. Then they only have to guess passwords for the ones
+                that are.
+            </li>
+            <li>
+                <strong>Something that isn't yours is a 404, not a 403.</strong> A <cde>403</cde> on
+                <cde>/notes/2</cde> confirms note 2 exists. A <cde>404</cde> is the same answer a
+                note that never existed gets, so it gives nothing away.
+            </li>
+            <li>
+                <strong
+                    >A password reset says "If that address has an account, we've sent a
+                    link,"</strong>
+                whether it does or not.
+            </li>
+        </list>
+        <p>
+            Expressive to your users, vague to your attackers. A real user who mistyped their
+            password knows which half they're unsure of. Only someone fishing needs the difference.
+        </p>
+
+        <side-story title="I'm a Teapot">
+            <cde>418 I'm a teapot</cde> comes from RFC 2324, an April Fools' standard from 1998 for
+            controlling coffee pots over HTTP. A teapot asked to brew coffee answers 418. It was
+            never meant to be used, and it's in plenty of software anyway, and when a proposal came
+            up to remove it, enough people objected that the code was reserved instead.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The client reads the code first. Scripts, browsers, CDNs and monitoring all decide
+                what to do from it: retry, redirect, show an error, cache or not.
+            </li>
+            <li>The body explains, for a person, if there's a person.</li>
+            <li>
+                Headers that go with the code finish the answer: <cde>Location</cde> with
+                <cde>201</cde> and redirects, <cde>Allow</cde> with <cde>405</cde>,
+                <cde>Retry-After</cde> with <cde>429</cde> and <cde>503</cde>,
+                <cde>WWW-Authenticate</cde> with <cde>401</cde>.
+            </li>
+            <li>
+                For anything an attacker could learn from, the code, the body and the time it takes
+                are the same for "doesn't exist" and "not for you."
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A tiny JSON API, written twice. In a folder, make <cde>app.php</cde>, with pretend users
+            and notes, and a few helpers. <cde>respond()</cde> sends a code, a body and any extra
+            headers, then stops:
+        </p>
+        <code-block example="expressive-response-codes/app.php" />
+        <p>Then <cde>before.php</cde>, which tells everyone everything:</p>
+        <code-block example="expressive-response-codes/before.php" />
+        <p>
+            Each is a router script: PHP's built-in server sends every request to it, whatever the
+            path. Start it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 before.php</code-block>
+        <p>From a second terminal, be an attacker with a list of addresses:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -d 'email=nobody@example.com&amp;password=x' http://localhost:8000/login
+curl -i -d 'email=alice@example.com&amp;password=x' http://localhost:8000/login</code-block>
+        <p>
+            The first says "No account with that email." The second says "Wrong password." You've
+            learned that Alice is a customer without knowing anything about her. Time them, and they
+            leak it again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -s -o /dev/null -w '%{time_total}\n' -d 'email=nobody@example.com&amp;password=x' http://localhost:8000/login
+curl -s -o /dev/null -w '%{time_total}\n' -d 'email=alice@example.com&amp;password=x' http://localhost:8000/login</code-block>
+        <p>
+            The stranger's answer comes back in a few milliseconds. Alice's takes a fraction of a
+            second, because only a real account gets its password checked, and
+            <cde>password_verify()</cde> is slow on purpose. Now log in as Alice (her token is
+            <cde>alice-token</cde>), and ask for a note that isn't hers, then one that doesn't
+            exist:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/notes/2
+curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/notes/9</code-block>
+        <p>
+            <cde>403</cde>, "That note belongs to someone else," then <cde>404</cde>. Count up from
+            1, and the <cde>403</cde>s map every note in the system. Stop the server, and make
+            <cde>after.php</cde>:
+        </p>
+        <code-block example="expressive-response-codes/after.php" />
+        <p>Start it the same way, with <cde>after.php</cde> at the end:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 after.php</code-block>
+        <p>
+            Ask the same four questions. Both logins get the same <cde>401</cde> and "Wrong email or
+            password," in about the same time: when there's no account, it checks the password
+            against a dummy hash anyway. Both notes get the same <cde>404</cde>. Then the honest
+            mistakes, which get as specific as they like:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -H 'Authorization: Bearer alice-token' -d 'text=Hello' http://localhost:8000/notes
+curl -i -H 'Authorization: Bearer alice-token' -d 'text=' http://localhost:8000/notes
+curl -i http://localhost:8000/login</code-block>
+        <p>
+            <cde>201 Created</cde> with a <cde>Location</cde>; <cde>422</cde> with what a note
+            should be; <cde>405</cde> with <cde>Allow: POST</cde>. Every one of those tells a real
+            client what to do next, and none of them tells an attacker anything about anyone.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>http_response_code(404)</cde> sets the code. Call it before any output, like
+                <cde>header()</cde>.
+            </li>
+            <li>
+                <cde>header('Location: /notes/3')</cde>, <cde>header('Allow: POST')</cde> and the
+                rest for the headers that go with a code.
+            </li>
+            <li>
+                A <cde>never</cde> return type on a function that always ends in <cde>exit</cde>,
+                like <cde>respond()</cde>, so PHP and your editor know nothing runs after it.
+            </li>
+            <li>
+                <cde>password_verify()</cde> against a dummy hash when the account doesn't exist, so
+                both answers take the same time. See <lnk to="/php/passwords">Passwords</lnk>.
+            </li>
+            <li>
+                <cde>$_SERVER['HTTP_AUTHORIZATION']</cde> and every field in <cde>$_POST</cde> are
+                input. <lnk to="/php/never-trust-input">Never trust input</lnk>: check that a token
+                is one you issued, and that <cde>text</cde> is a string before you measure it.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A <cde>200</cde> with an error in the body is a lie.</strong> Caches keep
+                it, monitoring counts it as success, and every client has to read the body to find
+                out something went wrong.
+            </li>
+            <li>
+                <strong>A 500 should say nothing.</strong> "Something went wrong" for the user, and
+                the stack trace for your error log. A trace on the page shows file paths, queries
+                and sometimes secrets. See
+                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>.
+            </li>
+            <li>
+                <strong>Signup forms leak too.</strong> "That email is already registered" answers
+                the same question the login form now refuses to. You can't always avoid it, but you
+                can rate-limit it, or send the "you already have an account" news by email instead
+                of on the page.
+            </li>
+            <li>
+                <strong>Vague isn't the same as wrong.</strong> Don't answer a failed login with
+                <cde>200</cde> to hide it, or a missing page with a redirect home. Use the honest
+                code, and keep the details out of it.
+            </li>
+            <li>
+                <strong>Something in the middle can change your code's answer.</strong> A CDN or
+                proxy can swap your error responses for its own pages. Test your error codes through
+                the whole chain, not only on your laptop.
+            </li>
+        </list>
+
+        <side-story title="HTML Where JSON Should Be">
+            One of my apps sat behind a CDN that was set to replace every <cde>403</cde> and
+            <cde>404</cde> with its own friendly error page. That's fine for a website. It applied
+            to the API too, so the app's JavaScript, expecting a small JSON error, got a whole HTML
+            page and fell over. The status codes were right; something in the middle had rewritten
+            the answer.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="See just the code">
+            <p>
+                <cde>curl -s -o /dev/null -w '%{http_code}\n' URL</cde> prints the status code and
+                nothing else. Put a handful of those in a script, with the code you expect next to
+                each, and you have a check of every answer your app gives, honest and vague, that
+                runs in a second.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>before.php</cde> and <cde>after.php</cde> each mix routing, rules, data and output
+            in one file, which was fine for two endpoints and won't be for twenty. Next, in Various
+            Patterns: separating concerns.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/separating-concerns">Next: Separating Concerns &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

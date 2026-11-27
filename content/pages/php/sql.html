@@ -1,0 +1,267 @@
+<layout name="default" title="SQL" />
+<page-head>
+    <meta
+        name="description"
+        content="The language inside every query string: tables, rows and columns, the four statements (SELECT, INSERT, UPDATE, DELETE), and how to type them straight into MySQL. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="SQL, MySQL, SELECT, INSERT, UPDATE, DELETE, WHERE, ORDER BY, tables rows columns, mysql client, Docker Compose, PDO, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The language inside every query string. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="sql">SQL</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/pdo">Working with a Database</lnk> sent queries from PHP and got rows
+            back. The queries themselves were strings in another language: SQL. This section is
+            about that language, and about the database on the other end. PHP's job is small: hand
+            SQL to the database, safely, and do something with what comes back. Most of the real
+            work happens on the database's side.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-sql">What's SQL?</heading>
+        <p>
+            A language for asking a database for data and for changing it. Nearly every relational
+            database speaks it: MySQL, MariaDB, PostgreSQL, SQLite, SQL Server, Oracle. Each has its
+            own dialect, but the core is the same everywhere. This course uses MySQL 8.4.
+        </p>
+        <p>
+            SQL is declarative. You say what you want ("the books from before 1900, oldest first"),
+            not how to find it. The database works out the how, and it's usually better at that than
+            you would be.
+        </p>
+
+        <heading h3 id="tables-rows-and-columns">Tables, Rows and Columns</heading>
+        <p>
+            A database holds tables. A table is a grid: each column is one kind of fact, with a name
+            and a type, and each row is one thing. A <cde>books</cde> table might have the columns
+            <cde>id</cde>, <cde>title</cde>, <cde>author</cde> and <cde>year</cde>, and a row for
+            each book.
+        </p>
+
+        <heading h3 id="the-four-statements">The Four Statements</heading>
+        <p>Almost everything an app does to its data is one of four statements:</p>
+        <list>
+            <li><strong>SELECT</strong> reads rows.</li>
+            <li><strong>INSERT</strong> adds rows.</li>
+            <li><strong>UPDATE</strong> changes rows that are already there.</li>
+            <li><strong>DELETE</strong> removes rows.</li>
+        </list>
+        <p>
+            Each one gets its own lesson in this section, because each has its own way to go wrong.
+            A fifth kind, statements like <cde>CREATE TABLE</cde>, changes the shape of the database
+            rather than the data in it. That's the next lesson.
+        </p>
+
+        <heading h3 id="how-it-reads">How It Reads</heading>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `title`, `year`
+FROM `books`
+WHERE `year` &lt; 1900
+ORDER BY `year`;</code-block>
+        <p>
+            SQL doesn't care about case or line breaks in its keywords, so the style is up to you.
+            This course writes keywords in capitals, puts each clause on its own line, and wraps the
+            names of tables and columns in backticks. The backticks tell MySQL "this is a name," so
+            a column called <cde>order</cde> or <cde>year</cde> can't be mistaken for a keyword.
+            Text values go in single quotes: <cde>'Jane Austen'</cde>.
+        </p>
+
+        <side-story title="SEQUEL">
+            SQL started at IBM in the early 1970s, where Donald Chamberlin and Raymond Boyce
+            designed a language for Edgar Codd's new relational model and called it SEQUEL, for
+            Structured English Query Language. The name had to change because a British aircraft
+            company already held it as a trademark, so it became SQL. Half the world still says
+            "sequel," and the other half spells it out. Both are right.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                A client, like PHP or the <cde>mysql</cde> command, connects to the database server
+                and logs in.
+            </li>
+            <li>It sends a statement, as text.</li>
+            <li>The server reads it, and checks that the user is allowed to do what it asks.</li>
+            <li>
+                It plans how to do it: which table to read first, whether an index can help. The
+                Indexes lesson is about that part.
+            </li>
+            <li>
+                It runs the plan and answers: rows for a <cde>SELECT</cde>, a count of the rows it
+                changed for the others, or an error.
+            </li>
+        </ol>
+        <p>
+            The database is a server, like the web server in Client/Server, and your PHP code is its
+            client. It usually runs on another machine, or in another container, and PHP talks to it
+            over the network.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Start a real MySQL, put some books in it, and talk to it two ways: by typing SQL
+            straight in, and from PHP. This one needs a few files in a folder. First,
+            <cde>compose.yml</cde>, which describes two containers: the database, and a PHP that can
+            reach it.
+        </p>
+        <code-block example="sql/compose.yml" />
+        <p>
+            The PHP container needs the <cde>pdo_mysql</cde> extension, which the plain PHP image
+            doesn't include. A <cde>Dockerfile</cde> adds it:
+        </p>
+        <code-block example="sql/Dockerfile" />
+        <p>
+            Then <cde>init.sql</cde>. MySQL runs it once, the first time it starts, to make a table
+            and fill it:
+        </p>
+        <code-block example="sql/init.sql" />
+        <p>Start the database, in the background, and wait until it's ready:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db</code-block>
+        <p>
+            Then open the <cde>mysql</cde> command inside its container, logged in as the user from
+            <cde>compose.yml</cde>. It warns you about the password on the command line, which is
+            fair: fine for a pretend password on your own computer, never for a real one.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
+        <p>At the <cde>mysql&gt;</cde> prompt, ask for every book. The semicolon sends it.</p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT *
+FROM `books`;</code-block>
+        <p>Then only some of them, in order:</p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `title`, `year`
+FROM `books`
+WHERE `year` &lt; 1900
+ORDER BY `year`;</code-block>
+        <p>Add one, fix it, and take it out again, checking with a <cde>SELECT</cde> after each:</p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `books` (`title`, `author`, `year`)
+VALUES ('Beloved', 'Toni Morrison', 1986);
+
+UPDATE `books`
+SET `year` = 1987
+WHERE `title` = 'Beloved';
+
+DELETE FROM `books`
+WHERE `title` = 'Beloved';</code-block>
+        <p>
+            Each one answers with how many rows it changed: <cde>Query OK, 1 row affected</cde>.
+            Type <cde>exit</cde> to leave. Now the same kind of question from PHP. Make
+            <cde>db.php</cde>, which connects, using the settings <cde>compose.yml</cde> passes in:
+        </p>
+        <code-block example="sql/db.php" />
+        <p>And <cde>books.php</cde>, which lists the books from before a year you give it:</p>
+        <code-block example="sql/books.php" />
+        <p>Run it in the PHP container:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php books.php 1900</code-block>
+        <p>
+            Five books, oldest first, and <cde>Charlotte Brontë</cde> with her accent intact,
+            because every hop (the file, the connection, the table) is UTF-8.
+            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> is why that matters, and Character
+            Sets and Collation is the database's side of it. Then try
+            <cde>books.php "1900 OR 1=1"</cde>: it refuses. The year came from the command line, and
+            <strong>never trust input</strong>, so it's checked before it goes anywhere near the
+            query, and then sent separately from the SQL anyway.
+        </p>
+        <p>When you're done, stop it all and throw the data away:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose down -v</code-block>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$pdo-&gt;prepare($sql)</cde>, then <cde>execute([$value, ...])</cde>, for any
+                SQL with a value in it. The <cde>?</cde> marks where each value goes, and the values
+                travel apart from the SQL.
+            </li>
+            <li>
+                <cde>$pdo-&gt;query($sql)</cde> only for SQL with nothing from outside in it at all.
+            </li>
+            <li>
+                <cde>foreach ($statement as $row)</cde> walks the rows; <cde>fetchAll()</cde> gets
+                them all at once, and <cde>fetchColumn()</cde> gets one value.
+            </li>
+            <li>
+                <cde>PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION</cde> makes a failed query
+                throw, instead of quietly returning <cde>false</cde>. It's the default since PHP
+                8.0; the example says it anyway.
+            </li>
+            <li><cde>charset=utf8mb4</cde> in the connection string, every time.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never build SQL out of input.</strong> Gluing a value from a form or a URL
+                into the SQL string lets whoever sent it rewrite your query.
+                <lnk to="/php/never-trust-input">Never trust input</lnk>: use placeholders, always.
+                <lnk to="/php/sql-injection">SQL Injection</lnk>, in Security, shows what happens if
+                you don't.
+            </li>
+            <li>
+                <strong>Single quotes for text, backticks for names.</strong> MySQL also accepts
+                double quotes for text, but standard SQL, and other databases, read double quotes as
+                names. Stick to single quotes and your SQL means the same thing everywhere.
+            </li>
+            <li>
+                <strong>It's one equals sign.</strong> <cde>WHERE `year` = 1851</cde>, not
+                <cde>==</cde>. And nothing equals <cde>NULL</cde>, not even <cde>NULL</cde>; that's
+                in Selecting Data.
+            </li>
+            <li>
+                <strong>Table names can be case sensitive.</strong> MySQL stores each table as files
+                on disk, so on Linux <cde>Books</cde> and <cde>books</cde> are two different tables,
+                and on a Mac they usually aren't. Code that works on your laptop can fail on the
+                server. Pick lowercase names and never vary them.
+            </li>
+            <li>
+                <strong>init.sql only runs on an empty database.</strong> Change it, and nothing
+                happens until you throw the old data away with <cde>docker compose down -v</cde> and
+                start again.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="End it with \G">
+            <p>
+                In the <cde>mysql</cde> command, end a query with <cde>\G</cde> instead of
+                <cde>;</cde>, and each row prints as a list of <cde>column: value</cde> lines
+                instead of one wide line. When a table has more columns than your terminal has room
+                for, it's the difference between reading the answer and squinting at it.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>init.sql</cde> made the <cde>books</cde> table without explaining a word of it: the
+            types, the <cde>NOT NULL</cde>, the <cde>AUTO_INCREMENT</cde>. Next: creating tables.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/creating-tables">Next: Creating Tables &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

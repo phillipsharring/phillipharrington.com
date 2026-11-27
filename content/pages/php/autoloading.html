@@ -1,0 +1,228 @@
+<layout name="default" title="Autoloading with Composer and PSR-4" />
+<page-head>
+    <meta
+        name="description"
+        content="How PHP finds a class's file by itself: namespaces, spl_autoload_register(), the PSR-4 rule that maps a class name to a file, and Composer, which writes the autoloader for you. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP autoloading, Composer, PSR-4, namespaces, use, spl_autoload_register, vendor/autoload.php, composer.json, composer.lock, composer dump-autoload, composer run, PHP-FIG, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How PHP finds a class's file by itself. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="autoloading">Autoloading with Composer and PSR-4</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The last few lessons each started with a stack of <cde>require</cde> lines, one per
+            class, in the right order. With five classes that's tidy enough. With five hundred, it's
+            a job, and a missed line is a crash. Autoloading hands the job to PHP: when it meets a
+            class it hasn't seen, it asks you where the file is. A naming rule answers, and Composer
+            writes the code.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-autoloading">What's Autoloading?</heading>
+        <p>
+            A function you give PHP. The first time code uses a class PHP doesn't know yet, PHP
+            calls that function with the class's name. The function works out which file holds the
+            class and loads it. If it doesn't, PHP stops with <cde>Class "..." not found</cde>.
+        </p>
+
+        <heading h3 id="namespaces">Namespaces</heading>
+        <p>
+            A namespace is a family name for classes, so yours don't collide with everyone else's.
+            <cde>namespace App\Text;</cde> at the top of a file makes the class in it
+            <cde>App\Text\Shout</cde>. Other files can write the full name, or say
+            <cde>use App\Text\Shout;</cde> once at the top and then just <cde>Shout</cde>.
+        </p>
+
+        <heading h3 id="psr-4">PSR-4</heading>
+        <p>
+            A rule for where a class's file is, from its name. Pick a prefix and a folder:
+            <cde>App\</cde> is <cde>src/</cde>. Then every backslash after the prefix is a folder,
+            and the last part is the file name:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>App\Greeter        src/Greeter.php
+App\Text\Shout     src/Text/Shout.php</code-block>
+        <p>One class per file, and the file named exactly like the class.</p>
+
+        <heading h3 id="composer">Composer</heading>
+        <p>
+            PHP's package manager, from <lnk to="/php/tools#composer">Tools</lnk>. It installs other
+            people's code into a <cde>vendor</cde> folder, and writes one autoloader,
+            <cde>vendor/autoload.php</cde>, for their classes and yours. Your project's settings go
+            in <cde>composer.json</cde>.
+        </p>
+
+        <side-story title="A Group for Getting Along">
+            By the late 2000s, every big PHP framework had its own way of naming and loading
+            classes, so code from one rarely worked in another. In 2009, people from several of them
+            formed the Framework Interoperability Group, PHP-FIG, to agree on a few things. Their
+            first standard, PSR-0, was about exactly this: how a class name maps to a file. PSR-4
+            replaced it. Composer came out in 2012, built on those rules, and within a few years
+            nearly every PHP project used it.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                <cde>composer install</cde> reads <cde>composer.json</cde>, downloads any packages
+                it lists into <cde>vendor</cde>, and writes <cde>vendor/autoload.php</cde>.
+            </li>
+            <li>Your script requires that one file, first thing.</li>
+            <li>
+                It registers an autoloader with PHP, using
+                <cde>spl_autoload_register()</cde>.
+            </li>
+            <li>
+                Your code says <cde>new Greeter(...)</cde>. PHP doesn't know
+                <cde>App\Greeter</cde> yet, so it asks the autoloader.
+            </li>
+            <li>
+                The autoloader applies the PSR-4 rule, finds <cde>src/Greeter.php</cde>, and
+                requires it. Then the code carries on as if the class had been there all along.
+            </li>
+        </ol>
+        <p>
+            Classes load only when they're used. A page that never touches a class never reads its
+            file.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Two classes, in two namespaces. In a new folder, make <cde>src/Greeter.php</cde> and
+            <cde>src/Text/Shout.php</cde>:
+        </p>
+        <code-block example="autoloading/src/Greeter.php" />
+        <code-block example="autoloading/src/Text/Shout.php" />
+        <p>
+            First, an autoloader by hand, so you can see there's no magic. Make
+            <cde>by-hand.php</cde>:
+        </p>
+        <code-block example="autoloading/by-hand.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php by-hand.php</code-block>
+        <p>
+            Two <cde>(loading ...)</cde> lines, one for each class, at the moment each was needed,
+            then <cde>HELLO, ADA!</cde>. Now let Composer write it. Make <cde>composer.json</cde>:
+        </p>
+        <code-block example="autoloading/composer.json" />
+        <p>
+            The <cde>autoload</cde> part is the PSR-4 rule: <cde>App\</cde> is <cde>src/</cde>
+            (with the backslash doubled, because it's JSON). Install, in Composer's own container:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <p>
+            There's no package to download yet, so it just writes <cde>vendor/autoload.php</cde> and
+            a <cde>composer.lock</cde>. Now <cde>hello.php</cde>, with a single <cde>require</cde>:
+        </p>
+        <code-block example="autoloading/hello.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php hello.php</code-block>
+        <p>
+            <cde>HELLO, ADA!</cde> and <cde>HELLO, ZOË!</cde>, with the ë intact, because
+            <cde>Shout</cde> uses <cde>mb_strtoupper()</cde>; plain <cde>strtoupper()</cde> only
+            knows ASCII letters, and <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> is why. Add
+            a class to <cde>src</cde> and it just works, with no new <cde>require</cde> anywhere.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>namespace App\Text;</cde> first in the file (after
+                <cde>declare(strict_types=1);</cde>), and <cde>use App\Text\Shout;</cde> to use a
+                short name.
+            </li>
+            <li>
+                <cde>Shout::class</cde> is the full name as a string, <cde>'App\Text\Shout'</cde>,
+                checked by your editor instead of typed by hand.
+            </li>
+            <li>
+                <cde>require __DIR__ . '/vendor/autoload.php';</cde> once, at the top of every entry
+                point: each page, each script.
+            </li>
+            <li>
+                <cde>spl_autoload_register()</cde> adds an autoloader of your own. You'll rarely
+                need to.
+            </li>
+            <li>
+                <cde>composer dump-autoload</cde> rewrites the autoloader after you change the
+                <cde>autoload</cde> part of <cde>composer.json</cde>.
+            </li>
+            <li>
+                <cde>composer require vendor/package</cde> adds a package, and Dependency Injection
+                uses one.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Case counts, on the server.</strong> A Mac or Windows disk usually ignores
+                case, so <cde>src/greeter.php</cde> loads <cde>App\Greeter</cde> fine on your
+                laptop. The Linux server cares, and can't find it. Name files exactly like their
+                classes.
+            </li>
+            <li>
+                <strong>Inside a namespace, PHP's own classes need a backslash.</strong> In
+                <cde>namespace App;</cde>, <cde>new DateTimeImmutable()</cde> looks for
+                <cde>App\DateTimeImmutable</cde>, and doesn't find it. Write
+                <cde>new \DateTimeImmutable()</cde>, or <cde>use DateTimeImmutable;</cde> at the
+                top.
+            </li>
+            <li>
+                <strong><cde>vendor</cde> stays out of git.</strong> Commit
+                <cde>composer.json</cde> and <cde>composer.lock</cde>, put <cde>vendor/</cde> in
+                <cde>.gitignore</cde>, and run <cde>composer install</cde> wherever the code goes.
+                The lock file is what makes that install get the same versions you tested.
+            </li>
+            <li>
+                <strong>Packages are other people's code, running as yours.</strong> Anything you
+                install can read your files and your secrets.
+                <lnk to="/php/dependencies">Your Dependencies Are Your Code Too</lnk>, in Security,
+                has more.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name your commands">
+            <p>
+                The <cde>scripts</cde> part of <cde>composer.json</cde> gives a command a short
+                name. The example has one: <cde>composer run hello</cde> runs
+                <cde>php hello.php</cde>. Put your test, lint and setup commands there, and nobody
+                has to remember the flags, including you in six months.
+            </p>
+        </two-dollars>
+
+        <p>
+            When the autoloader can't find a class, PHP throws an <cde>Error</cde>, and so far
+            that's always ended the program. It doesn't have to. Next: exceptions and try/catch.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/exceptions">Next: Exceptions and Try/Catch &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

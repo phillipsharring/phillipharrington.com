@@ -1,0 +1,264 @@
+<layout name="default" title="Selecting Data" />
+<page-head>
+    <meta
+        name="description"
+        content="SELECT, properly: picking columns and rows, INNER and LEFT joins, NULL and why nothing equals it, ORDER BY, LIMIT for pages, counting, and the N+1 query that quietly turns one page into a hundred queries. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="MySQL SELECT, INNER JOIN, LEFT JOIN, NULL, IS NULL, ORDER BY, LIMIT OFFSET, pagination, COUNT, GROUP BY, N+1 query, PDO fetch, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Getting rows back out, in one query instead of a hundred. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="selecting-data">Selecting Data</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/inserting-data">Inserting Data</lnk> put rows in. Almost every page of a
+            web app takes rows out: a list, a profile, an order with its items. <cde>SELECT</cde> is
+            the statement you'll write most, and it can do a lot more than fetch a table. Done well,
+            one query brings back exactly what a page needs. Done badly, a page asks the database a
+            hundred small questions, and nobody notices until the site is slow.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-select">What's SELECT?</heading>
+        <p>The statement that reads rows. Its clauses always come in this order:</p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `books`.`title`, `authors`.`name`
+FROM `books`
+INNER JOIN `authors` ON `authors`.`id` = `books`.`author_id`
+WHERE `books`.`rating` &gt;= 4
+ORDER BY `books`.`title`
+LIMIT 10;</code-block>
+        <list>
+            <li><strong>SELECT</strong>: which columns. Name them, rather than <cde>*</cde>.</li>
+            <li>
+                <strong>FROM</strong> and <strong>JOIN</strong>: which tables, and how they line up.
+            </li>
+            <li><strong>WHERE</strong>: which rows.</li>
+            <li><strong>ORDER BY</strong>: in what order. Without it, the order isn't promised.</li>
+            <li><strong>LIMIT</strong>: how many.</li>
+        </list>
+
+        <heading h3 id="joins">INNER and LEFT Joins</heading>
+        <p>
+            An <cde>INNER JOIN</cde> keeps only the rows that match on both sides: books that have
+            an author, and authors that have books. A <cde>LEFT JOIN</cde> keeps every row from the
+            left table, matched or not, and fills the right side with <cde>NULL</cde> where there's
+            no match: every author, including the ones with no books yet. Always say which one you
+            mean. A bare <cde>JOIN</cde> is an inner join, but nobody reading it can tell you meant
+            that.
+        </p>
+
+        <heading h3 id="null">NULL</heading>
+        <p>
+            <cde>NULL</cde> means "no value": unknown, missing, not rated yet. It isn't zero, and it
+            isn't an empty string. And it isn't equal to anything, itself included:
+            <cde>NULL = NULL</cde> isn't true, it's <cde>NULL</cde>. To find it, ask
+            <cde>IS NULL</cde> or <cde>IS NOT NULL</cde>.
+        </p>
+
+        <side-story title="Codd's Two Nulls">
+            Edgar Codd, who invented the relational model, thought one <cde>NULL</cde> wasn't
+            enough. In 1990 he proposed two: one for "there's a value, but we don't know it," like
+            an unrated book, and one for "there's no value to know," like the middle name of someone
+            who doesn't have one. SQL never adopted the idea. It has one <cde>NULL</cde>, and you
+            decide what it means, column by column.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>
+            The clauses are written in one order and, as far as their meaning goes, run in another:
+        </p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li><cde>FROM</cde> and the joins build one wide set of rows.</li>
+            <li><cde>WHERE</cde> throws out the ones that don't match.</li>
+            <li><cde>GROUP BY</cde>, if there is one, folds them into groups, for counting.</li>
+            <li><cde>SELECT</cde> picks the columns.</li>
+            <li><cde>ORDER BY</cde> sorts what's left.</li>
+            <li><cde>LIMIT</cde> keeps the first few.</li>
+        </ol>
+        <p>
+            That's why <cde>LIMIT 10</cde> with no <cde>ORDER BY</cde> means "any ten," and why a
+            <cde>WHERE</cde> on the right side of a <cde>LEFT JOIN</cde> can quietly turn it back
+            into an inner one. The database is free to do the work in whatever order is fastest, as
+            long as the answer is the same.
+        </p>
+
+        <heading h3 id="the-n-plus-one-query">The N+1 Query</heading>
+        <p>
+            A page lists authors with their books. The natural way to write it: one query for the
+            authors, then, in the loop, one query for each author's books. For 4 authors that's 5
+            queries. For 200, it's 201. Each one is fast, and each one is a round trip to the
+            database, so the page gets slower with every author, and no single query ever looks
+            slow. That's the N+1 query: one, plus one for each of N rows. The fix is to ask once,
+            with a join, and sort the rows out in PHP.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A reading list. The same <cde>compose.yml</cde>, <cde>Dockerfile</cde> and
+            <cde>db.php</cde> as in SQL, and this <cde>init.sql</cde>, with one author who has no
+            books yet, and two books with no rating:
+        </p>
+        <code-block example="selecting-data/init.sql" />
+        <p>Start the database and open the <cde>mysql</cde> command:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose exec db mysql -u app -papp-password course</code-block>
+        <p>
+            Every author, and the books they have. With a <cde>LEFT JOIN</cde>, Toni Morrison is
+            there, with <cde>NULL</cde> for a title:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `authors`.`name`, `books`.`title`
+FROM `authors`
+LEFT JOIN `books` ON `books`.`author_id` = `authors`.`id`
+ORDER BY `authors`.`name`;</code-block>
+        <p>Change it to <cde>INNER JOIN</cde>, and she's gone. Now look for the unrated books:</p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `title`
+FROM `books`
+WHERE `rating` = NULL;
+
+SELECT `title`
+FROM `books`
+WHERE `rating` IS NULL;</code-block>
+        <p>
+            The first finds nothing, ever. The second finds both. Then the one that catches people
+            out, every book not rated 5:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `title`, `rating`
+FROM `books`
+WHERE `rating` &lt;&gt; 5;</code-block>
+        <p>
+            Two books, not four. The unrated ones aren't "not 5"; their comparison is
+            <cde>NULL</cde>, and <cde>WHERE</cde> only keeps rows where it's true. Last, count each
+            author's books:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `authors`.`name`, COUNT(*) AS `rows`, COUNT(`books`.`id`) AS `books`
+FROM `authors`
+LEFT JOIN `books` ON `books`.`author_id` = `authors`.`id`
+GROUP BY `authors`.`id`
+ORDER BY `authors`.`name`;</code-block>
+        <p>
+            <cde>COUNT(*)</cde> counts rows, and gives Toni Morrison 1, for her row with no book.
+            <cde>COUNT(`books`.`id`)</cde> counts values, skips the <cde>NULL</cde>, and gives her
+            0, which is right. Type <cde>exit</cde>.
+        </p>
+        <p>
+            Now from PHP. <cde>list.php</cde> shows the books a page at a time, with
+            <cde>LIMIT</cde> and <cde>OFFSET</cde>:
+        </p>
+        <code-block example="selecting-data/list.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php list.php 1
+docker compose run --rm php php list.php 2</code-block>
+        <p>
+            Three books a page, in title order. Ask for page <cde>'2 OR 1'</cde> and you get page 1:
+            the page number came from outside, and <strong>never trust input</strong>, so anything
+            that isn't a whole number is treated as the first page. Then the N+1 query, and its fix,
+            side by side, in <cde>n-plus-one.php</cde>:
+        </p>
+        <code-block example="selecting-data/n-plus-one.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php n-plus-one.php</code-block>
+        <p>
+            The same list twice, word for word. The first took 5 queries, and would take 201 with
+            200 authors. The second took 1, and always will. <cde>docker compose down -v</cde>
+            when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>fetch()</cde> gets the next row, or <cde>false</cde> when there are none;
+                <cde>fetchAll()</cde> gets every row as an array; <cde>fetchColumn()</cde> gets one
+                value; <cde>fetchAll(PDO::FETCH_COLUMN)</cde> gets one column as a list.
+            </li>
+            <li>
+                A <cde>NULL</cde> from the database is a <cde>null</cde> in PHP. Check for it with
+                <cde>=== null</cde> before you print it.
+            </li>
+            <li>
+                <cde>bindValue(1, $limit, PDO::PARAM_INT)</cde> for <cde>LIMIT</cde> and
+                <cde>OFFSET</cde>, so they're sent as numbers.
+            </li>
+            <li>
+                Every value in a <cde>WHERE</cde> that came from outside is a placeholder.
+                <lnk to="/php/never-trust-input">Never trust input</lnk>, including the page number,
+                the sort order and the search box. A column name to sort by can't be a placeholder,
+                so pick it from an allow list of your own.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The N+1 query hides in loops.</strong> Any query inside a
+                <cde>foreach</cde> over rows from another query is a candidate. Fetch the related
+                rows in one query, with a join or with <cde>WHERE `author_id` IN (...)</cde>, before
+                the loop.
+            </li>
+            <li>
+                <strong>Nothing equals NULL.</strong> <cde>= NULL</cde> finds nothing, and
+                <cde>&lt;&gt; 5</cde> skips every <cde>NULL</cde>. If a column can be
+                <cde>NULL</cde>, every comparison on it has to say what to do about that.
+            </li>
+            <li>
+                <strong>A WHERE on the right side undoes a LEFT JOIN.</strong>
+                <cde>WHERE `books`.`rating` &gt; 3</cde> throws away the authors with no books,
+                because their rating is <cde>NULL</cde>. Put the condition in the <cde>ON</cde>
+                instead, if you want to keep them.
+            </li>
+            <li>
+                <strong>MySQL turns "2abc" into 2.</strong> Compare an integer column to a string
+                and MySQL converts the string, reading digits until it hits something else:
+                <cde>WHERE `id` = '2abc'</cde> finds row 2, with only a warning. Check that an id is
+                a whole number in PHP, before it's a query.
+            </li>
+            <li>
+                <strong>NULL sorts first.</strong> In MySQL, <cde>ORDER BY `rating`</cde> puts the
+                <cde>NULL</cde>s before the lowest rating. Add <cde>DESC</cde>, and they go last.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Count your queries">
+            <p>
+                In development, count the queries each page makes, and show the number in the footer
+                or write it to the log. A page that should take 3 and takes 140 is an N+1 query,
+                found in a second, long before anyone has to tell you the site is slow.
+            </p>
+        </two-dollars>
+
+        <p>
+            Reading rows can't hurt them. Changing them can, and the most dangerous part of the
+            statement is the one you forget to write. Next: updating data.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/updating-data">Next: Updating Data &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

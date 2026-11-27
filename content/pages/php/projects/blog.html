@@ -1,0 +1,190 @@
+<layout name="default" title="Blog" />
+<page-head>
+    <meta
+        name="description"
+        content="A blog from a posts table: newest first, three to a page, drafts and scheduled posts kept out of sight in SQL, dates in UTC, and an Atom feed built with XMLWriter. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP blog, posts table, pagination, LIMIT OFFSET, drafts, scheduled posts, UTC, Atom feed, XMLWriter, RFC 3339, Host header, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Posts, pages of them, drafts, and a feed. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="blog">Blog</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The CMS held pages that stay where you put them. A blog holds posts that arrive in
+            order. You'll build the reading side of one: a list, newest first, three to a page; a
+            page for each post; drafts and scheduled posts that nobody sees until their time; and an
+            Atom feed, so people can follow along in a feed reader without visiting at all.
+        </p>
+        <p>
+            Writing posts is the CMS's admin form with a date on it, so this project leaves it out
+            and puts the posts straight into the database.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/cms">Content Management System</lnk>: pages from a table,
+                plain text to paragraphs
+            </li>
+            <li>
+                <lnk to="/php/selecting-data">Selecting Data</lnk>: <cde>ORDER BY</cde>,
+                <cde>LIMIT</cde> and <cde>OFFSET</cde>
+            </li>
+            <li><lnk to="/php/indexes">Indexes</lnk>: on the column every query sorts by</li>
+            <li>
+                <lnk to="/php/query-strings">Query Strings</lnk>: <cde>?page=2</cde>, which is input
+            </li>
+            <li><lnk to="/php/content-types">Content Types</lnk>: the feed isn't HTML</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-posts">Step 1: The Posts</heading>
+        <p>
+            <cde>compose.yml</cde>, the <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones
+            from <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <cde>blog</cde> and one more setting, <cde>SITE_URL</cde>, for Step 4:
+        </p>
+        <code-block example="project-blog/compose.yml" />
+        <p>The table, and seven posts to show:</p>
+        <code-block example="project-blog/init.sql" />
+        <p>
+            One column decides who sees a post. <cde>published_at</cde> empty is a draft. In the
+            future, it's scheduled. In the past, it's live. There's no separate "status" to keep in
+            step with the date.
+        </p>
+
+        <heading h3 id="step-2-the-queries">Step 2: The Queries</heading>
+        <p>
+            <cde>src/posts.php</cde> asks for published posts only, and writes that condition once,
+            so no page can forget it:
+        </p>
+        <code-block example="project-blog/src/posts.php" />
+        <p>
+            <cde>LIMIT</cde> and <cde>OFFSET</cde> are bound as integers with
+            <cde>bindValue(..., PDO::PARAM_INT)</cde>. Placeholders work there too; they just have
+            to be numbers. Times are stored in UTC and only turned into a local-looking date at the
+            last moment, on the page.
+        </p>
+
+        <heading h3 id="step-3-the-pages">Step 3: The Pages</heading>
+        <p>
+            <cde>public/index.php</cde> answers three kinds of address: <cde>/</cde> for the list,
+            <cde>/posts/hello</cde> for a post, and <cde>/feed</cde> for the feed. Anything else is
+            a 404.
+        </p>
+        <code-block example="project-blog/public/index.php" />
+        <p>
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> including the
+            page number. <cde>?page=abc</cde>, <cde>?page=-3</cde> and <cde>?page=1 OR 1=1</cde> all
+            become page 1, through <cde>filter_var()</cde>, before they get anywhere near SQL. A
+            page past the end is a 404. So is a draft, the same answer as a typo, so the blog
+            doesn't confirm that an unpublished post exists.
+        </p>
+
+        <heading h3 id="step-4-the-feed">Step 4: The Feed</heading>
+        <p>
+            A feed is an XML file listing the latest posts, which feed readers check now and then.
+            <cde>src/feed.php</cde> builds one in the Atom format with <cde>XMLWriter</cde>, which
+            escapes every value as it writes it:
+        </p>
+        <code-block example="project-blog/src/feed.php" />
+        <p>
+            Feed links must be whole URLs, with the scheme and host. They come from
+            <cde>SITE_URL</cde>, a setting, never from the request's <cde>Host</cde> header. The
+            <cde>Host</cde> header is input: anyone can send <cde>Host: evil.example</cde>, and a
+            feed built from it, cached and served to everyone, would point your readers at someone
+            else's site.
+        </p>
+
+        <heading h3 id="step-5-run-it">Step 5: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>. Five posts are live, three on the first page, two
+            on the second. The title with <cde>&lt;b&gt;</cde> in it shows the tags as text. Then
+            try the ones you shouldn't see:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/posts/unfinished
+curl -i http://localhost:8000/posts/someday
+curl http://localhost:8000/feed</code-block>
+        <p>
+            Two 404s, and a feed with five entries. Change <cde>someday</cde>'s
+            <cde>published_at</cde> to a minute from now with
+            <cde>docker compose exec db mysql -uapp -papp blog</cde>, wait a minute, and it appears,
+            with nothing else to do.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="Web Log, We Blog">
+            Jorn Barger called his site of daily links a "weblog" in 1997. In 1999, Peter Merholz
+            jokingly split the word as "we blog," and "blog" stuck, as a noun and a verb. The Atom
+            format came later, in 2005, as RFC 4287, written partly to settle the confusion between
+            the several incompatible versions of RSS.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Offsets get slow, and they shift.</strong> <cde>OFFSET 10000</cde> makes the
+                database find and skip ten thousand rows. And a new post pushes everything down one,
+                so a reader paging back sees one post twice. For long lists, page by "older than
+                this date" instead.
+            </li>
+            <li>
+                <strong>Pick UTC and never change it.</strong> Store UTC, set the connection to UTC,
+                and convert for display. A server whose time zone changes, or a summer-time switch,
+                will otherwise publish posts an hour early or late.
+            </li>
+            <li>
+                <strong>Slugs are forever.</strong> Once a post's address is out in the world,
+                changing it breaks every link to it. If you must, keep the old slug and redirect it
+                with a 301.
+            </li>
+            <li>
+                <strong>A feed is content too.</strong> The same escaping rules apply, and the same
+                hidden posts stay hidden. It's easy to filter drafts out of the page and forget the
+                feed.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Point to your feed in every page">
+            <p>
+                One line in the <cde>&lt;head&gt;</cde>,
+                <cde>&lt;link rel="alternate" type="application/atom+xml" href="/feed"&gt;</cde>,
+                and feed readers find the feed from the blog's address alone. People paste the home
+                page into their reader, not <cde>/feed</cde>.
+            </p>
+        </two-dollars>
+
+        <p>
+            A blog that only talks is half a conversation. Next: comments, and what happens when the
+            other half includes a script and a spam bot.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/comments">Next: Comments &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

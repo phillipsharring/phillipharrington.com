@@ -1,0 +1,199 @@
+<layout name="default" title="Protected Page" />
+<page-head>
+    <meta
+        name="description"
+        content="A members' page that only signed-in people can see: a guard function at the top of the page, a sign-in that sends you back where you were, a new session id at sign-in, a sign-out that's a POST, and the redirect without exit that hands the page out anyway. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP protected page, require login, members only, PHP sign in, password_verify, session_regenerate_id, exit after header Location, Cache-Control private no-store, logout POST, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A page only signed-in members can see. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="protected-page">Protected Page</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Sessions ended with "the session can remember who the visitor is." This project does
+            that: a members' page that strangers can't see. A stranger who asks for it is sent to
+            sign in, then straight back to the page they wanted. A member sees it. And everyone gets
+            the same vague answer when a sign-in fails.
+        </p>
+        <p>
+            For now there's one member, in a settings file, so the project can be about the guard
+            and not the database. The Signup Form and Login Form projects put members in MySQL and
+            add the defenses a real sign-in needs.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/projects/sessions">Sessions</lnk>: the careful
+                <cde>session_start()</cde>.
+            </li>
+            <li>
+                <lnk to="/php/passwords">Passwords: password_hash() and Nothing Else</lnk>:
+                <cde>password_verify()</cde>.
+            </li>
+            <li>
+                <lnk to="/php/projects/redirecting">Redirecting</lnk>: <cde>local_path()</cde> for
+                "where to next."
+            </li>
+            <li>
+                <lnk to="/php/expressive-response-codes"
+                    >Expressive HTTP Response Codes, and When Not to Be</lnk>: one answer for every failed sign-in.
+            </li>
+            <li>
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: keeping caches away
+                from private pages.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-member">The Member</heading>
+        <p>
+            <cde>src/users.php</cde> returns the one member's address and password hash. Never a
+            password: a hash made by <cde>password_hash()</cde>, as the comment says:
+        </p>
+        <code-block example="project-protected-page/src/users.php" />
+
+        <heading h3 id="the-guard">The Guard</heading>
+        <p><cde>src/auth.php</cde> holds everything about who's signed in:</p>
+        <code-block example="project-protected-page/src/auth.php" />
+        <list>
+            <li>
+                <strong><cde>require_login()</cde> is the guard.</strong> If nobody is signed in, it
+                redirects to the sign-in page, with the page they wanted in <cde>?next=</cde>, and
+                <cde>redirect()</cde> ends the script, so nothing below it runs. If someone is, it
+                marks the response <cde>private, no-store</cde> and hands back who it is.
+            </li>
+            <li>
+                <strong><cde>sign_in()</cde> changes the session id</strong> with
+                <cde>session_regenerate_id(true)</cde> before it records who signed in. The id from
+                before sign-in might be known to someone else; the one after is brand new. The Login
+                Form project attacks a sign-in that skips this.
+            </li>
+            <li>
+                <strong><cde>sign_out()</cde> clears all of it</strong>: the data, the cookie and
+                the file on the server, as in the Sessions project.
+            </li>
+        </list>
+
+        <heading h3 id="the-pages">The Pages</heading>
+        <p>A public home page, <cde>public/index.php</cde>, that links to the members' page:</p>
+        <code-block example="project-protected-page/public/index.php" />
+        <p>
+            The members' page, <cde>public/members.php</cde>. The guard is the first thing after the
+            session starts, before a single byte of the page:
+        </p>
+        <code-block example="project-protected-page/public/members.php" />
+        <p>The sign-in page, <cde>public/login.php</cde>:</p>
+        <code-block example="project-protected-page/public/login.php" />
+        <p>
+            <strong>Never trust input:</strong> the address, the password and <cde>next</cde> all
+            came from the visitor. Each one is checked for type, and <cde>next</cde> goes through
+            <cde>local_path()</cde>, so the sign-in page can't be made into an open redirect. A
+            wrong password and an unknown address get the same words, so the form can't be used to
+            find out who's a member.
+        </p>
+        <p>And signing out, <cde>public/logout.php</cde>, which only answers a POST:</p>
+        <code-block example="project-protected-page/public/logout.php" />
+
+        <heading h3 id="run-it">Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000/members.php</cde>. You're sent to sign in, with
+            <cde>next=%2Fmembers.php</cde> in the address. Sign in as
+            <cde>alice@example.com</cde> with <cde>correct horse battery staple</cde>, and you're
+            back on the members' page. Sign out, and it's closed again. From the terminal, a
+            stranger's view:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/members.php</code-block>
+        <p>
+            A <cde>303</cde> to the sign-in page, and an empty body. Nothing of the page left the
+            server.
+        </p>
+
+        <heading h3 id="a-guard-that-forgot">A Guard That Forgot</heading>
+        <p>
+            Now the mistake that guard exists to prevent. <cde>header('Location: ...')</cde> only
+            adds a header; the script keeps going, and prints the page after it. Make
+            <cde>public/forgot-exit.php</cde>, a guard that forgot to stop:
+        </p>
+        <code-block example="project-protected-page/public/forgot-exit.php" />
+        <p>
+            Open it in the browser, and you're sent to the sign-in page, as you should be. Then ask
+            the way a script would, without following redirects:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/forgot-exit.php</code-block>
+        <p>
+            A redirect to the sign-in page, and right under it, "The meeting is Thursday at 7." The
+            browser followed the redirect and never showed you the body; curl shows you everything
+            the server sent. That's why <cde>redirect()</cde> is declared to return
+            <cde>never</cde>, and PHP holds it to that.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A redirect without <cde>exit</cde> hands out the page anyway.</strong> The
+                guard that forgot, above, looks fine in a browser and gives everything away to curl.
+                Make every redirect go through a function that ends the script.
+            </li>
+            <li>
+                <strong>Every protected page needs the guard.</strong> It's one line, which makes it
+                one line to forget on the page you add next month. Once a site has more than a few
+                of these, put the check in one place that every request goes through, as in
+                <lnk to="/php/middleware">Middleware and Pipelines</lnk>.
+            </li>
+            <li>
+                <strong>Signing out is a POST.</strong> A sign-out link can be followed by anything:
+                a browser prefetching links, or an image tag on someone else's page pointing at it.
+                A button in a form can't be triggered that casually.
+            </li>
+            <li>
+                <strong>This sign-in can be guessed at forever.</strong> Nothing stops a script from
+                trying a million passwords. The Login Form project adds the limits.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Check your guard with curl">
+            <p>
+                The browser hides what a page sends before it redirects. Every time you protect a
+                page, <cde>curl -i</cde> it without signing in, and look at the body. It should be
+                empty. If anything is there, the guard is in the wrong place, or it doesn't stop.
+            </p>
+        </two-dollars>
+
+        <p>
+            One member in a file doesn't scale. Members belong in a database, and so does almost
+            everything else a site keeps. Before that, the classic way a database gets broken into.
+            Next: something database-y.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/something-database-y">Next: Something Database-y &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

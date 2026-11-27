@@ -1,0 +1,230 @@
+<layout name="default" title="Magic Methods" />
+<page-head>
+    <meta
+        name="description"
+        content="The double-underscore methods PHP calls for you: __construct, __toString, __get and __set, __call, __invoke, __debugInfo and the rest. What each one does, and what you give up when a property or method isn't really there. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP magic methods, __construct, __toString, __get, __set, __isset, __call, __callStatic, __invoke, __debugInfo, __clone, __serialize, __destruct, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The methods PHP calls for you. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="magic-methods">Magic Methods</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            You've already written one. <cde>__construct</cde> is a method you never call: PHP calls
+            it for you, when you say <cde>new</cde>. PHP has a set of these, all starting with two
+            underscores, each one a hook into something the language does. Some are plain useful.
+            Others let an object pretend to have properties and methods it doesn't have, and that's
+            where the arguments start.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-magic-method">What's a Magic Method?</heading>
+        <p>
+            A method with a reserved name that PHP calls by itself, at a certain moment. You write
+            it like any other method; you just don't call it. The ones you'll meet:
+        </p>
+        <list>
+            <li>
+                <strong><cde>__construct()</cde></strong> when an object is made, and
+                <strong><cde>__destruct()</cde></strong> when it's freed.
+            </li>
+            <li>
+                <strong><cde>__toString()</cde></strong> when the object is used as a string, in
+                <cde>echo</cde> or <cde>"{$money}"</cde>.
+            </li>
+            <li>
+                <strong><cde>__get()</cde></strong>, <strong><cde>__set()</cde></strong>, <strong><cde>__isset()</cde></strong> and <strong><cde>__unset()</cde></strong>
+                when code reads, writes, checks or removes a property that doesn't exist, or that it
+                isn't allowed to see.
+            </li>
+            <li>
+                <strong><cde>__call()</cde></strong> and <strong><cde>__callStatic()</cde></strong>
+                when code calls a method that doesn't exist.
+            </li>
+            <li>
+                <strong><cde>__invoke()</cde></strong> when the object itself is called like a
+                function: <cde>$greet('Ada')</cde>.
+            </li>
+            <li>
+                <strong><cde>__clone()</cde></strong> on the copy, right after <cde>clone</cde>.
+            </li>
+            <li>
+                <strong><cde>__serialize()</cde></strong> and
+                <strong><cde>__unserialize()</cde></strong> when the object is turned into a string
+                for storage and back.
+            </li>
+            <li>
+                <strong><cde>__debugInfo()</cde></strong> when <cde>var_dump()</cde> or
+                <cde>print_r()</cde> shows the object.
+            </li>
+        </list>
+
+        <heading h3 id="two-kinds">Two Kinds</heading>
+        <p>
+            Most of these hook into something real: making an object, copying it, printing it. The
+            object has the thing; PHP just needs to know what to do with it. <cde>__get</cde>,
+            <cde>__set</cde> and <cde>__call</cde> are different. They answer for things that aren't
+            there. The property or method exists only because the code inside them decides it does,
+            while the program runs.
+        </p>
+
+        <side-story title="Sufficiently Advanced">
+            Arthur C. Clarke, the science fiction writer, put it as a law: any sufficiently advanced
+            technology is indistinguishable from magic. Programmers call a feature "magic" for the
+            same reason, and usually not as a compliment. It means it works, and you can't see how
+            from where you're standing.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>Take <cde>$row-&gt;email</cde>, on an object that has no <cde>email</cde> property:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>PHP looks for a property called <cde>email</cde> that this code may read.</li>
+            <li>There isn't one, so it looks for a <cde>__get()</cde> method on the class.</li>
+            <li>
+                If there is one, PHP calls <cde>__get('email')</cde>, and whatever it returns is the
+                value.
+            </li>
+            <li>
+                If there isn't, PHP warns <cde>Undefined property</cde> and gives you
+                <cde>null</cde>.
+            </li>
+        </ol>
+        <p>
+            Step four is a safety net, and step three takes it away. Once a class has a
+            <cde>__get()</cde>, every property name is valid as far as PHP is concerned, including
+            the misspelled ones. Your editor can't suggest the names, and tools that check your code
+            before it runs can't tell a real one from a typo.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>Four of them, and one comparison, in <cde>magic.php</cde>:</p>
+        <code-block example="magic-methods/magic.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php magic.php</code-block>
+        <list>
+            <li>
+                <strong>The price</strong> prints as <cde>$19.99</cde>: <cde>__toString()</cde>.
+            </li>
+            <li>
+                <strong>The row</strong> has an email, though <cde>Row</cde> declares no such
+                property: <cde>__get()</cde> found it in the array.
+            </li>
+            <li>
+                <strong>The row's typo</strong>, <cde>$row-&gt;emial</cde>, prints nothing at all,
+                with no warning. <cde>__get()</cde> said "null" and PHP believed it.
+            </li>
+            <li>
+                <strong>The user's typo</strong>, on a class with real properties, gets
+                <cde>Warning: Undefined property: User::$emial</cde>. PHP told you.
+            </li>
+            <li>
+                <strong>The greeter</strong> is an object called like a function, even by
+                <cde>array_map()</cde>: <cde>__invoke()</cde>.
+            </li>
+            <li>
+                <strong>The API client</strong> prints with its key <cde>(hidden)</cde>:
+                <cde>__debugInfo()</cde>.
+            </li>
+        </list>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Names starting with <cde>__</cde> are reserved for PHP. Don't start your own methods
+                that way.
+            </li>
+            <li>
+                Magic methods other than <cde>__construct()</cde>, <cde>__destruct()</cde> and
+                <cde>__clone()</cde> must be <cde>public</cde>, and most have fixed signatures:
+                <cde>__get(string $name): mixed</cde>, <cde>__toString(): string</cde>.
+            </li>
+            <li>
+                A class with <cde>__toString()</cde> automatically implements <cde>Stringable</cde>,
+                from <lnk to="/php/interfaces">Interfaces</lnk>.
+            </li>
+            <li>
+                <cde>__get()</cde> only runs for properties that don't exist or can't be seen from
+                where the code is. A public property is read directly, and <cde>__get()</cde> never
+                hears about it.
+            </li>
+            <li>
+                Write <cde>__isset()</cde> whenever you write <cde>__get()</cde>, or
+                <cde>isset($row-&gt;email)</cde> and <cde>??</cde> say false for everything.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Typos stop being errors.</strong> As the Try It showed. If you do write a
+                <cde>__get()</cde>, have it throw for names it doesn't know, rather than return
+                <cde>null</cde>.
+            </li>
+            <li>
+                <strong>You can't see what an object has.</strong> Open the class file, and the
+                properties and methods aren't listed anywhere. You have to read the code inside
+                <cde>__get()</cde> or <cde>__call()</cde>, and sometimes the data it reads, to find
+                out.
+            </li>
+            <li>
+                <strong><cde>__debugInfo()</cde> is only for the debugging functions.</strong>
+                <cde>var_export()</cde>, <cde>serialize()</cde> and <cde>json_encode()</cde> ignore
+                it. Hiding a secret there doesn't hide it everywhere.
+            </li>
+            <li>
+                <strong><cde>__destruct()</cde> runs when PHP gets around to it.</strong> Usually
+                when the last handle goes away, sometimes not until the script ends. Don't put
+                anything there that has to happen at a certain moment.
+            </li>
+            <li>
+                <strong>Unserializing input runs magic methods.</strong>
+                <cde>unserialize()</cde> on data from outside can build objects of your classes and
+                trigger their <cde>__wakeup()</cde>, <cde>__unserialize()</cde> and
+                <cde>__destruct()</cde>.
+                <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>: use <cde>json_decode()</cde> for anything that came from outside.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Hide secrets from var_dump()">
+            <p>
+                Give any class that holds a password, a key or a token a <cde>__debugInfo()</cde>
+                that leaves it out, like the example's API client. Then the
+                <cde>var_dump($client)</cde> you add while debugging, and forget to take out,
+                doesn't print your key onto a page.
+            </p>
+        </two-dollars>
+
+        <p>
+            The API client in the example was given its key when it was made, instead of going to
+            find it. That idea, on a bigger scale, is the next lesson: dependency injection.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/dependency-injection">Next: Dependency Injection &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

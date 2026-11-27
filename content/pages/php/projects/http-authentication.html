@@ -1,0 +1,197 @@
+<layout name="default" title="HTTP Authentication" />
+<page-head>
+    <meta
+        name="description"
+        content="Put a page behind the browser's own login box with HTTP Basic authentication: the 401, the WWW-Authenticate header, password_verify(), and why it only belongs on HTTPS. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="HTTP Basic authentication, 401 Unauthorized, WWW-Authenticate, Authorization header, PHP_AUTH_USER, PHP_AUTH_PW, password_verify, base64, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Put a page behind the browser's own login box. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="http-authentication">HTTP Authentication</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The last few projects built a login the long way: a form, a session, a password hash, a
+            page to change it. HTTP has a login of its own, built into every browser, with no form
+            and no session at all. It's called Basic authentication. It's plain, it's ugly, and it's
+            exactly right for a staff page, a staging site, or a tool only you will use.
+        </p>
+        <p>
+            You'll build one page behind it: the browser asks for a name and password, PHP checks
+            them against a hash, and only the right pair gets in.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/request-and-response">Request and Response</lnk>: the 401 status and
+                the headers both ways
+            </li>
+            <li>
+                <lnk to="/php/document-root">Document Root</lnk>: the password list lives outside
+                <cde>public</cde>
+            </li>
+            <li>
+                <lnk to="/php/passwords">Passwords: password_hash() and Nothing Else</lnk>: store a
+                hash, check with <cde>password_verify()</cde>
+            </li>
+            <li><lnk to="/php/http">HTTP, HTTPS and TLS</lnk>: why this only belongs on HTTPS</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+        <p>The conversation goes like this:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The browser asks for the page, with no credentials.</li>
+            <li>
+                PHP answers <cde>401 Unauthorized</cde>, with a
+                <cde>WWW-Authenticate: Basic</cde> header.
+            </li>
+            <li>
+                The browser sees that header and shows its own login box. The <cde>realm</cde> in
+                the header names what you're logging in to.
+            </li>
+            <li>
+                It asks again, this time with an <cde>Authorization</cde> header: the word
+                <cde>Basic</cde>, then <cde>name:password</cde> in base64.
+            </li>
+            <li>
+                PHP decodes it into <cde>$_SERVER['PHP_AUTH_USER']</cde> and
+                <cde>$_SERVER['PHP_AUTH_PW']</cde>, and your code checks them.
+            </li>
+            <li>The browser remembers the pair and sends it with every request to that site.</li>
+        </ol>
+
+        <heading h3 id="step-1-the-users">Step 1: The Users</heading>
+        <p>
+            Make a project folder, and in it, <cde>users.php</cde>: each user name and a hash of its
+            password. Never the password itself.
+        </p>
+        <code-block example="project-http-authentication/users.php" />
+        <p>
+            That hash is for <cde>correct horse battery staple</cde>. To make your own, this script
+            reads a password from the keyboard, so it doesn't end up in your shell history:
+        </p>
+        <code-block example="project-http-authentication/hash-password.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -v "$PWD":/app -w /app php:8.4-cli php hash-password.php</code-block>
+
+        <heading h3 id="step-2-the-check">Step 2: The Check</heading>
+        <p>
+            <cde>auth.php</cde> holds one function. It reads the name and password PHP decoded, and
+            either returns the name or answers 401 and stops.
+        </p>
+        <code-block example="project-http-authentication/auth.php" />
+        <p>
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> The
+            <cde>Authorization</cde> header is whatever the client sent, so the name might be empty,
+            absurdly long, or made of anything. It only ever gets used as an array key and checked
+            against a hash, so none of that matters here. Notice the dummy hash: an unknown name
+            still costs one <cde>password_verify()</cde>, so a wrong name and a wrong password take
+            the same time, and the timing can't tell anyone which names exist.
+        </p>
+
+        <heading h3 id="step-3-the-page">Step 3: The Page</heading>
+        <p>Then <cde>public/index.php</cde>, the page behind the door:</p>
+        <code-block example="project-http-authentication/public/index.php" />
+        <p>Start it, with <cde>public</cde> as the web root:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>. The browser asks for a name and password. Cancel,
+            and you get the 401's text. Log in as <cde>editor</cde>, and you're in.
+        </p>
+
+        <heading h3 id="step-4-watch-it-with-curl">Step 4: Watch It with curl</heading>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000
+curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-block>
+        <p>
+            The first gets the 401 and its <cde>WWW-Authenticate</cde> header. The second shows, in
+            curl's <cde>&gt;</cde> lines, exactly what went out:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>&gt; Authorization: Basic ZWRpdG9yOmNvcnJlY3QgaG9yc2UgYmF0dGVyeSBzdGFwbGU=</code-block>
+        <p>Decode it:</p>
+        <!-- prettier-ignore -->
+        <code-block>echo 'ZWRpdG9yOmNvcnJlY3QgaG9yc2UgYmF0dGVyeSBzdGFwbGU=' | base64 -d</code-block>
+        <p>
+            There's the password. Base64 is a way to write bytes as plain letters, not a lock.
+            Anyone who sees the request sees the password, on every request, which is why Basic
+            authentication only ever goes over HTTPS.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="Older Than Most of the Web">
+            Basic authentication was already in the HTTP/1.0 specification, RFC 1945, published in
+            1996. It has barely changed since. Its current spec, RFC 7617, mostly adds a way to say
+            the password is UTF-8: the <cde>charset="UTF-8"</cde> in the example's header.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Without HTTPS, it's a password on a postcard.</strong> Every request carries
+                it, readable by anything in between. On a live site, HTTPS or nothing.
+            </li>
+            <li>
+                <strong>There's no logout.</strong> The browser keeps sending the pair until you
+                close it. If people need to log out, or you need to lock someone out mid-session,
+                use the form and session login from the earlier projects.
+            </li>
+            <li>
+                <strong>Nothing stops guessing.</strong> The browser box will retry forever. A real
+                one needs a limit on failures, like the one in
+                <lnk to="/php/rate-limiting">Rate Limiting</lnk>.
+            </li>
+            <li>
+                <strong>Some setups hide the header from PHP.</strong> PHP's built-in server passes
+                it along. Apache running PHP as CGI or FastCGI normally keeps
+                <cde>Authorization</cde> to itself, and <cde>PHP_AUTH_USER</cde> is just missing.
+                The fix lives in the server's settings (<cde>CGIPassAuth On</cde>, in Apache), not
+                in your code.
+            </li>
+            <li>
+                <strong>Your web server can do this without PHP.</strong> nginx and Apache both
+                protect a folder with Basic authentication on their own. Doing it in PHP is for when
+                the check depends on something only your app knows.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Lock the staging site">
+            <p>
+                Put Basic authentication in front of every staging and preview site, even the ones
+                nobody knows about. Search engines find them anyway, and an unlocked copy of your
+                site with test data and debug output turned on is the one you don't want indexed.
+                One password in the web server's config, and it's done.
+            </p>
+        </two-dollars>
+
+        <p>
+            A staff-only page is just where a log viewer belongs. Next: build one, and find out what
+            <cde>../</cde> can do to it.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/log-viewer">Next: Log Viewer &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

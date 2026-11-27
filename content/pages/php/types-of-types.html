@@ -1,0 +1,228 @@
+<layout name="default" title="Types of Types" />
+<page-head>
+    <meta
+        name="description"
+        content="PHP's types one at a time: int, float, bool, string, array, null, and a first look at objects. What counts as false, where ints run out, and why floats are not for money. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP types, int, float, bool, string, array, null, object, nullable types, union types, floating point, money in cents, PHP_INT_MAX, falsy values, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Every PHP type, and why floats are not for money. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="types-of-types">Types of Types</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/variables-and-types">Variables, Types and strict_types</lnk> said every
+            value has a type, and <lnk to="/php/operators">Operators</lnk> showed what happens when
+            PHP juggles them. This lesson goes through the types themselves. Most are what you'd
+            expect. One of them, the float, is quietly wrong about money, and it's the one people
+            reach for first.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-types">The Types</heading>
+
+        <heading h3 id="int">int</heading>
+        <p>
+            A whole number: <cde>42</cde>, <cde>-7</cde>, <cde>0</cde>. On a 64-bit machine, which
+            is nearly all of them, it goes up to <cde>PHP_INT_MAX</cde>, a little over nine
+            quintillion. Go past it, and PHP hands you a float instead. Ints are exact: adding and
+            subtracting them never drifts.
+        </p>
+
+        <heading h3 id="float">float</heading>
+        <p>
+            A number with a fractional part: <cde>3.14</cde>, <cde>0.5</cde>, <cde>1e3</cde>. Floats
+            cover a huge range, and they're the right tool for measurements, averages and science.
+            But they're stored as binary fractions, and most decimal fractions, like <cde>0.1</cde>,
+            have no exact binary form. So they're stored as the nearest value that fits, which is
+            slightly off. <cde>0.1 + 0.2</cde> is <cde>0.30000000000000004</cde>.
+        </p>
+
+        <heading h3 id="bool">bool</heading>
+        <p>
+            <cde>true</cde> or <cde>false</cde>. Any value can be read as a bool, in an
+            <cde>if</cde>, and these count as false: <cde>false</cde>, <cde>0</cde>, <cde>0.0</cde>,
+            <cde>''</cde>, <cde>'0'</cde>, an empty array, and <cde>null</cde>. Everything else is
+            true, including the string <cde>'false'</cde>.
+        </p>
+
+        <heading h3 id="string">string</heading>
+        <p>
+            Text, or more exactly, a row of bytes. <lnk to="/php/strings">Strings</lnk> and
+            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> are both about it, because the
+            difference between bytes and letters matters as soon as someone types "café."
+        </p>
+
+        <heading h3 id="array">array</heading>
+        <p>
+            A list, or a set of named values, or both: <cde>['a', 'b']</cde>,
+            <cde>['name' =&gt; 'Alice']</cde>. <lnk to="/php/arrays">Arrays</lnk> has the details.
+        </p>
+
+        <heading h3 id="null">null</heading>
+        <p>
+            No value. It's what a variable holds before it's set, what a missing database field
+            comes back as, and what <cde>??</cde> looks for. In a type declaration,
+            <cde>?string</cde> means "a string, or null."
+        </p>
+
+        <heading h3 id="object">object</heading>
+        <p>
+            A value that carries its own functions, called methods. PHP comes with many, like
+            <cde>DateTimeImmutable</cde> for dates:
+            <cde>(new DateTimeImmutable('2026-11-27'))-&gt;format('l')</cde> is "Friday." You'll
+            make your own in <lnk to="/php/classes-and-objects">Classes and Objects</lnk>.
+        </p>
+
+        <heading h3 id="the-rest">The Rest</heading>
+        <p>
+            A few types show up mostly in declarations: <cde>callable</cde> (something you can call
+            like a function), <cde>iterable</cde> (something you can loop over),
+            <cde>mixed</cde> (anything), <cde>void</cde> (a function that returns nothing). And
+            <cde>int|string</cde>
+            means "an int or a string": a union type.
+        </p>
+
+        <side-story title="The Index That Lost Half Its Value">
+            In 1982 the Vancouver Stock Exchange started a new index at 1,000. Less than two years
+            later it stood at about 520, in a market that hadn't fallen. The index was recalculated
+            thousands of times a day, and each time the result was cut off at three decimal places
+            instead of rounded. Tiny losses, every time, all in the same direction. Recalculated
+            properly, it was over 1,000.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>Why a float can't hold a dime, and what to do about it:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                A float is stored in binary, as a fraction made of halves, quarters, eighths and so
+                on.
+            </li>
+            <li>
+                One tenth can't be made from those exactly, any more than one third can be written
+                exactly in decimal (0.333...).
+            </li>
+            <li>So <cde>0.1</cde> is stored as the closest binary fraction, a hair off.</li>
+            <li>
+                Each sum carries the error forward. Add a dime ten times, and you get
+                <cde>0.9999999999999999</cde>, not <cde>1</cde>.
+            </li>
+            <li>
+                Ints don't have this problem. Count money in the smallest unit, cents, as an
+                <cde>int</cde>: ten dimes are <cde>100</cde>, exactly.
+            </li>
+        </ol>
+        <p>
+            So: <strong>floats are not for money.</strong> Store and add up cents as ints, in your
+            code and in your database, and turn them into dollars only when you show them to a
+            person. When you need fractions of a cent, like interest or tax rates, use a decimal
+            library, such as PHP's BCMath extension, which works in decimal digits instead of
+            binary.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>Every type, and every way to be false. In a folder, make <cde>types.php</cde>:</p>
+        <code-block example="types-of-types/types.php" />
+        <p>Then the money, <cde>money.php</cde>:</p>
+        <code-block example="types-of-types/money.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php types.php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php money.php</code-block>
+        <p>
+            Ten dimes in floats come to <cde>0.9999999999999999</cde>, and <cde>=== 1.0</cde> is
+            false. Ten dimes in cents come to <cde>100</cde>. And the bill split shows the other
+            thing cents do: <cde>intdiv()</cde> and <cde>%</cde> tell you there's one cent left
+            over, so your code has to decide who pays it. Floats would have hidden it in the
+            fourteenth decimal place.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>get_debug_type($x)</cde>: the type's name, like <cde>int</cde> or
+                <cde>DateTimeImmutable</cde>.
+            </li>
+            <li>
+                <cde>is_int()</cde>, <cde>is_float()</cde>, <cde>is_string()</cde>,
+                <cde>is_bool()</cde>, <cde>is_array()</cde>, <cde>is_null()</cde>: one question
+                each.
+            </li>
+            <li><cde>PHP_INT_MAX</cde>: the biggest int.</li>
+            <li><cde>intdiv()</cde> and <cde>%</cde>: splitting cents without leaving the ints.</li>
+            <li><cde>number_format($cents / 100, 2)</cde>: cents to dollars, only for display.</li>
+            <li><cde>round($float, 2)</cde> rounds for display. It doesn't make a float exact.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never compare floats with <cde>===</cde>.</strong>
+                <cde>0.1 + 0.2 === 0.3</cde> is false. Compare the difference to a small tolerance,
+                or, better, don't use floats for anything you need to compare exactly.
+            </li>
+            <li>
+                <strong>Money in a float column is the same mistake, in the database.</strong> Use
+                an integer column for cents, or a <cde>DECIMAL</cde> column, never
+                <cde>FLOAT</cde> or <cde>DOUBLE</cde>.
+            </li>
+            <li>
+                <strong>Prices from input are strings.</strong> <cde>'19.99'</cde> from a form isn't
+                a float yet, and shouldn't become one. <strong>Never trust input:</strong> check it,
+                and convert it to cents carefully, digit by digit, not by multiplying a float by
+                100.
+            </li>
+            <li>
+                <strong><cde>'0'</cde> is false, and <cde>'false'</cde> is true.</strong> If a form
+                sends <cde>'0'</cde> for "no," <cde>if ($value)</cde> works by luck. Compare to what
+                you expect, with <cde>===</cde>.
+            </li>
+        </list>
+
+        <side-story title="A Tenth of a Second">
+            In February 1991, a Patriot missile battery in Dhahran, Saudi Arabia, failed to stop an
+            incoming Scud missile, and 28 American soldiers were killed. The system counted time in
+            tenths of a second, and a tenth has no exact binary form, so its clock drifted. After
+            about 100 hours running, it was off by about a third of a second, enough to look in the
+            wrong place for the missile. A government report traced the failure to that rounding.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name the unit">
+            <p>
+                Put the unit in the name: <cde>$price_cents</cde>, <cde>$timeout_seconds</cde>,
+                <cde>$size_bytes</cde>. Then <cde>$price_cents / 100</cde> reads as obviously right,
+                and adding <cde>$price_cents</cde> to <cde>$shipping_dollars</cde> reads as
+                obviously wrong, before anything runs.
+            </p>
+        </two-dollars>
+
+        <p>
+            Every value in this lesson lived in a variable, and every variable lives somewhere: in
+            the whole file, or only inside one function. Next: Scope.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/scope">Next: Scope &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

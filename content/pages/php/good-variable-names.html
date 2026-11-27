@@ -1,0 +1,220 @@
+<layout name="default" title="Good Variable Names" />
+<page-head>
+    <meta
+        name="description"
+        content="A good name says what a thing holds, so the reader doesn't have to work it out. What makes a name good, the names to stop using, and the one PHP function that lets strangers name your variables. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="variable names, naming things, readable code, PHP variables, camelCase, boolean names, extract, register_globals, clean code, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A good name says what a thing holds. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Style</p>
+        <heading h1 id="good-variable-names">Good Variable Names</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A coding standard decides where the spaces go. It can't decide what to call things, and
+            names do more for a reader than any layout. A good name answers the question the reader
+            was about to ask. A bad one sends them back up the file to work it out.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-good-name">What's a Good Name?</heading>
+        <p>One that says what the thing holds, in words the reader already uses.</p>
+        <list>
+            <li>
+                <strong>What, not what type.</strong> <cde>$emails</cde>, not <cde>$arr</cde>.
+                <cde>$renewsOn</cde>, not <cde>$date</cde>. The type is already in the code; the
+                meaning is only in the name.
+            </li>
+            <li>
+                <strong>Units in the name.</strong> <cde>$timeoutSeconds</cde>,
+                <cde>$priceCents</cde>, <cde>$maxUploadBytes</cde>. Half the bugs with numbers are
+                someone reading seconds as milliseconds.
+            </li>
+            <li>
+                <strong>Booleans read as yes-or-no.</strong> <cde>$isActive</cde>,
+                <cde>$hasPaid</cde>, <cde>$autoRenews</cde>, so <cde>if ($hasPaid)</cde> reads like
+                a sentence.
+            </li>
+            <li>
+                <strong>Plural for many, singular for one.</strong>
+                <cde>foreach ($subscriptions as $subscription)</cde> tells you which is the list.
+            </li>
+            <li>
+                <strong>Length to match the reach.</strong> <cde>$i</cde> in a three-line loop is
+                fine. A variable that lives for fifty lines needs a real name.
+            </li>
+            <li>
+                <strong>One word per idea.</strong> If it's "customer" in one place, don't make it
+                "client" in the next. A reader assumes two words mean two things.
+            </li>
+        </list>
+
+        <side-story title="Pound-Force Seconds">
+            NASA lost the Mars Climate Orbiter in 1999 because of units. Software on the ground
+            reported thruster impulse in pound-force seconds, and the navigation software that used
+            the numbers expected newton-seconds. The spacecraft came in far too low and was lost. A
+            number without its unit is half a number.
+        </side-story>
+
+        <heading h3 id="names-to-stop-using">Names to Stop Using</heading>
+        <p>
+            <cde>$data</cde>, <cde>$info</cde>, <cde>$tmp</cde>, <cde>$temp</cde>,
+            <cde>$result</cde> for anything that lives longer than a line or two, <cde>$obj</cde>,
+            <cde>$arr</cde>, <cde>$x</cde>, <cde>$flag</cde>, and anything with a number on the end
+            (<cde>$user2</cde>). Each one is a name that could mean anything, so it means nothing.
+        </p>
+
+        <side-story title="God Is Real">
+            Early FORTRAN picked a variable's type from its first letter: names starting with I
+            through N were integers, and everything else was a floating-point number. Programmers
+            turned it into a joke, "God is real, unless declared integer." Names carrying meaning
+            the reader has to know is an old problem.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When you read a line, you hold every name in it in your head at once:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>You meet a name.</li>
+            <li>If it says what it is, you move on.</li>
+            <li>
+                If it doesn't, you go and find where it was set, read that, and come back, holding
+                the answer while you read the rest.
+            </li>
+        </ol>
+        <p>
+            Three or four of those in one condition, and the reader is out of room. Good names keep
+            everyone at step two.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A script that finds whom to remind about a subscription renewing in the next week. In a
+            folder, make <cde>before.php</cde>:
+        </p>
+        <code-block example="good-variable-names/before.php" />
+        <p>
+            It follows PSR-12, and it works. Now try to say what <cde>$x[2]</cde> is, or
+            <cde>$l</cde>, without scrolling. Then make <cde>after.php</cde>, the same code with
+            nothing changed but the names:
+        </p>
+        <code-block example="good-variable-names/after.php" />
+        <p>Run both:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php before.php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
+        <p>
+            Same answer: Alice and Carol. Bob doesn't auto-renew, Dan is too far off, and Erin
+            already renewed. You can check all three of those against <cde>after.php</cde> by
+            reading the <cde>if</cde>. With <cde>before.php</cde>, you'd have to decode it first.
+            (The <cde>7</cde> is still sitting there unexplained. That's the next lesson.)
+        </p>
+        <p>
+            One more file, to see what happens when someone else picks the names. Make
+            <cde>extract.php</cde>:
+        </p>
+        <code-block example="good-variable-names/extract.php" />
+        <p>Serve the folder, and ask for it twice:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000
+curl http://localhost:8000/extract.php
+curl 'http://localhost:8000/extract.php?isAdmin=1'</code-block>
+        <p>
+            The first says "Welcome, guest." The second says "Welcome, administrator." The visitor
+            chose a name, <cde>isAdmin</cde>, and <cde>extract()</cde> made it a variable, right
+            over yours.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Variables are <cde>$camelCase</cde> in most PHP code today. Some projects use
+                <cde>$snake_case</cde>. Pick the project's, and stick to it.
+            </li>
+            <li>
+                Variable names are case-sensitive: <cde>$user</cde> and <cde>$User</cde> are two
+                variables. Function and class names aren't, which is one more reason not to lean on
+                case.
+            </li>
+            <li>
+                Array keys are names too. <cde>$subscription['renewsOn']</cde> beats
+                <cde>$x[1]</cde>, and a class with typed properties beats both, once the shape is
+                used in more than one place (see
+                <lnk to="/php/classes-and-objects">Classes and Objects</lnk>).
+            </li>
+            <li>
+                <cde>extract()</cde> turns an array's keys into variables. Never use it on input,
+                and there's rarely a reason to use it at all.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Never let input name your variables.</strong> That's the Try It's
+                <cde>extract.php</cde>: one query string, and you're an administrator.
+                <lnk to="/php/never-trust-input">Never trust input</lnk>, including the names in it.
+                PHP used to do this to every script, with a setting called
+                <cde>register_globals</cde>; it was turned off by default in PHP 4.2 and removed in
+                PHP 5.4.
+            </li>
+            <li>
+                <strong>A name that lies is worse than a bad one.</strong> If
+                <cde>$activeUsers</cde> starts holding every user, rename it. Readers believe names.
+            </li>
+            <li>
+                <strong>Abbreviations save typing once and cost reading forever.</strong>
+                <cde>$custAddrLn2</cde> is quicker to type than <cde>$customerAddressLine2</cde>,
+                and every reader pays for it after. Your editor will finish the long one for you.
+            </li>
+            <li>
+                <strong>Don't rename by find-and-replace.</strong> Replacing <cde>$user</cde> also
+                hits <cde>$username</cde> and <cde>$users</cde>. Use your editor's rename, which
+                knows the difference.
+            </li>
+        </list>
+
+        <side-story title="Two Hard Things">
+            "There are only two hard things in Computer Science: cache invalidation and naming
+            things." It's usually credited to Phil Karlton, a programmer at Netscape. People have
+            been adding a third for years: off-by-one errors.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Name it so you can search for it">
+            <p>
+                Search a big project for <cde>$id</cde> and you get thousands of hits. Search for
+                <cde>$invoiceId</cde> and you get the ones you meant. A name specific enough to find
+                with a search is usually specific enough to read.
+            </p>
+        </two-dollars>
+
+        <p>
+            The names are fixed, but one thing in <cde>after.php</cde> still means something only
+            its author knows: the <cde>7</cde>. Next: magic numbers in code.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/magic-numbers">Next: Magic Numbers in Code &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

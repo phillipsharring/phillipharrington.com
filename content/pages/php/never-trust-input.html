@@ -1,0 +1,336 @@
+<layout name="default" title="Never Trust Input" />
+<page-head>
+    <meta
+        name="description"
+        content="The one rule under every security lesson: anything your code didn't make itself is input, and input gets checked on the way in and escaped on the way out. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="never trust input, input validation, filter_var, FILTER_VALIDATE_INT, allow list, hidden fields, price tampering, escape output, web security, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The one rule under every security lesson. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="never-trust-input">Never Trust Input</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Testing checks that your code does what you meant, with the values you thought to try.
+            Security is about the values you didn't think of, sent on purpose by someone who wants
+            your code to do something you didn't mean. Every lesson in this section is one way that
+            goes wrong. This one is the rule under all of them.
+        </p>
+        <p>
+            <strong>Never trust input.</strong> Anything your code didn't make itself, check before
+            you use it. Then, wherever it goes next, escape it for that place.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-input">What's Input?</heading>
+        <p>
+            Anything that comes from outside your code. On the web, that's every part of every
+            request, and more:
+        </p>
+        <list>
+            <li>
+                <strong>The URL</strong>: the path and the query string, <cde>$_GET</cde>. See
+                <lnk to="/php/query-strings">Query Strings</lnk>.
+            </li>
+            <li>
+                <strong>Form fields</strong>, <cde>$_POST</cde>, hidden ones included. See
+                <lnk to="/php/forms">Forms</lnk>.
+            </li>
+            <li>
+                <strong>Cookies</strong>, <cde>$_COOKIE</cde>. You set them, but the browser sends
+                them back, and anyone can change them first. See
+                <lnk to="/php/cookies">Cookies</lnk>.
+            </li>
+            <li>
+                <strong>Headers</strong>, in <cde>$_SERVER['HTTP_...']</cde>: <cde>User-Agent</cde>,
+                <cde>Referer</cde>, <cde>Host</cde>, <cde>X-Forwarded-For</cde>, all of them. See
+                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+            </li>
+            <li>
+                <strong>Uploads</strong>, <cde>$_FILES</cde>: the file, its name and the type the
+                browser claims for it. See <lnk to="/php/file-uploads">File Uploads</lnk>.
+            </li>
+            <li>
+                <strong>The request body</strong>, from <cde>php://input</cde>: the JSON an API
+                client sends.
+            </li>
+            <li>
+                <strong>Everything you read later</strong>: rows in your database, files on disk,
+                answers from other people's APIs, emails, webhooks.
+            </li>
+        </list>
+        <p>
+            The last one surprises people. A comment sits in your database because a visitor typed
+            it. Reading it back out a week later doesn't make it yours. It's still what they typed.
+        </p>
+
+        <heading h3 id="what-trust-means">What "Trust" Means</heading>
+        <p>
+            Trusting a value means letting it decide something without checking it first: a price, a
+            quantity, which file to open, which row to change, what HTML goes on the page, who is
+            logged in. The browser is a program the visitor controls, and so is curl. Any value it
+            sends can be anything at all: missing, empty, an array, a million characters long, not
+            even valid <lnk to="/php/text-and-utf-8">UTF-8</lnk>.
+        </p>
+
+        <side-story title="The Line That Was Too Long">
+            On November 2, 1988, a program written by Robert Tappan Morris, a graduate student,
+            spread across the early internet and slowed thousands of machines to a crawl. One of the
+            ways it got in was <cde>fingerd</cde>, a small service that answered questions about
+            users. It read each request into a fixed-size buffer with a C function,
+            <cde>gets()</cde>, that never checks length. The worm sent a line longer than the
+            buffer, and the extra bytes overwrote the program with the worm's own instructions. It
+            was input nobody had expected anyone to send.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The rule has two halves: check it on the way in, escape it on the way out.</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                A value arrives. PHP hands it to you as a string, or an array of strings, or not at
+                all. Nothing from a request arrives as a number or a yes or no.
+            </li>
+            <li>
+                Check that it's there, and that it's a string. Add <cde>[]</cde> to a field's name,
+                and PHP makes it an array, so this step is not optional.
+            </li>
+            <li>
+                Check it against what you'll accept: a whole number from 1 to 10, an email address,
+                one of the four sizes you sell. An allow list (what's allowed) beats a deny list
+                (what's forbidden), because nobody can list every bad value.
+            </li>
+            <li>
+                If it fails, refuse it. Answer with an error, usually a <cde>422</cde>, and say
+                what's wrong. Don't try to repair it into something valid.
+            </li>
+            <li>
+                Use the checked value from then on, never the raw one. Anything that should be yours
+                to decide, like a price or who someone is, comes from your own code or database,
+                never from the request.
+            </li>
+            <li>
+                When the value leaves your code, escape it for wherever it's going:
+                <cde>htmlspecialchars()</cde> into a page, a prepared statement into SQL,
+                <cde>escapeshellarg()</cde> into a shell command, <cde>rawurlencode()</cde> into a
+                URL.
+            </li>
+        </ol>
+        <p>
+            Steps two to five keep out values that are wrong. Step six is for values that are
+            perfectly valid and still dangerous in the wrong place: a name like
+            <cde>O'Brien</cde> is a fine name and a broken SQL query. You need both halves, every
+            time. The next two lessons, <lnk to="/php/sql-injection">SQL Injection</lnk> and
+            <lnk to="/php/xss">XSS and Escaping Output</lnk>, are what happens when step six is
+            missing.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            See for yourself how much of a request is up to the sender. In a folder, make
+            <cde>show.php</cde>, which reports everything a request brought with it:
+        </p>
+        <code-block example="never-trust-input/show.php" />
+        <p>Start the server:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000/show.php</cde> in a browser, and you'll see what your
+            browser chose to send. Then send a request of your own, and make all of it up:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -A 'Definitely a real browser' -e 'https://example.com/trust-me' \
+    -b 'admin=yes' -H 'X-Forwarded-For: 1.2.3.4' -d 'price=1' \
+    'http://localhost:8000/show.php?id[]=7&amp;id[]=8'</code-block>
+        <p>
+            Every line comes back exactly as you wrote it. A browser you never ran, a page you never
+            came from, a cookie the server never set, an address that isn't yours, a form field the
+            page doesn't have, and an <cde>id</cde> that's an array instead of a number. PHP didn't
+            check any of it, and neither did anything else. That's your job.
+        </p>
+        <p>One more, with a byte that isn't valid UTF-8:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/show.php?name=%FF'</code-block>
+        <p>
+            The name comes back as <cde>&#xFFFD;</cde>, the replacement character, because the
+            script asks <cde>json_encode()</cde> to swap bad bytes for it. Without that flag,
+            <cde>json_encode()</cde> refuses the whole thing and returns <cde>false</cde>. Text is
+            input too, encoding and all.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>is_string($_POST['qty'] ?? null)</cde>: there, and not an array. Check this
+                first, every time.
+            </li>
+            <li>
+                <cde
+                    >filter_var($value, FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 1,
+                    'max_range' =&gt; 10]])</cde>
+                returns the number, or <cde>false</cde>. There are filters for floats, booleans,
+                email addresses, URLs and IP addresses too.
+            </li>
+            <li>
+                <cde>in_array($value, $allowed, true)</cde>, with the <cde>true</cde>, for an allow
+                list. Without it, PHP compares loosely.
+            </li>
+            <li>
+                <cde>preg_match('/\A[a-z0-9-]{1,40}\z/', $slug)</cde> for a shape of your own.
+                Anchor both ends with <cde>\A</cde> and <cde>\z</cde>, or the pattern can match part
+                of the value and pass the rest.
+            </li>
+            <li>
+                <cde>mb_check_encoding($value, 'UTF-8')</cde> before you store text or measure it
+                with <cde>mb_strlen()</cde>.
+            </li>
+            <li>
+                <cde>http_response_code(422)</cde> when you refuse something: the request arrived,
+                and the content is wrong.
+            </li>
+            <li>
+                On the way out: <cde>htmlspecialchars()</cde>, prepared statements with
+                <lnk to="/php/pdo">PDO</lnk>, <cde>escapeshellarg()</cde>,
+                <cde>rawurlencode()</cde> and <cde>http_build_query()</cde>,
+                <cde>json_encode()</cde>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Anything can be an array.</strong> <cde>?id[]=1</cde> turns
+                <cde>$_GET['id']</cde> into an array, and code that expected a string crashes, or
+                worse, carries on. Check with <cde>is_string()</cde> before anything else.
+            </li>
+            <li>
+                <strong>Hidden fields are visible and editable.</strong> <cde>type="hidden"</cde>
+                only means the page doesn't draw it. Prices, user ids and roles never go in a form
+                for the server to read back.
+            </li>
+            <li>
+                <strong>Missing, empty and <cde>"0"</cde> are three different things.</strong>
+                <cde>empty()</cde> treats all three the same, and <cde>"0"</cde> is often a valid
+                answer. Say exactly which you mean: <cde>isset()</cde>, <cde>=== ''</cde>, or a
+                filter.
+            </li>
+            <li>
+                <strong><cde>==</cde> is not a check.</strong> In PHP,
+                <cde>"0e123" == "0e456"</cde> is <cde>true</cde>, because both look like numbers
+                (zero, in scientific notation). Compare input with <cde>===</cde>, and secrets with
+                <cde>hash_equals()</cde>.
+            </li>
+            <li>
+                <strong>Filters forgive a little.</strong> <cde>FILTER_VALIDATE_INT</cde> trims
+                spaces from both ends before it checks, so <cde>" 3 "</cde> passes as <cde>3</cde>.
+                That's usually what you want. Know that it happens.
+            </li>
+            <li>
+                <strong>Don't repair, refuse.</strong> Stripping out the parts that look bad
+                (<cde>strip_tags()</cde>, removing quotes) changes what people meant and still
+                misses things. Check against what's allowed, refuse the rest, and escape on the way
+                out.
+            </li>
+            <li>
+                <strong>The browser's checks don't count.</strong> <cde>required</cde>,
+                <cde>maxlength</cde> and <cde>type="email"</cde> are for honest visitors. The server
+                checks again, every time, as in <lnk to="/php/forms">Forms</lnk>.
+            </li>
+            <li>
+                <strong>The <cde>Host</cde> header is input.</strong> Build a password reset link
+                from <cde>$_SERVER['HTTP_HOST']</cde>, and someone can ask for a reset with their
+                own host name in the header, and your email sends the victim to their site. Put your
+                site's address in configuration, and build links from that.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            A shop that sells mugs, built the way a lot of real shops once were: the price rides
+            along in a hidden field, so the order page can multiply it by the quantity. Make
+            <cde>naive.php</cde>:
+        </p>
+        <code-block example="never-trust-input/naive.php" />
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde> and buy two: $24.00. The browser won't
+            let you type a quantity under 1 or over 10. Now go around it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'qty=2&amp;price=1' http://localhost:8000/naive.php</code-block>
+        <p>
+            <cde>Order total: $0.02 for 2 mugs.</cde> The server charged what the request said the
+            price was. Then a quantity the form would never send:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'qty=-5&amp;price=1200' http://localhost:8000/naive.php</code-block>
+        <p>
+            <cde>Order total: $-60.00 for -5 mugs.</cde> In a real shop, that's a refund for mugs
+            nobody bought. And one more, an array:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'qty[]=1&amp;price=1200' http://localhost:8000/naive.php</code-block>
+        <p>
+            <cde>Uncaught TypeError: Unsupported operand types: array * string</cde>, with your
+            file's path and line number printed on the page for the visitor to read.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            The price belongs to the shop, so it lives in the code. The quantity belongs to the
+            visitor, so it's checked: there, a string, a whole number, from 1 to 10. Anything else
+            is refused with a 422. Make <cde>index.php</cde>:
+        </p>
+        <code-block example="never-trust-input/index.php" />
+        <p>Send the same three attacks to <cde>http://localhost:8000/</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'qty=2&amp;price=1' http://localhost:8000/
+curl -d 'qty=-5' http://localhost:8000/
+curl -d 'qty[]=1' http://localhost:8000/</code-block>
+        <p>
+            The first costs $24.00: the form has no <cde>price</cde> field to tamper with, and the
+            one in the request is ignored. The second gets "Pick from 1 to 10 mugs." The third gets
+            "How many mugs?" instead of a crash. Add <cde>-i</cde> to see the <cde>422</cde> on
+            both.
+        </p>
+
+        <!-- $2 tip -->
+        <two-dollars title="Four bad requests for every form">
+            <p>
+                Whenever you finish a form, send it four things with curl before anyone else does:
+                the field as an array (<cde>name[]=x</cde>), empty (<cde>name=</cde>), far too long
+                (<cde>name=$(head -c 100000 /dev/zero | tr '\0' a)</cde>), and invalid UTF-8
+                (<cde>name=%FF</cde>). Each should get a polite refusal. A warning, a crash or a
+                blank page means a check is missing.
+            </p>
+        </two-dollars>
+
+        <p>
+            The most famous way input goes wrong is when it gets pasted straight into a database
+            query. Next: SQL injection.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/sql-injection">Next: SQL Injection &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

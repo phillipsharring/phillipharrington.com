@@ -1,0 +1,222 @@
+<layout name="default" title="REST" />
+<page-head>
+    <meta
+        name="description"
+        content="URLs name things, methods say what to do with them, status codes say how it went. What REST means for a JSON API in PHP: resources, GET, POST, PUT and DELETE, idempotence, statelessness, and the answers each request should get. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="REST, RESTful API, JSON API, PHP API, HTTP methods, PUT vs PATCH, idempotent, stateless, 201 Created, 204 No Content, 415, Roy Fielding, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="URLs name things, methods say what to do. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Patterns</p>
+        <heading h1 id="rest">REST</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            CRUD answered a browser, with forms, HTML and redirects. When the client is a program, a
+            phone app or JavaScript using <lnk to="/php/fetch">fetch()</lnk>, it wants
+            <lnk to="/php/json">JSON</lnk>, and it can use every HTTP method, not just the two forms
+            know. REST is the set of conventions most of those APIs follow, so that a developer who
+            has used one can guess how yours works.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-rest">What's REST?</heading>
+        <p>
+            Representational State Transfer: a way of designing an API around the web's own parts.
+            In practice, for a PHP API, it comes down to three rules.
+        </p>
+        <list>
+            <li>
+                <strong>URLs name resources.</strong> Nouns, not verbs. <cde>/notes</cde> is the
+                collection; <cde>/notes/3</cde> is one note. Not <cde>/getNote?id=3</cde> or
+                <cde>/deleteNote</cde>.
+            </li>
+            <li>
+                <strong>Methods say what to do.</strong> <cde>GET</cde> reads, <cde>POST</cde> to a
+                collection creates, <cde>PUT</cde> replaces, <cde>PATCH</cde> changes part,
+                <cde>DELETE</cde> deletes.
+            </li>
+            <li>
+                <strong>Status codes say how it went.</strong> <cde>201</cde> for created,
+                <cde>204</cde> for done with nothing to say, <cde>404</cde>, <cde>422</cde> and the
+                rest from
+                <lnk to="/php/expressive-response-codes">Expressive HTTP Response Codes</lnk>.
+            </li>
+        </list>
+
+        <heading h3 id="stateless">Stateless</heading>
+        <p>
+            Each request carries everything the server needs to answer it, including who's asking,
+            usually as a token in the <cde>Authorization</cde> header. The server doesn't remember
+            the last request. That's what lets an API run on many servers behind a load balancer,
+            from <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: any of them can
+            answer any request.
+        </p>
+
+        <heading h3 id="safe-and-idempotent">Safe and Idempotent</heading>
+        <p>
+            <cde>GET</cde> is safe: it changes nothing. <cde>GET</cde>, <cde>PUT</cde> and
+            <cde>DELETE</cde> are idempotent: sending one twice leaves things the same as sending it
+            once. Replace note 3 with "Buy beans" twice, and it says "Buy beans." <cde>POST</cde>
+            isn't: post twice, and you have two notes. Clients, proxies and browsers rely on this
+            when they decide what's safe to retry.
+        </p>
+
+        <side-story title="A Dissertation">
+            REST comes from Roy Fielding's doctoral dissertation, finished at UC Irvine in 2000.
+            Fielding was one of the authors of the HTTP/1.1 specification and a co-founder of the
+            Apache project, and the dissertation described the style the web had been built in. Most
+            APIs that call themselves RESTful today follow only part of it, and that's mostly fine.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The whole API for notes, in five lines:</p>
+        <list>
+            <li><cde>GET /notes</cde>: <cde>200</cde>, and the list.</li>
+            <li>
+                <cde>POST /notes</cde>, with JSON: <cde>201</cde>, the new note, and
+                <cde>Location: /notes/3</cde>.
+            </li>
+            <li><cde>GET /notes/3</cde>: <cde>200</cde> and the note, or <cde>404</cde>.</li>
+            <li><cde>PUT /notes/3</cde>, with JSON: <cde>200</cde> and the replaced note.</li>
+            <li><cde>DELETE /notes/3</cde>: <cde>204</cde>, and no body.</li>
+        </list>
+        <p>
+            Anything else gets an honest refusal: <cde>405</cde> with an <cde>Allow</cde> header for
+            a method the URL doesn't take, <cde>415</cde> for a body that isn't JSON,
+            <cde>400</cde> for JSON that won't parse, <cde>422</cde> for JSON that parses but makes
+            no sense.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The notes again, as an API. To keep it to one container, they live in a JSON file in the
+            container's temp folder. In a folder, make <cde>src/NoteStore.php</cde>:
+        </p>
+        <code-block example="rest/src/NoteStore.php" />
+        <p>
+            <cde>src/http.php</cde>, with <cde>send()</cde> and the function that reads and checks a
+            note from the request:
+        </p>
+        <code-block example="rest/src/http.php" />
+        <p>And the front door, <cde>public/index.php</cde>:</p>
+        <code-block example="rest/public/index.php" />
+        <p>Start it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public public/index.php</code-block>
+        <p>From a second terminal, go through all four letters:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/notes
+curl -i -H 'Content-Type: application/json' -d '{"body":"Buy beans"}' http://localhost:8000/notes
+curl -i http://localhost:8000/notes/3
+curl -i -X PUT -H 'Content-Type: application/json' -d '{"body":"Buy more beans"}' http://localhost:8000/notes/3
+curl -i -X DELETE http://localhost:8000/notes/3
+curl -i http://localhost:8000/notes/3</code-block>
+        <p>
+            <cde>200</cde>, <cde>201</cde> with a <cde>Location</cde>, <cde>200</cde>,
+            <cde>200</cde>, <cde>204</cde>, and finally <cde>404</cde>: the note is gone. Send a
+            <cde>PUT</cde> twice, and the second one changes nothing. Send the
+            <cde>POST</cde> twice, and you get two new notes. Then send what a careless or hostile
+            client might:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -d 'body=Buy beans' http://localhost:8000/notes
+curl -i -H 'Content-Type: application/json' -d '{nope' http://localhost:8000/notes
+curl -i -H 'Content-Type: application/json' -d '{"body":["x"]}' http://localhost:8000/notes
+curl -i -X PATCH http://localhost:8000/notes/1</code-block>
+        <p>
+            <cde>415</cde>, <cde>400</cde>, <cde>422</cde>, and <cde>405</cde> with
+            <cde>Allow: GET, PUT, DELETE</cde>. Each says exactly what was wrong, so the developer
+            on the other end can fix their code without asking you.
+            <lnk to="/php/never-trust-input">Never trust input</lnk>: a JSON body is input, and
+            "it's JSON" says nothing about what's inside it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>file_get_contents('php://input')</cde> reads the raw request body.
+                <cde>$_POST</cde> is only filled in for form posts, never for JSON.
+            </li>
+            <li>
+                <cde>json_decode($raw, true, 8, JSON_THROW_ON_ERROR)</cde>: arrays instead of
+                objects, a depth limit, and an exception for bad JSON instead of a quiet
+                <cde>null</cde>.
+            </li>
+            <li>
+                <cde>json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)</cde> sends
+                "café" as UTF-8 rather than <cde>café</cde>. Both are valid JSON; one is readable.
+                See <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>.
+            </li>
+            <li>
+                <cde>$_SERVER['CONTENT_TYPE']</cde> says what the client claims it sent. It's a
+                claim, so check the body too.
+            </li>
+            <li>
+                <cde>Content-Type: application/json; charset=utf-8</cde> on every JSON response.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong><cde>200</cde> with <cde>{"error": ...}</cde> isn't REST.</strong> It's the
+                most common way APIs break the rules, and it makes every client read every body to
+                find out whether it worked.
+            </li>
+            <li>
+                <strong>PUT replaces; PATCH changes part.</strong> A <cde>PUT</cde> without a field
+                means "this field is now empty." If you want "change only what I sent," that's
+                <cde>PATCH</cde>, and it's a separate route to write.
+            </li>
+            <li>
+                <strong>This API has no login.</strong> Anyone can delete anything. A real one
+                checks a token on every request, and answers <cde>404</cde> for notes that aren't
+                yours. The REST API project builds that.
+            </li>
+            <li>
+                <strong>Version it from the start.</strong> Once a phone app in the wild depends on
+                <cde>/notes</cde>, you can't change what it returns. Many APIs put the version in
+                the path, <cde>/v1/notes</cde>, so a <cde>/v2</cde> can live beside it.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Keep a file of curl commands">
+            <p>
+                Next to the API, keep a plain text file with one <cde>curl -i</cde> for every route,
+                good and bad. It's documentation, a test you can run by pasting, and the first thing
+                you'll want when someone says "the API is broken."
+            </p>
+        </two-dollars>
+
+        <p>
+            Every route in this API does some of the same things first: read the method, check the
+            content type, and in a real one, check the token. That shared work has its own pattern.
+            Next: middleware and pipelines.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/middleware">Next: Middleware and Pipelines &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

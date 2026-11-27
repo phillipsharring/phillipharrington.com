@@ -1,0 +1,221 @@
+<layout name="default" title="JSON" />
+<page-head>
+    <meta
+        name="description"
+        content="The format nearly every API speaks: what JSON is, how PHP's arrays turn into it and back, the flags that matter, reading a JSON request body, and checking its shape. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="JSON, json_encode, json_decode, JSON_THROW_ON_ERROR, JsonException, php://input, application/json, JSON API, UTF-8, validate JSON, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The format nearly every API speaks, in and out of PHP. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="json">JSON</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The search endpoint in fetch() and AJAX answered in JSON, and so does nearly every API
+            you'll ever call or build. It's a way to write data as text, so one program can send it
+            to another: PHP to JavaScript, your server to someone else's, a file to your code. PHP's
+            side is two functions. The work is in the flags, and in not believing what arrives.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-json">What's JSON?</heading>
+        <p>
+            JavaScript Object Notation: data written the way JavaScript writes it, with a few strict
+            rules.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>{
+    "id": 42,
+    "size": "large",
+    "gift": true,
+    "note": null,
+    "tags": ["cotton", "blue"]
+}</code-block>
+        <list>
+            <li>
+                <strong>Objects</strong>, in braces: names and values. Names are always strings in
+                double quotes.
+            </li>
+            <li><strong>Arrays</strong>, in square brackets: lists.</li>
+            <li>
+                <strong>Strings</strong> in double quotes (never single), <strong>numbers</strong>,
+                <strong>true</strong> and <strong>false</strong>, and <strong>null</strong>.
+            </li>
+            <li>No comments, and no comma after the last item.</li>
+            <li>
+                Text in JSON sent between systems is UTF-8, by the standard. From
+                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: PHP will refuse to encode
+                anything else.
+            </li>
+        </list>
+
+        <heading h3 id="php-and-json">PHP and JSON</heading>
+        <p>
+            JSON's types map onto PHP's almost one to one: an object or an array becomes a PHP
+            array, a string a string, a number an int or a float, and so on. The catch is that PHP
+            uses one kind of array for both lists and key-value pairs. A list, with keys 0, 1, 2 in
+            order, becomes a JSON array. Anything with other keys becomes an object.
+        </p>
+
+        <side-story title="Discovered, Not Invented">
+            Douglas Crockford, who named and popularized JSON in the early 2000s, says he discovered
+            it rather than invented it: the syntax was already in JavaScript, and people were
+            already using it. His license for his own JSON code added one line to an ordinary open
+            source license: "The Software shall be used for Good, not Evil." Some companies' lawyers
+            refused to approve it.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>An API that takes JSON gets it like this:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The client sends a POST with <cde>Content-Type: application/json</cde> and the JSON
+                as the body.
+            </li>
+            <li>
+                PHP doesn't decode it. <cde>$_POST</cde> only understands form encoding, so it stays
+                empty. The body waits, as it came, in <cde>php://input</cde>.
+            </li>
+            <li>Your code reads it and calls <cde>json_decode()</cde>.</li>
+            <li>
+                If it isn't JSON, that's a 400. If it is, your code checks the shape: the fields you
+                need are there, of the types you need, in the ranges you allow.
+            </li>
+            <li>It answers, in JSON, with a status that says what happened.</li>
+        </ol>
+        <p>
+            Step four is the one people skip. <cde>json_decode()</cde> succeeding means the text was
+            JSON. It says nothing about whether the JSON is an order. A string where you wanted a
+            number, a list where you wanted an object, a field missing: all valid JSON.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> Decode it,
+            then check every part of it.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>First, both directions on the command line. In a folder, make <cde>types.php</cde>:</p>
+        <code-block example="json/types.php" />
+        <p>Run it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php types.php</code-block>
+        <p>
+            Note the line with <cde>[] {}</cde>: an empty PHP array can't say whether it was a list
+            or not, so it comes out as a list. The bad JSON and the text that isn't UTF-8 both
+            become exceptions, and the last line shows <cde>caf&#92;u00e9</cde> next to
+            <cde>café</cde>: the same text, written two ways.
+        </p>
+        <p>
+            Now an endpoint that takes an order as JSON. Make a <cde>public</cde> folder, and in it,
+            <cde>order.php</cde>:
+        </p>
+        <code-block example="json/public/order.php" />
+        <p>Start the server:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>And from a second terminal, send it a good order, then two bad ones:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -H 'Content-Type: application/json' -d '{"size":"large","qty":2}' http://localhost:8000/order.php
+curl -i -H 'Content-Type: application/json' -d '{"size":"large","qty":"2"}' http://localhost:8000/order.php
+curl -i -H 'Content-Type: application/json' -d 'size=large' http://localhost:8000/order.php</code-block>
+        <p>
+            The first is a 201, with the order. The second is valid JSON with the quantity as a
+            string, <cde>"2"</cde>, not a number, and it's refused with a 422. The third isn't JSON
+            at all: 400.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>json_encode($value, JSON_THROW_ON_ERROR)</cde>: PHP to JSON. Without the flag,
+                a failure returns <cde>false</cde> quietly.
+            </li>
+            <li>
+                <cde>json_decode($json, true, 512, JSON_THROW_ON_ERROR)</cde>: JSON to PHP.
+                <cde>true</cde> means arrays instead of objects, 512 is how deeply nested it may be,
+                and the flag makes bad JSON a <cde>JsonException</cde>.
+            </li>
+            <li><cde>file_get_contents('php://input')</cde> reads a request body as it arrived.</li>
+            <li>
+                <cde>JSON_PRETTY_PRINT</cde> for people to read,
+                <cde>JSON_UNESCAPED_UNICODE</cde> and <cde>JSON_UNESCAPED_SLASHES</cde> to leave
+                accents and slashes as they are.
+            </li>
+            <li>
+                <cde>json_validate($json)</cde>, since PHP 8.3, checks that a string is JSON without
+                decoding it.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>An empty array is always <cde>[]</cde>.</strong> If the other side expects
+                an object, send <cde>(object) []</cde>, or <cde>JSON_FORCE_OBJECT</cde> for
+                everything.
+            </li>
+            <li>
+                <strong>Removing an item can turn a list into an object.</strong> After
+                <cde>unset($list[0])</cde>, the keys start at 1, so it's no longer a list, and it
+                encodes as <cde>{"1": ...}</cde>. <cde>array_values()</cde> renumbers it.
+            </li>
+            <li>
+                <strong>Floats aren't for money, in JSON either.</strong> <cde>0.1 + 0.2</cde> comes
+                out as <cde>0.30000000000000004</cde>. Send cents, as an int.
+            </li>
+            <li>
+                <strong>Big numbers lose digits in JavaScript.</strong> It can only count exactly to
+                about nine quadrillion. Ids bigger than that, like some from other APIs, should
+                travel as strings.
+            </li>
+            <li>
+                <strong>A failed decode looks like <cde>null</cde>.</strong> Without
+                <cde>JSON_THROW_ON_ERROR</cde>, bad JSON and the JSON <cde>null</cde> both give you
+                <cde>null</cde>. Always use the flag.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="jq, in a container">
+            <p>
+                <cde>jq</cde> pretty-prints JSON and pulls pieces out of it. Pipe any API's answer
+                through it:
+            </p>
+            <!-- prettier-ignore -->
+            <code-block>curl -s 'http://localhost:8000/order.php' | docker run --rm -i ghcr.io/jqlang/jq .</code-block>
+            <p>
+                <cde>.error</cde> instead of <cde>.</cde> prints just that field. It turns a wall of
+                JSON into something you can read.
+            </p>
+        </two-dollars>
+
+        <p>
+            All of this has been between a page and its own server. When the page belongs to a
+            different site, the browser gets involved. Next: CORS.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/cors">Next: CORS &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

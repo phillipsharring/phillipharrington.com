@@ -1,0 +1,263 @@
+<layout name="default" title="Operators" />
+<page-head>
+    <meta
+        name="description"
+        content="PHP's operators: math, joining strings, comparing (== versus ===, the headline), true and false logic, ??, ?: and the ternary, the spaceship, and the shortcuts like +=. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP operators, == vs ===, loose comparison, strict comparison, null coalescing, ternary operator, spaceship operator, string concatenation, operator precedence, hash_equals, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Math, comparison, and why === is the one to use. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="operators">Operators</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Variables hold values. Operators do things with them: add them, join them, compare them,
+            pick between them. Most work the way you'd guess from school. The comparisons are where
+            PHP's type juggling, from the last lesson, can let the wrong thing through, so they get
+            most of this page.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-operator">What's an Operator?</heading>
+        <p>
+            A symbol that takes one or two values and gives back a new one. <cde>+</cde> takes two
+            numbers and gives back their sum. <cde>===</cde> takes two values and gives back
+            <cde>true</cde> or <cde>false</cde>.
+        </p>
+
+        <heading h3 id="math">Math</heading>
+        <list>
+            <li>
+                <cde>+</cde> <cde>-</cde> <cde>*</cde> <cde>/</cde>, as usual. <cde>/</cde> gives a
+                float when it doesn't come out even: <cde>7 / 2</cde> is <cde>3.5</cde>.
+            </li>
+            <li>
+                <cde>%</cde> is the remainder: <cde>7 % 2</cde> is <cde>1</cde>.
+                <cde>intdiv(7, 2)</cde> is the whole-number part, <cde>3</cde>.
+            </li>
+            <li><cde>**</cde> is to the power of: <cde>2 ** 10</cde> is <cde>1024</cde>.</li>
+        </list>
+
+        <heading h3 id="joining-strings">Joining Strings</heading>
+        <p>
+            <cde>.</cde> joins two strings: <cde>'Hello, ' . $name</cde>. It's a dot, not a plus.
+            <cde>+</cde> is always math in PHP, so <cde>'1' + '1'</cde> is <cde>2</cde>, and
+            <cde>'a' + 'b'</cde> is a <cde>TypeError</cde>.
+        </p>
+
+        <heading h3 id="assignment">Assignment and Its Shortcuts</heading>
+        <p>
+            <cde>=</cde> puts a value in a variable. <cde>$total += 5</cde> is short for
+            <cde>$total = $total + 5</cde>, and the same goes for <cde>-=</cde>, <cde>*=</cde>,
+            <cde>/=</cde> and <cde>.=</cde>. <cde>$count++</cde> adds one, and
+            <cde>$count--</cde> takes one away.
+        </p>
+
+        <heading h3 id="comparison">Comparison</heading>
+        <p>
+            <cde>&lt;</cde>, <cde>&gt;</cde>, <cde>&lt;=</cde> and <cde>&gt;=</cde> do what they
+            look like. Then there are two kinds of equal:
+        </p>
+        <list>
+            <li>
+                <strong><cde>===</cde>, identical:</strong> the same type and the same value.
+                <cde>1 === '1'</cde> is <cde>false</cde>, because one is an int and one is a string.
+                Its opposite is <cde>!==</cde>.
+            </li>
+            <li>
+                <strong><cde>==</cde>, equal after juggling:</strong> PHP converts the types first,
+                then compares. <cde>1 == '1'</cde> is <cde>true</cde>. So is <cde>'1' == '01'</cde>,
+                and <cde>'10' == '1e1'</cde>, because two strings that look like numbers are
+                compared as numbers. Its opposite is <cde>!=</cde>.
+            </li>
+        </list>
+        <p>
+            Use <cde>===</cde> and <cde>!==</cde>, always, unless you can say exactly why you want
+            juggling. That's the whole lesson, if you only keep one thing.
+        </p>
+        <p>
+            <cde>&lt;=&gt;</cde>, the spaceship, compares two values and gives back <cde>-1</cde>,
+            <cde>0</cde> or <cde>1</cde>: left smaller, the same, or left bigger. Sorting uses it.
+        </p>
+
+        <heading h3 id="logic">Logic</heading>
+        <p>
+            <cde>&amp;&amp;</cde> is and, <cde>||</cde> is or, and <cde>!</cde> is not.
+            <cde>$paid &amp;&amp; !$shipped</cde> is true when it's paid and not shipped yet. PHP
+            stops as soon as it knows the answer, so in <cde>$a || $b</cde>, <cde>$b</cde> is never
+            looked at when <cde>$a</cde> is true.
+        </p>
+
+        <heading h3 id="choosing">Choosing a Value</heading>
+        <list>
+            <li>
+                <cde>$a ?? $b</cde>: <cde>$a</cde>, unless it's missing or <cde>null</cde>; then
+                <cde>$b</cde>. It doesn't warn about a missing key, which makes it right for input:
+                <cde>$_GET['page'] ?? '1'</cde>. <cde>$a ??= $b</cde> fills in <cde>$a</cde> only if
+                it's empty that way.
+            </li>
+            <li>
+                <cde>$a ?: $b</cde>: <cde>$a</cde>, unless it counts as false (<cde>''</cde>,
+                <cde>0</cde>, <cde>'0'</cde>, <cde>null</cde>, <cde>false</cde>, an empty array);
+                then <cde>$b</cde>.
+            </li>
+            <li>
+                <cde>$test ? $yes : $no</cde>, the ternary: one value if the test is true, another
+                if it isn't. <cde>$count === 1 ? 'item' : 'items'</cde>. One per line; nested ones
+                need parentheses, and are hard to read even with them.
+            </li>
+        </list>
+
+        <side-story title="One Equals, Two Equals">
+            BCPL, a language from the 1960s, wrote assignment as <cde>:=</cde> and equality as
+            <cde>=</cde>. Ken Thompson's B, the language before C, shortened assignment to
+            <cde>=</cde> and made equality <cde>==</cde>. C kept that, and so did nearly everything
+            that borrowed from C, PHP included. Typing <cde>=</cde> where you meant
+            <cde>==</cde> has been a classic bug ever since. PHP then added a third, <cde>===</cde>,
+            for "and the same type."
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When PHP meets an expression like <cde>$a + $b * 2 &gt; 10</cde>:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                It decides the order by precedence: <cde>*</cde> before <cde>+</cde>, math before
+                comparison, comparison before <cde>&amp;&amp;</cde> and <cde>||</cde>, and
+                <cde>=</cde> nearly last.
+            </li>
+            <li>
+                It works out each operator's values, juggling types where the operator allows it.
+            </li>
+            <li>The result of each becomes a value for the next, until one value is left.</li>
+        </ol>
+        <p>
+            You don't need the precedence table. Use parentheses whenever the order isn't obvious,
+            to you or to the next person: <cde>($a + $b) * 2</cde>. They cost nothing and they
+            prevent arguments.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>The math and the shortcuts. In a folder, make <cde>math.php</cde>:</p>
+        <code-block example="operators/math.php" />
+        <p>Then the comparisons and the choosers, <cde>compare.php</cde>:</p>
+        <code-block example="operators/compare.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php math.php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php compare.php</code-block>
+        <p>
+            Check each <cde>var_dump()</cde> against its comment. The last two are worth a second
+            look: <cde>$loose</cde> is <cde>false</cde>, because <cde>or</cde> binds looser than
+            <cde>=</cde>, so the assignment happened first.
+        </p>
+        <p>
+            Now the reason <cde>==</cde> matters. <cde>code.php</cde> checks a one-time code, the
+            kind a site emails you, both ways:
+        </p>
+        <code-block example="operators/code.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>From a second terminal, guess wrong, then guess <cde>0</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl 'http://localhost:8000/code.php?code=123456'
+curl 'http://localhost:8000/code.php?code=0'</code-block>
+        <p>
+            Both checks refuse <cde>123456</cde>. But <cde>==</cde> lets <cde>0</cde> in. The stored
+            code is <cde>0e</cde> and digits, which PHP reads as a number in scientific notation:
+            zero times ten to some power, which is zero. Your <cde>'0'</cde> is a numeric string
+            too, so <cde>==</cde> compares them as numbers, and zero equals zero.
+            <cde>===</cde> compares the strings themselves, and refuses. Codes and tokens made of
+            hex digits look like that now and then, and an attacker only needs one.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and never
+            compare it loosely.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>===</cde> and <cde>!==</cde> for every comparison.</li>
+            <li>
+                <cde>in_array($value, $list, true)</cde> and
+                <cde>array_search($value, $list, true)</cde>: that last <cde>true</cde> makes them
+                use <cde>===</cde>. Without it, they use <cde>==</cde>.
+            </li>
+            <li>
+                <cde>hash_equals($expected, $given)</cde> for secrets like tokens: strict, and it
+                takes the same time whether the first character matches or not, so timing can't give
+                it away.
+            </li>
+            <li><cde>??</cde> for reading input that might not be there.</li>
+            <li><cde>intdiv()</cde> and <cde>%</cde> for whole-number division.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong><cde>==</cde> on input is a door left open.</strong> Two strings that look
+                like numbers are compared as numbers, so <cde>'0'</cde> equals <cde>'0e123'</cde>,
+                and <cde>'1'</cde> equals <cde>'01'</cde>. Compare input with <cde>===</cde>, and
+                secrets with <cde>hash_equals()</cde>.
+            </li>
+            <li>
+                <strong>PHP 8 changed the rules.</strong> Before PHP 8, <cde>0 == 'abc'</cde> was
+                <cde>true</cde>. Now it's <cde>false</cde>. Old code and old answers online may rely
+                on the old rule.
+            </li>
+            <li>
+                <strong
+                    ><cde>and</cde> and <cde>or</cde> aren't <cde>&amp;&amp;</cde> and
+                    <cde>||</cde>.</strong>
+                They bind looser than <cde>=</cde>, so <cde>$ok = false or true;</cde> leaves
+                <cde>$ok</cde> false. Use the symbols.
+            </li>
+            <li>
+                <strong><cde>'0'</cde> counts as false.</strong> So
+                <cde>$input ?: 'default'</cde> replaces a real answer of <cde>0</cde>. Use
+                <cde>??</cde> when only "missing" should get the default.
+            </li>
+            <li>
+                <strong>Strings that look like numbers compare like numbers.</strong>
+                <cde>'10' &lt; '9'</cde> is <cde>false</cde>, as numbers. Sorting text that might be
+                numeric needs <cde>strcmp()</cde>.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Sort by two things at once">
+            <p>
+                The spaceship compares arrays item by item, so sorting by last name, then first, is
+                one line:
+                <cde
+                    >usort($people, fn($a, $b) =&gt; [$a['last'], $a['first']] &lt;=&gt;
+                    [$b['last'], $b['first']]);</cde>. Swap <cde>$a</cde> and <cde>$b</cde> on one side to sort that key backwards.
+            </p>
+        </two-dollars>
+
+        <p>
+            Every operator here cared what type its values were. Next: the types themselves, one at
+            a time, in Types of Types.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/types-of-types">Next: Types of Types &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

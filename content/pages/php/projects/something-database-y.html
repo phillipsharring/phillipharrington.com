@@ -1,0 +1,234 @@
+<layout name="default" title="Something Database-y" />
+<page-head>
+    <meta
+        name="description"
+        content="A book search on MySQL, built the naive way with the search pasted into the SQL, then attacked with a quote and a UNION that pulls the users table into the page, then fixed: prepared statements, escaped LIKE wildcards, and sorting from an allow list. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP MySQL project, SQL injection, UNION injection, PDO prepared statements, LIKE wildcards, ORDER BY allow list, Docker Compose MySQL, utf8mb4, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A book search on MySQL, and the quote that breaks it open. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="something-database-y">Something Database-y</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every project so far has kept its data in files. From here on, most of it goes in a
+            database. This one is a small library catalog: a table of books, a search box, and a
+            choice of how to sort the results. It's the most ordinary database page there is.
+        </p>
+        <p>
+            It's also where SQL injection lives. Build the search by pasting what someone typed into
+            the SQL, and they're no longer searching your database; they're writing queries for it.
+            You'll do exactly that, use it to read a table the page never meant to show, then fix it
+            for good.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li><lnk to="/php/pdo">Working with a Database: PDO and Prepared Statements</lnk>.</li>
+            <li>
+                <lnk to="/php/selecting-data">Selecting Data</lnk>: <cde>LIKE</cde> and
+                <cde>ORDER BY</cde>.
+            </li>
+            <li>
+                <lnk to="/php/sql-injection">SQL Injection</lnk>: the lesson this project acts out.
+            </li>
+            <li>
+                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk>:
+                <cde>utf8mb4</cde>, and searching without worrying about accents.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="the-database">The Database</heading>
+        <p>
+            A new project folder. MySQL runs in one container and PHP in another, so first the PHP
+            image, a <cde>Dockerfile</cde> that adds PDO's MySQL driver:
+        </p>
+        <code-block example="project-something-database-y/Dockerfile" />
+        <p>
+            Then <cde>compose.yml</cde>, which starts MySQL, waits until it's healthy, and then
+            starts PHP's server on port 8000:
+        </p>
+        <code-block example="project-something-database-y/compose.yml" />
+        <p>
+            <cde>init.sql</cde> runs once, the first time MySQL starts. It makes the books, and
+            another table the search has no business with: the site's users.
+        </p>
+        <code-block example="project-something-database-y/init.sql" />
+        <p>
+            <cde>SET NAMES utf8mb4</cde> makes sure "Misérables" arrives as UTF-8, and
+            <cde>utf8mb4_0900_ai_ci</cde> is a collation that compares text without caring about
+            accents or case, so a search for "mise" finds it.
+        </p>
+
+        <heading h3 id="the-connection">The Connection</heading>
+        <p><cde>src/db.php</cde>:</p>
+        <code-block example="project-something-database-y/src/db.php" />
+        <p>
+            Errors become exceptions, the connection speaks <cde>utf8mb4</cde>, and
+            <cde>ATTR_EMULATE_PREPARES</cde> is off, so prepared statements really are sent to MySQL
+            in two parts, the query and then the values.
+        </p>
+
+        <heading h3 id="the-naive-search">The Naive Search</heading>
+        <p>Build the naive search as <cde>public/naive.php</cde>:</p>
+        <code-block example="project-something-database-y/public/naive.php" />
+        <p>
+            The search and the sort go straight into the SQL string. The output is escaped, so this
+            is about the database and nothing else. Start it all:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up --build</code-block>
+        <p>
+            The first start takes a little while, as MySQL sets itself up. Then open
+            <cde>http://localhost:8000/naive.php</cde> and search for "frank": Frankenstein. It
+            works.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>Search for a single quote. In a second terminal:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl "http://localhost:8000/naive.php?q=%27"</code-block>
+        <!-- prettier-ignore -->
+        <code-block>Fatal error: Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '%' ORDER BY title' at line 1</code-block>
+        <p>
+            Your quote ended the string in the SQL early, and MySQL choked on what was left. That
+            error is the attacker's first clue: what you type becomes SQL. So type SQL. This search
+            ends the string, adds a second <cde>SELECT</cde> with three columns to match the first,
+            and turns the rest of the original query into a comment with <cde>--</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -G --data-urlencode "q=' UNION SELECT email, password_hash, 0 FROM users -- " http://localhost:8000/naive.php</code-block>
+        <p>The query MySQL ran was this:</p>
+        <!-- prettier-ignore -->
+        <code-block>SELECT title, author, year FROM books WHERE title LIKE '%' UNION SELECT email, password_hash, 0 FROM users -- %' ORDER BY title</code-block>
+        <p>And the page shows every book, then:</p>
+        <!-- prettier-ignore -->
+        <code-block>&lt;tr&gt;&lt;td&gt;admin@example.com&lt;/td&gt;&lt;td&gt;$2y$12$V7YmYyHThlzBFxJ50/IaK.NxdbvumRLq0B6SP9OoE1Zzm8.NxxwmS&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;librarian@example.com&lt;/td&gt;&lt;td&gt;$2y$12$pXjePItb5XPrLW28lDK/tuRc/2Xpp/fA7bfvOj.qZhL05PItyzNSG&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</code-block>
+        <p>
+            Every user's address and password hash, in a table labeled "Title, Author, Year." The
+            page never asked for the users table; the visitor did. With a little more typing, the
+            same hole reads any table this database user can see. The sort is a second hole of the
+            same kind: <cde>?sort=</cde> goes into <cde>ORDER BY</cde> untouched. (This setup
+            refuses a second statement after a <cde>;</cde>, so a <cde>DROP TABLE</cde> fails here.
+            A <cde>UNION</cde> doesn't need one.)
+        </p>
+        <p>
+            <strong>Never trust input.</strong> The fix is not to look for quotes, or the word
+            UNION, and strip them. That's a deny list, and every deny list for SQL has been beaten.
+            The fix is to never let input become SQL at all.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>The fixed search, <cde>public/index.php</cde>:</p>
+        <code-block example="project-something-database-y/public/index.php" />
+        <list>
+            <li>
+                <strong>A prepared statement.</strong> The SQL has a placeholder,
+                <cde>:pattern</cde>, and the search is sent separately, as a value. MySQL never
+                reads it as SQL, whatever it contains. A quote is a quote; <cde>UNION</cde> is five
+                letters.
+            </li>
+            <li>
+                <strong>Wildcards escaped.</strong> Inside a <cde>LIKE</cde> pattern,
+                <cde>%</cde> means "anything" and <cde>_</cde> means "any one character," even in a
+                placeholder value. <cde>addcslashes()</cde> puts a backslash before each, so a
+                search for <cde>%</cde> finds titles with a percent sign, not every title.
+            </li>
+            <li>
+                <strong>Sorting from an allow list.</strong> Placeholders hold values, never column
+                names or SQL keywords, so <cde>ORDER BY :sort</cde> can't work. The request picks a
+                key in <cde>$sorts</cde>, and the SQL comes from your array. Anything else gets
+                <cde>title</cde>.
+            </li>
+            <li>
+                <strong>Errors stay private.</strong> If the query fails, the details go to the
+                error log and the visitor gets one polite sentence.
+            </li>
+        </list>
+        <p>Send it the same attack:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -G --data-urlencode "q=' UNION SELECT email, password_hash, 0 FROM users -- " http://localhost:8000/</code-block>
+        <p>
+            "No books match." It searched for a book whose title contains that whole sentence, and
+            there isn't one. The quote alone: "No books match." A <cde>%</cde>: "No books match."
+            And "mise" still finds Les Misérables. <cde>docker compose down -v</cde> stops
+            everything and deletes the database; the next <cde>up</cde> builds it fresh.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Escaping is not the fix.</strong> Functions that add backslashes before
+                quotes depend on the connection's character set, and there have been ways around
+                them. Prepared statements don't escape anything; the value never becomes part of the
+                SQL text. Use them for every value, every time, even ones you think are safe.
+            </li>
+            <li>
+                <strong>Your own data is input too.</strong> A value that came out of the database
+                was put there by someone. If it ever goes back into a query, it goes in as a
+                placeholder value, like anything else.
+            </li>
+            <li>
+                <strong>Give the app's database user only what it needs.</strong> A user that can
+                only <cde>SELECT</cde> from the tables it uses turns a hole like this from "read
+                everything, drop everything" into much less. The <cde>app</cde> user here can do
+                anything to its database, which is fine for your laptop and nowhere else.
+            </li>
+            <li>
+                <strong>A hash is not a password, but it's still a leak.</strong> Those bcrypt
+                hashes are slow to crack, which buys time. Weak passwords still fall, and the
+                addresses alone are worth something to a spammer.
+            </li>
+        </list>
+
+        <side-story title="Little Bobby Tables">
+            In 2007, the webcomic xkcd ran a strip called "Exploits of a Mom": a school calls a
+            mother because her son's name, <cde>Robert'); DROP TABLE Students;--</cde>, has wiped
+            out the year's student records. She calls him Little Bobby Tables, and hopes they've
+            learned to sanitize their database inputs. Programmers have used the name ever since.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Search your code for a dollar sign in SQL">
+            <p>
+                Grep your project for query strings with a variable in them:
+                <cde>grep -rnE 'SELECT.*\$|WHERE.*\$' src public</cde>. Every hit is either a
+                placeholder you forgot, or a column name that needs an allow list. It's a crude
+                check, and it finds real holes in about a minute.
+            </p>
+        </two-dollars>
+
+        <p>
+            The users table you just leaked had password hashes in it, which is how it should be.
+            Next, the form that puts them there: a signup form.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/signup-form">Next: Signup Form &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

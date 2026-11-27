@@ -1,0 +1,254 @@
+<layout name="default" title="CSRF" />
+<page-head>
+    <meta
+        name="description"
+        content="Cross-site request forgery: another site makes your visitor's browser send your site a request, cookies and all. Why the cookie isn't proof, and the token that is. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="CSRF, cross-site request forgery, CSRF token, random_bytes, hash_equals, SameSite, same-site vs same-origin, confused deputy, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Another site sends your site a request, with your visitor's cookies. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="csrf">CSRF</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/xss">XSS</lnk> needed the attacker's code on your page. CSRF doesn't. It
+            works from a page on a completely different site, which quietly makes your visitor's
+            browser send a request to yours. The browser adds your cookies, as it always does, and
+            your site sees a logged-in member asking to change their email address.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-csrf">What's CSRF?</heading>
+        <p>
+            Cross-site request forgery. A forged request: one that carries a real member's login
+            cookie, sent by their own browser, that they never meant to send. Any page can contain a
+            form aimed at any site, and a script can submit it the moment the page loads. The
+            browser sends the target site's cookies with it, because that's how
+            <lnk to="/php/cookies">cookies</lnk> work: they go with every request to their site, no
+            matter which page started it.
+        </p>
+        <p>
+            So a session cookie proves which browser sent a request. It doesn't prove the person
+            meant to send it, or that it came from your page. A login cookie is input too, and
+            <strong>you <lnk to="/php/never-trust-input">never trust input</lnk></strong> to say
+            more than it can.
+        </p>
+
+        <heading h3 id="whats-a-csrf-token">What's a CSRF Token?</heading>
+        <p>
+            A long random secret, stored in the member's session and put in a hidden field in every
+            form your site draws. When a form comes back, the server checks the field against the
+            session. Another site can make the browser send the cookie, but it can't read your
+            pages, so it can't know the token. Without the token, the request is refused.
+        </p>
+
+        <heading h3 id="site-and-origin">Site and Origin</heading>
+        <p>
+            Two words browsers use precisely. An origin is the scheme, host and port together:
+            <cde>http://localhost:8000</cde> and <cde>http://localhost:8001</cde> are different
+            origins. A site is looser: the scheme and the registered domain, ignoring the port and
+            any subdomains. <cde>shop.example.com</cde> and <cde>blog.example.com</cde> are the same
+            site. That difference matters below.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Alice logs in to your site. Her browser keeps the session cookie.</li>
+            <li>
+                Later, in another tab, she opens a page on the attacker's site. It has a hidden form
+                aimed at your "change email" page, with the attacker's address filled in.
+            </li>
+            <li>A script on that page submits the form as soon as it loads.</li>
+            <li>
+                Alice's browser sends the POST to your site, and adds your session cookie to it.
+            </li>
+            <li>
+                Your code sees a POST from a logged-in member and changes her email address to the
+                attacker's. Next, the attacker asks for a password reset, and the email comes to
+                them.
+            </li>
+        </ol>
+        <p>
+            With a token, step five changes: there's no <cde>csrf</cde> field in the forged form, or
+            a wrong one, and your code refuses it. Alice's real form, drawn by your page, has the
+            right one.
+        </p>
+
+        <side-story title="The Confused Deputy">
+            In 1988, Norm Hardy published a short paper about a compiler at Tymshare, a time-sharing
+            company. The compiler was allowed to write to the company's billing file, so it could
+            record usage. A user told it to write its output to a file name of their choosing, and
+            chose the billing file. The compiler used its own permission on the user's behalf, and
+            the billing records were gone. Hardy called it the confused deputy. CSRF is the same
+            problem: your site acts on the cookie's authority, for a request somebody else chose.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            You need two sites for this: yours, and the attacker's. Compose can run both, on two
+            ports. In a folder, make <cde>compose.yml</cde>:
+        </p>
+        <code-block example="csrf/compose.yml" />
+        <p>
+            Your site goes in a <cde>site</cde> folder. First, <cde>site/account.php</cde>, which
+            both versions of the page share. It starts a session with a pretend logged-in member, so
+            there's no login form to build:
+        </p>
+        <code-block example="csrf/site/account.php" />
+        <p>
+            Then the account page, the naive way, which changes the email for any POST. Make
+            <cde>site/naive.php</cde>:
+        </p>
+        <code-block example="csrf/site/naive.php" />
+        <p>Start both sites:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde>. Your email address is
+            alice@example.com. Change it to something else with the form, and back. That works, and
+            so will the attack.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>bin2hex(random_bytes(32))</cde> makes the token: 32 bytes from the operating
+                system's secure random source, as 64 hex characters. Never <cde>rand()</cde>,
+                <cde>uniqid()</cde> or <cde>md5(time())</cde>, which can be guessed.
+            </li>
+            <li>
+                Keep it in <cde>$_SESSION</cde>, and print it into every form that changes
+                something.
+            </li>
+            <li>
+                <cde>hash_equals($_SESSION['csrf'], $token)</cde> to compare. It takes the same time
+                whether the first character is wrong or the last, so the timing gives nothing away.
+            </li>
+            <li>
+                Check that the token <cde>is_string()</cde> first: <cde>csrf[]=x</cde> makes it an
+                array, and <cde>hash_equals()</cde> would throw.
+            </li>
+            <li>
+                <cde>http_response_code(403)</cde> when it's missing or wrong, and change nothing.
+            </li>
+            <li>
+                <cde>session_set_cookie_params(['samesite' =&gt; 'Lax'])</cde> as a second layer.
+                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk> has the
+                rest of the cookie's settings.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A GET must never change anything.</strong> An <cde>&lt;img src&gt;</cde> on
+                any page makes a GET to any address, with cookies. If
+                <cde>/delete?id=7</cde> deletes, an image tag deletes. Changes are POSTs, and POSTs
+                need the token.
+            </li>
+            <li>
+                <strong>SameSite doesn't stop the same site.</strong> <cde>SameSite=Lax</cde> keeps
+                cookies off POSTs from other sites, and it's worth setting. But a page on another
+                subdomain, or another port, is the same site, and the cookie goes. Try It is exactly
+                that case. The token works either way.
+            </li>
+            <li>
+                <strong>Don't put the token in a URL.</strong> URLs end up in logs, in history, and
+                in the <cde>Referer</cde> header sent to other sites. Hidden field for forms, a
+                request header for <lnk to="/php/fetch">fetch()</lnk>.
+            </li>
+            <li>
+                <strong>XSS beats the token.</strong> A script running on your own page can read the
+                token and send it. CSRF protection assumes you've fixed XSS first.
+            </li>
+            <li>
+                <strong>Login forms need one too.</strong> A forged login signs the visitor in to
+                the attacker's account, and anything they then type, like a card or an address, goes
+                into it.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            The attacker's site goes in an <cde>evil</cde> folder. Make <cde>evil/index.html</cde>,
+            a page that promises a prize and quietly submits a form to yours:
+        </p>
+        <code-block example="csrf/evil/index.html" />
+        <p>
+            With both sites running, open <cde>http://localhost:8000/naive.php</cde> to be sure
+            you're "logged in." Then, in the same browser, open the attacker's page,
+            <cde>http://localhost:8001</cde>.
+        </p>
+        <p>
+            It flashes "Claiming your prize..." and lands you on your own account page, which now
+            says <cde>Your email address: attacker@example.net</cde>. You never pressed anything.
+            The attacker's page sent the form, and your browser added your cookie to it.
+        </p>
+        <p>
+            Your site saw a correct session cookie and a valid email address. Both checks passed.
+            Neither one asked whether the request came from your own page.
+        </p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            Give the session a token, put it in the form, and refuse any POST that doesn't bring it
+            back. Make <cde>site/index.php</cde>:
+        </p>
+        <code-block example="csrf/site/index.php" />
+        <p>
+            And <cde>evil/fixed.html</cde>, the same attack aimed at the fixed page. It's
+            <cde>evil/index.html</cde> with one change, the form's address:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>&lt;form id="prize" method="post" action="http://localhost:8000/"&gt;</code-block>
+        <p>
+            Open <cde>http://localhost:8000/</cde>, then
+            <cde>http://localhost:8001/fixed.html</cde>. This time you land on "That form didn't
+            come from this site." with a 403, and your email hasn't changed. The forged form had no
+            token. Your own form, on your own page, still works, because your page put the token in
+            it. <cde>Ctrl+C</cde> stops both sites.
+        </p>
+
+        <!-- $2 tip -->
+        <two-dollars title="One token check, in one place">
+            <p>
+                Don't check the token in each page. Check it once, at the top of every POST, before
+                any page code runs: in a shared include today, in
+                <lnk to="/php/middleware">middleware</lnk> later. Then a new form is protected the
+                day you write it, and forgetting isn't possible. Pages that truly need no token,
+                like a webhook from a payment company, get an explicit exception you can list.
+            </p>
+        </two-dollars>
+
+        <p>
+            The fake form changed Alice's email so the attacker could reset her password. What
+            protects that password, once it's yours to keep, is next: passwords, and
+            <cde>password_hash()</cde>.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/passwords">Next: Passwords: password_hash() and Nothing Else &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

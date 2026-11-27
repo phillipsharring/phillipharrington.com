@@ -1,0 +1,226 @@
+<layout name="default" title="Variables, Types and strict_types" />
+<page-head>
+    <meta
+        name="description"
+        content="Variables hold values, and values have types. How PHP converts between them on its own, what declare(strict_types=1) changes, and why input has to be converted on purpose. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP variables, PHP types, type juggling, strict_types, declare(strict_types=1), TypeError, type declarations, filter_var, FILTER_VALIDATE_INT, var_dump, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Variables, types, and the one line that makes PHP stricter. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="variables-and-types">Variables, Types and strict_types</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Output printed names, prices and lists, and every one of them was held in a variable
+            first. A variable is simple. The interesting part is the value inside it, because every
+            value has a type, and PHP will quietly change a value's type when it thinks you meant it
+            to. Sometimes that helps. Sometimes it hides a bug. One line at the top of a file
+            decides which.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-variable">What's a Variable?</heading>
+        <p>
+            A name for a value. In PHP it starts with <cde>$</cde>, then a letter or underscore,
+            then any letters, numbers and underscores: <cde>$name</cde>, <cde>$order_total</cde>,
+            <cde>$item2</cde>. You make one by assigning to it, with a single <cde>=</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>$name = 'Alice';
+$count = 3;</code-block>
+        <p>
+            There's no separate step to declare it. Names are case-sensitive, so
+            <cde>$name</cde> and <cde>$Name</cde> are two variables. Using one that was never
+            assigned gets a warning, "Undefined variable," and the value <cde>null</cde>.
+        </p>
+
+        <heading h2 id="whats-a-type">What's a Type?</heading>
+        <p>
+            The kind of value something is. The everyday ones are <cde>int</cde> (a whole number),
+            <cde>float</cde> (a number with a decimal point), <cde>string</cde> (text),
+            <cde>bool</cde> (<cde>true</cde> or <cde>false</cde>), <cde>array</cde>, and
+            <cde>null</cde> (nothing). <lnk to="/php/types-of-types">Types of Types</lnk> takes them
+            one at a time.
+        </p>
+        <p>
+            In PHP the type belongs to the value, not the variable. Put a string in
+            <cde>$count</cde> after a number, and <cde>$count</cde> holds a string now.
+        </p>
+
+        <heading h3 id="type-juggling">Type Juggling</heading>
+        <p>
+            When an operation needs a certain type, PHP converts the value to fit.
+            <cde>+</cde> needs numbers, so <cde>'5' + 5</cde> is <cde>10</cde>. <cde>.</cde> joins
+            strings, so <cde>'5' . 5</cde> is <cde>"55"</cde>. The manual calls this type juggling.
+        </p>
+
+        <heading h3 id="type-declarations">Type Declarations</heading>
+        <p>
+            A function can say what types it takes and gives back. This one takes an
+            <cde>int</cde> and returns an <cde>int</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>function double(int $number): int</code-block>
+        <p>
+            By default, PHP juggles here too: pass it the string <cde>'21'</cde>, and it's converted
+            to <cde>21</cde> on the way in. <lnk to="/php/functions">Functions</lnk> covers the rest
+            of that line.
+        </p>
+
+        <heading h3 id="strict-types">strict_types</heading>
+        <p>This line, as the very first statement in a file, turns that conversion off:</p>
+        <!-- prettier-ignore -->
+        <code-block>declare(strict_types=1);</code-block>
+        <p>
+            Now an <cde>int</cde> parameter takes an int, and anything else is a
+            <cde>TypeError</cde> that stops the script. (One small exception: an int is still
+            accepted where a float is expected.) It's per file, and it covers the calls made from
+            that file. From here on, every example in the course starts with it.
+        </p>
+
+        <side-story title="Why the Dollar Sign">
+            PHP started out replacing a few Perl scripts, and it borrowed from Perl's syntax, the
+            <cde>$</cde> included. Perl had it from Unix shell scripts, where <cde>$name</cde> means
+            "the value of name." Shell scripts only use the dollar when they read a variable. PHP
+            uses it every time, which is simpler to remember.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When you call a function that declares a type, PHP checks the value you pass:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>If the value is already the right type, it goes in.</li>
+            <li>
+                If not, PHP looks at the file the call is in. Without strict_types, it tries to
+                convert the value: <cde>'21'</cde> becomes <cde>21</cde>, <cde>true</cde> becomes
+                <cde>1</cde>.
+            </li>
+            <li>
+                If it can't convert it, like <cde>'twenty-one'</cde>, or the file has strict_types,
+                it's a <cde>TypeError</cde>.
+            </li>
+            <li>The return value is checked the same way on the way out.</li>
+        </ol>
+        <p>
+            That matters most for input. Every form field, query string, cookie and header arrives
+            as a string, even when it looks like a number. Arithmetic and casts would quietly turn
+            <cde>'21abc'</cde> into <cde>21</cde>. With strict_types, a string can't wander into a
+            function that wants an int. You have to check it and convert it on purpose, which is
+            exactly what you should be doing anyway: <strong>never trust input.</strong>
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>First, variables and juggling. In a folder, make <cde>variables.php</cde>:</p>
+        <code-block example="variables-and-types/variables.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php variables.php</code-block>
+        <p>Then the same function twice, without strict_types and with it. <cde>loose.php</cde>:</p>
+        <code-block example="variables-and-types/loose.php" />
+        <p>And <cde>strict.php</cde>:</p>
+        <code-block example="variables-and-types/strict.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php loose.php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php strict.php</code-block>
+        <p>
+            The loose one doubles <cde>21</cde>, <cde>'21'</cde> and even <cde>true</cde>, and only
+            gives up on <cde>'twenty-one'</cde>. The strict one stops at <cde>'21'</cde>, with "must
+            be of type int, string given," and the line it happened on.
+        </p>
+        <p>
+            So input has to be converted by hand. <cde>input.php</cde> takes what you type after the
+            file name, which arrives as a string just like a form field:
+        </p>
+        <code-block example="variables-and-types/input.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php input.php 21
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php input.php 21abc</code-block>
+        <p>
+            The cast, <cde>(int)</cde>, turns <cde>21abc</cde> into <cde>21</cde> without a word.
+            <cde>filter_var()</cde> with <cde>FILTER_VALIDATE_INT</cde> checks the whole string, and
+            says no.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>declare(strict_types=1);</cde> as the first statement of every file.</li>
+            <li>
+                <cde>var_dump($x)</cde> shows the type and value. <cde>get_debug_type($x)</cde>
+                gives just the type's name, for an error message.
+            </li>
+            <li>
+                <cde>isset($x)</cde>: whether a variable exists and isn't <cde>null</cde>, with no
+                warning.
+            </li>
+            <li>
+                <cde>filter_var($input, FILTER_VALIDATE_INT)</cde>: the whole string is a whole
+                number, or you get <cde>false</cde>. There are flavors for floats, emails, URLs and
+                more.
+            </li>
+            <li>
+                <cde>(int)</cde>, <cde>(float)</cde>, <cde>(string)</cde>, <cde>(bool)</cde>: casts.
+                They always succeed, which is the problem with using them on input.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>strict_types is per file.</strong> It has to be in every file, and it covers
+                the calls that file makes. A file without it can still pass a string to your strict
+                function, and PHP will convert it.
+            </li>
+            <li>
+                <strong>It has to be first.</strong> Put any code before it, and PHP refuses to run
+                the file. Comments are fine.
+            </li>
+            <li>
+                <strong>Casting isn't checking.</strong> <cde>(int) '21abc'</cde> is <cde>21</cde>,
+                and <cde>(int) 'abc'</cde> is <cde>0</cde>. A cast on input turns garbage into a
+                plausible number. Validate first.
+            </li>
+            <li>
+                <strong>Input is always a string, or an array.</strong> Even <cde>?id=7</cde> gives
+                you <cde>'7'</cde>, and <cde>?id[]=7</cde> gives you an array. Check the type before
+                you use it.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Put it in the template">
+            <p>
+                Most editors let you change what a new PHP file starts with. Make it
+                <cde>&lt;?php</cde>, a blank line, and <cde>declare(strict_types=1);</cde>. You'll
+                never forget it again, and you'll never have a file where half the calls are quietly
+                juggled.
+            </p>
+        </two-dollars>
+
+        <p>
+            Juggling showed up again and again in this lesson, in <cde>+</cde> and <cde>.</cde>, and
+            it's at its sneakiest when you compare two values. Next: Operators.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/operators">Next: Operators &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

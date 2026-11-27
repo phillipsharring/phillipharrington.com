@@ -1,0 +1,234 @@
+<layout name="default" title="Inserting Data" />
+<page-head>
+    <meta
+        name="description"
+        content="INSERT from PHP: prepared statements, the id the database just made with lastInsertId(), adding many rows at once, and the upsert, INSERT ... ON DUPLICATE KEY UPDATE, with what its row count means. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="MySQL INSERT, PDO insert, lastInsertId, AUTO_INCREMENT, upsert, ON DUPLICATE KEY UPDATE, INSERT IGNORE, rowCount, multi-row insert, unique key, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Putting rows in, and getting their ids back. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="inserting-data">Inserting Data</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The tables are built, with the right types, keys, indexes and character sets. Now they
+            need rows. Most rows in a web app start as something a person typed into a form, which
+            makes <cde>INSERT</cde> the place where outside data comes to stay. It's the simplest of
+            the four statements, and it has three questions attached: what id did the new row get,
+            how do you add many at once, and what happens when it's already there.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-insert">What's INSERT?</heading>
+        <p>The statement that adds rows to a table:</p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `subscribers` (`email`, `name`)
+VALUES ('alice@example.com', 'Alice');</code-block>
+        <p>
+            Name the columns, then give the values in the same order. Columns you leave out get
+            their default: the next <cde>AUTO_INCREMENT</cde> number, the current time, or
+            <cde>NULL</cde>. Always name the columns. An insert without them depends on the table's
+            column order, and breaks the day someone adds one.
+        </p>
+
+        <heading h3 id="many-rows">Many Rows</heading>
+        <p>One statement can add many rows, which is much faster than one statement each:</p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `subscribers` (`email`, `name`)
+VALUES
+    ('bo@example.com', 'Bo'),
+    ('cy@example.com', 'Cy');</code-block>
+
+        <heading h3 id="whats-an-upsert">What's an Upsert?</heading>
+        <p>
+            An insert that turns into an update when the row is already there: "add this subscriber,
+            or if that email has already signed up, update their name." MySQL spells it
+            <cde>ON DUPLICATE KEY UPDATE</cde>. A duplicate means any primary key or unique index
+            that would be broken.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>INSERT INTO `subscribers` (`email`, `name`)
+VALUES ('alice@example.com', 'Alice Rivera') AS `new`
+ON DUPLICATE KEY UPDATE `name` = `new`.`name`;</code-block>
+        <p>
+            <cde>AS `new`</cde> names the row you tried to insert, so the update can use its values.
+            (Older code writes <cde>VALUES(`name`)</cde> for the same thing. It still works in MySQL
+            8.4, but it's deprecated.)
+        </p>
+
+        <side-story title="Data Entry, 1890">
+            The United States census of 1890 was the first to be counted by machine. Herman
+            Hollerith's tabulators read answers from punched cards, a hole for each fact. The 1880
+            census had taken years to count by hand, and the 1890 one went far faster. Every card
+            was still punched by hand, by clerks working from the census forms. Hollerith's company
+            later became part of IBM.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                PHP prepares the <cde>INSERT</cde> with placeholders, and sends the values
+                separately.
+            </li>
+            <li>
+                MySQL fills in the defaults, and takes the next <cde>AUTO_INCREMENT</cde> number for
+                the id.
+            </li>
+            <li>
+                It checks the row against every rule: types, <cde>NOT NULL</cde>, foreign keys,
+                unique indexes.
+            </li>
+            <li>
+                If a unique index is already taken, a plain insert fails, and an upsert updates the
+                row that has it instead.
+            </li>
+            <li>
+                It answers with the number of rows affected, and the id it made, which PHP can ask
+                for with <cde>lastInsertId()</cde>.
+            </li>
+        </ol>
+        <p>
+            Step two can happen before step three. An id can be used up even when the insert then
+            fails, or turns into an update, and it's never given back. That's why ids have gaps, and
+            why that's fine.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A newsletter signup that can be run twice. The same <cde>compose.yml</cde>,
+            <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL, and a table with a unique email:
+        </p>
+        <code-block example="inserting-data/init.sql" />
+        <p>Then <cde>subscribe.php</cde>, an upsert that reports what it did:</p>
+        <code-block example="inserting-data/subscribe.php" />
+        <p>Start the database, and subscribe two people:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose run --rm php php subscribe.php alice@example.com Alice
+docker compose run --rm php php subscribe.php bo@example.com Bo</code-block>
+        <p>
+            Subscribers #1 and #2. Now Alice signs up again, with her full name, and then once more,
+            the same way:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php subscribe.php alice@example.com 'Alice Rivera'
+docker compose run --rm php php subscribe.php alice@example.com 'Alice Rivera'</code-block>
+        <p>
+            The first updates her name. The second changes nothing, and says so: the row count is 0
+            when the update has nothing to change. Then a new one:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php subscribe.php cy@example.com Cy</code-block>
+        <p>
+            Subscriber #5, not #3. Each of Alice's two upserts took an id before finding her email,
+            and kept it. Look in the table, and there's no 3 or 4:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
+        <!-- prettier-ignore -->
+        <code-block>SELECT `id`, `email`, `name`
+FROM `subscribers`;</code-block>
+        <p>Type <cde>exit</cde>. Last, sign up with something that isn't an email address:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose run --rm php php subscribe.php 'nope' Mallory</code-block>
+        <p>
+            Refused before it gets anywhere near the table. <strong>Never trust input</strong>,
+            least of all input you're about to keep. <cde>docker compose down -v</cde> when you're
+            done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$pdo-&gt;prepare('INSERT ... VALUES (?, ?)')</cde>, then
+                <cde>execute([$email, $name])</cde>. Every value from outside goes in as a
+                placeholder. <lnk to="/php/never-trust-input">Never trust input</lnk>, and never
+                glue it into the SQL; <lnk to="/php/sql-injection">SQL Injection</lnk> shows why.
+            </li>
+            <li>
+                <cde>$pdo-&gt;lastInsertId()</cde> returns the new id, as a string. Call it right
+                after the insert: another statement on the same connection, even an
+                <cde>UPDATE</cde>, can reset it to 0.
+            </li>
+            <li>
+                <cde>$statement-&gt;rowCount()</cde> after an upsert: 1 if it inserted, 2 if it
+                updated, 0 if the row was already exactly that.
+            </li>
+            <li>
+                <cde>filter_var($email, FILTER_VALIDATE_EMAIL)</cde>, and <cde>trim()</cde> and a
+                length check on text, before anything is saved.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Don't count on ids being in a row.</strong> Failed inserts, upserts and
+                rolled-back transactions all use up ids. Never use the id to count rows, and never
+                assume the next id is the last one plus one.
+            </li>
+            <li>
+                <strong>Don't show your ids to the world if you can help it.</strong> An order
+                number of 1042 tells a competitor how many orders you've had, and invites someone to
+                try 1041. Check every id that comes back in a URL; it's input.
+            </li>
+            <li>
+                <strong>INSERT IGNORE ignores more than duplicates.</strong> It turns errors into
+                warnings: a duplicate is skipped, but so is a value that's out of range, which gets
+                clamped and saved. Use an upsert when you mean "it might already be there."
+            </li>
+            <li>
+                <strong>Check first, then insert, is a race.</strong> "Is this email taken? No?
+                Insert it" lets two signups in the same instant both pass the check. Let the unique
+                index decide, and handle the duplicate error or use an upsert.
+            </li>
+            <li>
+                <strong>Capitals count as the same email.</strong> With the default collation,
+                <cde>ALICE@EXAMPLE.COM</cde> is a duplicate of <cde>alice@example.com</cde>, and the
+                upsert updates her row.
+                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk> is
+                why.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="One commit, not ten thousand">
+            <p>
+                Importing a lot of rows one <cde>INSERT</cde> at a time is slow mostly because each
+                one is saved to disk on its own. Wrap the loop in
+                <cde>$pdo-&gt;beginTransaction()</cde> and <cde>$pdo-&gt;commit()</cde>, or insert a
+                few hundred rows per statement, and the same import often goes from minutes to
+                seconds.
+            </p>
+        </two-dollars>
+
+        <p>
+            The rows are in. Getting them back out, in the right order, with the right related rows,
+            without asking the database a hundred times: next, selecting data.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/selecting-data">Next: Selecting Data &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

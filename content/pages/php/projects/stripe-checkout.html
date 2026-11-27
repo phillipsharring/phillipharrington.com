@@ -1,0 +1,252 @@
+<layout name="default" title="Taking a Payment with Stripe Checkout" />
+<page-head>
+    <meta
+        name="description"
+        content="Take a real payment, in test mode, without a card number ever reaching your server: create a Stripe Checkout Session from the order, send the customer to Stripe's page, and mark the order paid only from a signed webhook. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="Stripe Checkout PHP, Checkout Session, stripe-php, test mode, test card 4242, webhook signature, Stripe-Signature, checkout.session.completed, Stripe CLI, PCI, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Take a payment without ever touching the card. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="taking-a-payment-with-stripe-checkout">
+            Taking a Payment with Stripe Checkout
+        </heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Checkout left an order awaiting payment, and a promise: the card number goes to the
+            payment provider, never to you. Here's how that works. Your server tells Stripe what the
+            order costs. Stripe gives back the address of a payment page on its own servers. The
+            customer types their card there. Afterward, Stripe tells your server, in a signed
+            message, that the money arrived.
+        </p>
+        <p>
+            Everything here runs in Stripe's test mode, with test keys and Stripe's published test
+            card numbers. No real money moves, and the example refuses to start with a live key.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li><lnk to="/php/projects/checkout">Checkout</lnk>: the orders, copied in</li>
+            <li>
+                <lnk to="/php/dont-touch-cards">Don't Touch Cards</lnk>: why the card goes to Stripe
+            </li>
+            <li>
+                <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk>: the keys live in
+                <cde>.env</cde>, never in git
+            </li>
+            <li>
+                <lnk to="/php/projects/redirecting">Redirecting</lnk> and
+                <lnk to="/php/request-and-response">Request and Response</lnk>: the 303 to Stripe
+            </li>
+            <li>
+                <lnk to="/php/projects/comments">Comments</lnk> and
+                <lnk to="/php/projects/newsletter">Newsletter</lnk>: checking an HMAC signature
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-test-keys">Step 1: Test Keys</heading>
+        <p>
+            Make a Stripe account, if you don't have one, and find the test-mode API keys in the
+            Dashboard. The secret key starts with <cde>sk_test_</cde>. It never goes in code or in
+            git. Copy <cde>.env.example</cde> to <cde>.env</cde>, which <cde>.gitignore</cde>
+            keeps out of the repository, and put it there:
+        </p>
+        <code-block example="project-stripe-checkout/.env.example" />
+        <code-block example="project-stripe-checkout/.gitignore" />
+        <p>
+            Then copy the <lnk to="/php/projects/checkout">Checkout</lnk> project, leaving out its
+            naive checkout and logs, and add Stripe's PHP library:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require stripe/stripe-php</code-block>
+        <code-block example="project-stripe-checkout/composer.json" />
+
+        <heading h3 id="step-2-the-containers">Step 2: The Containers</heading>
+        <p>
+            The app gets the keys from <cde>.env</cde>, through Compose. A third service, behind a
+            profile, runs the Stripe CLI, which receives test-mode webhooks from Stripe and forwards
+            them to your app, so Stripe can reach a server on your own computer:
+        </p>
+        <code-block example="project-stripe-checkout/compose.yml" />
+        <p>
+            The orders table gets two columns, <cde>stripe_session_id</cde> and <cde>paid_at</cde>:
+        </p>
+        <code-block example="project-stripe-checkout/init.sql" />
+        <p>
+            And <cde>src/helpers.php</cde> gets one more function, which only hands over the key if
+            it's a test key:
+        </p>
+        <code-block example="project-stripe-checkout/src/helpers.php" />
+
+        <heading h3 id="step-3-the-payment-page">Step 3: The Payment Page</heading>
+        <p>
+            A Checkout Session is Stripe's record of one payment page. <cde>src/Payments.php</cde>
+            makes one from the order: a line for each item, with the name and price the order copied
+            when it was placed, in cents, which is exactly what Stripe expects.
+        </p>
+        <code-block example="project-stripe-checkout/src/Payments.php" />
+        <p>
+            <cde>client_reference_id</cde> carries the order's public id to Stripe and back. The
+            <cde>success_url</cde> is where Stripe sends the customer afterward, and Stripe fills in
+            <cde>{CHECKOUT_SESSION_ID}</cde> itself.
+        </p>
+        <p>
+            <cde>public/pay.php</cde> is what the order page's Pay button posts to. It checks the
+            key, the token, and that this browser placed this order, makes the session, saves its
+            id, and redirects the customer to Stripe:
+        </p>
+        <code-block example="project-stripe-checkout/public/pay.php" />
+        <p>
+            And <cde>public/order.php</cde> gets the button. When the customer comes back with
+            <cde>paid</cde> in the URL, it says thanks, and that it's still confirming:
+        </p>
+        <code-block example="project-stripe-checkout/public/order.php" />
+
+        <heading h3 id="step-4-the-webhook">Step 4: The Webhook</heading>
+        <p>
+            Coming back to the success page proves nothing. It's a URL; anyone can visit it, and
+            people close the tab before they get there.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and a
+            visitor's arrival is input. The truth comes from Stripe, server to server, as a webhook:
+            a POST to your app saying what happened.
+        </p>
+        <p>
+            Anyone can POST to your webhook too, so Stripe signs every one. The
+            <cde>Stripe-Signature</cde> header holds a timestamp and an HMAC of the timestamp and
+            the body, made with your webhook secret. <cde>src/StripeSignature.php</cde> checks it:
+        </p>
+        <code-block example="project-stripe-checkout/src/StripeSignature.php" />
+        <p>
+            The library has the same check built in, as <cde>Webhook::constructEvent()</cde>; it's
+            written out here so you can see there's no magic in it. Then
+            <cde>public/webhook.php</cde>:
+        </p>
+        <code-block example="project-stripe-checkout/public/webhook.php" />
+        <p>
+            Even a signed event is checked against the order. <cde>markPaid()</cde>, added to
+            <cde>src/Orders.php</cde>, only changes an order that's still awaiting payment, for
+            exactly the amount and currency it asked for:
+        </p>
+        <code-block example="project-stripe-checkout/src/Orders.php" />
+        <p>
+            Stripe sends an event again if it doesn't get a 200, and sometimes sends one twice
+            anyway. Because <cde>markPaid()</cde> only moves an order from awaiting to paid, the
+            second copy changes nothing.
+        </p>
+
+        <heading h3 id="step-5-pay">Step 5: Pay</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install
+docker compose --profile stripe up</code-block>
+        <p>
+            The Stripe CLI prints a webhook signing secret, <cde>whsec_...</cde>. Put it in
+            <cde>.env</cde> as <cde>STRIPE_WEBHOOK_SECRET</cde>, and restart the app so it reads it,
+            from a second terminal:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d app</code-block>
+        <p>
+            Shop at <cde>http://localhost:8000</cde>, check out, and press Pay. You're on Stripe's
+            page now, with your products and prices. Pay with Stripe's test card,
+            <cde>4242 4242 4242 4242</cde>, any future expiry date, any three-digit CVC. Stripe
+            sends you back, the CLI's terminal shows <cde>checkout.session.completed</cde> being
+            forwarded with a <cde>200</cde>, and a reload of the order page says <cde>Paid</cde>.
+        </p>
+        <p>Two more test cards worth trying:</p>
+        <list>
+            <li><cde>4000 0000 0000 0002</cde> is declined. The order stays unpaid.</li>
+            <li>
+                <cde>4000 0025 0000 3155</cde> asks for extra authentication, the step some banks
+                add, which Stripe's page handles for you.
+            </li>
+        </list>
+        <p>
+            Then look for the card number on your side: in the database, in the logs, anywhere. It
+            isn't there. It never came.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="Why 4242 Works">
+            Card numbers end in a check digit, worked out with a formula patented by Hans Peter
+            Luhn, an IBM engineer, in 1960. Double every second digit from the right, add up the
+            digits, and the total of a valid number ends in 0. It catches most typos, which is why a
+            payment form can say "that number's wrong" before asking anyone. Stripe's test numbers,
+            <cde>4242 4242 4242 4242</cde> included, pass the check, so they look valid to any form,
+            and in test mode Stripe treats each one as a card with a known outcome.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Read the raw body.</strong> The signature covers the exact bytes Stripe
+                sent. Decode and re-encode the JSON before checking, and the bytes change and the
+                check fails. <cde>php://input</cde>, untouched, first.
+            </li>
+            <li>
+                <strong>Test and live are separate worlds.</strong> Different keys, different
+                webhook secrets, different customers and orders. A test key can't move real money,
+                which is why it's the only kind this example accepts.
+            </li>
+            <li>
+                <strong>Fulfill from the webhook, not the redirect.</strong> Ship the order, send
+                the receipt, grant the download: all of it when the webhook says paid. A customer
+                who closes the tab on Stripe's page has still paid.
+            </li>
+            <li>
+                <strong>Answer the webhook fast.</strong> Stripe waits only a short while. Slow
+                work, like emailing a receipt, goes in a <lnk to="/php/projects/queues">queue</lnk>,
+                and the webhook answers 200 at once.
+            </li>
+            <li>
+                <strong>Abandoned sessions are normal.</strong> Many people get to the payment page
+                and leave. The order stays awaiting payment, and the
+                <lnk to="/php/projects/cron-jobs">cron job</lnk> that cancels old unpaid orders
+                handles it.
+            </li>
+        </list>
+
+        <side-story title="Not One Card Number">
+            One of my own apps takes its payments exactly this way, through Stripe Checkout. No card
+            number ever touches its server, so there's no card number on it to lose.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Make the live key impossible by accident">
+            <p>
+                Have your code check the key's prefix, the way <cde>stripeTestKey()</cde> does, in
+                every environment that isn't production. A development machine that refuses
+                <cde>sk_live_</cde> can't charge a real card because someone pasted the wrong key
+                into the wrong <cde>.env</cde>.
+            </p>
+        </two-dollars>
+
+        <p>
+            Paid orders pile up, and someone will want them in a spreadsheet. Next: exporting data,
+            as a CSV download, and the attack hiding in a spreadsheet cell.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/exporting-data">Next: Exporting Data &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

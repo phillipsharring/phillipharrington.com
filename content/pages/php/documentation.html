@@ -1,0 +1,200 @@
+<layout name="default" title="Documentation: php.net" />
+<page-head>
+    <meta
+        name="description"
+        content="The PHP manual at php.net: how to find a function, how to read its page (the signature, the return values, the warnings, the changelog), and how to ask PHP itself. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP manual, php.net, PHP documentation, function signature, return values, strpos, str_contains, php --rf, changelog, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How to read the PHP manual. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Basics</p>
+        <heading h1 id="documentation">Documentation: php.net</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <cde>phpinfo()</cde> tells you about the PHP you have. The manual tells you about PHP:
+            every function, every setting, and every change from one version to the next. It's at
+            <lnk to="https://www.php.net/manual/en/" blank>php.net</lnk>, it's free, and it's good.
+            This course can't cover every function PHP has, and doesn't try. Learning to read the
+            manual covers the rest.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-the-manual">What's the Manual?</heading>
+        <p>
+            The official PHP documentation, written and kept up by the people who make PHP. The
+            parts you'll use most are the Language Reference (how PHP itself works: variables,
+            operators, functions, classes) and the Function Reference (every built-in function,
+            grouped by extension). There's also a Security section, worth reading once.
+        </p>
+
+        <heading h3 id="a-function-page">A Function's Page</heading>
+        <p>Every function gets a page, and they're all laid out the same way:</p>
+        <list>
+            <li>
+                <strong>The versions</strong>, at the top: "(PHP 4, PHP 5, PHP 7, PHP 8)" means it's
+                been around forever. "(PHP 8)" means it's newer, and older servers won't have it.
+            </li>
+            <li>
+                <strong>Description</strong>: the signature, one line that says what goes in and
+                what comes out.
+            </li>
+            <li><strong>Parameters</strong>: what each thing you pass it means.</li>
+            <li>
+                <strong>Return Values</strong>: what you get back, and when. Read this one every
+                time.
+            </li>
+            <li>
+                <strong>Changelog</strong>: what changed, and in which version. If code acts
+                differently on two servers, look here.
+            </li>
+            <li><strong>Examples</strong>, then <strong>See Also</strong>, for its relatives.</li>
+            <li>
+                <strong>User Contributed Notes</strong>, at the bottom: comments from readers, some
+                of them twenty years old. Sometimes the best thing on the page, sometimes wrong. The
+                manual above them is the one that counts.
+            </li>
+        </list>
+
+        <side-story title="The Notes Were Longer">
+            In 1843, Ada Lovelace translated Luigi Menabrea's French article about Charles Babbage's
+            Analytical Engine, and added notes of her own, longer than the article itself. Note G
+            set out, step by step, how the engine could calculate Bernoulli numbers: the first
+            published computer program. It came with documentation, because it was documentation.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The fastest way to a function's page, and through it:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Go to <cde>php.net/</cde> and the function's name, like <cde>php.net/strpos</cde>.
+                It sends you straight to the page.
+            </li>
+            <li>Read the signature (below).</li>
+            <li>Read Return Values, and any warning box near it.</li>
+            <li>Check the versions and the Changelog against the PHP you're running.</li>
+            <li>Then the examples.</li>
+        </ol>
+
+        <heading h3 id="reading-a-signature">Reading a Signature</heading>
+        <!-- prettier-ignore -->
+        <code-block>strpos(string $haystack, string $needle, int $offset = 0): int|false</code-block>
+        <list>
+            <li>
+                <cde>strpos</cde> is the name. In the parentheses, the parameters, each with its
+                type: two strings, then an int.
+            </li>
+            <li>
+                <cde>$offset = 0</cde> has a default, so you can leave it off. Parameters without
+                one are required.
+            </li>
+            <li>
+                After the colon is what comes back: <cde>int|false</cde>, an integer or
+                <cde>false</cde>. The <cde>|</cde> means "or." Types get a lesson of their own soon,
+                in Variables, Types and strict_types.
+            </li>
+        </list>
+        <p>
+            That <cde>int|false</cde> is the whole story of this function's most famous bug, and the
+            manual warns about it in a box on the page: the position of something at the very start
+            is <cde>0</cde>, and <cde>0</cde> looks false.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>PHP can show you a signature too, with no browser:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm php:8.4-cli php --rf strpos</code-block>
+        <p>
+            It lists the parameters, marks the optional one with its default, and ends with
+            <cde>Return [ int|false ]</cde>. Now see what happens to code that read the name and
+            skipped the page. In a folder, make <cde>strpos.php</cde>:
+        </p>
+        <code-block example="documentation/strpos.php" />
+        <p>Run it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php strpos.php</code-block>
+        <p>
+            "apple" is right there at position 0, and the loose check says "no apple." The strict
+            check, <cde>!== false</cde>, gets it right; Operators explains the difference. And
+            <cde>str_contains()</cde>, new in PHP 8.0, answers the yes-or-no question without the
+            trap. Its page says "(PHP 8)" at the top, which is how you'd know whether your server
+            has it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>php --rf strpos</cde>: a function's signature, from PHP itself.</li>
+            <li><cde>php --re mbstring</cde>: everything an extension provides.</li>
+            <li>
+                <cde>function_exists('str_contains')</cde>: whether this PHP has a function, when
+                code has to run on more than one version.
+            </li>
+            <li>
+                <cde>PHP_VERSION</cde> and <cde>php -v</cde>: which version's manual you should be
+                reading.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Tutorials outlive the functions they teach.</strong> The old
+                <cde>mysql_query()</cde> family is in thousands of tutorials, and it was removed in
+                PHP 7.0. If the manual page says a function is removed or deprecated, the tutorial
+                is old. <cde>php --rf mysql_connect</cde> says "does not exist."
+            </li>
+            <li>
+                <strong>The warning boxes are the point.</strong> The manual puts the traps in boxes
+                marked Warning or Caution, like strpos's. They're there because people kept falling
+                in.
+            </li>
+            <li>
+                <strong>The default can change between versions.</strong> The Changelog is where you
+                find out a function behaves differently in PHP 8 than it did in 7. Check it before
+                you blame your code.
+            </li>
+            <li>
+                <strong>The English manual is the most current.</strong> The translations are good,
+                but they can lag behind.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="A search shortcut">
+            <p>
+                Set up a custom search in your browser with the address
+                <cde>https://www.php.net/%s</cde> and a keyword like <cde>php</cde>. Then typing
+                <cde>php array_map</cde> in the address bar opens the page. Most browsers call these
+                site search or keyword shortcuts, in their search settings.
+            </p>
+        </two-dollars>
+
+        <p>
+            The first function most people look up is the one that puts something on the page. Next:
+            Output.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/output">Next: Output &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,191 @@
+<layout name="default" title="Abstract Classes" />
+<page-head>
+    <meta
+        name="description"
+        content="Classes built on other classes with extends, and abstract classes: half-finished on purpose, with the shared parts written once and the rest left for each child to fill in. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP abstract class, abstract method, extends, inheritance, protected, final, parent::, override, Cannot instantiate abstract class, Liskov substitution, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Half a class, on purpose. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="abstract-classes">Abstract Classes</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Say you have several reports. Each one has its own numbers, but they're all laid out the
+            same way: a title, a line under it, a column of labels and values. Copy the layout code
+            into every report, and the day you change it, you change it everywhere, and miss one.
+            One class can be built on another, sharing its code. An abstract class is one built to
+            be built on, and nothing else.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-extends">What's <cde>extends</cde>?</heading>
+        <p>
+            <cde>class SalesReport extends Report</cde> makes <cde>SalesReport</cde> a child of
+            <cde>Report</cde>. The child gets every public and protected method and property of the
+            parent, and can add its own, or replace the parent's with its own version (override
+            them). A <cde>SalesReport</cde> is a <cde>Report</cde>: anywhere that wants a
+            <cde>Report</cde> will take one.
+        </p>
+        <p>
+            A class in PHP has at most one parent. <cde>protected</cde>, from the last lesson, means
+            "this class and its children."
+        </p>
+
+        <heading h2 id="whats-an-abstract-class">What's an Abstract Class?</heading>
+        <p>
+            A class marked <cde>abstract</cde> can't be made with <cde>new</cde>. It exists to be
+            extended. It can have finished methods, which every child shares, and abstract methods:
+            a name and a signature with no body, which every child must write.
+        </p>
+        <p>
+            The usual shape: the parent does the part that's always the same, and calls abstract
+            methods for the parts that differ. A method marked <cde>final</cde> can't be overridden,
+            so no child can change the shared part by accident.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                When PHP loads a class that extends an abstract one, it checks that every abstract
+                method has been written, with a compatible signature. If not, it stops right there,
+                before any of your code runs.
+            </li>
+            <li>
+                <cde>new SalesReport()</cde> makes an object with the parent's methods and the
+                child's together.
+            </li>
+            <li>
+                <cde>$report-&gt;render()</cde> runs the parent's <cde>render()</cde>. Inside it,
+                <cde>$this</cde> is the <cde>SalesReport</cde>.
+            </li>
+            <li>
+                So when <cde>render()</cde> calls <cde>$this-&gt;rows()</cde>, it gets the child's
+                rows.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>The half-finished parent, <cde>Report.php</cde>:</p>
+        <code-block example="abstract-classes/Report.php" />
+        <p>
+            Two reports that finish it, <cde>SalesReport.php</cde> and <cde>SignupReport.php</cde>:
+        </p>
+        <code-block example="abstract-classes/SalesReport.php" />
+        <code-block example="abstract-classes/SignupReport.php" />
+        <p>And <cde>reports.php</cde>, which prints both:</p>
+        <code-block example="abstract-classes/reports.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php reports.php</code-block>
+        <p>
+            Two reports, the same layout, and neither report has a line of layout code. Now try to
+            make a <cde>Report</cde> itself:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php -r 'require "Report.php"; new Report();'</code-block>
+        <p>
+            <cde>Cannot instantiate abstract class Report</cde>. Then a report that forgot a method,
+            <cde>broken.php</cde>:
+        </p>
+        <code-block example="abstract-classes/broken.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php broken.php</code-block>
+        <p>
+            PHP refuses the class outright, and names the missing method:
+            <cde>Report::rows</cde>. You find out the moment the file loads, not when some page
+            finally calls it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>abstract class Report</cde> declares a class that can't be made directly.</li>
+            <li>
+                <cde>abstract protected function rows(): array;</cde> declares a method every child
+                must write. Note the semicolon where the body would be.
+            </li>
+            <li><cde>class SalesReport extends Report</cde> builds on it.</li>
+            <li>
+                <cde>parent::render()</cde>, inside a child, calls the parent's version of a method
+                the child has overridden.
+            </li>
+            <li>
+                <cde>final</cde> on a method stops children overriding it; on a class, stops anyone
+                extending it.
+            </li>
+            <li>
+                <cde>#[\Override]</cde>, above a method, asks PHP to check that it really does
+                override a parent's method, and to stop if it doesn't.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Change the parent, change every child.</strong> A fix to the parent lands in
+                every class built on it, including the ones that relied on the old behavior.
+            </li>
+            <li>
+                <strong>Deep family trees are hard to read.</strong> When a method is defined in a
+                grandparent and overridden in a parent, finding out what <cde>$this-&gt;rows()</cde>
+                actually runs means reading three files. Keep it to one level where you can.
+            </li>
+            <li>
+                <strong>One parent only.</strong> A class that wants to be two things at once can't
+                extend both. That's a job for interfaces, the next lesson.
+            </li>
+            <li>
+                <strong>Protected isn't private.</strong> Anyone can extend your class and reach
+                every protected property. Use private for what children don't need.
+            </li>
+        </list>
+
+        <side-story title="Substitution">
+            In 1987, Barbara Liskov gave a talk called "Data Abstraction and Hierarchy" that set out
+            what became the Liskov substitution principle: a child should work anywhere its parent
+            does, without surprising the code using it. A report that throws away its title or
+            prints to a file instead of returning a string breaks the rule, even if PHP accepts it.
+            Liskov, one of the first women in the United States to earn a PhD in computer science,
+            won the Turing Award in 2008.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Say it as a sentence">
+            <p>
+                Before you write <cde>extends</cde>, say it as a sentence: "a sales report is a
+                report." If it sounds right, extend. If it sounds wrong ("a mailer is a logger"),
+                you want one object to hold the other instead, and call it.
+            </p>
+        </two-dollars>
+
+        <p>
+            Take every finished method out of an abstract class, and what's left is a list of
+            promises with no code at all. Next: interfaces.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/interfaces">Next: Interfaces &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

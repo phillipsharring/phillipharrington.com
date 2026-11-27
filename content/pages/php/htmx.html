@@ -1,0 +1,193 @@
+<layout name="default" title="HTMX" />
+<page-head>
+    <meta
+        name="description"
+        content="Pages that update in place with no JavaScript of your own: htmx's attributes, a server that answers with pieces of HTML, the HX-Request header, and a search box that still works with JavaScript off. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="htmx, hx-get, hx-post, hx-target, hx-trigger, hx-swap, HX-Request, HTML fragments, partial page updates, progressive enhancement, PHP htmx, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Pages that update in place, with HTML from the server. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Various Web Technologies
+        </p>
+        <heading h1 id="htmx">HTMX</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The search box in fetch() and AJAX took three files: a PHP endpoint that answered in
+            JSON, and a script that turned the JSON back into HTML. htmx does the same job with no
+            script of your own. PHP sends the HTML, already built, and a few attributes on the page
+            say where to put it. It's optional: plenty of sites never need it. But it suits PHP,
+            which has been building HTML on the server all along.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-htmx">What's htmx?</heading>
+        <p>
+            A small JavaScript library, one file, that lets any HTML element make a request and put
+            the answer somewhere on the page. You don't write JavaScript; you add attributes:
+        </p>
+        <list>
+            <li>
+                <cde>hx-get="/search"</cde>, or <cde>hx-post</cde>: the request to make, like a
+                link's <cde>href</cde> or a form's <cde>action</cde>.
+            </li>
+            <li>
+                <cde>hx-trigger="input changed delay:300ms"</cde>: when to make it. Here, 300
+                milliseconds after the visitor stops typing. Buttons and forms default to click and
+                submit.
+            </li>
+            <li>
+                <cde>hx-target="#results"</cde>: which element the answer goes into. Without it, the
+                element that made the request.
+            </li>
+            <li>
+                <cde>hx-swap</cde>: how. The default replaces what's inside the target;
+                <cde>outerHTML</cde> replaces the target itself, and <cde>beforeend</cde> adds to
+                the end.
+            </li>
+        </list>
+
+        <heading h3 id="fragments">Fragments</heading>
+        <p>
+            What the server sends back: not a whole page, just the piece that changes, like a few
+            <cde>&lt;li&gt;</cde> elements. htmx adds the header <cde>HX-Request: true</cde> to its
+            requests, so PHP can tell them apart from a normal visit and answer with the fragment
+            alone.
+        </p>
+
+        <side-story title="intercooler.js">
+            htmx is by Carson Gross, and it isn't his first try at the idea. It came out in 2020 as
+            the successor to intercooler.js, a library of his from years earlier that did the same
+            thing with jQuery underneath. htmx dropped the dependency.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The page loads htmx with a <cde>&lt;script&gt;</cde> tag.</li>
+            <li>htmx reads the page and finds the elements with <cde>hx-</cde> attributes.</li>
+            <li>
+                The trigger happens. htmx sends the request, with the element's value if it has a
+                name, and <cde>HX-Request: true</cde>.
+            </li>
+            <li>PHP sees the header, and answers with only the fragment.</li>
+            <li>htmx swaps it into the target. Nothing else on the page changes.</li>
+        </ol>
+        <p>
+            The fragment is HTML going straight into the page, so everything from
+            <lnk to="/php/xss">XSS and Escaping Output</lnk> applies, every time.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> escape every
+            value in the fragment, exactly as you would in a whole page. And an
+            <cde>hx-post</cde> that changes something is a POST that changes something, with the
+            same <lnk to="/php/csrf">CSRF</lnk> protection as a form.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            The color search again, in one PHP file. Without JavaScript, it's a plain form. With
+            htmx, it updates as you type. In a folder, make a <cde>public</cde> folder, and in it,
+            <cde>index.php</cde>:
+        </p>
+        <code-block example="htmx/public/index.php" />
+        <p>Start it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and type <cde>b</cde>. The list fills in without a
+            reload. Watch the Network tab: each pause in typing is one request, and the answer is
+            just the list items. Ask the way htmx does, then the way a plain browser does:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -H 'HX-Request: true' 'http://localhost:8000/?q=b'
+curl 'http://localhost:8000/?q=b'</code-block>
+        <p>
+            The first is three <cde>&lt;li&gt;</cde> lines. The second is the whole page, with the
+            same three already in it. Turn JavaScript off in your browser, type <cde>b</cde> and
+            press Search: the form still works, the old-fashioned way, because it was a real form
+            all along.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$_SERVER['HTTP_HX_REQUEST']</cde> is <cde>'true'</cde> when htmx is asking.
+                It's a header, so it's only a hint about what to send back, never a reason to trust
+                the request.
+            </li>
+            <li>
+                A function that renders the fragment, like <cde>results()</cde>, called both for the
+                fragment and inside the full page, keeps the two from drifting apart.
+            </li>
+            <li>
+                <cde>header('Vary: HX-Request')</cde>, because one URL now has two answers, and a
+                cache must not mix them up.
+            </li>
+            <li>
+                Response headers like <cde>HX-Redirect</cde> and <cde>HX-Trigger</cde> let PHP tell
+                htmx to go to another page or to fire an event.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A fragment needs escaping like a page.</strong> It's easy to forget in a
+                function that prints a few list items. <cde>htmlspecialchars()</cde> on every value.
+            </li>
+            <li>
+                <strong
+                    >Without <cde>Vary</cde>, a cache can serve the fragment as the page.</strong>
+                Someone opens the URL and gets three bare list items, no page around them, because
+                the cache kept htmx's answer.
+            </li>
+            <li>
+                <strong>Error responses aren't swapped in.</strong> By default htmx ignores a 4xx or
+                5xx answer, and the page just doesn't change. Show errors with a 200 and a message
+                in the fragment, or tell htmx how to handle them.
+            </li>
+            <li>
+                <strong>Pin the version.</strong> Load an exact version, like
+                <cde>htmx.org@2.0.4</cde>, never "latest," and add the <cde>integrity</cde> hash so
+                the browser refuses a file that's been changed.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Build it without htmx first">
+            <p>
+                Make the page work as plain links and forms, the way Forms did, and add the
+                <cde>hx-</cde> attributes last. If htmx fails to load, the page still works, and
+                each attribute is a small change you can take back out.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's the web's technologies, from HTML back to HTML. What's left is how you write your
+            own code, so that other people can read it, starting with the rules most PHP code
+            already follows. Next, in Style: Coding Standards.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/coding-standards">Next: Coding Standards &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

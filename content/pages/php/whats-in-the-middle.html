@@ -141,7 +141,8 @@ curl http://localhost:8000</code-block>
         <p>
             PHP gets <cde>1.2.3.4</cde> first, then your real address. The proxy didn't replace what
             you sent; it added what it saw to the end. Everything before the last entry came from
-            the client, which means from anyone. <strong>Never trust input,</strong> and that
+            the client, which means from anyone.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and that
             includes headers. Trust only the entry your own proxy added: the last one, or the last
             few if you run several layers. <cde>Ctrl+C</cde> stops both.
         </p>

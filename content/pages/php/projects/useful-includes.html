@@ -1,0 +1,202 @@
+<layout name="default" title="Useful Includes" />
+<page-head>
+    <meta
+        name="description"
+        content="A small site whose pages share one bootstrap file, one set of settings, a few helper functions, a header and a footer, all kept outside the web root. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP includes, require, require_once, bootstrap file, config file, header and footer, helper functions, __DIR__, document root, PHP project, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Pages that share one bootstrap file, a header and a footer. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="useful-includes">Useful Includes</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A one-page site is easy. The second page is where it starts: the same header, the same
+            navigation, the same footer with its view source link, and the same settings at the top,
+            copied into both. Change the site's name and you change it everywhere, by hand, and miss
+            one.
+        </p>
+        <p>
+            This project pulls the shared parts into their own files and has every page include
+            them: one bootstrap file that sets things up, a settings file, a couple of helper
+            functions, a header and a footer. All of them live outside <cde>public</cde>, where only
+            your code can reach them.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/includes">Includes</lnk>: <cde>require</cde>, <cde>require_once</cde>,
+                and a file that returns a value.
+            </li>
+            <li><lnk to="/php/functions">Functions</lnk>: small helpers you call everywhere.</li>
+            <li>
+                <lnk to="/php/document-root">Document Root</lnk>: <cde>__DIR__</cde>,
+                <cde>dirname()</cde>, and keeping code out of <cde>public</cde>.
+            </li>
+            <li>
+                <lnk to="/php/projects/view-source-link">View Source Link</lnk>: the viewer, moved
+                in.
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+        <p>The finished project looks like this:</p>
+        <!-- prettier-ignore -->
+        <code-block>project/
+    src/
+        bootstrap.php    every page requires this first
+        config.php       settings
+        functions.php    helpers
+    templates/
+        header.php
+        footer.php
+    public/              the web root
+        index.php
+        about.php
+        source.php</code-block>
+
+        <heading h3 id="the-settings">The Settings</heading>
+        <p>
+            <cde>src/config.php</cde> holds the facts about the site that more than one page needs.
+            It doesn't echo anything; it <cde>return</cde>s an array, so whoever includes it gets
+            the settings as a value:
+        </p>
+        <code-block example="project-useful-includes/src/config.php" />
+
+        <heading h3 id="the-helpers">The Helpers</heading>
+        <p>
+            <cde>src/functions.php</cde> holds two functions. <cde>e()</cde> is
+            <cde>htmlspecialchars()</cde> with a short name, because you'll escape output so often
+            that a long name turns into a reason to skip it. <cde>nav_link()</cde> builds a link and
+            marks the current page with <cde>aria-current</cde>, which screen readers announce and
+            which you can style:
+        </p>
+        <code-block example="project-useful-includes/src/functions.php" />
+
+        <heading h3 id="the-bootstrap">The Bootstrap</heading>
+        <p>
+            <cde>src/bootstrap.php</cde> is the one file every page requires first. It loads the
+            helpers and the settings, and does the setup every page needs, like the time zone from
+            the Home Page project. Anything else every page should do goes here, once:
+        </p>
+        <code-block example="project-useful-includes/src/bootstrap.php" />
+
+        <heading h3 id="header-and-footer">The Header and Footer</heading>
+        <p>
+            <cde>templates/header.php</cde> is everything above a page's content. It expects two
+            variables to exist: <cde>$config</cde>, from the bootstrap, and <cde>$page</cde>, from
+            the page that includes it:
+        </p>
+        <code-block example="project-useful-includes/templates/header.php" />
+        <p>
+            <cde>templates/footer.php</cde> closes what the header opened, and carries the view
+            source link:
+        </p>
+        <code-block example="project-useful-includes/templates/footer.php" />
+
+        <heading h3 id="the-pages">The Pages</heading>
+        <p>
+            Now a page is three steps: require the bootstrap, say what this page is, and put its own
+            content between the header and the footer. <cde>public/index.php</cde>:
+        </p>
+        <code-block example="project-useful-includes/public/index.php" />
+        <p><cde>public/about.php</cde> is the same shape, with its own content:</p>
+        <code-block example="project-useful-includes/public/about.php" />
+        <p>
+            Every path starts from <cde>dirname(__DIR__)</cde>, the project folder, so it works no
+            matter where PHP was started from.
+        </p>
+
+        <heading h3 id="the-viewer">The Viewer, Moved In</heading>
+        <p>
+            <cde>public/source.php</cde> is the View Source Link viewer, now using the bootstrap and
+            the templates, with the shared files on its allow list so visitors can see how the
+            pieces fit. <strong>Never trust input</strong> still applies: the query string picks a
+            key, never a path, and <cde>config.php</cde> stays off the list.
+        </p>
+        <code-block example="project-useful-includes/public/source.php" />
+
+        <heading h3 id="run-it">Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and click between Home and About. Same header,
+            same footer, and the current page marked in the navigation. Change
+            <cde>site_name</cde> in <cde>config.php</cde> and reload: it changes in both pages and
+            both titles. Then try to fetch the shared files through the web:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000/src/config.php
+curl http://localhost:8000/templates/header.php</code-block>
+        <p>
+            Neither one is there. They're outside <cde>public</cde>, so the server can't hand them
+            out, and you get the home page instead.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Relative paths in an include are a guess.</strong>
+                <cde>require 'src/bootstrap.php'</cde> is looked up in several places, the include
+                path and the current directory among them, and the current directory depends on how
+                PHP was started. Build every path from <cde>__DIR__</cde>.
+            </li>
+            <li>
+                <strong>Functions can only be declared once.</strong> Include
+                <cde>functions.php</cde> twice and PHP stops with "Cannot redeclare". That's what
+                <cde>require_once</cde> is for. Settings files that return a value are the opposite:
+                plain <cde>require</cde>, since you want the value each time.
+            </li>
+            <li>
+                <strong>An include in the web root can be run on its own.</strong> Put
+                <cde>header.php</cde> in <cde>public</cde>, and anyone can visit it directly, with
+                none of the variables it expects. At best it shows warnings; at worst, paths and
+                settings. And a file named <cde>config.inc</cde> isn't <cde>.php</cde>, so the
+                server sends it as text. Keep includes outside <cde>public</cde>.
+            </li>
+            <li>
+                <strong>A header and footer split one tag across two files.</strong> The header
+                opens <cde>&lt;main&gt;</cde> and the footer closes it, and neither file makes sense
+                alone. It works, and it gets fragile as the site grows. The next project fixes it.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="One file runs before everything">
+            <p>
+                A bootstrap that every page requires is the place for anything you'd otherwise
+                forget on one page: the time zone, error settings, security headers, starting a
+                session. Put it there once, and the page you add next year gets it for free.
+            </p>
+        </two-dollars>
+
+        <p>
+            A header that opens a tag and a footer that closes it is two halves of one thing. Next:
+            a layout, which keeps it whole.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/layout">Next: Layout &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,219 @@
+<layout name="default" title="Redirecting" />
+<page-head>
+    <meta
+        name="description"
+        content="Redirects done right: a 301 for a page that moved, a 303 after a form, and a 'send me back where I was' that an attacker can't point at their own site. Build the open redirect, use it for phishing, then fix it with a local path check. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP redirect, header Location, 301 vs 302 vs 303, Post/Redirect/Get, open redirect, phishing, return URL, next parameter, exit after redirect, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Redirects, and the open redirect that turns your site into a phishing link. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="redirecting">Redirecting</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            A redirect is a response that says "not here, go there": a status code in the 300s and a
+            <cde>Location</cde> header. You've used one already, after every form, so a reload
+            doesn't post again. This project uses two more: one for a page that moved, and one for a
+            settings form that sends you back to whatever page you were on.
+        </p>
+        <p>
+            That last one is where it goes wrong. "Back to where you were" means the request says
+            where to go. Let it say anywhere, and your site becomes a link that starts on your
+            domain and ends on someone else's. That's an open redirect, and you'll build one, use it
+            the way a phisher would, then close it.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li>
+                <lnk to="/php/request-and-response">Request and Response</lnk>: status codes, the
+                <cde>Location</cde> header, Post/Redirect/Get.
+            </li>
+            <li>
+                <lnk to="/php/anatomy-of-a-url">Anatomy of a URL</lnk>: what makes a URL point at
+                another site.
+            </li>
+            <li>
+                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: the destination is input.
+            </li>
+            <li><lnk to="/php/projects/cookies">Cookies</lnk>: the setting being saved.</li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="two-helpers">Two Helpers</heading>
+        <p>
+            <cde>src/redirect.php</cde> has <cde>redirect()</cde>, which sends the header and stops,
+            <cde>local_path()</cde>, which you'll need in Fix It, and <cde>theme()</cde>, which
+            reads the saved setting through an allow list:
+        </p>
+        <code-block example="project-redirecting/src/redirect.php" />
+        <p>
+            <cde>redirect()</cde> is declared as returning <cde>never</cde>, which PHP enforces: it
+            must end the script. That's the point. A <cde>header('Location: ...')</cde> without an
+            <cde>exit</cde> after it sends the browser away and keeps running the page anyway.
+        </p>
+
+        <heading h3 id="a-moved-page">A Moved Page</heading>
+        <p>
+            The site has a home page and an About page, and the About page used to be at
+            <cde>/about-us.php</cde>. Old links and search results still point there, so the old
+            address answers with a <cde>301 Moved Permanently</cde>:
+        </p>
+        <code-block example="project-redirecting/public/about-us.php" />
+        <p>The home page, <cde>public/index.php</cde>, and <cde>public/about.php</cde>:</p>
+        <code-block example="project-redirecting/public/index.php" />
+        <code-block example="project-redirecting/public/about.php" />
+
+        <heading h3 id="the-naive-settings">The Naive Settings Page</heading>
+        <p>
+            Each page links to the settings with <cde>?back=</cde> saying where it is. The settings
+            page keeps that in a hidden field, saves the theme, and sends you back. Build the naive
+            version as <cde>public/naive-settings.php</cde>:
+        </p>
+        <code-block example="project-redirecting/public/naive-settings.php" />
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>Check the moved page first:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/about-us.php</code-block>
+        <p>
+            <cde>301 Moved Permanently</cde> and <cde>Location: /about.php</cde>. Then open
+            <cde>http://localhost:8000/naive-settings.php?back=/about.php</cde> in the browser, pick
+            Dark, and save. You land back on About. It works.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            <strong>Never trust input,</strong> and <cde>back</cde> is input, from the query string
+            and then the form. Give it someone else's site:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -d 'theme=dark&amp;back=https://evil.example/login' http://localhost:8000/naive-settings.php</code-block>
+        <p>
+            <cde>303 See Other</cde>, <cde>Location: https://evil.example/login</cde>. Your server
+            just sent a visitor to a site you've never heard of.
+        </p>
+        <p>Here's how that gets used. An attacker sends this link to your users:</p>
+        <!-- prettier-ignore -->
+        <code-block>http://localhost:8000/naive-settings.php?back=https://evil.example/login</code-block>
+        <p>
+            It's your domain, so it looks safe, and anyone who checks the link before clicking sees
+            your name. They land on your real settings page, change something, press Save, and your
+            site sends them to <cde>evil.example/login</cde>: a copy of your sign-in page that says
+            "your session expired." They type their password into the attacker's form. Spam filters
+            and link checkers also tend to trust a link to a known domain, which is why phishers go
+            looking for open redirects on big sites.
+        </p>
+
+        <!-- Fix it -->
+        <heading h2 id="fix-it">Fix It</heading>
+        <p>
+            The settings page only ever needs to send people somewhere on your own site. So the fix
+            is <cde>local_path()</cde>, from the helpers: the value must start with one
+            <cde>/</cde>, which makes it a path on this site, and it's refused if it's anything
+            sneakier:
+        </p>
+        <list>
+            <li>
+                <strong><cde>//evil.example</cde></strong> starts with a slash, but two slashes make
+                it a scheme-relative URL: "the same scheme, on this other host."
+            </li>
+            <li>
+                <strong><cde>/\evil.example</cde></strong> looks like a path, but browsers treat a
+                backslash in a URL as a forward slash, so it's <cde>//evil.example</cde> again.
+            </li>
+            <li>
+                <strong>A tab or newline,</strong> as in <cde>/%09/evil.example</cde>: browsers
+                strip them out of URLs, which can leave two slashes behind.
+            </li>
+        </list>
+        <p>
+            Anything refused gets the fallback, the home page. Notice what
+            <cde>local_path()</cde> doesn't do: it doesn't try to spot bad sites. It accepts one
+            narrow shape and turns down everything else. Make the fixed page,
+            <cde>public/settings.php</cde>:
+        </p>
+        <code-block example="project-redirecting/public/settings.php" />
+        <p>
+            It checks <cde>back</cde> twice: when the page is shown, so the hidden field never holds
+            a foreign address, and when the form is posted, because the posted value is input too.
+            Attack it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -d 'theme=dark&amp;back=https://evil.example/login' http://localhost:8000/settings.php
+curl -i -d 'theme=dark&amp;back=//evil.example/login' http://localhost:8000/settings.php
+curl -i --data-urlencode 'back=/\evil.example/login' -d 'theme=dark' http://localhost:8000/settings.php</code-block>
+        <p>
+            All three: <cde>Location: /</cde>. A real path, like <cde>/about.php?x=1</cde>, still
+            goes through.
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Pick the right code.</strong> <cde>301</cde> is permanent, and browsers
+                cache it, sometimes for a very long time, so get it right or use
+                <cde>302</cde> while you're testing. <cde>303</cde> after a form means "now GET
+                this." <cde>307</cde> and <cde>308</cde> are the temporary and permanent ones that
+                keep the method, so a POST stays a POST.
+            </li>
+            <li>
+                <strong>Checking the host with string tricks fails.</strong>
+                <cde>str_starts_with($url, 'https://example.com')</cde> also matches
+                <cde>https://example.com.evil.example</cde>. If you must allow other sites, parse
+                the URL and compare the host against an allow list, exactly.
+            </li>
+            <li>
+                <strong>Redirecting to <cde>javascript:</cde>.</strong> If the same value is ever
+                used as a link's <cde>href</cde> instead of a header,
+                <cde>javascript:alert(1)</cde> runs a script when it's clicked. A path that has to
+                start with <cde>/</cde> can't be that.
+            </li>
+            <li>
+                <strong>Newlines in a header.</strong> PHP's <cde>header()</cde> refuses a value
+                with a newline in it, so <cde>back</cde> can't add headers of its own. Other
+                languages and old PHP weren't always so careful.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Store the path, not the URL">
+            <p>
+                When you remember where someone was, keep only the path and query, like
+                <cde>/about.php?tab=2</cde>, never a whole URL with a scheme and host. A value that
+                never had a host in it can't be pointed at someone else's, and it keeps working when
+                your domain changes.
+            </p>
+        </two-dollars>
+
+        <p>
+            The fixed settings page escapes the hidden field before it goes into the HTML. The next
+            project is what happens when a page forgets to. Next: a guestbook.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/guestbook">Next: Guestbook &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

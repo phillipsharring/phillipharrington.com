@@ -1,0 +1,273 @@
+<layout name="default" title="XSS and Escaping Output" />
+<page-head>
+    <meta
+        name="description"
+        content="Cross-site scripting: input printed into a page becomes the page, scripts and all. The three places it gets in, and the escaping and checks that keep it out. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="XSS, cross-site scripting, htmlspecialchars, ENT_QUOTES, escaping output, javascript: URLs, stored XSS, reflected XSS, HttpOnly, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Input printed into a page becomes the page. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Security</p>
+        <heading h1 id="xss">XSS and Escaping Output</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/sql-injection">SQL Injection</lnk> was input pasted into a query, where
+            the database ran it. XSS is input pasted into a page, where the visitor's browser runs
+            it. The attacker's code runs on your site, as your site, for whoever is looking at the
+            page. It can read what they see, act as them, and send it all somewhere else.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-xss">What's XSS?</heading>
+        <p>
+            Cross-site scripting. Your page prints something that came from input, and that input
+            contains HTML. The browser can't tell your HTML from theirs; it gets one page and draws
+            all of it. If theirs has a <cde>&lt;script&gt;</cde> in it, the script runs, with
+            everything your own scripts can do.
+        </p>
+
+        <heading h3 id="stored-and-reflected">Stored and Reflected</heading>
+        <list>
+            <li>
+                <strong>Reflected</strong>: the input comes in the request and goes straight back
+                out, like a search page that says "You searched for ...". The attacker sends the
+                victim a link with the script in it.
+            </li>
+            <li>
+                <strong>Stored</strong>: the input is saved, a comment or a profile name, and shown
+                to everyone who visits. The attacker posts once, and the page attacks every reader.
+                The <lnk to="/php/projects/guestbook">Guestbook</lnk> project does this one.
+            </li>
+        </list>
+
+        <heading h3 id="whats-escaping">What's Escaping?</heading>
+        <p>
+            Writing a character so it means itself instead of its job. In HTML,
+            <cde>&lt;</cde> starts a tag; <cde>&amp;lt;</cde> is a less-than sign that the browser
+            shows and never runs. <cde>htmlspecialchars()</cde> does this for the five characters
+            that matter: <cde>&lt;</cde>, <cde>&gt;</cde>, <cde>&amp;</cde>, <cde>"</cde> and
+            <cde>'</cde>. Each place output goes has its own escape: HTML here, prepared statements
+            for SQL, <cde>json_encode()</cde> for JavaScript, <cde>rawurlencode()</cde> for a piece
+            of a URL.
+        </p>
+
+        <side-story title="Why Not CSS?">
+            Microsoft's security engineers gave the attack its name around 2000, for a script
+            arriving from one site and running in the context of another. The obvious abbreviation
+            was already taken by Cascading Style Sheets, so it became XSS.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The attacker gets their HTML into something your page prints: a query string, a form
+                field, a comment saved last week.
+            </li>
+            <li>Your page prints it as-is. The browser parses it as part of your page.</li>
+            <li>
+                Their script runs on your site's origin. It can read the page, read any cookie
+                without <cde>HttpOnly</cde>, fill in and submit forms, and send what it finds to a
+                server of theirs.
+            </li>
+        </ol>
+        <p>
+            There are three places in a page where input commonly goes, and each one breaks
+            differently:
+        </p>
+        <list>
+            <li>
+                <strong>Between tags</strong>, like <cde>&lt;p&gt;Hello, ...&lt;/p&gt;</cde>: a
+                <cde>&lt;script&gt;</cde> tag gets in.
+            </li>
+            <li>
+                <strong>Inside an attribute</strong>, like <cde>value="..."</cde>: a
+                <cde>"</cde> closes your attribute, and the next one, like <cde>onfocus</cde>, is
+                theirs.
+            </li>
+            <li>
+                <strong>As a URL</strong>, like <cde>href="..."</cde>: <cde>javascript:</cde> at the
+                start makes the link run code when clicked. There's nothing in it to escape, so
+                escaping can't help. The address has to be checked.
+            </li>
+        </list>
+        <p>
+            So the rule: <strong>never trust input</strong>, and escape everything you print, every
+            time, whether it came from the request or the database. Then check the things escaping
+            can't fix.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A profile preview: type your name and your website, and see how they'll look. Build it
+            the naive way first. In a folder, make <cde>naive.php</cde>:
+        </p>
+        <code-block example="xss/naive.php" />
+        <p>
+            It also sets a pretend login cookie, the way a real site would, so there's something
+            worth stealing. Start the server:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000/naive.php</cde>, type a name, and press Preview. It says
+            hello, and the name stays in the box. Now it's time to break it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')</cde>.
+                <cde>ENT_QUOTES</cde> escapes both kinds of quote, for attributes, and
+                <cde>ENT_SUBSTITUTE</cde> replaces invalid
+                <lnk to="/php/text-and-utf-8">UTF-8</lnk> instead of returning an empty string.
+                Since PHP 8.1 those are the defaults; saying them costs nothing.
+            </li>
+            <li>
+                Wrap it in a short function, like <cde>e()</cde>, so escaping is the easy thing to
+                type.
+            </li>
+            <li>
+                Always quote attributes: <cde>value="&lt;?= e($name) ?&gt;"</cde>. An unquoted
+                attribute ends at a space, which <cde>htmlspecialchars()</cde> doesn't escape.
+            </li>
+            <li>
+                <cde>parse_url($url, PHP_URL_SCHEME)</cde> and an allow list of <cde>http</cde> and
+                <cde>https</cde>, for any address that goes in an <cde>href</cde> or <cde>src</cde>.
+            </li>
+            <li>
+                <cde
+                    >json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS |
+                    JSON_HEX_QUOT)</cde>
+                to put a value inside a <cde>&lt;script&gt;</cde>, so a
+                <cde>&lt;/script&gt;</cde> in the data can't end your script early.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Escape on the way out, not on the way in.</strong> Store what people typed,
+                as they typed it, and escape it when you print it. Escaped text in the database gets
+                escaped twice on the page (<cde>&amp;amp;lt;</cde>), and is wrong in an email or a
+                CSV.
+            </li>
+            <li>
+                <strong>The database is input.</strong> A name that was safe to store is not safe to
+                print. Every value from a query gets escaped like every value from a form.
+            </li>
+            <li>
+                <strong><cde>strip_tags()</cde> is not escaping.</strong> It removes things that
+                look like tags, mangles honest text like <cde>a &lt;b</cde>, and does nothing about
+                a quote in an attribute.
+            </li>
+            <li>
+                <strong>Letting people write HTML takes a real sanitizer.</strong> If comments may
+                contain bold and links, use a library built for it, such as HTML Purifier, with an
+                allow list of tags. Never write that filter yourself.
+            </li>
+            <li>
+                <strong>HttpOnly limits the damage, not the hole.</strong> With it, a script can't
+                read the login cookie, but it can still act as the visitor on the page. See
+                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>.
+            </li>
+        </list>
+
+        <!-- Break it -->
+        <heading h2 id="break-it">Break It</heading>
+        <p>
+            <strong>Never trust input.</strong> With Try It running, open this address in your
+            browser (it can take the characters as they are):
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>http://localhost:8000/naive.php?name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code-block>
+        <p>
+            A box pops up that says <cde>session=pretend-session-id</cde>. That's your login cookie,
+            read by a script that came from the link. A real attacker's script wouldn't show it to
+            you; it would send it to their own server, and they'd be logged in as you. View the
+            page's source and the script is right there, in the page, as if you'd written it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>&lt;p&gt;Hello, &lt;script&gt;alert(document.cookie)&lt;/script&gt;.&lt;/p&gt;</code-block>
+        <p>Next, the attribute. This name has no tags in it at all:</p>
+        <!-- prettier-ignore -->
+        <code-block>http://localhost:8000/naive.php?name=" autofocus onfocus="this.onfocus=null;alert(document.cookie)</code-block>
+        <p>
+            The same box. The quote closed <cde>value=""</cde>, and the rest became two attributes
+            of the attacker's: focus this field as soon as the page loads, and run a script when
+            it's focused (once, which is what the <cde>this.onfocus=null</cde> is for). Last, the
+            link:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>http://localhost:8000/naive.php?website=javascript:alert(document.cookie)</code-block>
+        <p>Click "Your website," and the box again.</p>
+
+        <heading h3 id="fix-it">Fix It</heading>
+        <p>
+            Escape every value with one small function, and only link addresses that start with
+            <cde>http://</cde> or <cde>https://</cde>. Make <cde>index.php</cde>:
+        </p>
+        <code-block example="xss/index.php" />
+        <p>
+            Open the same three addresses with <cde>/?</cde> in place of <cde>/naive.php?</cde>. The
+            first shows the script as text, after "Hello,". The second fills the box with the whole
+            string, quotes and all, and nothing runs. In the source, they're
+            <cde>&amp;lt;script&amp;gt;</cde> and <cde>&amp;quot;</cde>. The third says the website
+            isn't a web address, and there's no link to click.
+        </p>
+        <p>
+            Note what fixed the third one: not escaping, which left
+            <cde>javascript:</cde> untouched, but a check of what the value is allowed to be.
+            Escaping and checking are the two halves of
+            <lnk to="/php/never-trust-input">Never Trust Input</lnk>, and this page needs both.
+        </p>
+
+        <side-story title="Samy Is My Hero">
+            In October 2005, a MySpace user named Samy Kamkar found a way to get JavaScript into his
+            profile past the site's filters. Anyone who viewed it ran the script, which added him as
+            a friend, and copied itself into their profile, with the line "but most of all, samy is
+            my hero." Every infected profile infected its visitors. In about a day, more than a
+            million people had run it, and MySpace went offline to clean it up. It's usually called
+            the first big XSS worm.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Make the safe way the short way">
+            <p>
+                Name the escaping function <cde>e()</cde> and the unsafe way
+                <cde>&lt;?= $name ?&gt;</cde> is only four characters shorter than
+                <cde>&lt;?= e($name) ?&gt;</cde>. Then search your templates for
+                <cde>&lt;?= $</cde>: every hit is a value printed without escaping, and should be a
+                short list you can explain.
+            </p>
+        </two-dollars>
+
+        <p>
+            XSS gets the attacker's code onto your page. The next attack doesn't need that. It makes
+            the visitor's own browser send a request they never meant to. Next: CSRF.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/csrf">Next: CSRF &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

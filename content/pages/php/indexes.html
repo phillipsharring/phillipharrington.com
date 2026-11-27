@@ -1,0 +1,226 @@
+<layout name="default" title="Indexes" />
+<page-head>
+    <meta
+        name="description"
+        content="Why a query that was instant with a hundred rows takes seconds with a million, and the fix: an index. What one is, how to see whether a query uses it with EXPLAIN, and the ways to make it stop. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="MySQL index, CREATE INDEX, unique index, composite index, EXPLAIN, full table scan, B-tree, slow query, leftmost prefix, LIKE wildcard, query performance, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How a database finds one row in a million. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Database</p>
+        <heading h1 id="indexes">Indexes</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Every table so far has had a handful of rows, and every query has been instant. Real
+            tables grow. A login form that looks up an email address among a million customers will,
+            unless you've told the database otherwise, read all million to find one. It works on
+            your laptop, with ten rows, and falls over in production, a year in. The fix is usually
+            one line.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-index">What's an Index?</heading>
+        <p>
+            A sorted copy of one or more columns, with a pointer from each value back to its row. It
+            works like the index at the back of a book: to find "foreign keys," you don't read every
+            page, you look it up under F and turn to the page it gives you. Without an index, the
+            database reads every row and checks each one. That's called a full table scan.
+        </p>
+        <p>
+            The primary key is always indexed. Foreign keys get one too, in MySQL. Anything else you
+            search by, sort by, or join on needs one of its own.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>CREATE INDEX `customers_city_index`
+ON `customers` (`city`);</code-block>
+
+        <heading h3 id="unique-indexes">Unique Indexes</heading>
+        <p>
+            An index that also refuses duplicates. An email address that has to belong to one
+            customer gets a <cde>UNIQUE</cde> index, and then it's fast to look up and impossible to
+            sign up with twice, even if two signups arrive in the same instant.
+        </p>
+
+        <heading h3 id="composite-indexes">Indexes on More Than One Column</heading>
+        <p>
+            An index can cover several columns, sorted by the first, then the second, like a phone
+            book sorted by last name, then first name. An index on
+            <cde>(`city`, `created_at`)</cde> helps a search by city, and by city and date together.
+            It doesn't help a search by date alone, any more than a phone book helps you find
+            everyone named Maria. The database can use the columns from the left, and stops at the
+            first one your query skips.
+        </p>
+
+        <side-story title="What the B Stands For">
+            The kind of index MySQL uses is a B-tree, a structure Rudolf Bayer and Edward McCreight
+            described in 1970, while working at Boeing's research labs. It keeps values sorted in a
+            shallow tree, so finding one among millions takes a few steps. Neither of them ever
+            settled what the B stands for. Boeing, balanced and Bayer have all been suggested.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>A query arrives: <cde>WHERE `email` = 'user123456@example.com'</cde>.</li>
+            <li>
+                The database looks at the indexes on the table, and its statistics about them, and
+                plans the cheapest way to find the rows.
+            </li>
+            <li>
+                With an index on <cde>email</cde>, it walks the tree straight to that value and
+                reads one row. Without one, it reads them all.
+            </li>
+            <li>
+                On every insert, update and delete, it updates the indexes too, so they always match
+                the table.
+            </li>
+        </ol>
+        <p>
+            Step four is the cost. Every index makes writes a little slower and takes space on disk.
+            That's almost always worth it for a column you search by, and never worth it for one you
+            don't.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Two hundred thousand customers, and no index on their email addresses. The same
+            <cde>compose.yml</cde>, <cde>Dockerfile</cde> and <cde>db.php</cde> as in SQL, and an
+            <cde>init.sql</cde> that makes up the customers:
+        </p>
+        <code-block example="indexes/init.sql" />
+        <p>Then <cde>find.php</cde>, which looks one up by email and times the query:</p>
+        <code-block example="indexes/find.php" />
+        <p>Start the database, and find someone:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up -d --wait db
+docker compose run --rm php php find.php user123456@example.com</code-block>
+        <p>
+            Found, in some tens of milliseconds, depending on your computer. That sounds fine until
+            you multiply it by every login, on every server. Ask the database how it found her. Open
+            the <cde>mysql</cde> command and put <cde>EXPLAIN</cde> in front of the query:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
+        <!-- prettier-ignore -->
+        <code-block>EXPLAIN SELECT `id`, `name`
+FROM `customers`
+WHERE `email` = 'user123456@example.com';</code-block>
+        <p>
+            Two columns matter. <cde>type</cde> is <cde>ALL</cde>: a full table scan.
+            <cde>rows</cde> is about 200,000: how many it expects to read, to find one. Now add the
+            index. Email addresses here have to be unique, so make it a unique one:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>CREATE UNIQUE INDEX `customers_email_unique`
+ON `customers` (`email`);</code-block>
+        <p>
+            Run the same <cde>EXPLAIN</cde>. Now <cde>type</cde> is <cde>const</cde>,
+            <cde>key</cde> names your index, and <cde>rows</cde> is 1. Type <cde>exit</cde>, and run
+            <cde>find.php</cde> again: a fraction of a millisecond. Same query, same data, a hundred
+            times faster or more, and the gap grows with the table.
+        </p>
+        <p>
+            Back in <cde>mysql</cde>, two ways to throw the index away again without dropping it.
+            <cde>EXPLAIN</cde> each:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>EXPLAIN SELECT `id`, `name`
+FROM `customers`
+WHERE LOWER(`email`) = 'user123456@example.com';
+
+EXPLAIN SELECT `id`, `name`
+FROM `customers`
+WHERE `email` LIKE '%123456@example.com';</code-block>
+        <p>
+            Both are back to <cde>ALL</cde>. The index is sorted by <cde>email</cde>, not by
+            <cde>LOWER(`email`)</cde>, and a search that starts with a wildcard has nowhere in the
+            sorted list to start. <cde>docker compose down -v</cde> when you're done.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Indexes live in the database, not in PHP. Your code doesn't change; the query just
+                gets faster.
+            </li>
+            <li>
+                <cde>hrtime(true)</cde> gives a time in nanoseconds, for measuring how long
+                something took. Measure before and after, not by feel.
+            </li>
+            <li>
+                A unique index turns a duplicate into a <cde>PDOException</cde> with MySQL error
+                1062, which is the reliable way to catch "that email is taken": checking first and
+                then inserting leaves a gap for a second signup to slip through.
+            </li>
+            <li>
+                <cde>filter_var($email, FILTER_VALIDATE_EMAIL)</cde> before the lookup.
+                <strong>Never trust input</strong>, even when the only thing it can do is ask.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Wrapping a column in a function hides it from its index.</strong>
+                <cde>LOWER(`email`)</cde>, <cde>YEAR(`created_at`)</cde>, <cde>DATE(...)</cde>: each
+                one makes the database work out the value for every row. Compare the bare column
+                instead: <cde>`created_at` &gt;= '2026-01-01'</cde>. For case, you usually don't
+                need <cde>LOWER()</cde> at all. Character Sets and Collation explains why.
+            </li>
+            <li>
+                <strong>A leading wildcard can't use an index.</strong>
+                <cde>LIKE 'user12%'</cde> can; <cde>LIKE '%12'</cde> can't. Searching inside text
+                takes a different tool, like MySQL's full-text indexes.
+            </li>
+            <li>
+                <strong>Small tables lie.</strong> With a hundred rows, a full scan is instant, and
+                you won't notice the missing index until there's real data. Test with a realistic
+                number of rows, the way <cde>init.sql</cde> does.
+            </li>
+            <li>
+                <strong>Indexes aren't free.</strong> Each one slows every write a little. Index
+                what you search, sort and join on, and leave the rest alone.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Let the database tell you">
+            <p>
+                MySQL can log every query that takes longer than a limit you set: turn on
+                <cde>slow_query_log</cde>, and set <cde>long_query_time</cde> to, say, half a
+                second. Then read the log once a week, and <cde>EXPLAIN</cde> whatever shows up. The
+                database already knows which of your queries are slow. All you have to do is ask.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>USER123456@EXAMPLE.COM</cde> would have found the same customer, capitals and all,
+            without any <cde>LOWER()</cde>. Whether two pieces of text count as equal is a setting.
+            Next: character sets and collation.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/character-sets-and-collation"
+                >Next: Character Sets and Collation &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

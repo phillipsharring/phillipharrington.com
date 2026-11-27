@@ -1,0 +1,208 @@
+<layout name="default" title="Affiliate Program" />
+<page-head>
+    <meta
+        name="description"
+        content="Pay people for sending you customers: affiliate links checked against a table, a 30-day cookie, a clean redirect, commissions in whole cents with basis points, and the checks that stop forged codes and self-referrals. A project in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP affiliate program, referral links, ref parameter, tracking cookie, attribution, commission, basis points, intdiv, self-referral, open redirect, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Pay people for sending you customers, in whole cents. A project in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Projects</p>
+        <heading h1 id="affiliate-program">Affiliate Program</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            An affiliate program pays people for sending you customers. A blogger links to your
+            product with their own code in the link, and if someone follows it and buys, the blogger
+            gets a cut. You'll build the pieces: the link, the cookie that remembers who sent a
+            visitor, and the commission worked out when an order arrives.
+        </p>
+        <p>
+            Money is changing hands based on a code in a URL and a cookie in a browser, both of
+            which anyone can edit. So the work is mostly in the checks: which codes count, who can
+            earn on which orders, and how the cents are rounded.
+        </p>
+
+        <!-- What you'll use -->
+        <heading h2 id="what-youll-use">What You'll Use</heading>
+        <list>
+            <li><lnk to="/php/query-strings">Query Strings</lnk>: <cde>?ref=ALICE10</cde></li>
+            <li>
+                <lnk to="/php/cookies">Cookies</lnk> and
+                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>: 30 days of
+                memory
+            </li>
+            <li>
+                <lnk to="/php/projects/redirecting">Redirecting</lnk>: a redirect that can't be
+                pointed elsewhere
+            </li>
+            <li><lnk to="/php/projects/store-front">Store Front</lnk>: money in whole cents</li>
+            <li>
+                <lnk to="/php/transactions">Transactions</lnk>: an order and its commission,
+                together
+            </li>
+        </list>
+
+        <!-- Build it -->
+        <heading h2 id="build-it">Build It</heading>
+
+        <heading h3 id="step-1-the-tables">Step 1: The Tables</heading>
+        <p>
+            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones from
+            <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <cde>shop</cde>. Four tables: the affiliates, their clicks, orders, and commissions:
+        </p>
+        <code-block example="project-affiliate-program/init.sql" />
+        <p>
+            Each affiliate's cut is in basis points, hundredths of a percent: 1000 is 10%, 750 is
+            7.5%. That keeps percentages in whole numbers too, like the money. A commission's
+            <cde>order_id</cde> is unique, so an order can never pay out twice.
+        </p>
+
+        <heading h3 id="step-2-the-rules">Step 2: The Rules</heading>
+        <code-block example="project-affiliate-program/src/Affiliates.php" />
+        <list>
+            <li>
+                <strong><cde>find()</cde></strong> is the gate. A code must have the right shape and
+                belong to an active affiliate, or it's nothing. It's used for the link and again for
+                the cookie, because both are input.
+            </li>
+            <li>
+                <strong><cde>commission()</cde></strong> multiplies first and divides last, with
+                <cde>intdiv()</cde>, so 10% of $49.99 is 499 cents. The fraction of a cent is
+                dropped, on purpose and in one place.
+            </li>
+            <li>
+                <strong><cde>recordOrder()</cde></strong> writes the order and its commission in one
+                transaction, and pays nothing when the buyer is the affiliate.
+            </li>
+        </list>
+
+        <heading h3 id="step-3-the-link">Step 3: The Link</heading>
+        <code-block example="project-affiliate-program/public/index.php" />
+        <p>
+            Someone follows <cde>/?ref=ALICE10</cde>. If the code is real, the click is counted and
+            a cookie remembers it for 30 days: <cde>HttpOnly</cde>, so the page's JavaScript can't
+            read it, and <cde>SameSite=Lax</cde>, which still sends it when someone follows a link
+            from another site. Either way, the visitor is redirected to the plain page.
+        </p>
+        <p>
+            That redirect always goes to <cde>/</cde>, a fixed address. Redirect code that sends
+            people to an address from the query string, like <cde>?next=</cde>, is an open redirect,
+            and a link through your site to someone else's is exactly what a phishing email wants.
+        </p>
+
+        <heading h3 id="step-4-the-order">Step 4: The Order</heading>
+        <p>
+            A stand-in for the shop's checkout, with one product at one price. It reads the cookie,
+            looks the code up again, and records the order:
+        </p>
+        <code-block example="project-affiliate-program/public/buy.php" />
+        <p>
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> The cookie
+            came back from the browser, and the browser's owner can set it to anything. An
+            affiliate's code is public, it's in their links, so a cookie can only ever claim what
+            any visitor could claim by clicking one. Codes that aren't real and active count for
+            nothing.
+        </p>
+
+        <heading h3 id="step-5-the-report">Step 5: The Report</heading>
+        <code-block example="project-affiliate-program/bin/report.php" />
+
+        <heading h3 id="step-6-run-it">Step 6: Run It</heading>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>
+            Open <cde>http://localhost:8000/?ref=ALICE10</cde>. The address changes to
+            <cde>http://localhost:8000/</cde>, and your browser's developer tools show a
+            <cde>ref</cde> cookie. Buy the widget, then, from a second terminal:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose exec app php bin/report.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>Code          Clicks  Orders    Pending
+ALICE10            1       1      $4.99
+BOBREVIEWS         0       0      $0.00
+OLDPARTNER         0       0      $0.00</code-block>
+        <p>Then the ways it shouldn't pay:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i 'http://localhost:8000/?ref=OLDPARTNER'
+curl -H 'Cookie: ref=MADEUP' -d email=gus@example.com http://localhost:8000/buy.php
+curl -H 'Cookie: ref=ALICE10' -d email=alice@example.com http://localhost:8000/buy.php</code-block>
+        <p>
+            An inactive affiliate's link sets no cookie. A made-up code in the cookie earns nothing.
+            And Alice buying through her own link records the order and pays her nothing. Run the
+            report again: still $4.99.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <side-story title="Paying for Links">
+            Amazon started its Associates program in 1996, paying websites a share of the books sold
+            through their links. It wasn't the first program of its kind, but it was the one that
+            made the idea familiar, and the basic shape, a code in the link and a cut of the sale,
+            hasn't changed since.
+        </side-story>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Decide who gets credit, and write it down.</strong> This one gives it to the
+                last link followed, because each click overwrites the cookie. Some programs give it
+                to the first. Either is fine; changing it quietly isn't.
+            </li>
+            <li>
+                <strong>Commissions wait for refunds.</strong> A commission stays pending until the
+                refund window has passed. If the order is refunded first, the commission is
+                reversed. Approving them is a nightly
+                <lnk to="/php/projects/cron-jobs">cron job</lnk>.
+            </li>
+            <li>
+                <strong>Clicks are cheap to fake.</strong> Anyone can load a link a thousand times.
+                Count clicks for interest, and pay only on orders.
+            </li>
+            <li>
+                <strong>Tell people.</strong> Many places require affiliates to disclose that
+                they're paid for a link, and your site should say that it tracks referrals with a
+                cookie.
+            </li>
+            <li>
+                <strong>Cookies get cleared.</strong> Private windows, other devices, browsers that
+                limit tracking. Some referrals will always be lost; build the program expecting it.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Multiply first, divide once">
+            <p>
+                <cde>intdiv($total * $bps, 10000)</cde>, not <cde>$total * ($bps / 10000)</cde>.
+                Dividing first makes a float, and the rounding happens wherever it happens. Do all
+                the multiplying in whole numbers, divide once at the end, and the rounding is one
+                decision you can point to.
+            </p>
+        </two-dollars>
+
+        <p>
+            Affiliates will want their numbers without asking you to run a report. Next: a REST API,
+            where another program asks your server for data, and has to prove who it is.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/projects/rest-api">Next: REST API &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>
