@@ -1,0 +1,207 @@
+<layout name="default" title="Anatomy of a URL" />
+<page-head>
+    <meta
+        name="description"
+        content="The parts of a URL, what each one tells the browser and the server, and which part never leaves your browser at all. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="URL, anatomy of a URL, scheme, host, port, path, query string, fragment, parse_url, $_GET, REQUEST_URI, urlencode, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Scheme, host, port, path, query, fragment. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="anatomy-of-a-url">Anatomy of a URL</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            In Client/Server you opened <cde>http://localhost:8000</cde>. That's a URL, a Uniform
+            Resource Locator: one line of text that tells a client which protocol to speak, which
+            server to talk to, where to knock, and what to ask for. Every link you've ever clicked
+            is one. Here's a full one, with every part filled in:
+        </p>
+        <code-block>https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments</code-block>
+
+        <!-- What is/are -->
+        <heading h2 id="the-parts">The Parts</heading>
+
+        <heading h3 id="scheme">Scheme: <cde>https</cde></heading>
+        <p>
+            Which protocol to use. <cde>https</cde> and <cde>http</cde> for the web, but there are
+            others: <cde>mailto:</cde> opens your email program, <cde>file:</cde> opens a file on
+            your own computer.
+        </p>
+
+        <heading h3 id="host">Host: <cde>www.example.com</cde></heading>
+        <p>
+            Which server. A name, which DNS turns into an address, or the address itself. The
+            <cde>www</cde> is a subdomain the owner chose, nothing more.
+        </p>
+
+        <heading h3 id="port">Port: <cde>8080</cde></heading>
+        <p>
+            Which door on that server. You almost never see one, because each scheme has a default:
+            80 for <cde>http</cde>, 443 for <cde>https</cde>. Leave it off, and the browser uses the
+            default. Your Try It server needed <cde>:8000</cde> because it wasn't on either.
+        </p>
+
+        <heading h3 id="path">Path: <cde>/blog/post</cde></heading>
+        <p>
+            Which thing on that server. It looks like folders and a file, and sometimes it is, but
+            the server decides what a path means. On this site, <cde>/about</cde> is a file with no
+            extension. In a PHP app, every path usually goes to one script that decides what to
+            show.
+        </p>
+
+        <heading h3 id="query">Query String: <cde>?sort=new&amp;page=2</cde></heading>
+        <p>
+            Extra instructions for the server, after a <cde>?</cde>: pairs of <cde>name=value</cde>,
+            joined with <cde>&amp;</cde>. Here, "sort by newest, show page two." In PHP they arrive
+            in <cde>$_GET</cde>. Query strings get a lesson of their own.
+        </p>
+
+        <heading h3 id="fragment">Fragment: <cde>#comments</cde></heading>
+        <p>
+            A spot on the page, after a <cde>#</cde>. The browser scrolls to the element with that
+            id. And it never sends the fragment to the server: it's the one part of a URL that stays
+            in your browser.
+        </p>
+
+        <side-story title="Those Two Slashes">
+            Tim Berners-Lee, who invented the web, has said the <cde>//</cde> after the scheme was
+            unnecessary, and that he'd leave it out if he did it again. Since then, the world has
+            typed it billions of times, for nothing.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When you follow a link, the browser takes the URL apart, left to right:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The scheme says which protocol to speak.</li>
+            <li>The host gets looked up in DNS, to find the server's address.</li>
+            <li>It connects to that address on the port, or the scheme's default.</li>
+            <li>It asks the server for the path, with the query string attached.</li>
+            <li>When the page arrives, it scrolls to the fragment.</li>
+        </ol>
+        <p>
+            Some characters can't go in a URL as themselves: a space, or an <cde>&amp;</cde> that's
+            part of a value rather than a separator. They're written as a <cde>%</cde> and two hex
+            digits instead. A space is <cde>%20</cde>. That's percent-encoding, and it's why some
+            links look like they were typed by a cat.
+        </p>
+        <p>
+            Links inside a page usually leave off the start. A link to <cde>/about</cde> on this
+            site means "same scheme, same host, this path", and the browser fills in the rest from
+            the page you're on. That's a relative URL.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            PHP can take a URL apart for you. In a folder, make a file called
+            <cde>url.php</cde>:
+        </p>
+        <code-block
+            >&lt;?php $url = $argv[1] ??
+            'https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments';
+            print_r(parse_url($url));</code-block
+        >
+        <p>Run it the usual way:</p>
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php url.php</code-block>
+        <p>
+            Every part, labeled. Give it a URL of your own to pick apart, in quotes, after
+            <cde>url.php</cde>.
+        </p>
+        <p>
+            Now see which parts reach a server. Put this in <cde>index.php</cde> in the same folder:
+        </p>
+        <code-block
+            >&lt;?php echo 'Path and query: ', $_SERVER['REQUEST_URI'], "\n";
+            print_r($_GET);</code-block
+        >
+        <p>Start the server from Client/Server again:</p>
+        <code-block
+            >docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S
+            0.0.0.0:8000</code-block
+        >
+        <p>And open a URL with every part in it:</p>
+        <code-block>http://localhost:8000/anything/you/like?name=you&amp;page=2#here</code-block>
+        <p>
+            The server shows you the path and the query string, and <cde>$_GET</cde> with the query
+            already split into names and values. The <cde>#here</cde> isn't anywhere. The browser
+            kept it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li><cde>parse_url()</cde> takes a URL apart.</li>
+            <li>
+                <cde>$_SERVER['REQUEST_URI']</cde> is the path and query string of the request
+                you're answering, and <cde>$_GET</cde> is its query, already decoded.
+            </li>
+            <li>
+                <cde>http_build_query()</cde> goes the other way: it turns an array into a query
+                string, percent-encoding as it goes.
+            </li>
+            <li><cde>rawurlencode()</cde> encodes one value to put in a path.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>The server never sees the fragment.</strong> Anything after the
+                <cde>#</cde> is only available to JavaScript in the page, never to PHP.
+            </li>
+            <li>
+                <strong>Build query strings, don't glue them.</strong> A value with an
+                <cde>&amp;</cde> in it ("Salt &amp; Pepper") breaks a query string assembled by
+                hand. <cde>http_build_query()</cde> encodes it for you.
+            </li>
+            <li>
+                <strong><cde>parse_url()</cde> doesn't check anything.</strong> It splits whatever
+                you give it, as well as it can. To ask whether something is a valid URL, use
+                <cde>filter_var($url, FILTER_VALIDATE_URL)</cde>.
+            </li>
+        </list>
+
+        <side-story title="WWW Was Optional">
+            The first website lived at <cde>info.cern.ch</cde>, no <cde>www</cde> in sight. The
+            <cde>www</cde> caught on as a convention, a way of saying "the web server is this
+            machine," and stuck around long after it stopped meaning anything.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Link to the exact spot">
+            <p>
+                When you send someone a link, send them to the part you mean. Most docs and blogs
+                give their headings ids (every heading on this site has a link icon for it), so add
+                the fragment: <cde>/php/dns#gotchas</cde>. You can even link to a sentence: in
+                Chrome, Edge or Firefox, select it, right-click, and choose "Copy link to
+                highlight."
+            </p>
+        </two-dollars>
+
+        <p>
+            The host is a name, and a browser can't connect to a name. Next: how it turns into an
+            address.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/dns">Next: DNS &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>
