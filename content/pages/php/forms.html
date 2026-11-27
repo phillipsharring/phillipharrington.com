@@ -32,7 +32,7 @@
         <!-- prettier-ignore -->
         <code-block>&lt;form action="/order" method="post"&gt;
     &lt;label&gt;Name &lt;input name="name" required&gt;&lt;/label&gt;
-    &lt;button&gt;Order&lt;/button&gt;
+    &lt;button type="submit"&gt;Order&lt;/button&gt;
 &lt;/form&gt;</code-block>
         <list>
             <li>
@@ -51,7 +51,11 @@
                 <strong>label</strong>: the field's visible name. Clicking it puts you in the field,
                 and screen readers read it aloud.
             </li>
-            <li><strong>button</strong>: inside a form, a button submits it.</li>
+            <li>
+                <strong>button</strong>, with <cde>type="submit"</cde>: sends the form. A button
+                inside a form submits it even without the type, but say so anyway: it's clearer, and
+                <cde>type="button"</cde> is how you make one that doesn't.
+            </li>
         </list>
 
         <heading h3 id="fields">Fields</heading>
@@ -82,8 +86,8 @@
             <li>Someone fills in the form and presses the button.</li>
             <li>The browser runs its checks. If any fail, it says so and sends nothing.</li>
             <li>
-                It collects every named field as <cde>name=value</cde>. A checkbox counts only if
-                it's checked, and a disabled field doesn't count at all.
+                It collects every named field as <cde>name=value</cde>. A checkbox is sent only if
+                it's checked, and a disabled field isn't sent at all.
             </li>
             <li>
                 For <cde>get</cde>, those pairs become the query string. For <cde>post</cde>, they
@@ -169,7 +173,7 @@
                 Test whether it's there.
             </li>
             <li>
-                <strong>A select isn't a whitelist.</strong> The browser only offers your options,
+                <strong>A select isn't an allow list.</strong> The browser only offers your options,
                 but anyone can send any value. Check it against the list on the server.
             </li>
             <li>
@@ -179,8 +183,10 @@
                 to stay short.
             </li>
             <li>
-                <strong>Disabled isn't read-only.</strong> A <cde>disabled</cde> field isn't sent. A
-                <cde>readonly</cde> one is sent, and, being input, can still be changed.
+                <strong>Disabled and read-only fields can both be changed.</strong> A
+                <cde>disabled</cde> field isn't sent, and a <cde>readonly</cde> one is. Either way,
+                anyone can edit them in their developer tools, or send a value of their own, so
+                never trust input.
             </li>
         </list>
 
@@ -189,14 +195,14 @@
             <p>
                 <cde>type="email"</cde> gives phones a keyboard with an @ on it.
                 <cde>type="tel"</cde> brings up a number pad, and
-                <cde>inputmode="numeric"</cde> does the same for codes and ZIPs. One attribute, and
-                every phone user types less and gets it wrong less.
+                <cde>inputmode="numeric"</cde> does the same for PINs and quantities. One attribute,
+                and every phone user types less and gets it wrong less.
             </p>
         </two-dollars>
 
         <p>
-            Your form's data leaves the browser for your server. But it rarely goes straight there.
-            Next: what's in the middle.
+            Your form's data leaves the browser, bound for the server in the form's
+            <cde>action</cde>. But it rarely goes straight there. Next: what's in the middle.
         </p>
 
         <!-- Next -->
