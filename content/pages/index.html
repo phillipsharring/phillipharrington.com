@@ -153,9 +153,39 @@
     </section>
 
     <!-- Home, top to bottom: who I am (hero), what I do (Work),
-         what I've built (Projects), what I play (Music), what people say, what I write (From the
-         Blog), the newest comment anywhere (Latest Comment), and how this is made (Built in the Open). Ask Me About, once the magnet
-         content exists, goes between What People Are Saying and From the Blog. -->
+         what I've built (Projects), what I play (Music), what people say, what to
+         ask me about (Ask Me About), what I write (From the Blog), the newest
+         comment anywhere (Latest Comment), and how this is made (Built in the Open). -->
+
+    <!-- Ask Me About: the magnet content, the things worth coming back for.
+         Same look as From the Blog below, minus the dates: a link and a line. -->
+    <section class="reveal pb-16 sm:pb-14">
+        <section-heading label="Ask Me About" />
+        <div class="space-y-6">
+            <p>
+                <lnk to="/php">PHP, and how the web works</lnk>
+                <br />
+                <span class="text-th-muted"
+                    >Web Nerdism w/ PHP 101: from how two computers talk at all to building things
+                    that hold up when someone tries to break them.</span
+                >
+            </p>
+            <p>
+                <lnk to="/everybody-knows-alice">Seed data that tells a story</lnk>
+                <br />
+                <span class="text-th-muted"
+                    >Named, numbered scenarios that carry you from dev data to sales demo.</span
+                >
+            </p>
+            <p>
+                <lnk to="/static-site-comments">Comments on a static site</lnk>
+                <br />
+                <span class="text-th-muted"
+                    >No database, no server, no cookies, and still 100s on Lighthouse.</span
+                >
+            </p>
+        </div>
+    </section>
 
     <!-- From the Blog: the newest three, same title, summary and count as /blog,
          dates in the margin column like Music and Work. "More on the blog"
