@@ -85,6 +85,11 @@
     --shiki-token-parameter: #1f2937;
     --shiki-token-punctuation: #374151;
     --shiki-token-link: #8a3b12;
+
+    /* The burst sticker: a step louder than everything else, on purpose. */
+    --burst-fill: #a3d65c;
+    --burst-edge: #476b20;
+    --burst-text: #19280b;
 }
 
 /* ── Dark theme ───────────────────────────────────────────── */
@@ -124,6 +129,10 @@
     --shiki-token-parameter: #d1d5db;
     --shiki-token-punctuation: #b6bcc6;
     --shiki-token-link: #f0a37a;
+
+    --burst-fill: #c4ef7e;
+    --burst-edge: #8dc640;
+    --burst-text: #19280b;
 }
 
 @theme {
