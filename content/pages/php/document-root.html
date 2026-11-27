@@ -1,0 +1,202 @@
+<layout name="default" title="Document Root" />
+<page-head>
+    <meta
+        name="description"
+        content="The folder a web server hands out, and why it should be a small folder inside your project, never the whole thing. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="document root, web root, public folder, DocumentRoot, php -S -t, .env exposed, .git exposed, directory listing, project structure, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The folder a web server hands out. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Web Server Basics
+        </p>
+        <heading h1 id="document-root">Document Root</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            At the end of every chain in What's in the Middle is a server with a folder. Ask for
+            <cde>/images/logo.png</cde>, and it goes looking for a file called
+            <cde>logo.png</cde> in an <cde>images</cde> folder inside that folder. That folder is
+            the document root, also called the web root, and the most important thing about it is
+            what you leave out of it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-document-root">What's a Document Root?</heading>
+        <p>
+            The one folder a web server hands out. Everything inside it can be reached by a URL.
+            Nothing outside it can. The server's settings name it: <cde>root</cde> in nginx,
+            <cde>DocumentRoot</cde> in Apache, and <cde>-t</cde> for PHP's built-in server.
+        </p>
+
+        <heading h3 id="project-root-and-web-root">Project Root and Web Root</heading>
+        <p>
+            A project is much more than what visitors should see. So most projects, and all of
+            yours, keep the web root as one small folder inside the project, usually called
+            <cde>public</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>my-project/          the project root: never served
+    .env             settings and secrets
+    composer.json
+    src/             your code
+    vendor/          other people's code
+    logs/
+    public/          the web root: the only folder served
+        index.php
+        style.css</code-block>
+        <p>
+            Visitors can reach <cde>index.php</cde> and <cde>style.css</cde>, and nothing else. Your
+            code can still use everything, because PHP reads files from disk, not through URLs:
+            <cde>index.php</cde> reaches up a folder for the settings, and the world can't.
+        </p>
+
+        <side-story title="Why public_html?">
+            On a lot of shared hosting, the web root is a folder called
+            <cde>public_html</cde>. The name comes from early web servers, which let every user on a
+            shared machine publish pages from a <cde>public_html</cde> folder in their home
+            directory, at addresses like <cde>/~yourname/</cde>. The tilde URLs mostly went away.
+            The folder name stuck.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The request asks for a path, like <cde>/style.css</cde>.</li>
+            <li>
+                The server joins it to the web root: <cde>public/style.css</cde>. It refuses any
+                path that tries to climb out with <cde>..</cde>.
+            </li>
+            <li>
+                If the file exists, the server sends it, with a content type picked from its
+                extension. A <cde>.php</cde> file is different: the server runs it and sends what it
+                printed. How that works is two lessons from now.
+            </li>
+            <li>
+                If the path is a folder, it looks for an index file, <cde>index.php</cde> or
+                <cde>index.html</cde>.
+            </li>
+            <li>
+                If there's nothing there, it's a 404. Or, in most PHP apps, the server hands every
+                unknown path to <cde>index.php</cde>, and your code decides what it means.
+            </li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Make a project with a secret in it, then serve it two ways. In a folder, make a file
+            called <cde>.env</cde>, with a pretend secret in it:
+        </p>
+        <code-block example="document-root/.env" />
+        <p>Then a <cde>public</cde> folder, and in it, <cde>index.php</cde>:</p>
+        <code-block example="document-root/public/index.php" />
+        <p>
+            From the project folder, start the server with <cde>-t public</cde>, so only
+            <cde>public</cde> is served:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde>: the greeting, read from the <cde>.env</cde>
+            the page can't serve. Now go after the secret:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000/.env
+curl --path-as-is http://localhost:8000/../.env</code-block>
+        <p>
+            Both just get the greeting again. There's no <cde>.env</cde> in <cde>public</cde>, and
+            the server won't climb out of it, so it hands the unknown path to <cde>index.php</cde>,
+            like the apps in step five. Stop the server, and start it the wrong way, without
+            <cde>-t public</cde>, so the whole project is the web root:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>Then ask again:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000/.env</code-block>
+        <p>There's your API key, for anyone who asks. That's the whole lesson in one command.</p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>__DIR__</cde> is the folder the current file is in, and
+                <cde>dirname(__DIR__)</cde> is the one above it: from <cde>public/index.php</cde>,
+                that's the project root.
+            </li>
+            <li>
+                Build paths from those, like <cde>dirname(__DIR__) . '/.env'</cde>, never from the
+                current directory, which can be anything.
+            </li>
+            <li><cde>$_SERVER['DOCUMENT_ROOT']</cde> is the web root the server is using.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Deploying the project folder as the web root.</strong> The Try It's second
+                run, for real: <cde>.env</cde>, the <cde>.git</cde> folder with your whole history,
+                logs, and everything else become downloads. Automated scanners ask every site for
+                <cde>/.env</cde> and <cde>/.git/</cde> all day long.
+            </li>
+            <li>
+                <strong>Leftovers in the web root.</strong> A <cde>config.php.bak</cde> or an
+                editor's swap file isn't a <cde>.php</cde> file, so the server sends it as text,
+                source and all.
+            </li>
+            <li>
+                <strong>Directory listings.</strong> With an index file missing, some servers list
+                the folder's contents instead. Turn that off.
+            </li>
+            <li>
+                <strong>Uploads in the web root.</strong> If someone can upload a file into a served
+                folder and then visit it, they can upload a <cde>.php</cde> file and run it.
+                <strong>Never trust input,</strong> and uploads are input. File Uploads, in
+                Security, is about this.
+            </li>
+        </list>
+
+        <side-story title="Not Even This Site">
+            Macs leave a hidden <cde>.DS_Store</cde> file in folders, listing the names of the files
+            around it. For a while, one sat in this site's web root, and anyone asking for
+            <cde>/.DS_Store</cde> got a list of my file names. The deploy deletes them now, before
+            anything uploads.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Try to steal your own secrets">
+            <p>
+                After every new setup or deploy, ask your live site for the things that should never
+                be served: <cde>curl -I</cde> on <cde>/.env</cde>, <cde>/.git/HEAD</cde>, and
+                <cde>/composer.json</cde>. If any of them answers with your file, fix it before
+                someone else's scanner finds it.
+            </p>
+        </two-dollars>
+
+        <p>
+            Every request that reaches the web root, found or not, gets written down. Next: access
+            and error logs.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <span class="text-th-muted text-right">Next: Access and Error Logs (coming soon)</span>
+        </nav>
+    </spaced>
+</article>
