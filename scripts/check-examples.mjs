@@ -2,11 +2,12 @@
 /**
  * The PHP course shows its example code on the page and keeps the same code,
  * runnable and tested, in the web-nerdism-php repo. A code block that names its
- * file (code-block file="dns/dns.php") must match that file exactly, or this
+ * file (code-block example="dns/dns.php") must match that file exactly, or this
  * fails, so a lesson can't quietly drift from the code people download.
  *
  * Reads the repo from EXAMPLES_DIR, or a sibling checkout at
- * ../web-nerdism-php. Pages with no file= blocks need neither.
+ * ../web-nerdism-php. Pages with no example= blocks need neither. (Not file=: handlr-build
+ * reserves that attribute on every tag, to load a component from a file.)
  *
  *   node scripts/check-examples.mjs
  */
@@ -37,13 +38,13 @@ const pages = [];
 const blocks = [];
 for (const page of pages) {
     const src = fs.readFileSync(page, 'utf8');
-    for (const m of src.matchAll(/<code-block\s+file="([^"]+)"\s*>([\s\S]*?)<\/code-block\s*>/g)) {
+    for (const m of src.matchAll(/<code-block\s+example="([^"]+)"\s*>([\s\S]*?)<\/code-block\s*>/g)) {
         blocks.push({ page: path.relative(root, page), file: m[1], code: decode(m[2]) });
     }
 }
 
 if (blocks.length === 0) {
-    console.log('check-examples: no code blocks name a file');
+    console.log('check-examples: no code blocks name an example file');
     process.exit(0);
 }
 if (!fs.existsSync(examples)) {

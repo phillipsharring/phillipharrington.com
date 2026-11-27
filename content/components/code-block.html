@@ -5,10 +5,10 @@
      came out narrower). Long lines wrap rather than scroll.
      Put a prettier-ignore comment on the line before each one in a page:
      Prettier treats the tag as ordinary text and reflows the code inside.
-     file= names the same code in the web-nerdism-php repo: the block links to
+     example= names the same code in the web-nerdism-php repo: the block links to
      it, and scripts/check-examples.mjs fails if the two stop matching. -->
 <div class="max-w-[60ch]">
     <!-- prettier-ignore -->
     <pre class="bg-th-tint-strong text-th-accent-text rounded px-4 py-3 font-mono text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]"><code>[[slot]]</code></pre>
-    [[#if file]]<p class="mt-1 text-right text-sm"><lnk to="https://github.com/phillipsharring/web-nerdism-php/blob/main/[[file]]" blank>[[file]] on GitHub</lnk></p>[[/if]]
+    [[#if example]]<p class="mt-1 text-right text-sm"><lnk to="https://github.com/phillipsharring/web-nerdism-php/blob/main/[[example]]" blank>[[example]] on GitHub</lnk></p>[[/if]]
 </div>
