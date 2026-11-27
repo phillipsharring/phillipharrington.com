@@ -157,7 +157,7 @@
             had a bad minute. To see the table as it goes:
         </p>
         <!-- prettier-ignore -->
-        <code-block>docker compose exec db mysql -uapp -papp app -e 'SELECT id, status, attempts, available_at, last_error FROM jobs'</code-block>
+        <code-block>docker compose exec db mysql -uapp -papp-password course -e 'SELECT id, status, attempts, available_at, last_error FROM jobs'</code-block>
         <p>
             And to retry jobs that gave up, once you've fixed whatever was wrong, put them back in
             the queue:

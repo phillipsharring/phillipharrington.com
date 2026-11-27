@@ -55,10 +55,11 @@
 
         <heading h3 id="whats-a-web-shell">What's a Web Shell?</heading>
         <p>
-            A small script that runs whatever command it's sent, and sends back the result. Three
+            A small script that runs whatever command it's sent, and sends back the result. A few
             lines of PHP. If someone can get one onto your server, somewhere the web server will run
             it, they can do anything your app can do: read its files and secrets, reach its
-            database, and use the machine for whatever they like.
+            database, and use the machine for whatever they like. The Try It below uses a stand-in
+            that only proves it ran, rather than a real shell; the point is the same.
         </p>
 
         <!-- How it works -->
@@ -190,36 +191,39 @@
         </p>
         <code-block example="file-uploads/public/naive.php" />
         <p>
-            Now the attacker's upload, <cde>shell.php</cde>, a web shell. Put it in an
+            Now the attacker's upload, <cde>proof.php</cde>. A real attacker would send a web shell;
+            this stand-in only reports that it ran, as whom, and what it can see. Put it in an
             <cde>attack</cde> folder:
         </p>
-        <code-block example="file-uploads/attack/shell.php" />
+        <code-block example="file-uploads/attack/proof.php" />
         <p>Upload it:</p>
         <!-- prettier-ignore -->
-        <code-block>curl -F 'photo=@attack/shell.php' http://localhost:8000/naive.php</code-block>
+        <code-block>curl -F 'photo=@attack/proof.php' http://localhost:8000/naive.php</code-block>
         <p>
-            "Saved. It's at /uploads/shell.php." The <cde>accept="image/*"</cde> on the form never
-            came into it; curl isn't a browser. Now visit it, with a command:
+            "Saved. It's at /uploads/proof.php." The <cde>accept="image/*"</cde> on the form never
+            came into it; curl isn't a browser. Now visit it:
         </p>
         <!-- prettier-ignore -->
-        <code-block>curl 'http://localhost:8000/uploads/shell.php?cmd=id'</code-block>
+        <code-block>curl http://localhost:8000/uploads/proof.php</code-block>
         <!-- prettier-ignore -->
-        <code-block>uid=0(root) gid=0(root) groups=0(root)</code-block>
+        <code-block>This uploaded file just ran on the server.
+Running as: root
+It can read your project: README.md, attack, public, storage</code-block>
         <p>
-            That's the output of the <cde>id</cde> command, run on your server, as root (the
-            container runs as root). The web server saw a <cde>.php</cde> file in its web root and
-            ran it, as it would any other. Try <cde>cmd=ls%20/app</cde>, and you get a listing of
-            the project, <cde>storage</cde> and all. Anything your app can read, they can read.
+            The web server saw a <cde>.php</cde> file in its web root and ran it, as it would any
+            other, as root (the container runs as root), with your whole project in reach,
+            <cde>storage</cde> and all. Swap those three lines for a real web shell, and anything
+            your app can read, or do, an attacker can too.
         </p>
 
         <heading h3 id="fix-it">Fix It</heading>
         <p>
-            The fixed page is the one from Try It. Send it the same shell, then the same shell
+            The fixed page is the one from Try It. Send it the same file, then the same file
             pretending to be a PNG:
         </p>
         <!-- prettier-ignore -->
-        <code-block>curl -F 'photo=@attack/shell.php' http://localhost:8000/
-curl -F 'photo=@attack/shell.php;type=image/png;filename=cat.png' http://localhost:8000/</code-block>
+        <code-block>curl -F 'photo=@attack/proof.php' http://localhost:8000/
+curl -F 'photo=@attack/proof.php;type=image/png;filename=cat.png' http://localhost:8000/</code-block>
         <p>
             Both get "That is not a PNG, JPEG or GIF," with a 422. The name and type were lies, and
             <cde>finfo</cde> read the bytes instead: <cde>text/x-php</cde>. Then the harder one,
@@ -227,15 +231,15 @@ curl -F 'photo=@attack/shell.php;type=image/png;filename=cat.png' http://localho
             Make it with:
         </p>
         <!-- prettier-ignore -->
-        <code-block>printf 'GIF89a&lt;?php echo shell_exec($_GET["cmd"] ?? "id"); ?&gt;\n' &gt; attack/polyglot.gif
+        <code-block>printf 'GIF89a&lt;?php echo "This GIF just ran as PHP."; ?&gt;\n' &gt; attack/polyglot.gif
 curl -F 'photo=@attack/polyglot.gif' http://localhost:8000/</code-block>
         <p>
             "Saved." It got through: to <cde>finfo</cde> and <cde>getimagesize()</cde>, it's a GIF.
-            Now open the address it gave you, with <cde>&amp;cmd=id</cde> on the end. You get the
-            file's bytes back, PHP code and all, as an image that won't display. Nothing ran. The
-            file is in <cde>storage</cde>, which the web server doesn't serve, under a name ending
-            in <cde>.gif</cde>, and <cde>image.php</cde> only ever reads it. The checks caught the
-            obvious attack; the storage made the clever one harmless.
+            Now open the address it gave you. You get the file's bytes back, PHP code and all, as an
+            image that won't display, and never the words "This GIF just ran as PHP." Nothing ran.
+            The file is in <cde>storage</cde>, which the web server doesn't serve, under a name
+            ending in <cde>.gif</cde>, and <cde>image.php</cde> only ever reads it. The checks
+            caught the obvious attack; the storage made the clever one harmless.
         </p>
 
         <side-story title="ImageTragick">

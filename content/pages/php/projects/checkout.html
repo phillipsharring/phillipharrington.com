@@ -169,7 +169,7 @@ CREATE TABLE order_items (
         <p>Now be anyone who can read your log, or a backup of your database:</p>
         <!-- prettier-ignore -->
         <code-block>grep 4242 logs/app.log
-docker compose exec db mysqldump --no-tablespaces -uapp -papp shop | grep 4242</code-block>
+docker compose exec db mysqldump --no-tablespaces -uapp -papp-password course | grep 4242</code-block>
         <!-- prettier-ignore -->
         <code-block>[27-Nov-2026 20:30:00 UTC] checkout: {"email":"bo@example.com","card_number":"4242424242424242","card_expiry":"12\/34","card_cvc":"123","total_cents":"2800"}
 INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34','123',2800);</code-block>
@@ -188,7 +188,7 @@ INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34'
             it the same card anyway:
         </p>
         <!-- prettier-ignore -->
-        <code-block>docker compose exec db mysqldump --no-tablespaces -uapp -papp shop | grep -c 4242424242424242</code-block>
+        <code-block>docker compose exec db mysqldump --no-tablespaces -uapp -papp-password course | grep -c 4242424242424242</code-block>
         <p>
             The only match is the naive table. The real orders have no card in them, because the
             real checkout never read one. The customer types their card on the payment provider's

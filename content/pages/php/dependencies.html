@@ -98,26 +98,31 @@
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            A project that depends on Guzzle, a popular HTTP client, and was set up a while ago. In
-            a folder, make <cde>composer.json</cde>:
-        </p>
-        <code-block example="dependencies/composer.json" />
-        <p>
-            You also need its <cde>composer.lock</cde>, which pins Guzzle at 7.4.0, from October
-            2021. Copy it from the examples repo, from the same folder as <cde>composer.json</cde>;
-            it's long, and you'd never write one by hand. Then <cde>version.php</cde>, which reports
-            what's installed:
+            A project that depends on Guzzle, a popular HTTP client, and was set up a while ago.
+            You'll make one on purpose, by asking for the version from October 2021. In an empty
+            folder, make <cde>version.php</cde>, which reports what's installed:
         </p>
         <code-block example="dependencies/version.php" />
-        <p>Install from the lock file, and run it:</p>
+        <p>Now ask Composer for Guzzle 7.4.0:</p>
         <!-- prettier-ignore -->
-        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require guzzlehttp/guzzle:7.4.0</code-block>
+        <p>
+            It refuses: "Your requirements could not be resolved to an installable set of packages."
+            Recent versions of Composer know which versions have published security advisories, and
+            won't pick one. That guard is the whole lesson in one message. For this lesson only,
+            switch it off, and ask again:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -e COMPOSER_NO_SECURITY_BLOCKING=1 -v "$PWD":/app -w /app composer:2 composer require guzzlehttp/guzzle:7.4.0
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
         <p>
-            <cde>Guzzle 7.4.0</cde>, after a screenful of warnings: "Implicitly marking parameter
-            ... as nullable is deprecated." Code from 2021 uses a style PHP 8.4 has started to
-            complain about. Old dependencies don't stay still; the language moves on around them.
-            Two more questions worth asking any project:
+            This time it installs, and says why it shouldn't have: "Found 14 security vulnerability
+            advisories affecting 1 package." Never set that variable in a real project. Then
+            <cde>version.php</cde> says <cde>Guzzle 7.4.0</cde>, after a screenful of warnings:
+            "Implicitly marking parameter <cde>Guzzle 7.4.0</cde>, after a screenful of warnings:
+            "Implicitly marking parameter ... as nullable is deprecated." Code from 2021 uses a
+            style PHP 8.4 has started to complain about. Old dependencies don't stay still; the
+            language moves on around them. Two more questions worth asking any project:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer outdated --direct
@@ -210,23 +215,19 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
             read too.
         </p>
         <p>
-            Notice also how you got here: <cde>composer install</cde> installed it without a fuss,
-            because the lock file asked for it. Recent versions of Composer refuse to pick a version
-            with known advisories when resolving a new one, but a lock file made before the
-            advisories were published installs exactly as written.
+            You had to switch off a guard to get here. A real project gets here without one: a lock
+            file made before the advisories were published installs exactly as written, with no
+            complaint, on every machine, for as long as nobody looks.
         </p>
 
         <heading h3 id="fix-it">Fix It</heading>
-        <p>Update Guzzle:</p>
-        <!-- prettier-ignore -->
-        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer update guzzlehttp/guzzle</code-block>
         <p>
-            It refuses: the newer Guzzle needs a newer version of one of its own dependencies, which
-            the lock file is holding back, and the message suggests
-            <cde>--with-all-dependencies</cde>. So:
+            Asking for exactly 7.4.0 wrote exactly <cde>7.4.0</cde> into <cde>composer.json</cde>,
+            so a plain update would stay put. Ask for any 7.x from 7.4 up instead, and let Guzzle's
+            own dependencies move too, since the newer Guzzle needs newer versions of them:
         </p>
         <!-- prettier-ignore -->
-        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer update guzzlehttp/guzzle --with-all-dependencies
+        <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require "guzzlehttp/guzzle:^7.4" --with-all-dependencies
 docker run --rm -v "$PWD":/app -w /app composer:2 composer audit
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
         <p>
