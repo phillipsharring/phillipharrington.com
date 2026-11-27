@@ -2,11 +2,11 @@
 <page-head>
     <meta
         name="description"
-        content="Before the first class: every name is a claim about what a thing is. Records, values, actions, events, listeners, validation, invariants, policies, queries: how to tell what something is, and how its name follows. A lesson in Web Nerdism w/ PHP 101."
+        content="Before the first class: every name is a claim about what a thing is. Records, values, actions, events, listeners, cleaning, validation, invariants, policies, queries; the patterns some of them already are; and how knowing what a thing is tells you where its code goes. A lesson in Web Nerdism w/ PHP 101."
     />
     <meta
         name="keywords"
-        content="naming things, domain modeling, record, value object, event, PostSaved, command, listener, validation, invariant, policy, query, Manager Helper Util, PSR-1, learn PHP"
+        content="naming things, domain modeling, record, value object, event, PostSaved, command pattern, observer pattern, strategy pattern, chain of responsibility, listener, sanitizing, normalizing, validation, invariant, policy, query, dependency injection, Manager Helper Util, learn PHP"
     />
     <meta
         property="og:description"
@@ -71,14 +71,23 @@
             </li>
         </list>
 
-        <heading h3 id="validation-invariants-policies"
-            >Validation, Invariants and Policies</heading
+        <heading h3 id="cleaning-validation-invariants-policies"
+            >Cleaning, Validation, Invariants and Policies</heading
         >
         <p>
-            Three more kinds all sound like "checking," and they get mixed up constantly. They
-            answer different questions, about different things:
+            Four more kinds all sound like "checking," and they get mixed up constantly. They do
+            different jobs, about different things:
         </p>
         <list>
+            <li>
+                <strong>Cleaning</strong>, also called normalizing or sanitizing, changes the
+                <em>input</em> into a standard form, without judging it: trim the spaces, lowercase
+                the email address, turn " Alice@Example.com " into "alice@example.com". It runs
+                first, so everything after sees one shape. It is not escaping for HTML: that happens
+                on the way <em>out</em>, at the moment you print, and it's the
+                <lnk to="/php/xss">XSS lesson</lnk>. "Sanitizing" input for HTML on the way in
+                mangles your data and still misses things.
+            </li>
             <li>
                 <strong>Validation</strong> asks about the <em>input</em>: is this acceptable? Is
                 the title there, is the email an email? It runs on everything that arrives, because
@@ -97,8 +106,43 @@
         </list>
         <p>
             Keep them apart, and each one has one job and one name. Mix them, and you get a
-            <cde>validate()</cde> that also checks permissions and quietly enforces a business rule,
-            and nobody can find the permission check later.
+            <cde>validate()</cde> that also cleans, checks permissions and quietly enforces a
+            business rule, and nobody can find the permission check later.
+        </p>
+
+        <heading h2 id="patterns-with-names">Some Already Have Pattern Names</heading>
+        <p>
+            In 1994, four authors, often called the Gang of Four, published
+            <em>Design Patterns</em>, a catalog of shapes that keep turning up in well-built code. A
+            few of the kinds above are those shapes, and knowing the name means knowing where to
+            read more:
+        </p>
+        <list>
+            <li>
+                <strong>An action</strong> is the <strong>Command</strong> pattern: a request,
+                wrapped up as a thing of its own, that can be handled, queued or logged.
+            </li>
+            <li>
+                <strong>An event and its listeners</strong> are the
+                <strong>Observer</strong> pattern: one thing announces, any number of others react,
+                and the announcer doesn't know who's listening.
+                <lnk to="/php/observers">Observers</lnk> has the details.
+            </li>
+            <li>
+                <strong>Rules you can swap</strong>, like different policies or validation rules
+                behind one shape, are the <strong>Strategy</strong> pattern.
+            </li>
+            <li>
+                <strong>A line of checks</strong>, where each one handles what it can and passes the
+                rest along, is <strong>Chain of Responsibility</strong>. It's how
+                <lnk to="/php/middleware">middleware</lnk> works.
+            </li>
+        </list>
+        <p>
+            Not everything has one, and that's fine. Tables and mappers come from a different book,
+            Martin Fowler's <em>Patterns of Enterprise Application Architecture</em>, and records
+            and values are older than either. Don't force a pattern name onto a thing; use one when
+            it's already true.
         </p>
 
         <side-story title="Genus and Species">
@@ -123,6 +167,35 @@
             <cde>SaveAndNotify</cde> is two things. If you can't name it, you don't know what it is
             yet, or it's more than one.
         </p>
+
+        <heading h2 id="what-it-isnt">What It Isn't</heading>
+        <p>
+            Knowing what a thing is also tells you what it isn't, and that's where most of the
+            design gets easier. "This is the action that saves a post. So it doesn't validate input,
+            that's the validation's job. It doesn't decide who's allowed, that's the policy's. It
+            doesn't send email, that's a listener's." Every "that's not mine" answers a question
+            about where code goes, before you write it.
+        </p>
+        <p>
+            The usual reason things end up in the wrong place is that putting them in the right
+            place is a hassle: one more class to create, pass around and wire up. A
+            <lnk to="/php/dependency-injection">dependency injection</lnk> container takes the
+            hassle away. Your action asks for a policy and a table in its constructor, and gets
+            them. When asking for the right piece costs nothing, you stop building the wrong one in
+            place.
+        </p>
+
+        <side-story title="Two Bits for Three Choices">
+            A large company's app I worked on had a setting with two choices, stored as a yes or no
+            column, named for the first choice. Then a third choice came along. The yes-or-no
+            couldn't hold it, so a second yes-or-no column was added, and from then on the code read
+            like a riddle: if the second one is set, it's the third choice, unless the first one is
+            too, which shouldn't happen but could; otherwise the first one decides between the other
+            two. Four combinations for three choices, one of them impossible and present anyway,
+            checked everywhere the setting mattered. The setting had never been a yes or no. It was
+            a choice among options, and once it's named that, it's one column holding which option,
+            a list of the allowed ones in the code, and the riddle goes away.
+        </side-story>
 
         <heading h3 id="the-spelling">And the Spelling</heading>
         <p>
