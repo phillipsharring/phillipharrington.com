@@ -149,42 +149,42 @@
             nobody is listening on port 8000 anymore. That error is what "the server is down"
             looks like from the client's end.
         </p>
-        <placeholder>
+        <tk>
             [ Try It: assumes Docker is installed and a terminal is open: link to Tools once it
             exists. Windows PowerShell wants <cde>${PWD}</cde> instead of <cde>"$PWD"</cde>;
             note it here or in Tools. ]
-        </placeholder>
+        </tk>
 
         <!-- In PHP -->
-        <placeholder>
+        <tk>
             [ In PHP: probably skip here. If kept, one paragraph: PHP runs on the server, never in
             the browser. The browser only ever sees what PHP printed. (Try It already showed
             that: the browser got the text, not the code.) ]
-        </placeholder>
+        </tk>
 
         <!-- Gotchas -->
-        <placeholder>
+        <tk>
             [ Gotchas: candidates. "Port is already allocated": something else is already on 8000,
             so use another (<cde>-p 8001:8000</cde>, then localhost:8001). Inside a container,
             localhost is the container, not your computer (why Try It says 0.0.0.0). Blaming the
             server when it's your Wi-Fi, or the other way round: see the $2 tip. ]
-        </placeholder>
+        </tk>
 
         <!-- Break it -->
-        <placeholder>
+        <tk>
             [ Break It: not a security lesson, so skip. (Stopping the server in Try It is the
             closest thing, and it's already there.) ]
-        </placeholder>
+        </tk>
 
         <!-- Side stories: brainstorm, to place last -->
-        <placeholder>
+        <tk>
             [ Side stories, more candidates: nginx was written by Igor Sysoev to handle 10,000
             connections at once (the "C10K problem"). "There's no place like 127.0.0.1"
             (localhost's address) is a real T-shirt. The popular story that Apache is named for
             being "a patchy server" (the project says it isn't true). Port numbers below 1024 need
             admin rights on Linux, one reason dev servers live on ports like 8000 instead of 80. Xerox PARC, the
             mouse-was-invented-there type, for some other lesson. ]
-        </placeholder>
+        </tk>
 
         <!-- $2 tip -->
         <two-dollars title="Is it the client or the server?">

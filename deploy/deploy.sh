@@ -152,7 +152,7 @@ echo "  Build complete"
 echo "→ Flattening dist/ for abstract URLs..."
 node scripts/flatten-dist.mjs
 
-# A page with a TK placeholder still in it is a draft. The placeholder
+# A page with a TK placeholder still in it is a draft. The <tk>
 # component marks itself with data-tk; refuse before anything uploads.
 TK_PAGES=$(grep -rl --exclude-dir=assets --exclude-dir=img 'data-tk' "$PROJECT_DIR/dist" || true)
 if [ -n "$TK_PAGES" ]; then
