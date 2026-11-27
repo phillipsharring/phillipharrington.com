@@ -1,7 +1,9 @@
-<!-- A side story: a true bit of history or trivia beside the lesson, not part
+<!-- A side story: a true bit of history or trivia beside the text, not part
      of it (the red margin stories in The 48 Laws of Power). Skippable by
-     design. Inline for now; it may move into the margin on wide screens. -->
+     design. Optional title: the story's own name, in bold above it; nothing
+     labels it "side story", the styling does that. Inline for now; it may move
+     into the margin on wide screens. -->
 <aside class="border-th-accent text-th-sub max-w-[60ch] border-l-2 pl-4 text-base italic">
-    [[#if label]]<p class="font-display text-th-accent not-italic text-xs font-semibold tracking-widest uppercase">[[label]]</p>[[/if]]
+    [[#if title]]<p class="text-th-heading mb-1 font-semibold not-italic">[[title]]</p>[[/if]]
     [[slot]]
 </aside>
