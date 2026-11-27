@@ -20,7 +20,9 @@
          form down in front of the reader, a layout shift. Chrome remembers the
          anchor from the start of the navigation, so the only way to stop the
          jump is to take the id away before the first layout; comments.js puts
-         it back and scrolls here once the comments are drawn. -->
+         it back and scrolls here once the comments are drawn. The newest
+         comment's anchor (latest-comment) doesn't exist until then, so it only
+         needs the same deferred scroll. -->
     <!-- Also start the comments request here, while the page is still being
          read, rather than after app.js downloads and runs: the two load side by
          side instead of one after the other. comments.js picks it up. -->
@@ -37,6 +39,8 @@
             if (location.hash === '#comments') {
                 document.getElementById('comments').removeAttribute('id');
                 document.documentElement.dataset.commentsJump = '';
+            } else if (location.hash === '#latest-comment') {
+                document.documentElement.dataset.commentsJump = 'latest';
             }
         })();
     </script>
