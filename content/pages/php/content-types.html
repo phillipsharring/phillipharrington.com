@@ -1,0 +1,214 @@
+<layout name="default" title="Content Types" />
+<page-head>
+    <meta
+        name="description"
+        content="How a browser knows what it was sent: the Content-Type header, media types, character sets, and why clicking a link sometimes downloads a file instead of showing it. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="Content-Type, MIME type, media type, text/html, application/json, application/octet-stream, charset, UTF-8, Content-Disposition, attachment, download, nosniff, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How a browser knows what it was sent. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="content-types">Content Types</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Ever clicked a link expecting a page, and your browser downloaded a file instead? Or
+            opened a page and got a screen full of raw code? Both come down to one response header,
+            <cde>Content-Type</cde>. A response body is just bytes. The browser doesn't look at the
+            bytes, or at the end of the URL, to decide what they are. It believes the header.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-content-type">What's a Content Type?</heading>
+        <p>
+            A label in the form <cde>type/subtype</cde>, also called a media type or MIME type. The
+            ones you'll see most:
+        </p>
+        <list>
+            <li><cde>text/html</cde>: a web page. Render it.</li>
+            <li><cde>text/plain</cde>: plain text. Show it, tags and all.</li>
+            <li><cde>text/css</cde> and <cde>text/javascript</cde>: a stylesheet, a script.</li>
+            <li><cde>application/json</cde>: data, usually for JavaScript to read.</li>
+            <li><cde>image/png</cde>, <cde>image/jpeg</cde>, <cde>image/webp</cde>: pictures.</li>
+            <li><cde>application/pdf</cde>: a PDF.</li>
+            <li>
+                <cde>application/octet-stream</cde>: "some bytes, no idea what." The browser
+                downloads it.
+            </li>
+        </list>
+        <p>
+            Requests have content types too, when they carry a body. A form posts
+            <cde>application/x-www-form-urlencoded</cde>, the <cde>name=value</cde> pairs from the
+            last lesson, or <cde>multipart/form-data</cde> when it includes a file.
+        </p>
+
+        <side-story title="Borrowed From Email">
+            MIME stands for Multipurpose Internet Mail Extensions. It was invented in the early
+            1990s so email could carry attachments, pictures and languages other than English. The
+            web borrowed the labels wholesale, which is why the header that tells your browser "this
+            is a web page" is named after email.
+        </side-story>
+
+        <heading h2 id="whats-a-charset">What's a Character Set?</heading>
+        <p>
+            Text types usually carry one more piece:
+            <cde>text/html; charset=utf-8</cde>. The charset says how the bytes become letters.
+            UTF-8 covers every language and every emoji, and it's the only one you should use. Get
+            it wrong, and "café" turns into "cafÃ©."
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When a response arrives, the browser reads <cde>Content-Type</cde> and decides:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Something it can show, like HTML, an image or a PDF? It shows it.</li>
+            <li>Plain text? It shows the text as text.</li>
+            <li>Something it can't show, or "no idea"? It downloads it.</li>
+        </ol>
+        <p>
+            So the download mystery is the server, labeling something the browser can't display, or
+            not labeling it at all. The file's extension doesn't enter into it. This site's own
+            pages have no extension, <cde>/about</cde> and not <cde>/about.html</cde>, so its deploy
+            has to tell the server, page by page, "this one is <cde>text/html</cde>." Without that
+            label, the server would send them as unknown bytes.
+        </p>
+        <p>
+            A second header can overrule the browser's choice.
+            <cde>Content-Disposition: attachment</cde> says "save this, don't show it," even for a
+            page the browser could show, and it can suggest a name for the file:
+            <cde>attachment; filename="report.csv"</cde>. That's how a site hands you a download
+            with a proper name. Sending files gets a lesson of its own, later.
+        </p>
+
+        <side-story title="Octets, Not Bytes">
+            Why "octet-stream" and not "byte stream"? On some early computers a byte wasn't eight
+            bits; it could be six, or nine. Network standards wanted to be exact, so they said
+            "octet," eight bits, every time. The name stuck around long after every byte became
+            eight bits anyway.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>One server, one body, four labels. In a folder, make <cde>index.php</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block example="content-types/index.php">&lt;?php
+$types = [
+    'html' =&gt; 'text/html',
+    'text' =&gt; 'text/plain',
+    'json' =&gt; 'application/json',
+    'bytes' =&gt; 'application/octet-stream',
+];
+$as = $_GET['as'] ?? 'html';
+
+header('Content-Type: ' . ($types[$as] ?? 'text/html'));
+if (isset($_GET['save'])) {
+    header('Content-Disposition: attachment; filename="hello.html"');
+}
+
+echo '&lt;h1&gt;Hello&lt;/h1&gt;&lt;p&gt;The same bytes, every time.&lt;/p&gt;';</code-block>
+        <p>Start it the usual way:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>Then open each of these in your browser:</p>
+        <list>
+            <li><cde>http://localhost:8000/</cde>: a heading and a paragraph.</li>
+            <li><cde>http://localhost:8000/?as=text</cde>: the same bytes, tags showing.</li>
+            <li>
+                <cde>http://localhost:8000/?as=json</cde>: labeled as data, and it isn't JSON.
+                Firefox tries to show it as data and reports an error; Chrome just shows the text.
+            </li>
+            <li><cde>http://localhost:8000/?as=bytes</cde>: a download.</li>
+            <li>
+                <cde>http://localhost:8000/?save=1</cde>: labeled as a web page, but downloaded
+                anyway, as <cde>hello.html</cde>.
+            </li>
+        </list>
+        <p>
+            The body never changed. Only the label did. To see the labels themselves, ask with
+            <cde>curl -I</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -I "http://localhost:8000/?as=text"</code-block>
+        <p>
+            Notice PHP added <cde>;charset=UTF-8</cde> to the text types on its own. That comes
+            next, under In PHP.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                PHP sends <cde>text/html; charset=UTF-8</cde> unless you say otherwise, and adds the
+                charset to any <cde>text/</cde> type you set. Both come from the
+                <cde>default_mimetype</cde> and <cde>default_charset</cde> settings.
+            </li>
+            <li>
+                <cde>header('Content-Type: application/json');</cde> before
+                <cde>echo json_encode($data);</cde> is how an API answers.
+            </li>
+            <li>
+                <cde>header('Content-Disposition: attachment; filename="report.csv"');</cde> makes a
+                download.
+            </li>
+            <li>
+                <cde>mime_content_type()</cde> guesses a file's type from its contents, which is
+                what you want for a file on your own server.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>JSON labeled as HTML.</strong> Forget the header in an API, and every JSON
+                response goes out as <cde>text/html</cde>. Some clients won't mind. Some will refuse
+                it, and some will treat it as a page.
+            </li>
+            <li>
+                <strong>Never trust the type a browser sends.</strong> An upload's content type
+                comes from the client, which means from whoever is uploading. A script can arrive
+                labeled <cde>image/png</cde>. File Uploads, in Security, is about exactly this.
+            </li>
+            <li>
+                <strong>Strict browsers.</strong> With the
+                <cde>X-Content-Type-Options: nosniff</cde>
+                security header, a browser takes the label at its word: a script sent as
+                <cde>text/plain</cde> won't run, and a stylesheet with the wrong type won't apply.
+                Good for safety, and a puzzle the first time it bites.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Check the label first">
+            <p>
+                A page that downloads instead of showing, a script that won't run, an API response
+                your code can't parse: before anything else, run <cde>curl -I</cde> on it and read
+                <cde>Content-Type</cde>. It's the answer more often than it has any right to be.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>Content-Type</cde> tells the browser what it got. Another header,
+            <cde>Set-Cookie</cde>, asks it to remember something. Next: cookies.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <span class="text-th-muted text-right">Next: Cookies (coming soon)</span>
+        </nav>
+    </spaced>
+</article>
