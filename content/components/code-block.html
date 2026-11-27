@@ -7,9 +7,11 @@
      reflows it.
      The 60ch wrapper is at body size, so the block is exactly as wide as the
      paragraphs (60ch on the pre itself measured its own, smaller font, and
-     came out narrower). Long lines wrap rather than scroll. -->
+     came out narrower). Long lines wrap rather than scroll. The link line under it
+     drops the site's 60ch cap on paragraphs, which at its smaller size stopped it
+     short of the right edge. -->
 <div class="max-w-[60ch]">
     <!-- prettier-ignore -->
     <pre class="bg-th-tint-strong text-th-accent-text rounded px-4 py-3 font-mono text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]"><code>[[#if example]]<code-file src="[[example]]" />[[else]][[slot]][[/if]]</code></pre>
-    [[#if example]]<p class="mt-1 text-right text-sm"><lnk to="https://github.com/phillipsharring/web-nerdism-php/blob/main/[[example]]" blank>[[example]] on GitHub</lnk></p>[[/if]]
+    [[#if example]]<p class="mt-1 max-w-none text-right text-sm"><lnk to="https://github.com/phillipsharring/web-nerdism-php/blob/main/[[example]]" blank>[[example]] on GitHub</lnk></p>[[/if]]
 </div>
