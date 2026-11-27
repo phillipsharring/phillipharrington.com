@@ -16,11 +16,12 @@
  *     dist/404/index.html         ->  dist/404.html     (kept with extension; CF error doc)
  *     dist/index.html             ->  dist/index.html   (untouched; CF function rewrites /index.html -> /)
  *
- * Limitation: nested routes (e.g. dist/blog/post-1/index.html) cannot be
- * flattened to extensionless files because a filesystem can't have both
- * `dist/blog` (file) and `dist/blog/post-1` (file inside dir). For this site
- * every page lives at the top level, so this script only flattens top-level
- * directories. Nested directories are left alone and the script warns.
+ * Nested routes (e.g. dist/php/client-server/index.html) cannot be flattened
+ * to extensionless files because a filesystem can't have both `dist/php`
+ * (file) and `dist/php/client-server` (file inside dir). So this script only
+ * flattens top-level pages and leaves a section with nested pages as a
+ * directory; deploy/deploy.sh maps each index.html in it to its extensionless
+ * S3 key, where `php` and `php/client-server` can coexist.
  *
  * Re-running this script after a successful flatten is a no-op: directories
  * that were already flattened are now files and get skipped.
@@ -62,10 +63,11 @@ async function flattenTopLevel() {
 
         const siblings = await fs.readdir(dir);
         if (siblings.length !== 1) {
-            console.warn(
-                `flatten-dist: skipping ${dir} — contains ${siblings.length} entries (not just index.html). ` +
-                `Nested URLs aren't compatible with extension-less flattening.`
-            );
+            // A section with nested pages (dist/php/index.html plus
+            // dist/php/client-server/index.html). Left as a directory on
+            // purpose: deploy.sh uploads each index.html under its
+            // extensionless key (`php`, `php/client-server`).
+            console.log(`flatten-dist: ${path.relative(distDir, dir)}/ has nested pages, left for deploy.sh`);
             skipped++;
             continue;
         }

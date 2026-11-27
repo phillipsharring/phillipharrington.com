@@ -152,6 +152,15 @@ echo "  Build complete"
 echo "→ Flattening dist/ for abstract URLs..."
 node scripts/flatten-dist.mjs
 
+# A page with a TK placeholder still in it is a draft. The placeholder
+# component marks itself with data-tk; refuse before anything uploads.
+TK_PAGES=$(grep -rl --exclude-dir=assets --exclude-dir=img 'data-tk' "$PROJECT_DIR/dist" || true)
+if [ -n "$TK_PAGES" ]; then
+    echo "Refusing to deploy: these pages still have TK placeholders:"
+    echo "$TK_PAGES" | sed "s|$PROJECT_DIR/dist/|  |"
+    exit 1
+fi
+
 # Strip macOS cruft before anything looks at dist/. A .DS_Store that reaches the
 # bucket is served publicly and lists local filenames: one was answering 200 at
 # https://phillipharrington.com/.DS_Store until 2026-10-27. Removing it here
@@ -210,9 +219,34 @@ aws s3api list-objects-v2 \
     --output text 2>/dev/null \
     | tr -d '"' > "$REMOTE_LIST" || true
 
+# Nested pages. flatten-dist.mjs can only flatten top-level routes, because a
+# filesystem can't hold both a file dist/php and a directory dist/php/. S3 has
+# no such rule: the keys `php` and `php/client-server` live side by side. So a
+# nested page stays dist/php/client-server/index.html on disk and is uploaded
+# under the extensionless key `php/client-server`, and dist/php/index.html
+# under `php`. The root dist/index.html keeps its name (CloudFront serves it
+# for `/`).
+key_for() {
+    local rel="${1#"$PROJECT_DIR"/dist/}"
+    case "$rel" in
+        index.html) echo "$rel" ;;
+        */index.html) echo "${rel%/index.html}" ;;
+        *) echo "$rel" ;;
+    esac
+}
+
+# The local file behind a key: itself, or the index.html of a nested page.
+src_for() {
+    if [ -f "$PROJECT_DIR/dist/$1" ]; then
+        echo "$PROJECT_DIR/dist/$1"
+    else
+        echo "$PROJECT_DIR/dist/$1/index.html"
+    fi
+}
+
 SAME=0
 while IFS= read -r file; do
-    key="${file#"$PROJECT_DIR"/dist/}"
+    key="$(key_for "$file")"
     case "$key" in .vite/*) continue ;; esac
     echo "$key" >> "$LOCAL_LIST"
 
@@ -245,10 +279,10 @@ upload_key() {
     ct="$(content_type_for "$key")"
     cc="$(cache_control_for "$key")"
     if [ -n "$ct" ]; then
-        retry 5 aws s3 cp "$PROJECT_DIR/dist/$key" "s3://$S3_BUCKET_NAME/$key" \
+        retry 5 aws s3 cp "$(src_for "$key")" "s3://$S3_BUCKET_NAME/$key" \
             --content-type "$ct" --cache-control "$cc" --no-progress --region "$REGION"
     else
-        retry 5 aws s3 cp "$PROJECT_DIR/dist/$key" "s3://$S3_BUCKET_NAME/$key" \
+        retry 5 aws s3 cp "$(src_for "$key")" "s3://$S3_BUCKET_NAME/$key" \
             --cache-control "$cc" --no-progress --region "$REGION"
     fi
 }
@@ -296,7 +330,7 @@ EMPTY_JSON="$(mktemp)"
 printf '[]' > "$EMPTY_JSON"
 N_SEEDED=0
 while IFS= read -r file; do
-    slug="${file#"$PROJECT_DIR"/dist/}"
+    slug="$(key_for "$file")"
     if out=$(aws s3api put-object --bucket "$COMMENTS_BUCKET" --key "api/comments/$slug.json" \
         --body "$EMPTY_JSON" --if-none-match '*' \
         --content-type 'application/json; charset=utf-8' \

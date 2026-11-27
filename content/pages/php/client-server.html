@@ -1,0 +1,207 @@
+<layout name="default" title="Client/Server" />
+<page-head>
+    <meta
+        name="description"
+        content="How computers talk over the Internet: what a server is, what a client is, how they interact, and what sits in the middle. The first lesson of Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="client server, what is a server, what is a client, web server, nginx, Apache, Caddy, CDN, reverse proxy, protocols, HTTP, learn PHP, web development basics"
+    />
+    <meta
+        property="og:description"
+        content="What a server is, what a client is, and how they talk. Lesson one of Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="client-server">Client/Server</heading>
+        <byline date="Nov 2026" updated>Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The main way computers interact over the Internet is called a client/server
+            relationship. At one end of the conversation is a server, and at the other end is a
+            client. The two communicate using agreed-upon protocols, such as HTTP, which gets a
+            lesson of its own. A server listens for requests, and a client makes them.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-server">What's a Server?</heading>
+        <p>
+            The server is a program on a computer that binds to a port on that computer's network
+            connection and listens for requests. Common server software includes nginx, Apache
+            and Caddy.
+        </p>
+
+        <heading h3 id="hardware">The Hardware</heading>
+        <p>
+            Both the client and the server are software, running on physical (or virtual)
+            computers that are connected to the Internet. The server has the added requirement of
+            being easy to find, either by IP address or, much more often, by a domain name. (How a
+            name turns into an address is the DNS lesson.)
+        </p>
+        <p>
+            The computer the server software runs on is usually also called a server, which is
+            nice and confusing. Sometimes people say "physical server" to tell the machine apart
+            from the software. The server is also sometimes called a "host," which is where
+            "hosting" and "web hosting" come from.
+        </p>
+        <p>
+            The physical server may be a powerful computer in a data center, a rack unit in an
+            office closet, or a PC under someone's desk. So long as it's connected to, and can be
+            reached from, the Internet, it can act as a server. These days it's very often a
+            virtual machine or a container in somebody else's data center, which is all "the
+            cloud" means.
+        </p>
+
+        <side-story label="Side story">
+            The first web server was Tim Berners-Lee's NeXT computer at CERN, in 1990. It had a
+            handwritten label stuck to it: "This machine is a server. DO NOT POWER IT DOWN!!"
+            Turning it off would have turned off the World Wide Web.
+        </side-story>
+
+        <heading h2 id="whats-a-client">What's a Client?</heading>
+        <p>
+            A client is the program you use to connect to a server. That can be a web browser, an
+            email program, an FTP program, a terminal, an app on your phone, and many other kinds
+            of programs. When you browse the web or check your email, you're using a client.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The typical interaction between the client and the server goes something like this:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The server listens for connections (it binds to a port).</li>
+            <li>The client opens a connection (you click a link or check your email).</li>
+            <li>
+                The client sends a request, and the server responds with the information
+                requested, or some kind of error.
+            </li>
+            <li>The client displays the response.</li>
+        </ol>
+        <p>
+            In the old days the server hung up after every response. Now the connection usually
+            stays open for the next request, which saves time. The conversation is the same either
+            way.
+        </p>
+
+        <heading h3 id="how-do-they-talk">How Do They Talk?</heading>
+        <p>
+            The Internet works by using what are called "protocols." These are simply
+            agreed-upon standards for communication between computers. This is how a Mac can talk
+            to a Linux or Windows server. It's like an English speaker and a Japanese speaker who
+            have both learned Spanish. It's a second language for each of them, and the third
+            language in the room, the one they agreed on. Protocols are the Spanish.
+        </p>
+        <p>
+            HTTP is one such protocol, the one web pages (and most of the apps on your phone)
+            travel over, and it's coming up right after DNS. For now, just know that the
+            <cde>https://</cde> at the start of a web address names it: HTTP, plus an S for
+            secure.
+        </p>
+
+        <heading h3 id="whats-in-the-middle">What's in the Middle?</heading>
+        <p>
+            Your client rarely talks straight to the server that does the work. On most sites,
+            this one included, your browser talks to a CDN: a network of servers around the world
+            that keeps copies of pages close to you and passes everything else along to the real
+            server. There may be a load balancer or a reverse proxy in there too.
+        </p>
+        <p>
+            Each of those is a server to whatever is in front of it and a client to whatever is
+            behind it. Same relationship, more links in the chain. They get a lesson of their own.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            You're going to be both ends of the conversation: the server and the client, on one
+            computer. PHP comes with a small built-in web server, which is all you need, and
+            you'll run it in a container, so there's nothing to install but Docker. Make a folder,
+            and in it a file called <cde>index.php</cde> containing one line:
+        </p>
+<code-block>&lt;?php echo 'Hello from the server.';</code-block>
+        <p>Then, in a terminal, in that folder, start the server:</p>
+<code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            That's step one from above: the server binds to a port and listens. Most of that line
+            is Docker. It starts a container with PHP in it, shares your folder with it, and
+            connects port 8000 on your computer to port 8000 inside the container. The PHP part is
+            the end: <cde>php -S 0.0.0.0:8000</cde> starts PHP's server on port 8000. (The
+            <cde>0.0.0.0</cde> means "listen on every address," which a server inside a container
+            needs in order to hear anything from outside it.)
+        </p>
+        <p>
+            Now be the client. Open <cde>http://localhost:8000</cde> in your browser.
+            <cde>localhost</cde> is the name every computer uses for itself. You'll see "Hello
+            from the server." And back in the terminal, the server has logged a line for your
+            request: one side of the conversation, written down.
+        </p>
+        <p>
+            Two more things to try. Ask again with a different client, from a second terminal:
+        </p>
+<code-block>curl http://localhost:8000</code-block>
+        <p>
+            Same server, same answer, different client. Then go back to the first terminal, stop
+            the server with <cde>Ctrl+C</cde>, and reload the browser. It can't connect, because
+            nobody is listening on port 8000 anymore. That error is what "the server is down"
+            looks like from the client's end.
+        </p>
+        <placeholder>
+            [ Try It: assumes Docker is installed and a terminal is open: link to Tools once it
+            exists. Windows PowerShell wants <cde>${PWD}</cde> instead of <cde>"$PWD"</cde>;
+            note it here or in Tools. ]
+        </placeholder>
+
+        <!-- In PHP -->
+        <placeholder>
+            [ In PHP: probably skip here. If kept, one paragraph: PHP runs on the server, never in
+            the browser. The browser only ever sees what PHP printed. (Try It already showed
+            that: the browser got the text, not the code.) ]
+        </placeholder>
+
+        <!-- Gotchas -->
+        <placeholder>
+            [ Gotchas: candidates. "Port is already allocated": something else is already on 8000,
+            so use another (<cde>-p 8001:8000</cde>, then localhost:8001). Inside a container,
+            localhost is the container, not your computer (why Try It says 0.0.0.0). Blaming the
+            server when it's your Wi-Fi, or the other way round: see the $2 tip. ]
+        </placeholder>
+
+        <!-- Break it -->
+        <placeholder>
+            [ Break It: not a security lesson, so skip. (Stopping the server in Try It is the
+            closest thing, and it's already there.) ]
+        </placeholder>
+
+        <!-- Side stories: brainstorm, to place last -->
+        <placeholder>
+            [ Side stories, more candidates: nginx was written by Igor Sysoev to handle 10,000
+            connections at once (the "C10K problem"). "There's no place like 127.0.0.1"
+            (localhost's address) is a real T-shirt. The popular story that Apache is named for
+            being "a patchy server" (the project says it isn't true). Port numbers below 1024 need
+            admin rights on Linux, one reason dev servers live on ports like 8000 instead of 80. Xerox PARC, the
+            mouse-was-invented-there type, for some other lesson. ]
+        </placeholder>
+
+        <!-- $2 tip -->
+        <two-dollars title="Is it the client or the server?">
+            <p>
+                When something won't load, find out which end is broken before you fix anything.
+                Try a different client: another browser, <cde>curl</cde>, your phone with Wi-Fi
+                off. If the second client works, the server is fine and the problem is on your
+                end. If nothing can reach it, it's the server, or something between you and it,
+                like DNS.
+            </p>
+        </two-dollars>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <span class="text-th-muted text-right">Next: DNS (coming soon)</span>
+        </nav>
+    </spaced>
+</article>

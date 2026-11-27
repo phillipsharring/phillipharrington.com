@@ -1,0 +1,238 @@
+<layout name="default" title="Web Nerdism w/ PHP 101" />
+<page-head>
+    <meta
+        name="description"
+        content="A course in how the web works, taught with PHP: clients and servers, HTTP, databases, security, and small projects that put it all together."
+    />
+    <meta
+        name="keywords"
+        content="learn PHP, PHP course, web development course, how the web works, HTTP, SQL, web security, PHP projects, Phillip Harrington"
+    />
+    <meta
+        property="og:description"
+        content="How the web works, taught with PHP. Short lessons, then small projects that use them."
+    />
+</page-head>
+<article>
+    <spaced>
+        <heading h1 id="web-nerdism-w-php-101">Web Nerdism w/ PHP 101</heading>
+        <p>
+            How the web works, taught with PHP. Short lessons, one page each, then small projects
+            that use them. It starts before PHP, with how two computers talk at all, and it ends
+            with you building things that hold up when someone tries to break them.
+        </p>
+        <p>
+            It's being written now, a lesson at a time. Linked lessons are up; the rest are on
+            their way.
+        </p>
+
+        <heading h2 id="tools">Before You Start: Tools</heading>
+        <p>
+            Not lessons, just the few things you set up once and come back to. Everything else in
+            the course runs in a container, so the only thing you install is Docker.
+        </p>
+        <list>
+            <li>The terminal</li>
+            <li>Docker</li>
+            <li>Package managers: Homebrew, apt, winget, whichever is yours</li>
+            <li>Git</li>
+            <li>Your editor</li>
+            <li>Reading logs</li>
+            <li>Composer, in a container</li>
+        </list>
+
+        <heading h2 id="basics">Basics: How the Web Works</heading>
+        <list>
+            <li><lnk to="/php/client-server">Client/Server</lnk></li>
+            <li>DNS</li>
+            <li>HTTP, HTTPS and TLS</li>
+            <li>Request and response</li>
+            <li>Content types</li>
+            <li>Cookies</li>
+            <li>Query strings</li>
+            <li>Forms</li>
+            <li>What's in the middle</li>
+        </list>
+
+        <heading h2 id="web-server-basics">Web Server Basics</heading>
+        <list>
+            <li>Document root</li>
+            <li>Access and error logs</li>
+            <li>How PHP actually runs: nginx and PHP-FPM</li>
+            <li>Configuration and the environment</li>
+        </list>
+
+        <heading h2 id="php-basics">PHP Basics</heading>
+        <list>
+            <li>PHP files, escaping into PHP, and phpinfo()</li>
+            <li>Documentation: php.net</li>
+            <li>Output</li>
+            <li>Variables, types and strict_types</li>
+            <li>Types of types</li>
+            <li>Scope</li>
+            <li>Strings</li>
+            <li>Arrays</li>
+            <li>Functions</li>
+            <li>Errors and the error log</li>
+            <li>Includes</li>
+            <li>Working with files</li>
+            <li>Working with a database: PDO and prepared statements</li>
+        </list>
+
+        <heading h2 id="database">Database</heading>
+        <list>
+            <li>SQL</li>
+            <li>Creating tables</li>
+            <li>Relating tables: keys and foreign keys</li>
+            <li>Normalization</li>
+            <li>Indexes</li>
+            <li>Inserting data</li>
+            <li>Selecting data</li>
+            <li>Updating data</li>
+            <li>Deleting data</li>
+            <li>Transactions</li>
+            <li>Migrations</li>
+        </list>
+
+        <heading h2 id="php-not-so-basics">PHP Not So Basics</heading>
+        <list>
+            <li>Sessions</li>
+            <li>Output buffering</li>
+            <li>Classes and objects</li>
+            <li>Abstract classes</li>
+            <li>Interfaces</li>
+            <li>Autoloading with Composer and PSR-4</li>
+            <li>Exceptions and try/catch</li>
+            <li>Constants, static variables and functions</li>
+            <li>Modern PHP</li>
+            <li>Magic methods</li>
+            <li>Dependency injection</li>
+            <li>Two-dollar test harnesses</li>
+            <li>Testing</li>
+        </list>
+
+        <heading h2 id="security">Security</heading>
+        <p>Every lesson here starts by breaking it, then fixes it.</p>
+        <list>
+            <li>Never trust input</li>
+            <li>SQL injection</li>
+            <li>XSS and escaping output</li>
+            <li>CSRF</li>
+            <li>Passwords: password_hash() and nothing else</li>
+            <li>Sessions and cookie flags</li>
+            <li>Rate limiting</li>
+            <li>Secrets out of code</li>
+            <li>File uploads</li>
+            <li>Don't touch cards</li>
+            <li>Security headers</li>
+            <li>Your dependencies are your code too</li>
+        </list>
+
+        <heading h2 id="web-technologies">Various Web Technologies</heading>
+        <list>
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+            <li>fetch() and AJAX</li>
+            <li>JSON</li>
+            <li>CORS</li>
+            <li>CSV</li>
+            <li>HTMX</li>
+        </list>
+
+        <heading h2 id="projects">Projects</heading>
+        <p>
+            Small things to build, in order, each using the lessons before it. The ones where a
+            classic mistake lives come with a "Break it" section: build it the naive way, attack
+            your own copy, then fix it.
+        </p>
+        <list>
+            <li>Home page</li>
+            <li>View source link</li>
+            <li>Useful includes</li>
+            <li>Layout</li>
+            <li>Logging</li>
+            <li>Cookies</li>
+            <li>Sending email</li>
+            <li>Contact form</li>
+            <li>Form validation</li>
+            <li>Redirecting</li>
+            <li>Guestbook</li>
+            <li>Sessions</li>
+            <li>Protected page</li>
+            <li>Something database-y</li>
+            <li>Signup form</li>
+            <li>Login form</li>
+            <li>Profile page</li>
+            <li>Change password form</li>
+            <li>HTTP authentication</li>
+            <li>Log viewer</li>
+            <li>Translation</li>
+            <li>Content management system</li>
+            <li>Blog</li>
+            <li>Comments</li>
+            <li>Caching</li>
+            <li>PHP on the command line</li>
+            <li>Cron jobs</li>
+            <li>Queues</li>
+            <li>Newsletter</li>
+            <li>Store front</li>
+            <li>Shopping cart</li>
+            <li>Checkout</li>
+            <li>Taking a payment with Stripe Checkout</li>
+            <li>Exporting data</li>
+            <li>Affiliate program</li>
+            <li>REST API</li>
+            <li>API client</li>
+        </list>
+
+        <heading h2 id="style">Style</heading>
+        <list>
+            <li>Coding standards</li>
+            <li>Good variable names</li>
+            <li>Magic numbers in code</li>
+            <li>Declaring symbols vs. causing changes</li>
+            <li>Defensive programming</li>
+            <li>DRY</li>
+            <li>Return early</li>
+            <li>Single point of return</li>
+            <li>Expressive HTTP response codes, and when not to be</li>
+        </list>
+
+        <heading h2 id="patterns">Various Patterns</heading>
+        <list>
+            <li>Separating concerns</li>
+            <li>MVC</li>
+            <li>Single point of entry</li>
+            <li>CRUD</li>
+            <li>Model, table, mapper</li>
+            <li>REST</li>
+            <li>Middleware and pipelines</li>
+            <li>Singletons</li>
+            <li>Factories</li>
+            <li>Observers</li>
+        </list>
+
+        <heading h2 id="convictions">Convictions</heading>
+        <list>
+            <li>Code should be boring</li>
+            <li>The three virtues</li>
+            <li>Be liberal in what you accept, strict in what you output</li>
+            <li>
+                Code should be written to be read by humans, and only incidentally run on computers
+            </li>
+            <li>Most PHP web/db programming problems are really SQL database problems</li>
+            <li>If you have to run the whole stack to test one thing, the thing is too big</li>
+        </list>
+
+        <heading h2 id="rants">Rants</heading>
+        <list>
+            <li>Why PHP sucks but isn't so bad after all</li>
+            <li>PHP doesn't suck!</li>
+            <li>Why magic methods are bad</li>
+            <li>Why inheritance annoys me</li>
+            <li>Why Hungarian is bad</li>
+            <li>Why Hungarian for apps isn't so bad</li>
+        </list>
+    </spaced>
+</article>
