@@ -36,8 +36,22 @@
             The few things that do live on the Mac come from
             <lnk to="https://brew.sh" blank>Homebrew</lnk>, never from installers downloaded off
             websites. One command installs, one updates everything, one removes. On mine right
-            now: git and the GitHub CLI, the AWS CLI, mkcert (more on that below), GoAccess for
-            reading server logs, ImageMagick and the WebP tools for images, and Node.
+            now:
+        </p>
+        <list>
+            <li>git and the GitHub CLI, the AWS CLI, Node, and mkcert (more on that below).</li>
+            <li>
+                ImageMagick and the WebP tools. Every image on this site went through them:
+                resized, cropped, converted to WebP, in two sizes. Doing it by command means doing
+                it the same way every time.
+            </li>
+            <li>GoAccess, which turns server logs into a readable traffic report.</li>
+            <li>curl, for asking a server a question directly, many times a day.</li>
+        </list>
+        <p>
+            Apps come from Homebrew too, not just command-line tools: Docker Desktop, iTerm2, VS
+            Code, Inkscape, and the non-dev ones like Spotify, Slack and Zoom. Updating everything
+            on the machine is one command.
         </p>
         <p>
             PHP and Composer are in there too, which breaks my own rule a little. They're for
@@ -47,7 +61,8 @@
 
         <heading h2 id="docker">Docker</heading>
         <p>
-            Docker Desktop is the one big install. Every project has a Docker Compose file that
+            Docker Desktop is the one big install, and it comes from Homebrew like everything
+            else. Every project has a Docker Compose file that
             says exactly what it needs to run: which PHP, which web server, which settings. Clone
             the repo, run one command, and it's up. No "works on my machine," because my machine
             isn't really involved.
@@ -68,7 +83,9 @@
             <li>
                 <strong>MySQL.</strong> One database server for every project, each project with
                 its own database. Same version as production, 8.4, because a database that
-                behaves differently locally is a bug you haven't met yet.
+                behaves differently locally is a bug you haven't met yet. The exception is a
+                project that needs a particular setup, like a primary and a replica to test
+                replication. Those run their own, in that project.
             </li>
             <li>
                 <strong>Adminer.</strong> A database admin tool in a single PHP file, running in
@@ -90,7 +107,9 @@
             Redis isn't in there. It runs only in the projects that actually need it, when they
             need it, instead of always. A tool for looking inside it would be a different story:
             like Adminer, a web app I'd want handy across projects, it would go in basic services.
+            At my last job I used a simple Redis viewer for exactly that.
         </p>
+        <tk>[ The Redis viewer from the last job: name it, or leave it unnamed. ]</tk>
 
         <heading h2 id="dot-test">.test and Real HTTPS</heading>
         <p>
@@ -99,6 +118,15 @@
             a real domain on the internet, so there's no chance of a local address colliding with
             somebody's real site. One line in <cde>/etc/hosts</cde> points all of them at my own
             machine.
+        </p>
+        <p>
+            Why <cde>.test</cde> and not <cde>.dev</cde>, which a lot of us used for years?
+            Because <cde>.dev</cde> became a real top-level domain, owned by Google, and in late
+            2017 Chrome started forcing every <cde>.dev</cde> address to HTTPS. Local sites broke
+            overnight, all over the world, and <cde>.test</cde> became the usual choice. One more
+            quirk: type a bare <cde>reuselists.test</cde> into the address bar and some browsers
+            search for it instead of going there, because they don't recognize the ending. Type
+            the <cde>https://</cde> the first time, and they remember.
         </p>
         <p>
             And they all use HTTPS, with a real padlock. <lnk to="https://github.com/FiloSottile/mkcert" blank>mkcert</lnk>
@@ -126,8 +154,8 @@
             <li>
                 <strong>Inkscape</strong>, for anything drawn: logos, icons, the occasional diagram.
             </li>
+            <li><strong>Spotify</strong>, always.</li>
         </list>
-        <tk>[ Anything else that belongs here? Spotify, for one, is installed. ]</tk>
 
         <heading h2 id="and-claude">And Claude</heading>
         <p>
