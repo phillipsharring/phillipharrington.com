@@ -31,8 +31,8 @@
         <heading h2 id="whats-a-server">What's a Server?</heading>
         <p>
             The server is a program on a computer that binds to a port on that computer's network
-            connection and listens for requests. Common server software includes nginx, Apache
-            and Caddy.
+            connection and listens for requests. Common server software includes nginx, Apache and
+            Caddy.
         </p>
 
         <side-story label="Side story">
@@ -44,23 +44,22 @@
 
         <heading h3 id="hardware">The Hardware</heading>
         <p>
-            Both the client and the server are software, running on physical (or virtual)
-            computers that are connected to the Internet. The server has the added requirement of
-            being easy to find, either by IP address or, much more often, by a domain name. (How a
-            name turns into an address is the DNS lesson.)
+            Both the client and the server are software, running on physical (or virtual) computers
+            that are connected to the Internet. The server has the added requirement of being easy
+            to find, either by IP address or, much more often, by a domain name. (How a name turns
+            into an address is the DNS lesson.)
         </p>
         <p>
-            The computer the server software runs on is usually also called a server, which is
-            nice and confusing. Sometimes people say "physical server" to tell the machine apart
-            from the software. The server is also sometimes called a "host," which is where
-            "hosting" and "web hosting" come from.
+            The computer the server software runs on is usually also called a server, which is nice
+            and confusing. Sometimes people say "physical server" to tell the machine apart from the
+            software. The server is also sometimes called a "host," which is where "hosting" and
+            "web hosting" come from.
         </p>
         <p>
             The physical server may be a powerful computer in a data center, a rack unit in an
             office closet, or a PC under someone's desk. So long as it's connected to, and can be
-            reached from, the Internet, it can act as a server. These days it's very often a
-            virtual machine or a container in somebody else's data center, which is all "the
-            cloud" means.
+            reached from, the Internet, it can act as a server. These days it's very often a virtual
+            machine or a container in somebody else's data center, which is all "the cloud" means.
         </p>
 
         <side-story label="Side story">
@@ -72,8 +71,8 @@
         <heading h2 id="whats-a-client">What's a Client?</heading>
         <p>
             A client is the program you use to connect to a server. That can be a web browser, an
-            email program, an FTP program, a terminal, an app on your phone, and many other kinds
-            of programs. When you browse the web or check your email, you're using a client.
+            email program, an FTP program, a terminal, an app on your phone, and many other kinds of
+            programs. When you browse the web or check your email, you're using a client.
         </p>
 
         <!-- How it works -->
@@ -83,8 +82,8 @@
             <li>The server listens for connections (it binds to a port).</li>
             <li>The client opens a connection (you click a link or check your email).</li>
             <li>
-                The client sends a request, and the server responds with the information
-                requested, or some kind of error.
+                The client sends a request, and the server responds with the information requested,
+                or some kind of error.
             </li>
             <li>The client displays the response.</li>
         </ol>
@@ -96,25 +95,24 @@
 
         <heading h3 id="how-do-they-talk">How Do They Talk?</heading>
         <p>
-            The Internet works by using what are called "protocols." These are simply
-            agreed-upon standards for communication between computers. This is how a Mac can talk
-            to a Linux or Windows server. It's like an English speaker and a Japanese speaker who
-            have both learned Spanish. It's a second language for each of them, and the third
-            language in the room, the one they agreed on. Protocols are the Spanish.
+            The Internet works by using what are called "protocols." These are simply agreed-upon
+            standards for communication between computers. This is how a Mac can talk to a Linux or
+            Windows server. It's like an English speaker and a Japanese speaker who have both
+            learned Spanish. It's a second language for each of them, and the third language in the
+            room, the one they agreed on. Protocols are the Spanish.
         </p>
         <p>
-            HTTP is one such protocol, the one web pages (and most of the apps on your phone)
-            travel over, and it gets a lesson of its own soon. For now, just know that the
-            <cde>https://</cde> at the start of a web address names it: HTTP, plus an S for
-            secure.
+            HTTP is one such protocol, the one web pages (and most of the apps on your phone) travel
+            over, and it gets a lesson of its own soon. For now, just know that the
+            <cde>https://</cde> at the start of a web address names it: HTTP, plus an S for secure.
         </p>
 
         <heading h3 id="whats-in-the-middle">What's in the Middle?</heading>
         <p>
-            Your client rarely talks straight to the server that does the work. On most sites,
-            this one included, your browser talks to a CDN: a network of servers around the world
-            that keeps copies of pages close to you and passes everything else along to the real
-            server. There may be a load balancer or a reverse proxy in there too.
+            Your client rarely talks straight to the server that does the work. On most sites, this
+            one included, your browser talks to a CDN: a network of servers around the world that
+            keeps copies of pages close to you and passes everything else along to the real server.
+            There may be a load balancer or a reverse proxy in there too.
         </p>
         <p>
             Each of those is a server to whatever is in front of it and a client to whatever is
@@ -125,88 +123,84 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             You're going to be both ends of the conversation: the server and the client, on one
-            computer. PHP comes with a small built-in web server, which is all you need, and
-            you'll run it in a container, so there's nothing to install but Docker. Make a folder,
-            and in it a file called <cde>index.php</cde> containing one line:
+            computer. PHP comes with a small built-in web server, which is all you need, and you'll
+            run it in a container, so there's nothing to install but Docker. Make a folder, and in
+            it a file called <cde>index.php</cde> containing one line:
         </p>
-<code-block>&lt;?php echo 'Hello from the server.';</code-block>
+        <code-block>&lt;?php echo 'Hello from the server.';</code-block>
         <p>Then, in a terminal, in that folder, start the server:</p>
-<code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <code-block
+            >docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S
+            0.0.0.0:8000</code-block
+        >
         <p>
-            That's step one from above: the server binds to a port and listens. Most of that line
-            is Docker. It starts a container with PHP in it, shares your folder with it, and
-            connects port 8000 on your computer to port 8000 inside the container. The PHP part is
-            the end: <cde>php -S 0.0.0.0:8000</cde> starts PHP's server on port 8000. (The
+            That's step one from above: the server binds to a port and listens. Most of that line is
+            Docker. It starts a container with PHP in it, shares your folder with it, and connects
+            port 8000 on your computer to port 8000 inside the container. The PHP part is the end:
+            <cde>php -S 0.0.0.0:8000</cde> starts PHP's server on port 8000. (The
             <cde>0.0.0.0</cde> means "listen on every address," which a server inside a container
             needs in order to hear anything from outside it.)
         </p>
 
         <side-story label="Side story">
-            Why 8000 and not 80, the real web port? On Linux and most Unix systems, ports below
-            1024 are "privileged": only an administrator can open one. Plain web (80) and secure
-            web (443) both live down there, so development servers have always picked numbers
-            like 8000 and 8080 instead.
+            Why 8000 and not 80, the real web port? On Linux and most Unix systems, ports below 1024
+            are "privileged": only an administrator can open one. Plain web (80) and secure web
+            (443) both live down there, so development servers have always picked numbers like 8000
+            and 8080 instead.
         </side-story>
         <p>
             Now be the client. Open <cde>http://localhost:8000</cde> in your browser.
-            <cde>localhost</cde> is the name every computer uses for itself. You'll see "Hello
-            from the server." And back in the terminal, the server has logged a line for your
-            request: one side of the conversation, written down.
+            <cde>localhost</cde> is the name every computer uses for itself. You'll see "Hello from
+            the server." And back in the terminal, the server has logged a line for your request:
+            one side of the conversation, written down.
         </p>
 
         <side-story label="Side story">
-            Underneath the name, <cde>localhost</cde> is the address 127.0.0.1, which every
-            computer reserves for talking to itself. Hence the classic nerd T-shirt: "There's no
-            place like 127.0.0.1."
+            Underneath the name, <cde>localhost</cde> is the address 127.0.0.1, which every computer
+            reserves for talking to itself. Hence the classic nerd T-shirt: "There's no place like
+            127.0.0.1."
         </side-story>
+        <p>Two more things to try. Ask again with a different client, from a second terminal:</p>
+        <code-block>curl http://localhost:8000</code-block>
         <p>
-            Two more things to try. Ask again with a different client, from a second terminal:
+            Same server, same answer, different client. Then go back to the first terminal, stop the
+            server with <cde>Ctrl+C</cde>, and reload the browser. It can't connect, because nobody
+            is listening on port 8000 anymore. That error is what "the server is down" looks like
+            from the client's end.
         </p>
-<code-block>curl http://localhost:8000</code-block>
-        <p>
-            Same server, same answer, different client. Then go back to the first terminal, stop
-            the server with <cde>Ctrl+C</cde>, and reload the browser. It can't connect, because
-            nobody is listening on port 8000 anymore. That error is what "the server is down"
-            looks like from the client's end.
+        <p class="text-th-muted text-base">
+            No Docker yet, or on Windows? <lnk to="/php/tools#docker">Tools</lnk> has the one
+            install, and the one change PowerShell needs in that command.
         </p>
-        <tk>
-            [ Try It: assumes Docker is installed and a terminal is open: link to Tools once it
-            exists. Windows PowerShell wants <cde>${PWD}</cde> instead of <cde>"$PWD"</cde>;
-            note it here or in Tools. ]
-        </tk>
-
 
         <!-- Gotchas -->
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>"Port is already allocated."</strong> Something else is already listening
-                on 8000. Pick another port on your side: <cde>-p 8001:8000</cde>, then open
+                <strong>"Port is already allocated."</strong> Something else is already listening on
+                8000. Pick another port on your side: <cde>-p 8001:8000</cde>, then open
                 <cde>localhost:8001</cde>.
             </li>
             <li>
-                <strong>Inside a container, localhost is the container.</strong> Not your
-                computer. A server in a container that listens only on localhost can't hear
-                anything from outside it, which is why Try It says <cde>0.0.0.0</cde>.
+                <strong>Inside a container, localhost is the container.</strong> Not your computer.
+                A server in a container that listens only on localhost can't hear anything from
+                outside it, which is why Try It says <cde>0.0.0.0</cde>.
             </li>
             <li>
                 <strong>"Connection refused" isn't "timed out."</strong> Refused means the machine
-                answered, but nothing is listening on that port: your stopped server, for
-                example. Timed out means the machine never answered at all, so the problem is
-                the address or something on the way there.
+                answered, but nothing is listening on that port: your stopped server, for example.
+                Timed out means the machine never answered at all, so the problem is the address or
+                something on the way there.
             </li>
         </list>
-
-
 
         <!-- $2 tip -->
         <two-dollars title="Is it the client or the server?">
             <p>
-                When something won't load, find out which end is broken before you fix anything.
-                Try a different client: another browser, <cde>curl</cde>, your phone with Wi-Fi
-                off. If the second client works, the server is fine and the problem is on your
-                end. If nothing can reach it, it's the server, or something between you and it,
-                like DNS.
+                When something won't load, find out which end is broken before you fix anything. Try
+                a different client: another browser, <cde>curl</cde>, your phone with Wi-Fi off. If
+                the second client works, the server is fine and the problem is on your end. If
+                nothing can reach it, it's the server, or something between you and it, like DNS.
             </p>
         </two-dollars>
 

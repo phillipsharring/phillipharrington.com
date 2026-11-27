@@ -1,0 +1,150 @@
+<layout name="default" title="Tools" />
+<page-head>
+    <meta
+        name="description"
+        content="The few tools to set up once before Web Nerdism w/ PHP 101: a terminal, Docker, a package manager, Git, an editor, a way to read logs, and Composer in a container."
+    />
+    <meta
+        name="keywords"
+        content="terminal, Docker, Homebrew, apt, winget, Git, VS Code, tail -f, reading logs, Composer, learn PHP, web development setup"
+    />
+    <meta
+        property="og:description"
+        content="Set up once, come back as needed. The tools behind Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Before You Start</p>
+        <heading h1 id="tools">Tools</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <p>
+            These aren't lessons. They're the handful of things you set up once and come back to
+            when a lesson needs them. The course assumes you can install an app and find a folder on
+            your computer, and nothing more: if you've never opened a terminal, start at the top.
+        </p>
+        <p>
+            One rule runs through all of it: you install as little as possible on your own computer.
+            Docker is the one real install. Everything else, PHP included, runs in a container.
+        </p>
+
+        <heading h2 id="terminal">The Terminal</heading>
+        <p>
+            A window where you type commands instead of clicking. On a Mac it's Terminal, in
+            Applications, Utilities. On Windows it's Windows Terminal, which runs PowerShell. On
+            Linux, you already know.
+        </p>
+        <p>Four things get you a long way:</p>
+        <list>
+            <li><cde>pwd</cde> says which folder you're in.</li>
+            <li><cde>ls</cde> lists what's in it (<cde>dir</cde> also works on Windows).</li>
+            <li>
+                <cde>cd some-folder</cde> goes into a folder, and <cde>cd ..</cde> goes back up.
+            </li>
+            <li><cde>Ctrl+C</cde> stops whatever is running.</li>
+        </list>
+        <p>The up arrow brings back the commands you typed before.</p>
+
+        <side-story label="Side story">
+            It's called a terminal because it used to be one: a screen and keyboard wired to a
+            computer somewhere else, like DEC's VT100 from 1978. The window on your screen is still
+            pretending to be one, codes and all.
+        </side-story>
+
+        <heading h2 id="docker">Docker</heading>
+        <p>
+            Docker runs containers: small, sealed-off computers-in-a-box with exactly the software a
+            lesson needs. When you're done, the box goes away, and nothing was installed on your
+            machine. It's how every lesson runs PHP.
+        </p>
+        <p>
+            Get
+            <lnk to="https://www.docker.com/products/docker-desktop/" blank>Docker Desktop</lnk> on
+            a Mac or Windows. On Linux, install Docker Engine with your package manager. Docker
+            Desktop has to be running before any <cde>docker</cde> command works. Check it:
+        </p>
+        <code-block>docker run --rm hello-world</code-block>
+        <p>
+            If it prints "Hello from Docker!", you're set. One Windows difference: where a lesson
+            says <cde>"$PWD"</cde> (the folder you're in), PowerShell wants <cde>${PWD}</cde>.
+        </p>
+
+        <heading h2 id="package-managers">Package Managers</heading>
+        <p>
+            For the few things that do have to live on your computer, use your system's package
+            manager rather than downloading installers from websites. It installs, updates and
+            removes things with one command each.
+        </p>
+        <list>
+            <li>
+                Mac: <lnk to="https://brew.sh" blank>Homebrew</lnk>. For example,
+                <cde>brew install git</cde>.
+            </li>
+            <li>Windows: winget, built in. For example, <cde>winget install Git.Git</cde>.</li>
+            <li>
+                Debian and Ubuntu Linux: apt, built in. For example,
+                <cde>sudo apt install git</cde>.
+            </li>
+        </list>
+
+        <heading h2 id="git">Git</heading>
+        <p>
+            Git keeps the history of your code: every change, when, and why, so you can go back.
+            Install it with your package manager (above). Check it:
+        </p>
+        <code-block>git --version</code-block>
+        <p>
+            The lessons use a few Git commands as they come up. For the whole thing, the free
+            <lnk to="https://git-scm.com/book" blank>Pro Git book</lnk> is the one.
+        </p>
+
+        <heading h2 id="editor">Your Editor</heading>
+        <p>
+            Code is plain text, so you need a code editor, not a word processor.
+            <lnk to="https://code.visualstudio.com" blank>VS Code</lnk> is free and fine. If PHP
+            turns into your job, PhpStorm is worth paying for. Any editor works for the course.
+        </p>
+
+        <heading h2 id="reading-logs">Reading Logs</heading>
+        <p>
+            A log is a file a program writes lines to as things happen. Watching one while you click
+            around is half of debugging. To follow a log as it grows:
+        </p>
+        <code-block>tail -f some.log</code-block>
+        <p>
+            <cde>less +F some.log</cde> does the same, and lets you scroll back:
+            <cde>Ctrl+C</cde> to stop following, <cde>q</cde> to quit. lnav, from your package
+            manager, adds color and search. On Windows, <cde>Get-Content some.log -Wait</cde> in
+            PowerShell follows a file, or try
+            <lnk to="https://www.baremetalsoft.com/baretail/" blank>BareTail</lnk>. For a container,
+            <cde>docker logs -f</cde> and the container's name.
+        </p>
+
+        <heading h2 id="composer">Composer, in a Container</heading>
+        <p>
+            Composer is PHP's package manager: it fetches the libraries a project uses. You'll run
+            it in a container too, never installed:
+        </p>
+        <code-block
+            >docker run --rm -it -v "$PWD":/app -w /app composer:2 composer install</code-block
+        >
+        <p>The lessons that need it say so, and explain it there.</p>
+
+        <two-dollars title="Press Tab">
+            <p>
+                Type the first few letters of a file, folder or command and press Tab: the terminal
+                finishes it for you. Fewer typos, less typing, and if nothing happens, the thing
+                you're typing doesn't exist where you think it does.
+            </p>
+        </two-dollars>
+
+        <p>That's everything. Now the first real lesson: how two computers talk at all.</p>
+
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/client-server">Next: Client/Server &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>
