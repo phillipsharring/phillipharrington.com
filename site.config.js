@@ -26,4 +26,7 @@ export default {
     // at the same relative path; see docker-compose.yml). The build fails if a
     // page includes a file that isn't there.
     codeRoot: '../web-nerdism-php',
+    // Build-time syntax highlighting for <code-file> (needs shiki). Colors are
+    // the --shiki-* variables in src/styles/style.css, light and dark.
+    highlight: true,
 };
