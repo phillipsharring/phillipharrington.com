@@ -26,6 +26,7 @@
             server to talk to, where to knock, and what to ask for. Every link you've ever clicked
             is one. Here's a full one, with every part filled in:
         </p>
+        <!-- prettier-ignore -->
         <code-block>https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments</code-block>
 
         <!-- What is/are -->
@@ -54,7 +55,7 @@
         <heading h3 id="path">Path: <cde>/blog/post</cde></heading>
         <p>
             Which thing on that server. It looks like folders and a file, and sometimes it is, but
-            the server decides what a path means. On this site, <cde>/about</cde> is a file with no
+            each server decides what a path means. On this site, <cde>/about</cde> is a file with no
             extension. In a PHP app, every path usually goes to one script that decides what to
             show.
         </p>
@@ -96,9 +97,10 @@
             links look like they were typed by a cat.
         </p>
         <p>
-            Links inside a page usually leave off the start. A link to <cde>/about</cde> on this
-            site means "same scheme, same host, this path", and the browser fills in the rest from
-            the page you're on. That's a relative URL.
+            Links inside a page usually leave off the scheme, host and port, and start with just the
+            <cde>/</cde>. A link to <cde>/about</cde> on this site means "same scheme, same host,
+            this path", and the browser fills in the rest from the page you're on. That's a relative
+            URL.
         </p>
 
         <!-- Try it -->
@@ -107,12 +109,13 @@
             PHP can take a URL apart for you. In a folder, make a file called
             <cde>url.php</cde>:
         </p>
-        <code-block
-            >&lt;?php $url = $argv[1] ??
-            'https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments';
-            print_r(parse_url($url));</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>&lt;?php
+$url = $argv[1] ?? 'https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments';
+
+print_r(parse_url($url));</code-block>
         <p>Run it the usual way:</p>
+        <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php url.php</code-block>
         <p>
             Every part, labeled. Give it a URL of your own to pick apart, in quotes, after
@@ -121,16 +124,15 @@
         <p>
             Now see which parts reach a server. Put this in <cde>index.php</cde> in the same folder:
         </p>
-        <code-block
-            >&lt;?php echo 'Path and query: ', $_SERVER['REQUEST_URI'], "\n";
-            print_r($_GET);</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>&lt;?php
+echo 'Path and query: ', $_SERVER['REQUEST_URI'], "\n";
+print_r($_GET);</code-block>
         <p>Start the server from Client/Server again:</p>
-        <code-block
-            >docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S
-            0.0.0.0:8000</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p>And open a URL with every part in it:</p>
+        <!-- prettier-ignore -->
         <code-block>http://localhost:8000/anything/you/like?name=you&amp;page=2#here</code-block>
         <p>
             The server shows you the path and the query string, and <cde>$_GET</cde> with the query
@@ -146,8 +148,8 @@
         <list>
             <li><cde>parse_url()</cde> takes a URL apart.</li>
             <li>
-                <cde>$_SERVER['REQUEST_URI']</cde> is the path and query string of the request
-                you're answering, and <cde>$_GET</cde> is its query, already decoded.
+                <cde>$_SERVER['REQUEST_URI']</cde> is usually the path and query string of the
+                request you're answering, and <cde>$_GET</cde> is its query, already decoded.
             </li>
             <li>
                 <cde>http_build_query()</cde> goes the other way: it turns an array into a query
@@ -161,7 +163,8 @@
         <list>
             <li>
                 <strong>The server never sees the fragment.</strong> Anything after the
-                <cde>#</cde> is only available to JavaScript in the page, never to PHP.
+                <cde>#</cde> stays with the page: the browser scrolls to it, and JavaScript in the
+                page can read it, but PHP never sees it.
             </li>
             <li>
                 <strong>Build query strings, don't glue them.</strong> A value with an

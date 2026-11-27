@@ -64,6 +64,7 @@
             a Mac or Windows. On Linux, install Docker Engine with your package manager. Docker
             Desktop has to be running before any <cde>docker</cde> command works. Check it:
         </p>
+        <!-- prettier-ignore -->
         <code-block>docker run --rm hello-world</code-block>
         <p>
             If it prints "Hello from Docker!", you're set. One Windows difference: where a lesson
@@ -93,6 +94,7 @@
             Git keeps the history of your code: every change, when, and why, so you can go back.
             Install it with your package manager (above). Check it:
         </p>
+        <!-- prettier-ignore -->
         <code-block>git --version</code-block>
         <p>
             The lessons use a few Git commands as they come up. For the whole thing, the free
@@ -111,6 +113,7 @@
             A log is a file a program writes lines to as things happen. Watching one while you click
             around is half of debugging. To follow a log as it grows:
         </p>
+        <!-- prettier-ignore -->
         <code-block>tail -f some.log</code-block>
         <p>
             <cde>less +F some.log</cde> does the same, and lets you scroll back:
@@ -126,9 +129,8 @@
             Composer is PHP's package manager: it fetches the libraries a project uses. You'll run
             it in a container too, never installed:
         </p>
-        <code-block
-            >docker run --rm -it -v "$PWD":/app -w /app composer:2 composer install</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -v "$PWD":/app -w /app composer:2 composer install</code-block>
         <p>The lessons that need it say so, and explain it there.</p>
 
         <two-dollars title="Press Tab">

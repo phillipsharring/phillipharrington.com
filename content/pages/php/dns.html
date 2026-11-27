@@ -109,6 +109,15 @@
             servers and the domain's servers. Same relationship as last time, more links in the
             chain.
         </p>
+        <p>
+            Step back and it's remarkable. Nobody runs DNS. Thousands of separate organizations, the
+            root operators, every top-level domain's registry, every company and person with a
+            domain, each run their own small piece of it, and they cooperate on nothing but an
+            agreed set of rules. It was designed in 1983 for a few thousand computers, and the same
+            design now answers for billions of them, all day, mostly without anyone noticing. It's
+            one of the great pieces of engineering of the last century, and also one of the great
+            examples of the world agreeing to work together.
+        </p>
 
         <side-story title="Thirteen Names">
             There are thirteen root server names, <cde>a.root-servers.net</cde> through
@@ -123,16 +132,16 @@
             PHP can do DNS lookups itself, so start there. In a folder, make a file called
             <cde>dns.php</cde>:
         </p>
-        <code-block
-            >&lt;?php $host = $argv[1] ?? 'phillipharrington.com'; echo gethostbyname($host), "\n";
-            print_r(dns_get_record($host, DNS_A)); print_r(dns_get_record($host,
-            DNS_MX));</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>&lt;?php
+$host = $argv[1] ?? 'phillipharrington.com';
+
+echo gethostbyname($host), "\n";
+print_r(dns_get_record($host, DNS_A));
+print_r(dns_get_record($host, DNS_MX));</code-block>
         <p>Run it in a container, the same way as last time, giving it a name to look up:</p>
-        <code-block
-            >docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php
-            phillipharrington.com</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php phillipharrington.com</code-block>
         <p>
             The first line is one address: <cde>gethostbyname()</cde> asks the question the way a
             browser would and takes the first answer. Then <cde>dns_get_record()</cde> shows the
@@ -144,14 +153,13 @@
             priority number (<cde>pri</cde>). Senders try the lowest number first and work up the
             list if it doesn't answer. Try another name, and the mail setup is different:
         </p>
-        <code-block
-            >docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php
-            reuselists.com</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php reuselists.com</code-block>
         <p>
             One MX record this time. Then ask a different client, the one that comes with every
             operating system:
         </p>
+        <!-- prettier-ignore -->
         <code-block>nslookup phillipharrington.com</code-block>
         <p>Same answer, different client. It also tells you which resolver answered, at the top.</p>
         <p class="text-th-muted text-base">

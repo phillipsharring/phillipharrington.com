@@ -125,14 +125,14 @@
             You're going to be both ends of the conversation: the server and the client, on one
             computer. PHP comes with a small built-in web server, which is all you need, and you'll
             run it in a container, so there's nothing to install but Docker. Make a folder, and in
-            it a file called <cde>index.php</cde> containing one line:
+            it a file called <cde>index.php</cde>:
         </p>
-        <code-block>&lt;?php echo 'Hello from the server.';</code-block>
+        <!-- prettier-ignore -->
+        <code-block>&lt;?php
+echo 'Hello from the server.';</code-block>
         <p>Then, in a terminal, in that folder, start the server:</p>
-        <code-block
-            >docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S
-            0.0.0.0:8000</code-block
-        >
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p>
             That's step one from above: the server binds to a port and listens. Most of that line is
             Docker. It starts a container with PHP in it, shares your folder with it, and connects
@@ -161,6 +161,7 @@
             127.0.0.1."
         </side-story>
         <p>Two more things to try. Ask again with a different client, from a second terminal:</p>
+        <!-- prettier-ignore -->
         <code-block>curl http://localhost:8000</code-block>
         <p>
             Same server, same answer, different client. Then go back to the first terminal, stop the
