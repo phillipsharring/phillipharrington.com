@@ -140,13 +140,14 @@
             To approve a comment, I click the link. To reject one, I do nothing. Spam doesn't pile
             up anywhere except my inbox, and it goes stale on its own.
         </p>
-        <p>
-            <strong>$2 tip:</strong>
-            never let a GET request approve anything. Email security scanners open every link in
-            every message to check it for malware. If clicking the link approved the comment, the
-            scanner would approve everything before I ever saw it. So the link opens a confirmation
-            page, and the Approve button on that page is a POST.
-        </p>
+        <two-dollars>
+            <p>
+                Never let a GET request approve anything. Email security scanners open every link in
+                every message to check it for malware. If clicking the link approved the comment,
+                the scanner would approve everything before I ever saw it. So the link opens a
+                confirmation page, and the Approve button on that page is a POST.
+            </p>
+        </two-dollars>
         <p>
             On approve, the Lambda appends the comment to the post's file, skips it if that comment
             is already there (double-clicks happen), and clears that one file from the CDN cache.

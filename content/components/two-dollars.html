@@ -1,4 +1,15 @@
-<!-- The $2 tip: one small, practical, cheap trick per lesson. Not a summary.
-     ("I want my two dollars!", Better Off Dead, 1985.) The title is the tip in
-     a few words; the slot is the tip. -->
-<callout label="$2 Tip" title="[[title]]">[[slot]]</callout>
+<!-- The $2 tip: one small, practical, cheap trick. Not a summary. ("I want
+     my two dollars!", Better Off Dead, 1985.) Optional title: the tip in a few
+     words, shown big above it. The slot is the tip itself. Callout styling,
+     without callout's link button. -->
+<aside
+    class="border-th-accent-deep bg-th-tint-deep rounded-lg border-l-4 px-6 py-5 sm:px-8 sm:py-6"
+>
+    <p class="font-display text-th-accent mb-2 text-sm font-semibold tracking-widest uppercase">
+        $2 Tip
+    </p>
+    [[#if title]]
+    <p class="font-display text-th-heading mb-3 text-xl font-bold sm:text-2xl">[[title]]</p>
+    [[/if]]
+    <div class="text-th-sub space-y-3 leading-relaxed">[[slot]]</div>
+</aside>
