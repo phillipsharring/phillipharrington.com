@@ -10,6 +10,8 @@ services:
     volumes:
       - .:/app
       - node_modules:/app/node_modules
+      # The PHP course's examples, for <code-file> (site.config.js codeRoot).
+      - ../web-nerdism-php:/web-nerdism-php:ro
     networks:
       - shared
 

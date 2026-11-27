@@ -1,4 +1,4 @@
-.PHONY: help start tail stop restart vite-clear clean build check-examples deploy provision cf-report cf-report-clean comments-test deploy-comments
+.PHONY: help start tail stop restart vite-clear clean build deploy provision cf-report cf-report-clean comments-test deploy-comments
 
 help: ## Print help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -28,11 +28,6 @@ clean: ## Delete the build output and any Vite cache in this folder.
 
 build: ## Build the site into dist/.
 	npm run build
-
-# The PHP course's code blocks against the tested files in ../web-nerdism-php.
-# deploy.sh runs this too.
-check-examples: ## Check the course's code blocks match web-nerdism-php.
-	@node scripts/check-examples.mjs
 
 # Local deploy: build, sync to S3, fix metadata, invalidate CF.
 deploy: ## Build and deploy to S3 and CloudFront.

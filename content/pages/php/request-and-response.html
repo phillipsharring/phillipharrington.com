@@ -192,17 +192,7 @@ Content-Length: 0</code-block>
             <cde>index.php</cde>:
         </p>
         <!-- prettier-ignore -->
-        <code-block example="request-and-response/index.php">&lt;?php
-if ($_SERVER['REQUEST_URI'] === '/teapot') {
-    http_response_code(418);
-}
-header('Content-Type: text/plain');
-
-echo $_SERVER['REQUEST_METHOD'], ' ', $_SERVER['REQUEST_URI'], "\n\n";
-foreach (getallheaders() as $name =&gt; $value) {
-    echo "$name: $value\n";
-}
-echo "\n", file_get_contents('php://input'), "\n";</code-block>
+        <code-block example="request-and-response/index.php" />
         <p>Start it the usual way:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>

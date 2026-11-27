@@ -23,9 +23,9 @@
         <p>
             In Client/Server, the server had to be easy to find. Computers find each other by
             number, the IP address, but people use names. DNS, the Domain Name System, is how a name
-            like <cde>phillipharrington.com</cde> turns into a number a client can connect to. It
-            happens before every new connection, usually in a few milliseconds, and you only notice
-            it when it breaks.
+            like <cde>example.com</cde> turns into a number a client can connect to. It happens
+            before every new connection, usually in a few milliseconds, and you only notice it when
+            it breaks.
         </p>
 
         <!-- What is/are -->
@@ -40,10 +40,9 @@
         <heading h2 id="whats-a-domain-name">What's a Domain Name?</heading>
         <p>
             The name people type instead of the number. It reads right to left, from general to
-            specific: in <cde>www.phillipharrington.com</cde>, <cde>com</cde> is the top-level
-            domain, <cde>phillipharrington</cde> is the name someone registered under it, and
-            <cde>www</cde> is a subdomain the owner made up. The owner can make as many of those as
-            they like.
+            specific: in <cde>www.example.com</cde>, <cde>com</cde> is the top-level domain,
+            <cde>example</cde> is the name someone registered under it, and <cde>www</cde> is a
+            subdomain the owner made up. The owner can make as many of those as they like.
         </p>
 
         <heading h2 id="records">What's a DNS Record?</heading>
@@ -91,8 +90,8 @@
             <li>
                 If the resolver doesn't know either, it starts at the top. It asks a root server,
                 "who's in charge of <cde>.com</cde>?" Then it asks the <cde>.com</cde> servers,
-                "who's in charge of <cde>phillipharrington.com</cde>?" Then it asks that domain's
-                own servers for the record itself.
+                "who's in charge of <cde>example.com</cde>?" Then it asks that domain's own servers
+                for the record itself.
             </li>
             <li>
                 The answer comes back down the chain, and every step remembers it for as long as the
@@ -133,34 +132,31 @@
             <cde>dns.php</cde>:
         </p>
         <!-- prettier-ignore -->
-        <code-block example="dns/dns.php">&lt;?php
-$host = $argv[1] ?? 'phillipharrington.com';
-
-echo gethostbyname($host), "\n";
-print_r(dns_get_record($host, DNS_A));
-print_r(dns_get_record($host, DNS_MX));</code-block>
+        <code-block example="dns/dns.php" />
         <p>Run it in a container, the same way as last time, giving it a name to look up:</p>
         <!-- prettier-ignore -->
-        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php phillipharrington.com</code-block>
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php example.com</code-block>
         <p>
             The first line is one address: <cde>gethostbyname()</cde> asks the question the way a
             browser would and takes the first answer. Then <cde>dns_get_record()</cde> shows the
-            actual A records, several of them, each with its TTL. This site sits behind a CDN, so
-            the name points at a handful of the CDN's servers.
+            actual A records, each with its TTL. There's more than one: example.com sits behind a
+            CDN, so the name points at more than one of the CDN's servers.
         </p>
         <p>
-            The MX records are where its email goes: five of Google's mail servers, each with a
-            priority number (<cde>pri</cde>). Senders try the lowest number first and work up the
-            list if it doesn't answer. Try another name, and the mail setup is different:
+            The MX record is where its email goes, and example.com's says "nowhere": priority 0, and
+            an empty target. That's a null MX, a domain announcing it takes no mail, so senders
+            don't even try. (example.com is reserved for examples like this one.) Try a name that
+            does take mail:
         </p>
         <!-- prettier-ignore -->
-        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php reuselists.com</code-block>
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php gmail.com</code-block>
         <p>
-            One MX record this time. Then ask a different client, the one that comes with every
-            operating system:
+            Five MX records, each with a priority number (<cde>pri</cde>). Senders try the lowest
+            number first, and work up the list if it doesn't answer. Then ask a different client,
+            the one that comes with every operating system:
         </p>
         <!-- prettier-ignore -->
-        <code-block>nslookup phillipharrington.com</code-block>
+        <code-block>nslookup example.com</code-block>
         <p>Same answer, different client. It also tells you which resolver answered, at the top.</p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.

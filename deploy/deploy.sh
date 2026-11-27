@@ -161,10 +161,6 @@ if [ -n "$TK_PAGES" ]; then
     exit 1
 fi
 
-# The PHP course's code blocks must match the tested files in the
-# web-nerdism-php repo (scripts/check-examples.mjs). Before anything uploads.
-node "$PROJECT_DIR/scripts/check-examples.mjs"
-
 # Strip macOS cruft before anything looks at dist/. A .DS_Store that reaches the
 # bucket is served publicly and lists local filenames: one was answering 200 at
 # https://phillipharrington.com/.DS_Store until 2026-10-27. Removing it here

@@ -75,8 +75,8 @@
         <heading h2 id="how-it-works">How It Works</heading>
         <p>An HTTP request, as it travels, looks like this:</p>
         <!-- prettier-ignore -->
-        <code-block>GET /php/dns HTTP/1.1
-Host: phillipharrington.com
+        <code-block>GET /hello HTTP/1.1
+Host: example.com
 Accept: text/html</code-block>
         <p>
             A method (<cde>GET</cde>, "give me"), a path, the protocol version, then a few headers,
@@ -119,23 +119,18 @@ Content-Length: 20469
         <heading h2 id="try-it">Try It</heading>
         <p>PHP can be the client too. In a folder, make a file called <cde>http.php</cde>:</p>
         <!-- prettier-ignore -->
-        <code-block example="http/http.php">&lt;?php
-$url = $argv[1] ?? 'https://phillipharrington.com/';
-$page = file_get_contents($url);
-
-print_r(http_get_last_response_headers());
-echo strlen($page), " bytes of page\n";</code-block>
+        <code-block example="http/http.php" />
         <p>Run it:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php http.php</code-block>
         <p>
             The first line is the status line: <cde>HTTP/1.1 200 OK</cde>. Then the response
-            headers, the type of the content, its length, how long it may be cached, and a few that
-            show the CDN answered. Then the size of the page itself.
+            headers: the type of the content, when it was last changed, and a few that show a CDN
+            answered (Cloudflare's, for example.com). Then the size of the page itself.
         </p>
         <p>Now ask with curl, and add <cde>-v</cde>, for verbose:</p>
         <!-- prettier-ignore -->
-        <code-block>curl -v https://phillipharrington.com/ -o /dev/null</code-block>
+        <code-block>curl -v https://example.com/ -o /dev/null</code-block>
         <p>
             The lines starting with <cde>*</cde> are the TLS handshake: the TLS version, the
             certificate's name and who issued it, when it expires. The lines starting with

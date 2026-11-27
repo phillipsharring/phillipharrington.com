@@ -100,21 +100,7 @@
         <heading h2 id="try-it">Try It</heading>
         <p>One server, one body, four labels. In a folder, make <cde>index.php</cde>:</p>
         <!-- prettier-ignore -->
-        <code-block example="content-types/index.php">&lt;?php
-$types = [
-    'html' =&gt; 'text/html',
-    'text' =&gt; 'text/plain',
-    'json' =&gt; 'application/json',
-    'bytes' =&gt; 'application/octet-stream',
-];
-$as = $_GET['as'] ?? 'html';
-
-header('Content-Type: ' . ($types[$as] ?? 'text/html'));
-if (isset($_GET['save'])) {
-    header('Content-Disposition: attachment; filename="hello.html"');
-}
-
-echo '&lt;h1&gt;Hello&lt;/h1&gt;&lt;p&gt;The same bytes, every time.&lt;/p&gt;';</code-block>
+        <code-block example="content-types/index.php" />
         <p>Start it the usual way:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
@@ -177,9 +163,10 @@ echo '&lt;h1&gt;Hello&lt;/h1&gt;&lt;p&gt;The same bytes, every time.&lt;/p&gt;';
                 it, and some will treat it as a page.
             </li>
             <li>
-                <strong>Never trust the type a browser sends.</strong> An upload's content type
-                comes from the client, which means from whoever is uploading. A script can arrive
-                labeled <cde>image/png</cde>. File Uploads, in Security, is about exactly this.
+                <strong>Never trust input. Not even the type a browser sends.</strong> An upload's
+                content type comes from the client, which means from whoever is uploading. A script
+                can arrive labeled <cde>image/png</cde>. File Uploads, in Security, is about exactly
+                this.
             </li>
             <li>
                 <strong>Strict browsers.</strong> With the

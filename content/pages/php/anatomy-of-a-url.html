@@ -110,10 +110,7 @@
             <cde>url.php</cde>:
         </p>
         <!-- prettier-ignore -->
-        <code-block example="anatomy-of-a-url/url.php">&lt;?php
-$url = $argv[1] ?? 'https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments';
-
-print_r(parse_url($url));</code-block>
+        <code-block example="anatomy-of-a-url/url.php" />
         <p>Run it the usual way:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php url.php</code-block>
@@ -125,9 +122,7 @@ print_r(parse_url($url));</code-block>
             Now see which parts reach a server. Put this in <cde>index.php</cde> in the same folder:
         </p>
         <!-- prettier-ignore -->
-        <code-block example="anatomy-of-a-url/index.php">&lt;?php
-echo 'Path and query: ', $_SERVER['REQUEST_URI'], "\n";
-print_r($_GET);</code-block>
+        <code-block example="anatomy-of-a-url/index.php" />
         <p>Start the server from Client/Server again:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>

@@ -1,14 +1,15 @@
-<!-- A block of code or terminal commands. Write the slot flush left in the
-     page source: a pre element keeps every space, indentation included.
+<!-- A block of code or terminal commands.
+     With example="dns/dns.php" it's self-closing, and the code comes from that
+     file in the web-nerdism-php repo (siteConfig.codeRoot) at build time, so the
+     page always shows the tested copy; a small link to the file goes under it.
+     Without it, the slot is the code: write it flush left (a pre keeps every
+     space), with a prettier-ignore comment on the line before, or Prettier
+     reflows it.
      The 60ch wrapper is at body size, so the block is exactly as wide as the
      paragraphs (60ch on the pre itself measured its own, smaller font, and
-     came out narrower). Long lines wrap rather than scroll.
-     Put a prettier-ignore comment on the line before each one in a page:
-     Prettier treats the tag as ordinary text and reflows the code inside.
-     example= names the same code in the web-nerdism-php repo: the block links to
-     it, and scripts/check-examples.mjs fails if the two stop matching. -->
+     came out narrower). Long lines wrap rather than scroll. -->
 <div class="max-w-[60ch]">
     <!-- prettier-ignore -->
-    <pre class="bg-th-tint-strong text-th-accent-text rounded px-4 py-3 font-mono text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]"><code>[[slot]]</code></pre>
+    <pre class="bg-th-tint-strong text-th-accent-text rounded px-4 py-3 font-mono text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]"><code>[[#if example]]<code-file src="[[example]]" />[[else]][[slot]][[/if]]</code></pre>
     [[#if example]]<p class="mt-1 text-right text-sm"><lnk to="https://github.com/phillipsharring/web-nerdism-php/blob/main/[[example]]" blank>[[example]] on GitHub</lnk></p>[[/if]]
 </div>
