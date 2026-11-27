@@ -82,8 +82,11 @@
                 Every later request to that site, pages, images, scripts, all of them, includes it
                 in a <cde>Cookie</cde> header, until it expires.
             </li>
-            <li>To delete it, the server sets it again with an expiry in the past.</li>
         </ol>
+        <p>
+            To delete a cookie, the server sets it again with an expiry in the past, and the
+            browser throws it away. In PHP, below, shows the one line it takes.
+        </p>
         <p>
             Notice step four. The cookie comes from the browser, which means from whoever controls
             the browser. A cookie is input, and <strong>you never trust input</strong>. Anyone can
