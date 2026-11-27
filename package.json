@@ -13,7 +13,7 @@
     "author": "Phillip Harrington <phillip@phillipharrington.com> (https://phillipharrington.com/)",
     "license": "MIT",
     "devDependencies": {
-        "@phillipsharring/handlr-build": "^0.18.0",
+        "@phillipsharring/handlr-build": "^0.19.0",
         "@tailwindcss/vite": "^4.1.18",
         "html-minifier-terser": "^7.2.0",
         "prettier": "^3.8.2",
