@@ -1,3 +1,11 @@
-<aside id="credits" class="border-th-border text-th-muted mt-6 block border-t pt-3 text-sm">
-    [[slot]]
+<!-- Image credits at the foot of a post. The asterisk is drawn here, in the
+     accent color to match the one on the figure that links down to it, so the
+     slot is just the credit text. Margin above, because it often follows the
+     comment form directly. The usual credits are attributes: pixlr or chatgpt
+     writes the whole line; anything else goes in the slot. -->
+<aside id="credits" class="border-th-border text-th-muted mt-12 block border-t pt-3 text-base">
+    <span class="text-th-accent text-2xl font-extrabold" aria-hidden="true">*</span>
+    [[#if pixlr]]Image generated with
+    <lnk to="https://pixlr.com/image-generator/" blank>Pixlr AI Image Generator</lnk>.[[/if]] [[#if
+    chatgpt]]Image generated with <lnk to="https://chatgpt.com" blank>ChatGPT</lnk>.[[/if]] [[slot]]
 </aside>

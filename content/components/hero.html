@@ -1,0 +1,24 @@
+<!-- The top of a page: the text (the slot: h1, byline, intro) beside a hero
+     photo, which stacks above the text on a phone. Every attribute is passed
+     through to the photo: img w h alt, plus optional caption, full and credit
+     (an asterisk after the caption, linking to the credits).
+     min-w-0 lets the text column shrink instead of overflowing beside the
+     photo.
+     The pass-throughs use the raw (curly-brace) placeholders: the photo component
+     escapes them itself, and escaping here too turned an apostrophe into
+     &amp;#39; on the page. -->
+<div class="mb-5 flex flex-col-reverse gap-8 sm:flex-row sm:items-start sm:gap-12">
+    <div class="min-w-0 flex-1 space-y-5">[[slot]]</div>
+    <div class="flex justify-center sm:justify-end">
+        <hero-photo
+            [[#if full]]full[[/if]]
+            [[#if credit]]credit[[/if]]
+            img="[[{img}]]"
+            w="[[{w}]]"
+            h="[[{h}]]"
+            alt="[[{alt}]]"
+            [[#if caption]]caption="[[{caption}]]"
+            [[/if]]
+        />
+    </div>
+</div>

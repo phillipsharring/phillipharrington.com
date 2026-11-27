@@ -6,48 +6,42 @@
     />
     <meta
         name="keywords"
-        content="Phillip Harrington, blog, tech posts, life lessons, occasional blogging, Did You Run This Code, Smile Big, MaShanda, personal blog, tech insights, fun content"
+        content="Phillip Harrington, blog, tech posts, life lessons, occasional blogging, Did You Run This Code, personal blog, tech insights, fun content"
     />
 </page-head>
 <article>
-    <div class="mb-5 flex flex-col-reverse gap-8 sm:flex-row sm:items-start sm:gap-12">
-        <div class="flex-1 space-y-5">
-            <heading h1 id="blog">Blog</heading>
-            <p>
-                Occasional posts about building software, playing music, and whatever else gets
-                stuck in my head long enough to write down.
-            </p>
-            <heading h2 id="nov-2026">Nov 2026</heading>
-            <p>
-                <lnk to="/static-site-comments"
-                    >How in the Hell Does My Static Site Have Comments?</lnk>
-                <br />
-                <span class="text-th-muted"
-                    >Comments with no database, no server and no cookies, and still 100s on
-                    Lighthouse.</span
-                >
-                <comment-count path="/static-site-comments" />
-            </p>
-            <p>
-                <lnk to="/everybody-knows-alice">Everybody Knows Alice</lnk>
-                <br />
-                <span class="text-th-muted"
-                    >Write your seed data as named scenarios, and one story carries you from dev
-                    data to sales demo.</span
-                >
-                <comment-count path="/everybody-knows-alice" />
-            </p>
-        </div>
-        <div class="flex justify-center sm:justify-end">
-            <hero-photo
-                full
-                img="blog-type-writer"
-                w="768"
-                h="768"
-                alt="An old typewriter on a sunny wooden desk with tea, flowers, pencils and books"
-            />
-        </div>
-    </div>
+    <hero
+        full
+        img="blog-type-writer"
+        w="768"
+        h="768"
+        alt="An old typewriter on a sunny wooden desk with tea, flowers, pencils and books"
+    >
+        <heading h1 id="blog">Blog</heading>
+        <p>
+            Occasional posts about building software, playing music, and whatever else gets stuck in
+            my head long enough to write down.
+        </p>
+        <heading h2 id="nov-2026">Nov 2026</heading>
+        <p>
+            <lnk to="/static-site-comments">How in the Hell Does My Static Site Have Comments?</lnk>
+            <br />
+            <span class="text-th-muted"
+                >Comments with no database, no server and no cookies, and still 100s on
+                Lighthouse.</span
+            >
+            <comment-count path="/static-site-comments" />
+        </p>
+        <p>
+            <lnk to="/everybody-knows-alice">Everybody Knows Alice</lnk>
+            <br />
+            <span class="text-th-muted"
+                >Write your seed data as named scenarios, and one story carries you from dev data to
+                sales demo.</span
+            >
+            <comment-count path="/everybody-knows-alice" />
+        </p>
+    </hero>
     <spaced class="space-y-5">
         <heading h2 id="may-2026">May 2026</heading>
         <p>
@@ -91,15 +85,6 @@
                 >A career-defining lesson in running your code, even after the tiniest change.</span
             >
             <comment-count path="/did-you-run-this-code" />
-        </p>
-        <heading h2 id="way-back">Way Back</heading>
-        <p>
-            <lnk to="/mashanda-smile-big">"Smile Big" by MaShanda</lnk>
-            <br />
-            <span class="text-th-muted"
-                >A feel-good music video from the one and only MaShanda. 😀</span
-            >
-            <comment-count path="/mashanda-smile-big" />
         </p>
     </spaced>
 </article>

@@ -40,13 +40,12 @@
         >
         <byline date="Nov 2026">Phillip Harrington</byline>
         <comment-count />
-        <p>
-            <strong>TL;DR:</strong>
+        <tldr>
             Every post gets its own JSON file, and they all live in a separate S3 bucket. A Lambda
             takes new comments, emails me a signed approve link, and on approval appends to that
             JSON file. The pages stay plain HTML, nothing sets a cookie, and Lighthouse still says
             100 across the board. It only took three tries to get there.
-        </p>
+        </tldr>
 
         <heading h2 id="where-is-the-community">"Where's the Community?"</heading>
         <p>
@@ -164,6 +163,12 @@
             The comment markup lives in a component in my site's repo, not in the data. Restyling
             the comments is a normal deploy.
         </p>
+        <p>
+            My laptop doesn't have any comments of its own. The local dev server sends
+            <cde>/api</cde> to the live site, so a page on my machine shows the real comments, and a
+            comment posted from it lands in the real moderation inbox. One copy of the data,
+            everywhere.
+        </p>
 
         <heading h2 id="lighthouse-strikes-back">Lighthouse Strikes Back</heading>
         <p>
@@ -264,7 +269,4 @@
     </spaced>
     <inject-comments />
 </article>
-<credits>
-    * Image generated with
-    <lnk to="https://pixlr.com/image-generator/" blank>Pixlr AI Image Generator</lnk>.
-</credits>
+<credits pixlr />
