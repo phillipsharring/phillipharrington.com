@@ -1,0 +1,149 @@
+<layout name="default" title="One Man's Setup" />
+<page-head>
+    <meta
+        name="description"
+        content="How I set up my Mac for web development, and why: Homebrew, Docker, one shared set of local services, .test domains with real HTTPS, and a very short list of apps."
+    />
+    <meta
+        name="keywords"
+        content="Phillip Harrington, developer setup, local development, Homebrew, Docker, Docker Compose, MySQL, Adminer, Mailpit, nginx reverse proxy, mkcert, .test domains, iTerm2, VS Code"
+    />
+</page-head>
+<article>
+    <spaced>
+        <tk>[ Hero image: TK. ]</tk>
+        <heading h1 id="one-mans-setup">One Man's Setup</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+        <tldr>
+            Install as little as possible, run everything else in Docker, and keep one shared set
+            of local services that every project plugs into. Every project gets a real-looking
+            address like <cde>reuselists.test</cde>, with real HTTPS, so local behaves like
+            production.
+        </tldr>
+        <p>
+            Every developer's setup is a pile of decisions they made once and stopped thinking
+            about. These are mine, with the reasons, because the reasons are the useful part.
+        </p>
+
+        <heading h2 id="install-as-little-as-possible">Install as Little as Possible</heading>
+        <p>
+            The rule I keep coming back to: if it can run in a container, it does. Software I
+            install directly on my Mac is software I have to update, untangle and eventually
+            uninstall. Software in a container is a line in a file, and it goes away when I'm done
+            with it.
+        </p>
+        <p>
+            The few things that do live on the Mac come from
+            <lnk to="https://brew.sh" blank>Homebrew</lnk>, never from installers downloaded off
+            websites. One command installs, one updates everything, one removes. On mine right
+            now: git and the GitHub CLI, the AWS CLI, mkcert (more on that below), GoAccess for
+            reading server logs, ImageMagick and the WebP tools for images, and Node.
+        </p>
+        <p>
+            PHP and Composer are in there too, which breaks my own rule a little. They're for
+            quick one-offs. Every real project runs its PHP in a container, pinned to the version
+            production runs.
+        </p>
+
+        <heading h2 id="docker">Docker</heading>
+        <p>
+            Docker Desktop is the one big install. Every project has a Docker Compose file that
+            says exactly what it needs to run: which PHP, which web server, which settings. Clone
+            the repo, run one command, and it's up. No "works on my machine," because my machine
+            isn't really involved.
+        </p>
+        <p>
+            It also means a project from five years ago still runs, on the PHP it was written for,
+            without me keeping five years of PHP versions around.
+        </p>
+
+        <heading h2 id="basic-services">Basic Services</heading>
+        <p>
+            Most of my projects need the same few things: a database, a way to look at the
+            database, somewhere for email to go, and a front door. Rather than give every project
+            its own copies, I keep them in one Compose project I call basic services, and every
+            other project joins its network.
+        </p>
+        <list>
+            <li>
+                <strong>MySQL.</strong> One database server for every project, each project with
+                its own database. Same version as production, 8.4, because a database that
+                behaves differently locally is a bug you haven't met yet.
+            </li>
+            <li>
+                <strong>Adminer.</strong> A database admin tool in a single PHP file, running in
+                its own container. It's a browser tab, not an app, and it's there when I need it.
+            </li>
+            <li>
+                <strong>Mailpit.</strong> Every email any project sends lands here instead of in
+                someone's inbox. Nothing local ever emails a real person by accident. It replaced
+                MailHog, which I'd used for years and which stopped getting updates.
+            </li>
+            <li>
+                <strong>An nginx proxy.</strong> The front door, on ports 80 and 443, for every
+                project at once. Each project gets a few lines of config, and the proxy sends
+                <cde>reuselists.test</cde> to Reuse Lists, <cde>streamtostory.test</cde> to Stream
+                to Story, and so on. Projects don't fight over ports.
+            </li>
+        </list>
+        <p>
+            Redis isn't in there. It runs only in the projects that actually need it, when they
+            need it, instead of always. A tool for looking inside it would be a different story:
+            like Adminer, a web app I'd want handy across projects, it would go in basic services.
+        </p>
+
+        <heading h2 id="dot-test">.test and Real HTTPS</heading>
+        <p>
+            Every project gets an address ending in <cde>.test</cde>, like
+            <cde>reuselists.test</cde>. That ending is reserved for exactly this: it will never be
+            a real domain on the internet, so there's no chance of a local address colliding with
+            somebody's real site. One line in <cde>/etc/hosts</cde> points all of them at my own
+            machine.
+        </p>
+        <p>
+            And they all use HTTPS, with a real padlock. <lnk to="https://github.com/FiloSottile/mkcert" blank>mkcert</lnk>
+            makes a little certificate authority that only my machine trusts, and signs a
+            certificate for each project. The proxy serves them.
+        </p>
+        <p>
+            Why bother? Because production is HTTPS, and things behave differently without it.
+            Cookies marked Secure don't get sent. Some browser features refuse to work. I once
+            shipped login cookies without the Secure flag for months, because the code that was
+            supposed to notice HTTPS never saw it. The closer local is to production, the fewer of
+            those I find in production.
+        </p>
+
+        <heading h2 id="apps">The Apps</heading>
+        <p>The list of things I actually open every day is short:</p>
+        <list>
+            <li>
+                <strong>iTerm2</strong>, for the terminal. Most of my day happens in it.
+            </li>
+            <li>
+                <strong>VS Code</strong>, for code. Free, fast enough, and everything else plugs
+                into it.
+            </li>
+            <li>
+                <strong>Inkscape</strong>, for anything drawn: logos, icons, the occasional diagram.
+            </li>
+        </list>
+        <tk>[ Anything else that belongs here? Spotify, for one, is installed. ]</tk>
+
+        <heading h2 id="and-claude">And Claude</heading>
+        <p>
+            There's one more thing in the terminal these days: Claude, Anthropic's AI, working
+            right alongside me in the same project. A good chunk of the work on this site, and the
+            setup above, got done that way. How that actually works, the good and the weird, is a
+            post of its own.
+        </p>
+
+        <two-dollars title="Write your setup down">
+            <p>
+                Keep your setup in a repo, even a small one: the Compose file, the proxy config, a
+                README with the steps you'd otherwise forget. Mine is basic services. The next
+                time you get a new computer, or a new teammate, it's an afternoon instead of a
+                week.
+            </p>
+        </two-dollars>
+    </spaced>
+</article>
