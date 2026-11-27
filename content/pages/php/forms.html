@@ -1,0 +1,209 @@
+<layout name="default" title="Forms" />
+<page-head>
+    <meta
+        name="description"
+        content="How people send data to your site: the HTML form, its fields, GET versus POST, what the browser actually sends, how PHP reads it, and why the browser's checks don't count. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="HTML forms, form method, GET vs POST, $_POST, input types, label, required, htmlspecialchars, form validation, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How people send data to your site. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="forms">Forms</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Query strings send data you type into the address bar. Forms send data people type into
+            a page: a search box, a signup, a comment, a checkout. A form is plain HTML. The browser
+            already knows how to show it, check it, and send it, with no JavaScript at all. Your job
+            is the other end: reading what arrives, and deciding whether to believe it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-form">What's a Form?</heading>
+        <!-- prettier-ignore -->
+        <code-block>&lt;form action="/order" method="post"&gt;
+    &lt;label&gt;Name &lt;input name="name" required&gt;&lt;/label&gt;
+    &lt;button&gt;Order&lt;/button&gt;
+&lt;/form&gt;</code-block>
+        <list>
+            <li>
+                <strong>action</strong>: where to send it. Leave it off, and it goes back to the
+                page it's on.
+            </li>
+            <li>
+                <strong>method</strong>: <cde>get</cde> puts the fields in a query string;
+                <cde>post</cde> puts them in the request body. The default is <cde>get</cde>.
+            </li>
+            <li>
+                <strong>name</strong>, on each field: the name it's sent under. A field without a
+                name isn't sent at all.
+            </li>
+            <li>
+                <strong>label</strong>: the field's visible name. Clicking it puts you in the field,
+                and screen readers read it aloud.
+            </li>
+            <li><strong>button</strong>: inside a form, a button submits it.</li>
+        </list>
+
+        <heading h3 id="fields">Fields</heading>
+        <p>
+            <cde>input</cde> does most of the work, changing with its <cde>type</cde>:
+            <cde>text</cde>, <cde>email</cde>, <cde>number</cde>, <cde>password</cde>,
+            <cde>checkbox</cde>, <cde>radio</cde>, <cde>date</cde>, <cde>hidden</cde> and more. Then
+            <cde>select</cde> for a list to pick from, and <cde>textarea</cde> for writing more than
+            a line.
+        </p>
+        <p>
+            The browser can check some things before it sends: <cde>required</cde>,
+            <cde>type="email"</cde>, <cde>min</cde> and <cde>max</cde>, <cde>maxlength</cde>. Use
+            them. They save people a round trip. But they're a courtesy to honest visitors, not a
+            defense, as Try It will show.
+        </p>
+
+        <side-story title="PHP Was Born for This">
+            In 1995, Rasmus Lerdorf released a set of tools he'd written for his own home page and
+            called it PHP/FI: Personal Home Page / Forms Interpreter. Reading what people typed into
+            forms was half the original point. The language grew from there, and the name got
+            reinterpreted as "PHP: Hypertext Preprocessor."
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Someone fills in the form and presses the button.</li>
+            <li>The browser runs its checks. If any fail, it says so and sends nothing.</li>
+            <li>
+                It collects every named field as <cde>name=value</cde>. A checkbox counts only if
+                it's checked, and a disabled field doesn't count at all.
+            </li>
+            <li>
+                For <cde>get</cde>, those pairs become the query string. For <cde>post</cde>, they
+                go in the body, labeled <cde>application/x-www-form-urlencoded</cde> (or
+                <cde>multipart/form-data</cde>, when the form uploads a file).
+            </li>
+            <li>PHP puts them in <cde>$_GET</cde> or <cde>$_POST</cde>.</li>
+        </ol>
+        <p>
+            Use <cde>get</cde> for forms that look something up, like a search, so the result has a
+            URL you can share. Use <cde>post</cde> for forms that change something: signups,
+            comments, orders.
+        </p>
+        <p>
+            Then the part that matters most. <strong>Never trust input.</strong> Step two only
+            happens in a browser that behaves. Anyone can delete <cde>required</cde> in their
+            developer tools, or skip the page entirely and send whatever they like with curl. Every
+            check that matters happens again on the server, every time.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A shirt order that checks everything twice: once in the browser, for courtesy, and once
+            on the server, for real. In a folder, make <cde>index.php</cde>:
+        </p>
+        <code-block example="forms/index.php" />
+        <p>Start it the usual way:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000</cde> and press Order with nothing filled in: the
+            browser stops you. That's <cde>required</cde>. Fill it in properly, and it thanks you.
+        </p>
+        <p>
+            Now go around the browser, the way a script would, with a size that isn't on the list:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'name=&amp;size=huge' http://localhost:8000</code-block>
+        <p>
+            The browser's checks never ran, and the server caught both problems anyway. One more:
+            send a name with HTML in it.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl --data-urlencode 'name=&lt;b&gt;hi&lt;/b&gt;' -d 'size=large' http://localhost:8000</code-block>
+        <p>
+            Look at the HTML that comes back: <cde>&amp;lt;b&amp;gt;hi&amp;lt;/b&amp;gt;</cde>.
+            <cde>htmlspecialchars()</cde> turned the tags into harmless text, in the message and in
+            the box. Every time you put input back into a page, escape it like that. The XSS lesson,
+            in Security, is why.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$_POST</cde> holds the fields of a <cde>post</cde> form, decoded. Every value
+                is input: check its type, trim it, and test it against what you'll accept.
+            </li>
+            <li>
+                <cde>$_SERVER['REQUEST_METHOD'] === 'POST'</cde> tells "showing the form" apart from
+                "it was submitted."
+            </li>
+            <li>
+                <cde>isset($_POST['wrap'])</cde> is how you read a checkbox: checked means present,
+                unchecked means missing.
+            </li>
+            <li>
+                <cde>in_array($value, $allowed, true)</cde> keeps a <cde>select</cde> honest: the
+                value has to be one of yours.
+            </li>
+            <li><cde>htmlspecialchars()</cde> on anything you echo back into the page.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>An unchecked checkbox sends nothing.</strong> Not "off," not empty: nothing.
+                Test whether it's there.
+            </li>
+            <li>
+                <strong>A select isn't a whitelist.</strong> The browser only offers your options,
+                but anyone can send any value. Check it against the list on the server.
+            </li>
+            <li>
+                <strong>Reloading resubmits a POST.</strong> Submit the shirt order, then reload,
+                and the browser asks whether to send it again. Real forms answer a successful POST
+                with a redirect: Post/Redirect/Get, from Request and Response. The example skips it
+                to stay short.
+            </li>
+            <li>
+                <strong>Disabled isn't read-only.</strong> A <cde>disabled</cde> field isn't sent. A
+                <cde>readonly</cde> one is sent, and, being input, can still be changed.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Pick the right input type">
+            <p>
+                <cde>type="email"</cde> gives phones a keyboard with an @ on it.
+                <cde>type="tel"</cde> brings up a number pad, and
+                <cde>inputmode="numeric"</cde> does the same for codes and ZIPs. One attribute, and
+                every phone user types less and gets it wrong less.
+            </p>
+        </two-dollars>
+
+        <p>
+            Your form's data leaves the browser for your server. But it rarely goes straight there.
+            Next: what's in the middle.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <span class="text-th-muted text-right">Next: What's in the Middle (coming soon)</span>
+        </nav>
+    </spaced>
+</article>
