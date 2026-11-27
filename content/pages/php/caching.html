@@ -1,0 +1,348 @@
+<layout name="default" title="Caching" />
+<page-head>
+    <meta
+        name="description"
+        content="What a cache is and where caches live: the browser, with Cache-Control, ETag and 304 Not Modified; CDNs in the middle; and your own app, keeping an expensive result instead of making it again. Invalidation, and the pages no shared cache should ever keep. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="caching, HTTP caching, Cache-Control, max-age, no-cache, no-store, private, ETag, If-None-Match, 304 Not Modified, CDN, file cache, APCu, OPcache, cache invalidation, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Keeping a copy of the answer, and knowing when it's no longer true. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="caching">Caching</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/output-buffering">Output Buffering</lnk> turned a whole page into a
+            string. A page you can hold, you can keep. If it took a second to make, and it will be
+            the same for the next thousand visitors, there's no reason to make it a thousand times.
+            Keeping it is caching.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-cache">What's a Cache?</heading>
+        <p>
+            A copy of an answer, kept somewhere closer or cheaper than the place the answer comes
+            from, so the next person who asks gets the copy instead. A few words come with it:
+        </p>
+        <list>
+            <li>
+                <strong>Hit</strong>: the copy was there, and it was used. <strong>Miss</strong>: it
+                wasn't, so the real work happened.
+            </li>
+            <li>
+                <strong>Fresh</strong> and <strong>stale</strong>: whether the copy is still young
+                enough to trust. How long it stays fresh is its lifetime, often called its TTL, for
+                "time to live."
+            </li>
+            <li>
+                <strong>Invalidation</strong>: throwing a copy away because the real answer has
+                changed.
+            </li>
+        </list>
+        <p>
+            A copy is never the truth. The database, the file, the other site: that's the truth, and
+            the cache is a bet that it hasn't changed since you looked.
+        </p>
+
+        <side-story title="A Hiding Place">
+            "Cache" is French, from <em>cacher</em>, to hide: a hidden store of supplies, kept for
+            later. Computing took the word in the late 1960s, at IBM, for a small, fast memory
+            between the processor and the main memory in the System/360 Model 85. Maurice Wilkes had
+            described the idea a few years before, in a 1965 paper.
+        </side-story>
+
+        <heading h2 id="where-caches-live">Where Caches Live</heading>
+
+        <heading h3 id="the-browser">The Browser</heading>
+        <p>
+            The browser keeps copies of what it downloads, and your response headers say what it may
+            keep and for how long. The main one is <cde>Cache-Control</cde>:
+        </p>
+        <list>
+            <li>
+                <cde>max-age=60</cde>: the copy is fresh for 60 seconds. Until then, the browser
+                uses it without asking you at all.
+            </li>
+            <li>
+                <cde>public</cde>: any cache may keep it, including the shared ones in the middle.
+            </li>
+            <li>
+                <cde>private</cde>: only this person's own browser may keep it. No shared cache.
+            </li>
+            <li>
+                <cde>no-cache</cde>: keep it if you like, but check with the server before every
+                use.
+            </li>
+            <li><cde>no-store</cde>: don't keep it anywhere, at all.</li>
+        </list>
+        <p>
+            When a copy goes stale, the browser doesn't have to download it again. If the response
+            came with an <cde>ETag</cde>, a fingerprint of that version, the browser asks with
+            <cde>If-None-Match</cde> and the fingerprint it has. If nothing changed, the server
+            answers <cde>304 Not Modified</cde>, with no body, and the browser uses its copy for
+            another lifetime. <cde>Last-Modified</cde> and <cde>If-Modified-Since</cde> do the same
+            with a date instead of a fingerprint. Both are headers from
+            <lnk to="/php/request-and-response">Request and Response</lnk>.
+        </p>
+
+        <heading h3 id="the-middle">The Middle</heading>
+        <p>
+            <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk> put a CDN at the front of
+            the chain, keeping copies close to visitors. It reads the same headers the browser does.
+            A <cde>public</cde> answer with a <cde>max-age</cde> can be handed out from a server on
+            another continent for that long, and your server never hears about it. Many CDNs also
+            have their own settings that override yours, so check them before you go looking for a
+            bug in your code.
+        </p>
+
+        <heading h3 id="your-app">Your App</heading>
+        <p>
+            The caches above keep whole responses. Your own code can keep anything expensive: the
+            result of a slow query, an answer from another site's API, a page built from a dozen
+            pieces. Make it once, keep it with a time on it, and hand out the copy until it's too
+            old.
+        </p>
+        <p>
+            Where to keep it depends on the size of the site. A file on disk is the simplest place,
+            and needs nothing installed. Memory is faster: APCu is a PHP extension that keeps values
+            in the server's memory between requests, with <cde>apcu_store()</cde> and
+            <cde>apcu_fetch()</cde>. It isn't in the <cde>php:8.4-cli</cde> image, and every server
+            has its own, so it suits a site on one machine. Redis and Memcached are shared caches
+            that several servers can use at once. Each one is a different place to put the copy; the
+            idea doesn't change.
+        </p>
+        <p>
+            PHP already caches for you, too. OPcache, which comes with PHP, keeps your scripts in
+            memory already compiled, so PHP doesn't have to read and parse every file on every
+            request.
+        </p>
+
+        <heading h2 id="invalidation">Invalidation</heading>
+        <p>
+            "There are only two hard things in Computer Science: cache invalidation and naming
+            things." The line is usually credited to Phil Karlton. Making the copy is easy. Knowing
+            when it stopped being true is the hard part. There are three ways to handle it:
+        </p>
+        <list>
+            <li>
+                <strong>Let it expire.</strong> Give every copy a lifetime and accept that it can be
+                that far behind. Simple, and right for most things.
+            </li>
+            <li>
+                <strong>Throw it away when the truth changes.</strong> When someone edits a post,
+                delete the cached copy of that post. Exact, but every place that changes the data
+                has to remember to do it.
+            </li>
+            <li>
+                <strong>Change the name.</strong> Put a version in the URL or the key, and a change
+                makes a new copy under a new name. The old one is never asked for again.
+            </li>
+        </list>
+        <p>
+            Once a browser has a copy, only the first and third work: you can't reach into someone's
+            browser and delete it.
+        </p>
+
+        <heading h2 id="one-persons-page">One Person's Page</heading>
+        <p>
+            A page that says "Hi, Alice," or shows a cart, an order, an account, belongs to one
+            person. If it's cached anywhere shared, the next visitor can get Alice's page. Send
+            <cde>Cache-Control: private, no-store</cde> on every page like that, and never cache it
+            in your app under a key that's the same for everyone. When in doubt, it's private.
+        </p>
+
+        <side-story title="Christmas on Steam">
+            On Christmas Day in 2015, people visiting Valve's Steam store started seeing other
+            people's account pages. During a flood of traffic, a change to the caching settings let
+            account pages be cached and served to the wrong visitors. Valve later said about 34,000
+            users' details could have been shown to someone else. Nothing about it was exotic: one
+            person's page, kept somewhere shared.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>One request, with all three kinds of cache in its way:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The browser looks for its own copy. If it has one that's still fresh, it uses it,
+                and nothing is sent at all.
+            </li>
+            <li>
+                If its copy is stale, it sends the request with <cde>If-None-Match</cde> and the
+                <cde>ETag</cde> it has.
+            </li>
+            <li>A CDN in the middle may have a fresh copy of its own, and answer from that.</li>
+            <li>
+                If not, the request reaches PHP. Your code looks in its own cache. On a hit, it
+                skips the slow work.
+            </li>
+            <li>On a miss, it does the work, and keeps the result for next time.</li>
+            <li>
+                It works out the <cde>ETag</cde> for what it's about to send. If that matches the
+                one the browser sent, it answers <cde>304</cde> with no body. If not, it sends the
+                whole thing.
+            </li>
+        </ol>
+        <p>
+            Every step that answers early is work nobody else has to do. The best request is the one
+            the browser never sends.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A page that's slow on purpose, made fast with a file cache, then made smaller still with
+            an <cde>ETag</cde>. In a folder, make a <cde>public</cde> folder and an empty
+            <cde>cache</cde> folder beside it, so the copies are kept outside the
+            <lnk to="/php/document-root">document root</lnk>. Then <cde>public/index.php</cde>:
+        </p>
+        <code-block example="caching/public/index.php" />
+        <p>Serve <cde>public</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>From a second terminal, ask twice, and time each one:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -w '%{time_total}s\n' http://localhost:8000/
+curl -i -w '%{time_total}s\n' http://localhost:8000/</code-block>
+        <p>
+            The first says <cde>X-Cache: MISS</cde> and takes two seconds. The second says
+            <cde>HIT</cde>, takes a few thousandths of a second, and has the same "Built at" time.
+            That's the file cache. Now copy the <cde>ETag</cde> from either one, quotes and all, and
+            ask the way a browser with a stale copy would:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-block>
+        <p>
+            <cde>304 Not Modified</cde>, and no page at all. The browser already has it. Now
+            invalidate: throw the copy away, and ask again with the same <cde>ETag</cde>.
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>rm cache/*.html
+curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-block>
+        <p>
+            A miss, two seconds, a new "Built at" time, so a new fingerprint, and the whole page
+            comes back with <cde>200</cde>. Wait a minute without deleting anything, and the same
+            thing happens on its own: the copy expires.
+        </p>
+        <p>
+            <cde>If-None-Match</cde> is a header, and headers are input.
+            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> The page only
+            compares it with its own fingerprint, and never uses it for anything else.
+        </p>
+        <p>One more file, a page about one person, <cde>public/hello.php</cde>:</p>
+        <code-block example="caching/public/hello.php" />
+        <!-- prettier-ignore -->
+        <code-block>curl -i 'http://localhost:8000/hello.php?name=Ada'</code-block>
+        <p>
+            <cde>Cache-Control: private, no-store</cde>: no cache anywhere keeps this one. The name
+            came from the query string, so it's checked and escaped, and the page says it's UTF-8,
+            so a name like Zoë arrives the way it was typed (<lnk to="/php/text-and-utf-8"
+                >Text and UTF-8</lnk>
+            has why). <cde>Ctrl+C</cde> stops the server.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+        <p>
+            This is the idea, small. The <lnk to="/php/projects/caching">Caching project</lnk>
+            builds a cache you can use for anything, with keys, lifetimes and a way to clear it all.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>header('Cache-Control: public, max-age=60');</cde> for a response that's the
+                same for everyone; <cde>header('Cache-Control: private, no-store');</cde> for one
+                that isn't.
+            </li>
+            <li>
+                <cde>header('ETag: "..."');</cde> with a fingerprint of the body, quotes included.
+                <cde>hash('sha256', $body)</cde> makes a good one.
+            </li>
+            <li>
+                <cde>$_SERVER['HTTP_IF_NONE_MATCH']</cde> is the fingerprint the client says it has.
+                It's input: compare it, don't use it.
+            </li>
+            <li>
+                <cde>http_response_code(304);</cde> then <cde>exit;</cde> when they match. A 304 has
+                no body.
+            </li>
+            <li>
+                <cde>filemtime()</cde> says when a cache file was written, which is all you need to
+                tell fresh from stale. Write with a temporary file and <cde>rename()</cde>, so no
+                one reads half a file.
+            </li>
+            <li>
+                <cde>apcu_store()</cde> and <cde>apcu_fetch()</cde>, when the APCu extension is
+                installed, keep values in memory instead.
+            </li>
+            <li>
+                <cde>session_cache_limiter()</cde> and the <cde>session.cache_limiter</cde> setting
+                control the cache headers <cde>session_start()</cde> sends.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong><cde>no-cache</cde> doesn't mean "don't cache."</strong> It means "check
+                before using." The one that means don't keep it is <cde>no-store</cde>.
+            </li>
+            <li>
+                <strong>Starting a session changes your cache headers.</strong> By default,
+                <cde>session_start()</cde> sends headers that tell every cache not to keep the page,
+                which is right for pages about one person and wasted on pages that aren't. Only
+                start a session where you need one.
+            </li>
+            <li>
+                <strong>Cache what you've measured, not what you guess.</strong> Every cache is one
+                more place for a stale answer to hide. Time the slow part first, and cache that.
+            </li>
+            <li>
+                <strong>A browser may send several ETags.</strong> <cde>If-None-Match</cde> can be a
+                list, separated by commas. The Try It compares the whole header to keep it short;
+                the Caching project splits the list.
+            </li>
+            <li>
+                <strong>The ETag has to change when the page does.</strong> Make it from the body,
+                or from something that changes whenever the body does. An ETag that stays the same
+                while the page changes tells every browser to keep the old one.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Turn the cache off while you work">
+            <p>
+                In Chrome or Firefox, the developer tools' Network tab has a "Disable cache"
+                checkbox. While the tools are open, the browser fetches everything fresh. Half of
+                "my change didn't work" is a copy the browser kept. Turn it back off when you want
+                to see what visitors see.
+            </p>
+        </two-dollars>
+
+        <p>
+            The page you cached was meant to be shown in the browser. Some responses are meant to be
+            saved instead: a report, an invoice, an export. Next: sending a file.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/sending-a-file">Next: Sending a File &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

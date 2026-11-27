@@ -1,0 +1,306 @@
+<layout name="default" title="Naming Things" />
+<page-head>
+    <meta
+        name="description"
+        content="Before the first class: how to name classes, methods, booleans, constants, interfaces and namespaces, the PSR-1 conventions, names that say what instead of how, and renaming as you learn more. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="naming things, class names, method names, PSR-1, StudlyCaps, camelCase, constants, interface names, namespaces, boolean names, readable code, renaming, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Nouns for classes, verbs for methods, and names that say what. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm">
+            <lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; PHP Not So Basics
+        </p>
+        <heading h1 id="naming-things">Naming Things</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <lnk to="/php/caching">Caching</lnk> quoted the line about the two hard things in
+            computer science. This is the other one. The next lesson starts classes, and with
+            classes come more names than you've had to pick so far: the class, each thing it knows,
+            each thing it does, the constants it uses, and later the interfaces it promises and the
+            namespace it lives in. Good names make a class read like a description of itself. Bad
+            ones make the reader work it all out from the code.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="what-gets-a-name">What Gets a Name?</heading>
+
+        <heading h3 id="classes">Classes: Nouns</heading>
+        <p>
+            A class describes a kind of thing, so name it for the thing: <cde>Invoice</cde>,
+            <cde>Cart</cde>, <cde>Customer</cde>, <cde>ShippingAddress</cde>,
+            <cde>PasswordHasher</cde>. If you can't say "an X is a ..." and finish the sentence, the
+            class probably isn't one thing yet.
+        </p>
+
+        <heading h3 id="methods">Methods: Verbs</heading>
+        <p>
+            A method is something the thing does, so name it for the action:
+            <cde>send()</cde>, <cde>addItem()</cde>, <cde>cancel()</cde>, <cde>calculateTax()</cde>.
+            A method that only answers with a value can be named for the value instead:
+            <cde>total()</cde>, <cde>count()</cde>, or <cde>getTotal()</cde> if the project uses
+            <cde>get</cde>. Pick one style per project. Either way, the call reads as a sentence:
+            <cde>$invoice-&gt;send()</cde>.
+        </p>
+
+        <heading h3 id="booleans">Booleans: Questions</heading>
+        <p>
+            Anything that's true or false, a method or a variable, reads best as a yes-or-no
+            question: <cde>isPaid()</cde>, <cde>hasItems()</cde>, <cde>canRefund()</cde>,
+            <cde>$isDomestic</cde>. Then <cde>if ($order-&gt;isPaid())</cde> says exactly what it
+            checks. Name them for the positive: <cde>isActive</cde>, not <cde>isNotDisabled</cde>.
+            Negatives turn every <cde>!</cde> into a puzzle.
+        </p>
+
+        <heading h3 id="constants">Constants</heading>
+        <p>
+            A constant is a value that never changes while the program runs, so its name is the only
+            explanation anyone gets: <cde>FREE_SHIPPING_MINIMUM_CENTS</cde>, not <cde>LIMIT</cde>.
+            Put the unit in the name. (<lnk to="/php/magic-numbers">Magic Numbers in Code</lnk>, in
+            Style, is about the numbers that should have been constants.)
+        </p>
+
+        <heading h3 id="interfaces">Interfaces</heading>
+        <p>
+            An <lnk to="/php/interfaces">interface</lnk>, a few lessons on, is a promise a class
+            makes about what it can do. Two habits are common in PHP. The PHP-FIG standards end
+            theirs in <cde>Interface</cde>: <cde>LoggerInterface</cde>,
+            <cde>CacheItemPoolInterface</cde>. Many projects leave the suffix off and name the
+            interface for the role, like <cde>Logger</cde>. PHP's own often use an adjective for
+            what the class can do: <cde>Countable</cde>, <cde>Stringable</cde>,
+            <cde>JsonSerializable</cde>. Follow the project you're in.
+        </p>
+
+        <heading h3 id="namespaces">Namespaces</heading>
+        <p>
+            A namespace is a family name for a group of classes, so two classes called
+            <cde>Invoice</cde> can live in one program without colliding:
+            <cde>Acme\Billing\Invoice</cde> and <cde>Acme\Reports\Invoice</cde>. The first part is
+            the vendor, you or your company, and the parts after it are areas of the app. Name them
+            for what's in them, <cde>Billing</cde>, <cde>Shipping</cde>, not for what kind of code
+            it is. <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk> ties them to
+            folders.
+        </p>
+
+        <side-story title="Hungarian">
+            In the 1970s and 80s, Charles Simonyi, a Hungarian-born programmer at Xerox PARC and
+            then Microsoft, put a short prefix on every variable name saying what kind of thing it
+            held. Other programmers called it Hungarian notation, after him. His prefixes said what
+            a value meant, but the version that spread put the type in instead: <cde>sz</cde> for a
+            string, <cde>dw</cde> for a number. The types were already in the code, and when one
+            changed, the name lied. In 2005, Joel Spolsky wrote an essay, "Making Wrong Code Look
+            Wrong," explaining the difference.
+        </side-story>
+
+        <heading h2 id="psr-1">PSR-1</heading>
+        <p>
+            PHP-FIG, a group of people from PHP projects, publishes shared standards called PSRs.
+            PSR-1, from 2012, is the basic one, and most PHP code follows its naming rules:
+        </p>
+        <list>
+            <li>
+                Class names in <strong>StudlyCaps</strong>, every word capitalized:
+                <cde>ShippingAddress</cde>.
+            </li>
+            <li>
+                Method names in <strong>camelCase</strong>, the first word lowercase:
+                <cde>calculateTax()</cde>.
+            </li>
+            <li>
+                Class constants in <strong>UPPER_CASE</strong>, with underscores between words:
+                <cde>MAX_ATTEMPTS</cde>.
+            </li>
+            <li>Every class in a namespace, with a vendor name at the top, one class to a file.</li>
+        </list>
+        <p>
+            PSR-1 says nothing on property names, on purpose. <cde>$camelCase</cde> is most common,
+            and whatever the project uses wins. Plain functions aren't covered either; PHP's own are
+            <cde>snake_case</cde>, like <cde>str_replace()</cde>, and most new code uses
+            <cde>camelCase</cde> for its own, to match methods.
+            <lnk to="/php/coding-standards">Coding Standards</lnk>, in Style, covers the rest.
+        </p>
+
+        <heading h2 id="what-not-how">What, Not How</heading>
+        <p>
+            A name should say what a thing is for, not how it does it today. How changes. What
+            usually doesn't.
+        </p>
+        <list>
+            <li>
+                <cde>activeCustomers()</cde>, not <cde>getCustomersFromDatabaseLoop()</cde>. When
+                the customers start coming from a cache, the first name is still true.
+            </li>
+            <li>
+                <cde>$orders</cde>, not <cde>$orderArray</cde>. The code already knows it's an
+                array.
+            </li>
+            <li>
+                Words that could mean anything, mean nothing: <cde>Manager</cde>, <cde>Helper</cde>,
+                <cde>Util</cde>, <cde>Processor</cde>, <cde>Data</cde>. An
+                <cde>InvoiceManager</cde> could do anything to an invoice. An
+                <cde>InvoiceSender</cde>
+                tells you what it does, and what it doesn't.
+            </li>
+            <li>
+                A name with "and" in it, like <cde>validateAndSave()</cde>, is two methods. Split
+                it, and each half gets a name that's true.
+            </li>
+        </list>
+        <p>
+            The how belongs in a name in one place: when there are several ways to do the same job.
+            The interface is <cde>OrderStore</cde>, what it's for, and the classes are
+            <cde>MysqlOrderStore</cde> and <cde>FileOrderStore</cde>, how each one does it.
+        </p>
+
+        <heading h2 id="renaming">Renaming as You Learn More</heading>
+        <p>
+            You pick a name when you know the least about the thing. A month later, you know what it
+            really does, and the name is a guess that didn't hold up. Rename it. A wrong name costs
+            every reader, every time; a rename costs you once.
+        </p>
+        <p>
+            Names other code depends on are harder: a public method other projects call, a URL, a
+            database column, a JSON field another app reads. Those can't change in one step. Add the
+            new name, keep the old one working for a while, then remove it once nothing uses it.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>A way to find a name, when one doesn't come:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>Say what the thing is, or does, in one plain sentence.</li>
+            <li>
+                Take the noun from the sentence for a class, the verb for a method, the question for
+                a boolean.
+            </li>
+            <li>
+                If the sentence needed an "and," it's two things. Split them before you name them.
+            </li>
+            <li>
+                Write a line that uses the name, like <cde>if ($policy-&gt;qualifies($order))</cde>,
+                and read it out loud. If it sounds like what it does, keep it.
+            </li>
+            <li>When you know more, come back and do it again.</li>
+        </ol>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            A small class that finds which orders ship free. The syntax is the next lesson's job;
+            for now, read only the names. In a folder, make <cde>before.php</cde>:
+        </p>
+        <code-block example="naming-things/before.php" />
+        <p>
+            It works. Now say what <cde>Mgr</cde> is for, what <cde>proc()</cde> returns, or what
+            <cde>X</cde> is, without reading every line. Then make <cde>after.php</cde>, the same
+            code with new names:
+        </p>
+        <code-block example="naming-things/after.php" />
+        <p>Run both:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php before.php
+docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
+        <p>
+            Same answer: <cde>A-1001, A-1003</cde>. In <cde>after.php</cde>, you can check why from
+            the names alone: A-1002 isn't paid, A-1004 isn't domestic, and A-1005 is under the
+            minimum. The class is a noun, its methods are an answer and a question, and the constant
+            says its unit. The <cde>!</cde> in <cde>before.php</cde> went away with the negative
+            name, <cde>nonUs</cde>, that needed it.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Class, method and function names aren't case-sensitive:
+                <cde>new invoice()</cde> makes an <cde>Invoice</cde>. Variables and constants are:
+                <cde>$total</cde> and <cde>$Total</cde> are two variables.
+            </li>
+            <li>
+                Some words are taken. <cde>list</cde>, <cde>array</cde> and <cde>function</cde> are
+                keywords, and <cde>int</cde>, <cde>string</cde>, <cde>bool</cde>,
+                <cde>float</cde> and the other type names can't be class names.
+            </li>
+            <li>
+                <cde>namespace Acme\Billing;</cde> at the top of a file puts its classes in that
+                namespace, and <cde>use Acme\Billing\Invoice;</cde> lets another file call it
+                <cde>Invoice</cde>.
+            </li>
+            <li>
+                <cde>const</cde> names a constant, at the top of a file or in a class. Inside a
+                class, <cde>self::MAX_ATTEMPTS</cde> reads it.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Case-insensitive names live in case-sensitive files.</strong> Once classes
+                are loaded from files by name, <cde>new invoice()</cde> looks for
+                <cde>invoice.php</cde>. A Mac finds <cde>Invoice.php</cde> anyway; a Linux server
+                doesn't. Write every name exactly as it was declared.
+            </li>
+            <li>
+                <strong>A class named for a pattern says nothing.</strong> <cde>OrderClass</cde>,
+                <cde>OrderObject</cde>, <cde>OrderData</cde>: all three are just <cde>Order</cde>,
+                with a word that tells you what you already knew.
+            </li>
+            <li>
+                <strong>A name that lies is worse than a vague one.</strong> If
+                <cde>sendInvoice()</cde> starts saving the invoice too, the name is now hiding
+                something. Rename it, or split it.
+            </li>
+            <li>
+                <strong>Consistency beats your favorite.</strong> If the project says
+                <cde>getTotal()</cde>, a new class with <cde>total()</cde> makes readers wonder
+                whether it's different. Follow the house style, and argue for a change separately.
+            </li>
+        </list>
+
+        <side-story title="Names by Length">
+            PHP's own function names are famously uneven: <cde>strpos()</cde> and
+            <cde>str_replace()</cde>, <cde>htmlspecialchars()</cde> and <cde>nl2br()</cde>. Rasmus
+            Lerdorf, who wrote the first PHP, has said that in the earliest versions the table of
+            function names was hashed by the length of the name, so names were picked partly to
+            spread their lengths out. Nobody can rename them now: too much code depends on them.
+        </side-story>
+
+        <p>
+            Variables get their own lesson later.
+            <lnk to="/php/good-variable-names">Good Variable Names</lnk>, in Style, goes deeper on
+            units, plurals, and the names to stop using.
+        </p>
+
+        <!-- $2 tip -->
+        <two-dollars title="Write the call first">
+            <p>
+                Before you write a method, write the line that will call it, the way you'd like it
+                to read: <cde>if ($cart-&gt;hasItems())</cde>. Then write the method to match. You
+                name things better from the outside, where they're used, than from the inside, where
+                you know how they work.
+            </p>
+        </two-dollars>
+
+        <p>You have the nouns and the verbs. Next: classes and objects, where they become code.</p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/classes-and-objects">Next: Classes and Objects &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>
