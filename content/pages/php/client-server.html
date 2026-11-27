@@ -35,6 +35,13 @@
             and Caddy.
         </p>
 
+        <side-story label="Side story">
+            nginx exists because of a number. In 1999 an engineer named Dan Kegel asked how one
+            server could handle ten thousand connections at once, and called it the C10K problem.
+            Igor Sysoev, running a busy Russian web portal, wrote nginx to answer it. Today it
+            serves a big share of the web.
+        </side-story>
+
         <heading h3 id="hardware">The Hardware</heading>
         <p>
             Both the client and the server are software, running on physical (or virtual)
@@ -97,7 +104,7 @@
         </p>
         <p>
             HTTP is one such protocol, the one web pages (and most of the apps on your phone)
-            travel over, and it's coming up right after DNS. For now, just know that the
+            travel over, and it gets a lesson of its own soon. For now, just know that the
             <cde>https://</cde> at the start of a web address names it: HTTP, plus an S for
             secure.
         </p>
@@ -133,12 +140,25 @@
             <cde>0.0.0.0</cde> means "listen on every address," which a server inside a container
             needs in order to hear anything from outside it.)
         </p>
+
+        <side-story label="Side story">
+            Why 8000 and not 80, the real web port? On Linux and most Unix systems, ports below
+            1024 are "privileged": only an administrator can open one. Plain web (80) and secure
+            web (443) both live down there, so development servers have always picked numbers
+            like 8000 and 8080 instead.
+        </side-story>
         <p>
             Now be the client. Open <cde>http://localhost:8000</cde> in your browser.
             <cde>localhost</cde> is the name every computer uses for itself. You'll see "Hello
             from the server." And back in the terminal, the server has logged a line for your
             request: one side of the conversation, written down.
         </p>
+
+        <side-story label="Side story">
+            Underneath the name, <cde>localhost</cde> is the address 127.0.0.1, which every
+            computer reserves for talking to itself. Hence the classic nerd T-shirt: "There's no
+            place like 127.0.0.1."
+        </side-story>
         <p>
             Two more things to try. Ask again with a different client, from a second terminal:
         </p>
@@ -155,36 +175,29 @@
             note it here or in Tools. ]
         </tk>
 
-        <!-- In PHP -->
-        <tk>
-            [ In PHP: probably skip here. If kept, one paragraph: PHP runs on the server, never in
-            the browser. The browser only ever sees what PHP printed. (Try It already showed
-            that: the browser got the text, not the code.) ]
-        </tk>
 
         <!-- Gotchas -->
-        <tk>
-            [ Gotchas: candidates. "Port is already allocated": something else is already on 8000,
-            so use another (<cde>-p 8001:8000</cde>, then localhost:8001). Inside a container,
-            localhost is the container, not your computer (why Try It says 0.0.0.0). Blaming the
-            server when it's your Wi-Fi, or the other way round: see the $2 tip. ]
-        </tk>
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>"Port is already allocated."</strong> Something else is already listening
+                on 8000. Pick another port on your side: <cde>-p 8001:8000</cde>, then open
+                <cde>localhost:8001</cde>.
+            </li>
+            <li>
+                <strong>Inside a container, localhost is the container.</strong> Not your
+                computer. A server in a container that listens only on localhost can't hear
+                anything from outside it, which is why Try It says <cde>0.0.0.0</cde>.
+            </li>
+            <li>
+                <strong>"Connection refused" isn't "timed out."</strong> Refused means the machine
+                answered, but nothing is listening on that port: your stopped server, for
+                example. Timed out means the machine never answered at all, so the problem is
+                the address or something on the way there.
+            </li>
+        </list>
 
-        <!-- Break it -->
-        <tk>
-            [ Break It: not a security lesson, so skip. (Stopping the server in Try It is the
-            closest thing, and it's already there.) ]
-        </tk>
 
-        <!-- Side stories: brainstorm, to place last -->
-        <tk>
-            [ Side stories, more candidates: nginx was written by Igor Sysoev to handle 10,000
-            connections at once (the "C10K problem"). "There's no place like 127.0.0.1"
-            (localhost's address) is a real T-shirt. The popular story that Apache is named for
-            being "a patchy server" (the project says it isn't true). Port numbers below 1024 need
-            admin rights on Linux, one reason dev servers live on ports like 8000 instead of 80. Xerox PARC, the
-            mouse-was-invented-there type, for some other lesson. ]
-        </tk>
 
         <!-- $2 tip -->
         <two-dollars title="Is it the client or the server?">
@@ -197,11 +210,16 @@
             </p>
         </two-dollars>
 
+        <p>
+            Everything you typed into the browser in Try It was a URL. Next: what each piece of one
+            means.
+        </p>
+
         <!-- Next -->
         <hr />
         <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
             <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
-            <span class="text-th-muted text-right">Next: DNS (coming soon)</span>
+            <span class="text-th-muted text-right">Next: Anatomy of a URL (coming soon)</span>
         </nav>
     </spaced>
 </article>
