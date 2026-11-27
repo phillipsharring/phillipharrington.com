@@ -110,7 +110,7 @@
             <cde>url.php</cde>:
         </p>
         <!-- prettier-ignore -->
-        <code-block>&lt;?php
+        <code-block file="anatomy-of-a-url/url.php">&lt;?php
 $url = $argv[1] ?? 'https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments';
 
 print_r(parse_url($url));</code-block>
@@ -125,7 +125,7 @@ print_r(parse_url($url));</code-block>
             Now see which parts reach a server. Put this in <cde>index.php</cde> in the same folder:
         </p>
         <!-- prettier-ignore -->
-        <code-block>&lt;?php
+        <code-block file="anatomy-of-a-url/index.php">&lt;?php
 echo 'Path and query: ', $_SERVER['REQUEST_URI'], "\n";
 print_r($_GET);</code-block>
         <p>Start the server from Client/Server again:</p>

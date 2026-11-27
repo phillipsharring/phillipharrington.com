@@ -8,7 +8,8 @@
         "dev": "vite",
         "build": "vite build && handlr-build-pages",
         "preview": "vite preview",
-        "format": "prettier --write 'content/**/*.html' 'src/**/*.{js,css}' && bash scripts/fix-format.sh"
+        "format": "prettier --write 'content/**/*.html' 'src/**/*.{js,css}' && bash scripts/fix-format.sh",
+        "check:examples": "node scripts/check-examples.mjs"
     },
     "author": "Phillip Harrington <phillip@phillipharrington.com> (https://phillipharrington.com/)",
     "license": "MIT",
