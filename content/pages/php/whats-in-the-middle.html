@@ -1,0 +1,230 @@
+<layout name="default" title="What's in the Middle" />
+<page-head>
+    <meta
+        name="description"
+        content="Almost no request goes straight from a browser to PHP. Reverse proxies, load balancers, CDNs and firewalls: what each one does, and what they change about what your code sees. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="reverse proxy, load balancer, CDN, web application firewall, X-Forwarded-For, REMOTE_ADDR, nginx, caching, 502 Bad Gateway, 504 Gateway Timeout, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="What sits between the browser and your code. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="whats-in-the-middle">What's in the Middle</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Client/Server drew two boxes and a line between them. Every Try It so far has been
+            exactly that: your browser, straight to PHP on your own computer. On the real web, the
+            line is a chain. A request passes through several servers before it reaches your code,
+            and each one can answer it, change it, or stop it. Each is a server to whatever is in
+            front of it, and a client to whatever is behind.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-pieces">The Pieces</heading>
+
+        <heading h3 id="reverse-proxy">A Reverse Proxy</heading>
+        <p>
+            The smallest middle there is: one server in front of your app that takes every request,
+            passes it along, and passes the answer back. It's usually a web server, like nginx or
+            Apache, sitting in front of PHP. It handles the jobs your code shouldn't have to: HTTPS,
+            sending static files like images and stylesheets, and holding on to slow connections so
+            your app doesn't.
+        </p>
+
+        <heading h3 id="load-balancer">A Load Balancer</heading>
+        <p>
+            For when one copy of your app isn't enough. It spreads requests across several app
+            servers, checks which ones are healthy, and stops sending traffic to any that aren't.
+            Visitors never know there's more than one.
+        </p>
+
+        <heading h3 id="cdn">A CDN</heading>
+        <p>
+            A content delivery network: servers all over the world, close to your visitors, that
+            keep copies of your files and pages. DNS points your name at the CDN, so a visitor in
+            Tokyo gets your stylesheet from a server in Tokyo, and your own server never hears about
+            it. Only what the CDN doesn't have, or isn't allowed to keep, goes all the way back.
+        </p>
+
+        <heading h3 id="firewall">A Firewall</heading>
+        <p>
+            A web application firewall reads each request and blocks the ones that look like attacks
+            or floods before they reach you. Useful, and never a reason to skip checking input in
+            your own code: it catches the common attacks, not all of them.
+        </p>
+
+        <side-story title="The Slashdot Effect">
+            In the early 2000s, a link from the tech news site Slashdot could send more visitors to
+            a small site in an hour than it normally saw in a year, and the site would fall over.
+            People called it being "slashdotted." Caching, and later CDNs, are a big part of why a
+            sudden crowd mostly doesn't knock sites over anymore.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>A busy site's request might go like this:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                The CDN gets it first. If it has a fresh copy of the answer, it sends that, and it's
+                done.
+            </li>
+            <li>
+                If not, a firewall checks it, and turns away anything that looks like an attack.
+            </li>
+            <li>A load balancer picks one of the app servers.</li>
+            <li>That server's reverse proxy handles the HTTPS and the static files.</li>
+            <li>What's left reaches PHP.</li>
+        </ol>
+        <p>
+            A small site might have only step four, or none at all. Either way, each layer can
+            change what your code sees:
+        </p>
+        <list>
+            <li>
+                <strong>The address.</strong> PHP's <cde>REMOTE_ADDR</cde> is whoever connected to
+                PHP, which is the last server in the chain, not the visitor. The middle reports the
+                visitor's address in a header, <cde>X-Forwarded-For</cde>, instead.
+            </li>
+            <li>
+                <strong>The protocol.</strong> The visitor used HTTPS, but the last hop to PHP may
+                be plain HTTP. That's the gotcha from the HTTP lesson.
+            </li>
+            <li>
+                <strong>The answer.</strong> A cache can send a copy without asking you, and a layer
+                can rewrite your error pages, like the 403s in Request and Response.
+            </li>
+        </list>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Put the smallest middle, one reverse proxy, in front of PHP, and see what changes. This
+            one needs three files in a folder. First, <cde>index.php</cde>, which reports what PHP
+            can see:
+        </p>
+        <code-block example="whats-in-the-middle/index.php" />
+        <p>
+            Then the proxy's settings, <cde>nginx.conf</cde>. Every request goes to PHP, with the
+            visitor's address added in <cde>X-Forwarded-For</cde>, and every answer is marked on the
+            way back:
+        </p>
+        <code-block example="whats-in-the-middle/nginx.conf" />
+        <p>
+            And <cde>compose.yml</cde>, which starts both, the proxy on port 8000 and PHP on 8001:
+        </p>
+        <code-block example="whats-in-the-middle/compose.yml" />
+        <p>Start them together:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker compose up</code-block>
+        <p>From a second terminal, ask PHP directly, then through the proxy:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8001
+curl http://localhost:8000</code-block>
+        <p>
+            Directly, PHP sees your address, and no <cde>X-Forwarded-For</cde>. Through the proxy,
+            PHP sees the proxy's address, and your address arrives in the header instead. Then add
+            <cde>-I</cde> to the second one, and the proxy's mark is there in the answer:
+            <cde>X-Passed-Through: proxy</cde>.
+        </p>
+        <p>Now lie to it:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -H 'X-Forwarded-For: 1.2.3.4' http://localhost:8000</code-block>
+        <p>
+            PHP gets <cde>1.2.3.4</cde> first, then your real address. The proxy didn't replace what
+            you sent; it added what it saw to the end. Everything before the last entry came from
+            the client, which means from anyone. <strong>Never trust input,</strong> and that
+            includes headers. Trust only the entry your own proxy added: the last one, or the last
+            few if you run several layers. <cde>Ctrl+C</cde> stops both.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$_SERVER['REMOTE_ADDR']</cde> is the last hop: right when PHP faces visitors
+                directly, wrong behind anything.
+            </li>
+            <li>
+                <cde>$_SERVER['HTTP_X_FORWARDED_FOR']</cde> is the chain of addresses, visitor
+                first. It's a header, so it's input: take the entries your own layers added, from
+                the end, and ignore the rest.
+            </li>
+            <li>
+                <cde>$_SERVER['HTTP_X_FORWARDED_PROTO']</cde>, when your proxy sets it, says whether
+                the visitor used HTTPS.
+            </li>
+            <li>
+                <cde>header('Cache-Control: private, no-store');</cde> on any page that's about one
+                person, so no layer in the middle keeps a copy.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Limits keyed on <cde>REMOTE_ADDR</cde> limit everyone.</strong> Behind a
+                proxy, every request comes from the proxy's address, so "ten tries per address"
+                becomes ten tries for the whole world.
+            </li>
+            <li>
+                <strong
+                    >The first <cde>X-Forwarded-For</cde> entry is whatever the visitor
+                    typed.</strong>
+                Code that trusts it lets anyone pick their own address, and dodge any limit keyed on
+                it.
+            </li>
+            <li>
+                <strong>A cache can show one person's page to another.</strong> A page that says
+                "Hi, Alice" must not be cached anywhere shared. Mark it private.
+            </li>
+            <li>
+                <strong>The middle has its own errors.</strong> <cde>502 Bad Gateway</cde>: a layer
+                couldn't reach the one behind it. <cde>504 Gateway Timeout</cde>: it gave up
+                waiting, often after a minute or less, so a slow page can fail in the middle while
+                PHP is still working on it.
+            </li>
+        </list>
+
+        <side-story title="The Wrong End">
+            One of my own apps checked its bot protection against the first address in
+            <cde>X-Forwarded-For</cde>. That's the one a visitor writes, so anyone could have
+            claimed any address they liked. The fix was one line: take the last one, the one the
+            app's own CDN added.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Ask which layer answered">
+            <p>
+                Most layers leave a mark in the response headers: a <cde>Server</cde>, a
+                <cde>Via</cde>, a cache status, an <cde>Age</cde> (more than 0 means it came from a
+                cache). When a change doesn't show up, <cde>curl -I</cde> the page and read them.
+                You're often looking at a copy someone in the middle kept.
+            </p>
+        </two-dollars>
+
+        <p>
+            At the far end of every chain is a server handing out files from a folder. Next, in Web
+            Server Basics: the document root.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <span class="text-th-muted text-right">Next: Document Root (coming soon)</span>
+        </nav>
+    </spaced>
+</article>
