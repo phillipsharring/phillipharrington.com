@@ -106,7 +106,8 @@
                 <p>
                     Notice step four, above. The cookie comes from the browser, which means from
                     whoever controls the browser. A cookie is input, and
-                    <strong>you <xref to="/php/never-trust-input">never trust input</xref></strong>. Anyone can open their browser's developer tools and change a cookie to
+                    <strong>you <xref to="/php/never-trust-input">never trust input</xref></strong
+                    >. Anyone can open their browser's developer tools and change a cookie to
                     anything they like. So a cookie should never say "role=admin" or "price=1.00".
                 </p>
             </nti>
@@ -129,6 +130,13 @@
             Open <cde>http://localhost:8000</cde> and reload a few times. The number goes up: the
             browser is sending the cookie back, and the server adds one each time.
         </p>
+        <screenshot
+            img="php/cookies/visit-1"
+            w="480"
+            h="225"
+            alt="The page in a browser: Visit number 1."
+            caption="The first visit. Reload, and it counts."
+        />
         <p>
             Now break it. Open your browser's
             <xref to="/php/tools#developer-tools">developer tools</xref>, find the cookies for
@@ -138,6 +146,14 @@
             a classroom trick, either: plenty of real break-ins started with exactly that move. Or
             skip the browser entirely, and send any cookie you like:
         </p>
+        <screenshot
+            img="php/cookies/devtools-application-cookies"
+            wide
+            w="1438"
+            h="700"
+            alt="Chrome's developer tools, Application tab, Cookies, http://localhost:8000: one cookie, visits, with the value 1."
+            caption="Application, then Cookies, then your site. Double-click the value to change it."
+        />
         <!-- prettier-ignore -->
         <code-block>curl -b 'visits=41' http://localhost:8000</code-block>
         <code-note>New here:</code-note>
@@ -147,11 +163,27 @@
                 value.</part
             >
         </breakdown>
+        <screenshot
+            img="php/cookies/curl-visits-41"
+            wide
+            w="1008"
+            h="177"
+            alt="Terminal: curl -b 'visits=41' http://localhost:8000 prints Visit number 42."
+            caption="No browser, no cookie jar. Just a claim."
+        />
         <p>
             Try <cde>-b 'visits=banana'</cde>, too. The <cde>(int)</cde> in the code, a
             <xref to="/php/reading-the-examples#casting">cast</xref>, turns nonsense into 0, so you
             get visit 1, not an error. That one cast is the code not trusting its input.
         </p>
+        <screenshot
+            img="php/cookies/curl-visits-banana"
+            wide
+            w="1096"
+            h="177"
+            alt="Terminal: curl -b 'visits=banana' http://localhost:8000 prints Visit number 1."
+            caption="Bananas count as zero."
+        />
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
