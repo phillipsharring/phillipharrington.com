@@ -101,13 +101,15 @@
             the browser asks again with <cde>If-None-Match</cde> and the fingerprint it has, and if
             nothing changed, the answer is <cde>304 Not Modified</cde>, with no body at all.
         </p>
-        <p>
-            The town crier rang his bell and shouted it in the square every morning:
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> and that
-            includes what goes into a cache key. The region must be one of four. If any string were
-            allowed, anyone could ask for a million made-up regions, and you'd make a million slow
-            reports and keep a million files.
-        </p>
+        <nti>
+            <p>
+                The town crier rang his bell and shouted it in the square every morning:
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> and that
+                includes what goes into a cache key. The region must be one of four. If any string
+                were allowed, anyone could ask for a million made-up regions, and you'd make a
+                million slow reports and keep a million files.
+            </p>
+        </nti>
 
         <heading h3 id="step-4-run-it">Step 4: Run It</heading>
         <!-- prettier-ignore -->
@@ -206,8 +208,7 @@ curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'</c
         <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
             <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
             <lnk to="/php/projects/php-on-the-command-line"
-                >Next: PHP on the Command Line &rarr;</lnk
-            >
+                >Next: PHP on the Command Line &rarr;</lnk>
         </nav>
     </spaced>
 </article>

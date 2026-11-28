@@ -132,12 +132,14 @@ CREATE TABLE order_items (
 
         <heading h3 id="step-4-the-checkout-page">Step 4: The Checkout Page</heading>
         <code-block example="project-checkout/public/checkout.php" />
-        <p>
-            An email for the receipt, a name, and a button. And you couldn't possibly forget to
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk>.</strong> It reads
-            those two fields and the tokens, and nothing else. If someone adds
-            <cde>total_cents=1</cde> or a card number to the request, nothing ever looks at it.
-        </p>
+        <nti>
+            <p>
+                An email for the receipt, a name, and a button. And you couldn't possibly forget to
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk>.</strong> It reads
+                those two fields and the tokens, and nothing else. If someone adds
+                <cde>total_cents=1</cde> or a card number to the request, nothing ever looks at it.
+            </p>
+        </nti>
         <p>
             Then the order page, which only the browser that placed the order can see. An order that
             isn't yours gets the same 404 as one that doesn't exist:

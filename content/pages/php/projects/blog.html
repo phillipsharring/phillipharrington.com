@@ -87,14 +87,16 @@
             a 404.
         </p>
         <code-block example="project-blog/public/index.php" />
-        <p>
-            I'll keep this short, since you know it by heart:
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> including the
-            page number. <cde>?page=abc</cde>, <cde>?page=-3</cde> and <cde>?page=1 OR 1=1</cde> all
-            become page 1, through <cde>filter_var()</cde>, before they get anywhere near SQL. A
-            page past the end is a 404. So is a draft, the same answer as a typo, so the blog
-            doesn't confirm that an unpublished post exists.
-        </p>
+        <nti>
+            <p>
+                I'll keep this short, since you know it by heart:
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> including
+                the page number. <cde>?page=abc</cde>, <cde>?page=-3</cde> and
+                <cde>?page=1 OR 1=1</cde> all become page 1, through <cde>filter_var()</cde>, before
+                they get anywhere near SQL. A page past the end is a 404. So is a draft, the same
+                answer as a typo, so the blog doesn't confirm that an unpublished post exists.
+            </p>
+        </nti>
 
         <heading h3 id="step-4-the-feed">Step 4: The Feed</heading>
         <p>

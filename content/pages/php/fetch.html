@@ -75,13 +75,15 @@ const body = await response.json();</code-block>
             </li>
             <li>JavaScript reads the answer and changes the part of the page that needs it.</li>
         </ol>
-        <p>
-            From PHP's side, nothing is new. It's a request, with a method, a query string, maybe a
-            body. Your JavaScript made it, but nothing proves that: anyone can call the same URL
-            with curl and send whatever they like. Stop me if you've heard this one:
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> even from
-            your own scripts. An endpoint checks everything a form handler checks.
-        </p>
+        <nti>
+            <p>
+                From PHP's side, nothing is new. It's a request, with a method, a query string,
+                maybe a body. Your JavaScript made it, but nothing proves that: anyone can call the
+                same URL with curl and send whatever they like. Stop me if you've heard this one:
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> even from
+                your own scripts. An endpoint checks everything a form handler checks.
+            </p>
+        </nti>
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>

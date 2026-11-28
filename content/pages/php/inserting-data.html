@@ -147,11 +147,14 @@ FROM `subscribers`;</code-block>
         <p>Type <cde>exit</cde>. Last, sign up with something that isn't an email address:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose run --rm php php subscribe.php 'nope' Mallory</code-block>
-        <p>
-            Refused before it gets anywhere near the table. Handed down, generation to generation:
-            <strong>never trust input</strong>, least of all input you're about to keep.
-            <cde>docker compose down -v</cde> when you're done.
-        </p>
+        <nti>
+            <p>
+                Refused before it gets anywhere near the table. Handed down, generation to
+                generation:
+                <strong>never trust input</strong>, least of all input you're about to keep.
+                <cde>docker compose down -v</cde> when you're done.
+            </p>
+        </nti>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
         </p>

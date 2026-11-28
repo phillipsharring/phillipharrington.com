@@ -196,11 +196,13 @@ curl -I http://localhost:8000/style.css</code-block>
                 <cde>/app</cde>.
             </li>
             <li>
-                <strong>Only run PHP files that exist.</strong> <cde>try_files $uri =404</cde> in
-                the PHP block stops an old trick, where a path like
-                <cde>/uploads/cat.jpg/x.php</cde> got an uploaded image run as PHP. Uploads are
-                input, and, as I may have mentioned,
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>; this one line keeps them from running.
+                <nti>
+                    <strong>Only run PHP files that exist.</strong>
+                    <cde>try_files $uri =404</cde> in the PHP block stops an old trick, where a path
+                    like <cde>/uploads/cat.jpg/x.php</cde> got an uploaded image run as PHP. Uploads
+                    are input, and, as I may have mentioned,
+                    <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>; this one line keeps them from running.
+                </nti>
             </li>
             <li>
                 <strong>The pool size is a memory budget.</strong> Every worker uses memory, so

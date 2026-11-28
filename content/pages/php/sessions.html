@@ -119,13 +119,15 @@ curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i -b 'PHPSESSID=madeup' http://localhost:8000</code-block>
-        <p>
-            Visit number 1, and a fresh id in <cde>Set-Cookie</cde>. That's
-            <cde>use_strict_mode</cde> at work: PHP refuses an id it didn't make. It's carved over
-            the door of every server room:
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> not even the
-            ticket.
-        </p>
+        <nti>
+            <p>
+                Visit number 1, and a fresh id in <cde>Set-Cookie</cde>. That's
+                <cde>use_strict_mode</cde> at work: PHP refuses an id it didn't make. It's carved
+                over the door of every server room:
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> not even
+                the ticket.
+            </p>
+        </nti>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
         </p>

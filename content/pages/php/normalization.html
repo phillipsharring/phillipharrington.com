@@ -200,10 +200,12 @@ GROUP BY `customers`.`id`;</code-block>
         <heading h2 id="in-php">In PHP</heading>
         <list>
             <li>
-                Read the current price from <cde>products</cde>, on the server, and copy it into the
-                order. Who remembers the rule? Now let's not see the same hands.
-                <strong>Never trust input</strong>: a price that arrives in a form is whatever the
-                visitor decided to pay.
+                <nti>
+                    Read the current price from <cde>products</cde>, on the server, and copy it into
+                    the order. Who remembers the rule? Now let's not see the same hands.
+                    <strong>Never trust input</strong>: a price that arrives in a form is whatever
+                    the visitor decided to pay.
+                </nti>
             </li>
             <li>
                 <cde>$pdo-&gt;beginTransaction()</cde> and <cde>$pdo-&gt;commit()</cde> around a

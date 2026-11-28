@@ -178,11 +178,13 @@ FROM `products`;</code-block>
                 matched.
             </li>
             <li>
-                Put the id in the <cde>WHERE</cde> as a placeholder, like every other value, and
-                check it first. I believe it was Hypatia who said to
-                <strong>never trust input</strong>, and an id is input. Then check that the row
-                belongs to whoever is asking, by adding it to the <cde>WHERE</cde>:
-                <cde>AND `owner_id` = ?</cde>.
+                <nti>
+                    Put the id in the <cde>WHERE</cde> as a placeholder, like every other value, and
+                    check it first. I believe it was Hypatia who said to
+                    <strong>never trust input</strong>, and an id is input. Then check that the row
+                    belongs to whoever is asking, by adding it to the <cde>WHERE</cde>:
+                    <cde>AND `owner_id` = ?</cde>.
+                </nti>
             </li>
             <li>Do arithmetic in the SQL, <cde>SET `stock` = `stock` - 1</cde>, not in PHP.</li>
         </list>

@@ -100,13 +100,15 @@
             compromised. Here it's a name. On most sites, it's the cookie that keeps someone logged
             in.
         </p>
-        <p>
-            Now the second problem, and you can probably finish this sentence for me.
-            <strong>Never trust input</strong>, and a cookie is input: it's whatever the browser
-            sends, and anything that can write to the browser's cookies can put anything there. A
-            page on a sibling subdomain can set a cookie for the whole domain, and so can anyone in
-            the middle of a plain HTTP request. Plant one:
-        </p>
+        <nti>
+            <p>
+                Now the second problem, and you can probably finish this sentence for me.
+                <strong>Never trust input</strong>, and a cookie is input: it's whatever the browser
+                sends, and anything that can write to the browser's cookies can put anything there.
+                A page on a sibling subdomain can set a cookie for the whole domain, and so can
+                anyone in the middle of a plain HTTP request. Plant one:
+            </p>
+        </nti>
         <!-- prettier-ignore -->
         <code-block>curl -b 'name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' http://localhost:8000/naive.php</code-block>
         <p>The page comes back with this in it:</p>
@@ -126,24 +128,20 @@
         <code-block example="project-cookies/src/cookies.php" />
         <list>
             <li>
-                <strong><cde>httponly</cde></strong
-                >: JavaScript can't read it. <cde>document.cookie</cde> no longer shows it.
+                <strong><cde>httponly</cde></strong>: JavaScript can't read it. <cde>document.cookie</cde> no longer shows it.
             </li>
             <li>
-                <strong><cde>samesite</cde> set to <cde>Lax</cde></strong
-                >: the browser sends it when someone follows a link to your site, but not with forms
+                <strong><cde>samesite</cde> set to <cde>Lax</cde></strong>: the browser sends it when someone follows a link to your site, but not with forms
                 other sites post to you or requests they make in the background. Set it yourself
                 rather than trusting each browser's default.
             </li>
             <li>
-                <strong><cde>secure</cde></strong
-                >, whenever the request came over HTTPS: the browser will only send it back over
+                <strong><cde>secure</cde></strong>, whenever the request came over HTTPS: the browser will only send it back over
                 HTTPS. On <cde>http://localhost</cde> it's left off, so the cookie still works while
                 you develop.
             </li>
             <li>
-                <strong><cde>expires</cde></strong
-                >: a real lifetime, so "remember me" means 30 days, not "until the browser feels
+                <strong><cde>expires</cde></strong>: a real lifetime, so "remember me" means 30 days, not "until the browser feels
                 like it."
             </li>
         </list>
@@ -170,8 +168,7 @@ curl -b 'name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' http://localh
             And the planted script comes back as text:
             <cde
                 >Welcome back,
-                &amp;lt;script&amp;gt;alert(document.cookie)&amp;lt;/script&amp;gt;.</cde
-            >
+                &amp;lt;script&amp;gt;alert(document.cookie)&amp;lt;/script&amp;gt;.</cde>
             In the browser, set your name on the fixed page and type <cde>document.cookie</cde> in
             the console again: <cde>""</cde>. The cookie is still there, in the Application or
             Storage tab, and still sent with every request. Scripts just can't see it.

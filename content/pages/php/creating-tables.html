@@ -178,12 +178,14 @@ VALUES ('Dracula', 'scroll', 999);</code-block>
         <!-- prettier-ignore -->
         <code-block>docker compose run --rm php php add-book.php 'Jane Eyre' ebook 899
 docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block>
-        <p>
-            The first is added, with the next id. The second is refused twice, for the format and
-            for the price, before the database ever sees it. Every space traveler knows to
-            <strong>never trust input</strong>: the table's rules are the last line of defense, and
-            your code is the first. <cde>docker compose down -v</cde> when you're done.
-        </p>
+        <nti>
+            <p>
+                The first is added, with the next id. The second is refused twice, for the format
+                and for the price, before the database ever sees it. Every space traveler knows to
+                <strong>never trust input</strong>: the table's rules are the last line of defense,
+                and your code is the first. <cde>docker compose down -v</cde> when you're done.
+            </p>
+        </nti>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
         </p>

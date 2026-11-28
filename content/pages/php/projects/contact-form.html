@@ -131,11 +131,13 @@ done</code-block>
         <code-block>&lt;b&gt;Fatal error&lt;/b&gt;:  Uncaught Symfony\Component\Mime\Exception\RfcComplianceException: Email &amp;quot;nope&amp;quot; does not comply with addr-spec of RFC 2822. in /app/vendor/symfony/mime/Address.php:58
 Stack trace:
 #0 /app/vendor/symfony/mime/Address.php(100): ...</code-block>
-        <p>
-            A crash, with your file paths and a stack trace, shown to whoever asked, all because the
-            code didn't not trust the address. <strong>Never trust input</strong>, not even to be
-            the shape the form said it would be.
-        </p>
+        <nti>
+            <p>
+                A crash, with your file paths and a stack trace, shown to whoever asked, all because
+                the code didn't not trust the address. <strong>Never trust input</strong>, not even
+                to be the shape the form said it would be.
+            </p>
+        </nti>
 
         <!-- Fix it -->
         <heading h2 id="fix-it">Fix It</heading>

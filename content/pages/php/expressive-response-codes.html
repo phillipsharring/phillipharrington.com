@@ -98,8 +98,7 @@
             <li>
                 <strong
                     >A password reset says "If that address has an account, we've sent a
-                    link,"</strong
-                >
+                    link,"</strong>
                 whether it does or not.
             </li>
         </list>
@@ -237,10 +236,12 @@ curl -i http://localhost:8000/login</code-block>
                 both answers take the same time. See <lnk to="/php/passwords">Passwords</lnk>.
             </li>
             <li>
-                <cde>$_SERVER['HTTP_AUTHORIZATION']</cde> and every field in <cde>$_POST</cde> are
-                input. You know the drill. <lnk to="/php/never-trust-input">Never trust input</lnk>:
-                check that a token is one you issued, and that <cde>text</cde> is a string before
-                you measure it.
+                <nti>
+                    <cde>$_SERVER['HTTP_AUTHORIZATION']</cde> and every field in
+                    <cde>$_POST</cde> are input. You know the drill.
+                    <lnk to="/php/never-trust-input">Never trust input</lnk>: check that a token is
+                    one you issued, and that <cde>text</cde> is a string before you measure it.
+                </nti>
             </li>
         </list>
 

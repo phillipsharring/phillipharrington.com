@@ -111,14 +111,17 @@ $count = 3;</code-block>
             </li>
             <li>The return value is checked the same way on the way out.</li>
         </ol>
-        <p>
-            That matters most for input. Every form field, query string, cookie and header arrives
-            as a string, even when it looks like a number. Arithmetic and casts would quietly turn
-            <cde>'21abc'</cde> into <cde>21</cde>. With strict_types, a string can't wander into a
-            function that wants an int. You have to check it and convert it on purpose, which is
-            exactly what you should be doing anyway. I'll say it again, in case it's been a few
-            pages: <strong>never trust input.</strong>
-        </p>
+        <nti>
+            <p>
+                That matters most for input. Every form field, query string, cookie and header
+                arrives as a string, even when it looks like a number. Arithmetic and casts would
+                quietly turn
+                <cde>'21abc'</cde> into <cde>21</cde>. With strict_types, a string can't wander into
+                a function that wants an int. You have to check it and convert it on purpose, which
+                is exactly what you should be doing anyway. I'll say it again, in case it's been a
+                few pages: <strong>never trust input.</strong>
+            </p>
+        </nti>
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>

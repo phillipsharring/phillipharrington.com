@@ -182,14 +182,17 @@ password_hash:  6 guesses a second</code-block>
         <!-- prettier-ignore -->
         <code-block>carol@example.com    $2y$12$...
 dave@example.com     $2y$12$...</code-block>
-        <p>
-            Two long hashes, different from each other, for the same password. <cde>$2y$</cde> says
-            bcrypt, and <cde>12$</cde> says the cost. Point <cde>crack.php</cde> at one of those and
-            it can't even start, and if it could, it would manage a handful of guesses a second. The
-            rule they'll put on a plaque outside your house someday,
-            <strong>never trust input</strong>, still applies to the rest of the form: try
-            <cde>password1234</cde>, or Carol's address in capitals, and see what you get.
-        </p>
+        <nti>
+            <p>
+                Two long hashes, different from each other, for the same password.
+                <cde>$2y$</cde> says bcrypt, and <cde>12$</cde> says the cost. Point
+                <cde>crack.php</cde> at one of those and it can't even start, and if it could, it
+                would manage a handful of guesses a second. The rule they'll put on a plaque outside
+                your house someday, <strong>never trust input</strong>, still applies to the rest of
+                the form: try <cde>password1234</cde>, or Carol's address in capitals, and see what
+                you get.
+            </p>
+        </nti>
 
         <!-- Gotchas -->
         <heading h2 id="gotchas">Gotchas</heading>

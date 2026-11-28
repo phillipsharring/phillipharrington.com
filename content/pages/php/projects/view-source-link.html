@@ -68,14 +68,16 @@
             <cde>&lt;</cde> and <cde>&amp;</cde> escaped, so the code is shown and not run. The
             interesting part is above it.
         </p>
-        <p>
-            The URL doesn't name a file. It names a key in <cde>$allowed</cde>, and the real path
-            comes from the array. This may have come up once or twice in the lessons:
-            <strong>never trust input.</strong> The value of <cde>?file=</cde> is whatever the
-            visitor typed, so it never gets anywhere near a path. If it isn't a key in the list, the
-            answer is a 404, and that's the end of it. The <cde>is_string()</cde> check is there
-            because <cde>?file[]=index.php</cde> makes it an array, not a string.
-        </p>
+        <nti>
+            <p>
+                The URL doesn't name a file. It names a key in <cde>$allowed</cde>, and the real
+                path comes from the array. This may have come up once or twice in the lessons:
+                <strong>never trust input.</strong> The value of <cde>?file=</cde> is whatever the
+                visitor typed, so it never gets anywhere near a path. If it isn't a key in the list,
+                the answer is a 404, and that's the end of it. The <cde>is_string()</cde> check is
+                there because <cde>?file[]=index.php</cde> makes it an array, not a string.
+            </p>
+        </nti>
 
         <heading h3 id="run-it">Run It</heading>
         <!-- prettier-ignore -->

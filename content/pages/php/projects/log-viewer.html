@@ -146,12 +146,14 @@ curl 'http://localhost:8000/naive.php?file=../users.php'</code-block>
             code, and your code can read everything.
         </p>
         <heading h2 id="fix-it">Fix It</heading>
-        <p>
-            The fix is already in <cde>index.php</cde>, and it's the one that hasn't changed since
-            the pyramids went up: <strong>never trust input</strong>, so don't use the name to build
-            a path at all. Use it to pick from a list you made yourself. Try the same attacks on the
-            real viewer:
-        </p>
+        <nti>
+            <p>
+                The fix is already in <cde>index.php</cde>, and it's the one that hasn't changed
+                since the pyramids went up: <strong>never trust input</strong>, so don't use the
+                name to build a path at all. Use it to pick from a list you made yourself. Try the
+                same attacks on the real viewer:
+            </p>
+        </nti>
         <!-- prettier-ignore -->
         <code-block>curl -u 'editor:correct horse battery staple' 'http://localhost:8000/?file=../.env'
 curl -u 'editor:correct horse battery staple' 'http://localhost:8000/?file=app.log/../../.env'</code-block>

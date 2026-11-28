@@ -79,12 +79,14 @@
                 connection.
             </li>
         </ol>
-        <p>
-            Step two is where downloads go wrong. The name in the query string is input, and
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>. Build a path from it, and someone will ask for <cde>../.env</cde>, and get it,
-            because, as the prophecy foretold, the code forgot to never trust input. Look it up in a
-            list of the files you offer instead, and anything not on the list is a 404.
-        </p>
+        <nti>
+            <p>
+                Step two is where downloads go wrong. The name in the query string is input, and
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>. Build a path from it, and someone will ask for <cde>../.env</cde>, and get it,
+                because, as the prophecy foretold, the code forgot to never trust input. Look it up
+                in a list of the files you offer instead, and anything not on the list is a 404.
+            </p>
+        </nti>
         <p>
             Step four is where they get slow. Reading the whole file into a string first means
             holding all of it in memory, for every download running at once. Sending it a piece at a

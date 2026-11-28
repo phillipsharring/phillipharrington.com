@@ -140,14 +140,16 @@
         <p class="text-th-muted text-base">
             The usual: PHP in a container, running one file from your folder.
         </p>
-        <p>
-            Each line of output comes from one call. <cde>quantity_from()</cde> is the pattern for
-            input, and it follows the rule you could probably recite by now:
-            <strong>never trust input</strong>, so it checks the type and the range, and gives back
-            a clean int or <cde>null</cde>. <cde>'3'</cde> passes; <cde>'30'</cde>,
-            <cde>'three'</cde> and an array don't. The code that calls it only has to check for
-            <cde>null</cde>.
-        </p>
+        <nti>
+            <p>
+                Each line of output comes from one call. <cde>quantity_from()</cde> is the pattern
+                for input, and it follows the rule you could probably recite by now:
+                <strong>never trust input</strong>, so it checks the type and the range, and gives
+                back a clean int or <cde>null</cde>. <cde>'3'</cde> passes; <cde>'30'</cde>,
+                <cde>'three'</cde> and an array don't. The code that calls it only has to check for
+                <cde>null</cde>.
+            </p>
+        </nti>
         <p>
             The last line passes the string <cde>'1999'</cde> to <cde>format_cents()</cde>, and
             strict_types stops it with a <cde>TypeError</cde> that names the function, the

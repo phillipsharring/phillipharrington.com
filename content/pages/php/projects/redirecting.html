@@ -100,11 +100,13 @@
 
         <!-- Break it -->
         <heading h2 id="break-it">Break It</heading>
-        <p>
-            Pop quiz, no peeking: what's the rule? <strong>Never trust input,</strong> and
-            <cde>back</cde> is input, from the query string and then the form. Give it someone
-            else's site:
-        </p>
+        <nti>
+            <p>
+                Pop quiz, no peeking: what's the rule? <strong>Never trust input,</strong> and
+                <cde>back</cde> is input, from the query string and then the form. Give it someone
+                else's site:
+            </p>
+        </nti>
         <!-- prettier-ignore -->
         <code-block>curl -i -d 'theme=dark&amp;back=https://evil.example/login' http://localhost:8000/naive-settings.php</code-block>
         <p>
