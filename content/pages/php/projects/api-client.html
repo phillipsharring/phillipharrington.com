@@ -42,7 +42,8 @@
             </li>
             <li>
                 <lnk to="/php/configuration-and-the-environment"
-                    >Configuration and the Environment</lnk>: <cde>.env</cde> and <cde>getenv()</cde>
+                    >Configuration and the Environment</lnk
+                >: <cde>.env</cde> and <cde>getenv()</cde>
             </li>
             <li>
                 <lnk to="/php/projects/rest-api">REST API</lnk>: bearer tokens and status codes,
@@ -267,6 +268,11 @@ docker compose logs api | grep -c "$(grep API_TOKEN .env | cut -d= -f2)"</code-b
             then rotated every one of them, because a secret that has sat in a file has to be
             assumed copied.
         </side-story>
+
+        <tk
+            >Repeated side story: the secrets-off-the-disk story is also told in Configuration and
+            the Environment. Keep one, make this a callback, or cut it.</tk
+        >
 
         <!-- $2 tip -->
         <two-dollars title="Scan before you push">
