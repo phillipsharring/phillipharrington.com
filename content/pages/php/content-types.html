@@ -71,8 +71,8 @@
             Text types usually carry one more piece:
             <cde>text/html; charset=utf-8</cde>. The <term def="character-set">charset</term> says
             how the bytes become letters. <term def="utf-8">UTF-8</term> covers every language and
-            every emoji, and it's the only one you should use. Get it wrong, and "café" turns into
-            "cafÃ©."
+            every emoji, and it's the only one you should use. Get it wrong, and Café Zoë, the
+            coffee shop that turns up later in the course, puts "CafÃ© ZoÃ«" on its sign.
         </p>
 
         <!-- How it works -->
@@ -89,10 +89,16 @@
         <p>
             So the download mystery is the <term def="server">server</term>, labeling something the
             browser can't display, or not labeling it at all. The file's extension doesn't enter
-            into it. This site's own pages have no extension, <cde>/about</cde> and not
-            <cde>/about.html</cde>, so its deploy has to tell the server, page by page, "this one is
-            <cde>text/html</cde>." Without that label, the server would send them as unknown bytes.
+            into it.
         </p>
+        <soaking>
+            <p>
+                This site's own pages have no extension, <cde>/about</cde> and not
+                <cde>/about.html</cde>, so its deploy has to tell the server, page by page, "this
+                one is <cde>text/html</cde>." Without that label, the server would send them as
+                unknown bytes.
+            </p>
+        </soaking>
         <p>
             A second header can overrule the browser's choice.
             <cde>Content-Disposition: attachment</cde> says "save this, don't show it," even for a
@@ -126,9 +132,9 @@
             <li><cde>http://localhost:8000/</cde>: a heading and a paragraph.</li>
             <li><cde>http://localhost:8000/?as=text</cde>: the same bytes, tags showing.</li>
             <li>
-                <cde>http://localhost:8000/?as=json</cde>: labeled as data, and it isn't
-                <term def="json">JSON</term>. Firefox tries to show it as data and reports an error;
-                Chrome just shows the text.
+                <cde>http://localhost:8000/?as=json</cde>: labeled as data, and it isn't JSON. The
+                browser tries to read it as data and reports an error. Chrome's:
+                <cde>Unexpected token '&lt;', "Hel"... is not valid JSON</cde>.
             </li>
             <li><cde>http://localhost:8000/?as=bytes</cde>: a download.</li>
             <li>
@@ -136,6 +142,10 @@
                 anyway, as <cde>hello.html</cde>.
             </li>
         </list>
+        <p class="text-th-muted text-base">
+            <cde>as=</cde> and <cde>save=</cde> are just what this script happens to read. They mean
+            nothing to any other site.
+        </p>
         <p>
             The body never changed. Only the label did. To see the labels themselves, ask with
             <cde>curl -I</cde>:
@@ -154,7 +164,7 @@
         </breakdown>
         <p>
             Notice PHP added <cde>;charset=UTF-8</cde> to the text types on its own. That comes
-            next, under In PHP.
+            next, under <sect>In PHP</sect>.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -164,9 +174,10 @@
         <heading h2 id="in-php">In PHP</heading>
         <list>
             <li>
-                PHP sends <cde>text/html; charset=UTF-8</cde> unless you say otherwise, and adds the
-                charset to any <cde>text/</cde> type you set. Both come from the
-                <cde>default_mimetype</cde> and <cde>default_charset</cde> settings.
+                PHP sends <cde>text/html; charset=UTF-8</cde> unless you say otherwise, since what
+                it usually makes is a web page, and adds the charset to any <cde>text/</cde> type
+                you set. Both come from the <cde>default_mimetype</cde> and
+                <cde>default_charset</cde> settings.
             </li>
             <li>
                 <cde>header('Content-Type: application/json');</cde> before
@@ -192,27 +203,31 @@
                 treat it as a page.
             </li>
             <li>
-                <strong
-                    ><xref to="/php/never-trust-input">Never trust input</xref>. Not even the type a
-                    browser sends.</strong>
-                An upload's content type comes from the client, which means from whoever is
-                uploading. A script can arrive labeled <cde>image/png</cde>. File Uploads, in
-                Security, is about exactly this.
+                <nti>
+                    <strong
+                        ><xref to="/php/never-trust-input">Never trust input</xref>. Not even the
+                        type a browser sends.</strong>
+                    An upload's content type comes from the client, which means from whoever is
+                    uploading. A script can arrive labeled <cde>image/png</cde>. File Uploads, in
+                    Security, is about exactly this.</nti
+                >
             </li>
             <li>
-                <strong>Strict browsers.</strong> With the
-                <cde>X-Content-Type-Options: nosniff</cde>
-                security header, a browser takes the label at its word: a script sent as
-                <cde>text/plain</cde> won't run, and a stylesheet with the wrong type won't apply.
-                Good for safety, and a puzzle the first time it bites.
+                <strong>Strict browsers.</strong> Left to themselves, browsers forgive a wrong label
+                on a script or stylesheet: they look at the contents and guess, which is called
+                sniffing. The <cde>X-Content-Type-Options: nosniff</cde> response header, sent for
+                security, turns that off. Then a script served as <cde>text/plain</cde> won't run at
+                all, and a stylesheet with the wrong type is ignored. That's safer, since nothing
+                can sneak in disguised as something else, and baffling the first time your own
+                script silently does nothing because the server mislabeled it.
             </li>
         </list>
 
         <!-- $2 tip -->
         <two-dollars title="Check the label first">
             <p>
-                A page that downloads instead of showing, a script that won't run, an API response
-                your code can't parse: before anything else, run <cde>curl -I</cde> on it and read
+                When a page downloads instead of showing, a script won't run, or your code can't
+                parse an API's response, run <cde>curl -I</cde> on it before anything else, and read
                 <cde>Content-Type</cde>. It's the answer more often than it has any right to be.
             </p>
         </two-dollars>
