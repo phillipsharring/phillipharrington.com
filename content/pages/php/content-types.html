@@ -167,7 +167,7 @@
                     <tr class="border-th-border-subtle border-b">
                         <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=json</cde></td>
                         <td class="py-3 pr-4 align-top"><cde>application/json</cde></td>
-                        <td class="py-3 pr-4 align-top">an error: it isn't JSON</td>
+                        <td class="py-3 pr-4 align-top">a JSON viewer, with nothing it can read as JSON</td>
                     </tr>
                     <tr class="border-th-border-subtle border-b">
                         <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=bytes</cde></td>
@@ -184,10 +184,36 @@
                 </tbody>
             </table>
         </div>
-        <p>
-            The JSON one is the browser trying to read the page as data and giving up. Chrome's
-            error: <cde>Unexpected token '&lt;', "Hel"... is not valid JSON</cde>.
-        </p>
+        <screenshot
+            img="php/content-types/as-text"
+            wide
+            w="1600"
+            h="260"
+            alt="The browser at localhost:8000/?as=text, showing the raw HTML tags as text."
+            caption="Labeled text/plain: the same bytes, tags and all."
+        />
+        <screenshot
+            img="php/content-types/as-json"
+            wide
+            w="1600"
+            h="330"
+            alt="The browser at localhost:8000/?as=json: Chrome's JSON viewer, with a Pretty-print checkbox and the raw HTML as text."
+            caption="Labeled application/json: a JSON viewer with nothing to make pretty."
+        />
+        <screenshot
+            img="php/content-types/save-as-download"
+            w="1444"
+            h="447"
+            alt="A Save As dialog suggesting the name: download."
+            caption="Labeled octet-stream: a download, and no name, so "download.""
+        />
+        <screenshot
+            img="php/content-types/save-as-hello"
+            w="836"
+            h="447"
+            alt="A Save As dialog suggesting the name: hello."
+            caption="Content-Disposition suggested a name: hello.html."
+        />
         <p class="text-th-muted text-base">
             <cde>as=</cde> and <cde>save=</cde> are just what this script happens to read. They mean
             nothing to any other site.
