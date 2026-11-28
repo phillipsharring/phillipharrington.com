@@ -239,10 +239,10 @@
         <!-- prettier-ignore -->
         <code-block>curl -d 'name=&amp;size=huge' http://localhost:8000</code-block>
         <screenshot
-            img="php/forms/curl-server-catches-both"
+            img="php/forms/curl-empty-name-huge-size"
             wide
-            w="1333"
-            h="834"
+            w="1625"
+            h="1054"
             alt="Terminal: curl posts an empty name and size huge; the HTML that comes back says: Your name, please. Pick a size from the list."
             caption="Both caught, no browser involved."
         />
@@ -261,10 +261,10 @@
             >
         </breakdown>
         <screenshot
-            img="php/forms/curl-html-escaped"
+            img="php/forms/curl-escaped-name"
             wide
-            w="1484"
-            h="834"
+            w="2021"
+            h="1008"
             alt="Terminal: curl posts a name with HTML tags; the reply shows them escaped as &amp;lt;b&amp;gt;hi&amp;lt;/b&amp;gt;."
             caption="The tags come back as harmless text."
         />
@@ -343,12 +343,16 @@
                 This example uses the most common shape there is for a PHP form, and you'll write it
                 a hundred times. One file does both jobs. The PHP at the top asks whether this
                 request is a <cde>POST</cde> (<cde>$posted</cde>), and only then reads the fields,
-                checks them, and decides what to say. The key: every variable gets a value before
-                the HTML starts, either what came in or a default, like an empty string. So the HTML
-                never has to ask whether anything exists. It just prints <cde>$name</cde>, with no
-                <cde>isset()</cde> in sight, and the form shows up empty the first time and filled
-                in after. The HTML at the bottom shows any message, then the form, which posts back
-                to the same file.
+                checks them, and decides what to say. The HTML at the bottom shows any message, then
+                the form, which posts back to the same file.
+            </p>
+            <p>
+                The key: every variable gets a value before the HTML starts, either what came in or
+                a default, like an empty string. So the HTML never has to ask whether anything
+                exists. It just prints <cde>$name</cde>, with no <cde>isset()</cde> in sight, and
+                the form shows up empty the first time and filled in after. It's a common pattern,
+                not the only one: frameworks and bigger apps split these jobs across files, and
+                you'll meet some of those ways later.
             </p>
             <!-- prettier-ignore -->
             <diagram caption="One file, two visits: the first shows an empty form, the second reads what came back.">
