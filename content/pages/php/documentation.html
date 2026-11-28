@@ -115,6 +115,13 @@
         <p>PHP can show you a signature too, with no browser:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm php:8.4-cli php --rf strpos</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="--rf strpos"
+                >Show what PHP knows about the function <cde>strpos</cde>: its parameters and what
+                it returns.</part
+            >
+        </breakdown>
         <p>
             It lists the parameters, marks the optional one with its default, and ends with
             <cde>Return [ int|false ]</cde>. Now see what happens to code that read the name and

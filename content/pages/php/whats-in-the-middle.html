@@ -125,6 +125,16 @@
         <p>Start them together:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose up</code-block>
+        <breakdown>
+            <part code="docker compose"
+                >Docker's tool for running several containers together, as described in the
+                <cde>compose.yml</cde> in the folder you're in.</part
+            >
+            <part code="up"
+                >Start every container in the file, and show their output until you press
+                <cde>Ctrl+C</cde>.</part
+            >
+        </breakdown>
         <p>From a second terminal, ask PHP directly, then through the proxy:</p>
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8001
@@ -138,11 +148,18 @@ curl http://localhost:8000</code-block>
         <p>Now lie to it:</p>
         <!-- prettier-ignore -->
         <code-block>curl -H 'X-Forwarded-For: 1.2.3.4' http://localhost:8000</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-H 'X-Forwarded-For: 1.2.3.4'"
+                >Add a header to the request: its name, a colon, and its value. Any header you
+                like.</part
+            >
+        </breakdown>
         <p>
             PHP gets <cde>1.2.3.4</cde> first, then your real address. The proxy didn't replace what
             you sent; it added what it saw to the end. Everything before the last entry came from
-            the client, which means from anyone.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and that
+            the client, which means from anyone. As you may recall,
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> and that
             includes headers. Trust only the entry your own proxy added: the last one, or the last
             few if you run several layers. <cde>Ctrl+C</cde> stops both.
         </p>

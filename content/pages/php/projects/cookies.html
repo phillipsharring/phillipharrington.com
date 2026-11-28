@@ -101,10 +101,11 @@
             in.
         </p>
         <p>
-            Now the second problem. <strong>Never trust input</strong>, and a cookie is input: it's
-            whatever the browser sends, and anything that can write to the browser's cookies can put
-            anything there. A page on a sibling subdomain can set a cookie for the whole domain, and
-            so can anyone in the middle of a plain HTTP request. Plant one:
+            Now the second problem, and you can probably finish this sentence for me.
+            <strong>Never trust input</strong>, and a cookie is input: it's whatever the browser
+            sends, and anything that can write to the browser's cookies can put anything there. A
+            page on a sibling subdomain can set a cookie for the whole domain, and so can anyone in
+            the middle of a plain HTTP request. Plant one:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -b 'name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' http://localhost:8000/naive.php</code-block>

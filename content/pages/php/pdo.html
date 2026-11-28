@@ -150,6 +150,13 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose up --build</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="--build"
+                >Build the images first, from the <cde>Dockerfile</cde>, instead of only downloading
+                ready-made ones.</part
+            >
+        </breakdown>
         <p>
             Open <cde>http://localhost:8000</cde>. Four books. Search for "austen," then add a book
             of your own, with an accent or an apostrophe in it, like "O'Brien": it goes in, and

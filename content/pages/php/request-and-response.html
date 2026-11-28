@@ -202,6 +202,14 @@ Content-Length: 0</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -d 'name=Alice&amp;comment=Hi' http://localhost:8000/comments</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-d">Send this data as the request body. That makes it a POST.</part>
+            <part code="'name=Alice&comment=Hi'"
+                >The data, as form fields. The single quotes keep the terminal from treating the
+                <cde>&amp;</cde> as a command of its own.</part
+            >
+        </breakdown>
         <p>
             Now it's a POST, with a <cde>Content-Type</cde>, a <cde>Content-Length</cde>, and the
             body at the bottom. Last, look at the response instead. <cde>-i</cde> shows the status
@@ -209,6 +217,11 @@ Content-Length: 0</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/teapot</code-block>
+        <breakdown>
+            <part code="-i"
+                >Include the response's status line and headers in the output, above the body.</part
+            >
+        </breakdown>
         <p>
             <cde>418</cde>, and PHP's built-in server calls it "Unknown Status Code." It never got
             the joke.

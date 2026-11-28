@@ -123,6 +123,10 @@ Content-Length: 20469
         <p>Run it:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php http.php</code-block>
+        <p class="text-th-muted text-base">
+            Same as before: a throwaway PHP container, with your folder as <cde>/app</cde>, running
+            one file.
+        </p>
         <p>
             The first line is the status line: <cde>HTTP/1.1 200 OK</cde>. Then the response
             headers: the type of the content, when it was last changed, and a few that show a CDN
@@ -131,6 +135,16 @@ Content-Length: 20469
         <p>Now ask with curl, and add <cde>-v</cde>, for verbose:</p>
         <!-- prettier-ignore -->
         <code-block>curl -v https://example.com/ -o /dev/null</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-v"
+                >Verbose: show everything curl does along the way, not just the page.</part
+            >
+            <part code="-o /dev/null"
+                >Write the page to a file instead of the screen. <cde>/dev/null</cde> is the file
+                that throws away whatever goes into it.</part
+            >
+        </breakdown>
         <p>
             The lines starting with <cde>*</cde> are the TLS handshake: the TLS version, the
             certificate's name and who issued it, when it expires. The lines starting with

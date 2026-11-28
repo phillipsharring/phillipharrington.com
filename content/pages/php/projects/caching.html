@@ -102,7 +102,8 @@
             nothing changed, the answer is <cde>304 Not Modified</cde>, with no body at all.
         </p>
         <p>
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and that
+            The town crier rang his bell and shouted it in the square every morning:
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> and that
             includes what goes into a cache key. The region must be one of four. If any string were
             allowed, anyone could ask for a million made-up regions, and you'd make a million slow
             reports and keep a million files.
@@ -111,6 +112,10 @@
         <heading h3 id="step-4-run-it">Step 4: Run It</heading>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p class="text-th-muted text-base">
+            The usual server: <cde>-p 8000:8000</cde> connects port 8000 on your computer to the
+            container's, where <cde>php -S</cde> is listening.
+        </p>
         <p>From a second terminal, ask twice, and time it:</p>
         <!-- prettier-ignore -->
         <code-block>curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'

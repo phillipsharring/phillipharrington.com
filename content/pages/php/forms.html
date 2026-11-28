@@ -134,6 +134,14 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>curl --data-urlencode 'name=&lt;b&gt;hi&lt;/b&gt;' -d 'size=large' http://localhost:8000</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="--data-urlencode"
+                >Like <cde>-d</cde>, but curl encodes the value for you first, so characters like
+                <cde>&lt;</cde> and <cde>&amp;</cde> arrive as text instead of breaking the form
+                data.</part
+            >
+        </breakdown>
         <p>
             Look at the HTML that comes back: <cde>&amp;lt;b&amp;gt;hi&amp;lt;/b&amp;gt;</cde>.
             <cde>htmlspecialchars()</cde> turned the tags into harmless text, in the message and in

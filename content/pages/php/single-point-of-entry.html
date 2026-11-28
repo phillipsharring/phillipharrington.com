@@ -163,8 +163,8 @@ curl -i -H 'Authorization: Bearer root-token' http://localhost:8000/admin</code-
                 <strong>Never let the URL name the file.</strong>
                 <cde>require "pages/{$_GET['page']}.php"</cde> looks like a shortcut to the same
                 thing, and it lets a visitor pick any file on the server, with <cde>../</cde> to
-                climb out. That's called local file inclusion.
-                <lnk to="/php/never-trust-input">Never trust input</lnk>: the URL picks a row in
+                climb out. That's called local file inclusion. Say it with me:
+                <lnk to="/php/never-trust-input">never trust input</lnk>. The URL picks a row in
                 your table, and your table names the file.
             </li>
             <li>

@@ -72,6 +72,13 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it --name sessions -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="--name sessions"
+                >Give the container a name, so other commands can point at it. Without one, Docker
+                makes up a name.</part
+            >
+        </breakdown>
         <p>
             Open <cde>http://localhost:8000</cde> and reload a few times: the count goes up. From a
             second terminal, do it with curl, keeping the cookie in a jar file between requests:
@@ -79,12 +86,33 @@
         <!-- prettier-ignore -->
         <code-block>curl -c jar.txt -b jar.txt http://localhost:8000
 curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-c jar.txt"
+                >Save any cookies the server sets into <cde>jar.txt</cde>, a file curl keeps them
+                in.</part
+            >
+            <part code="-b jar.txt"
+                >Send the cookies from that file. Given a file name instead of
+                <cde>name=value</cde>, <cde>-b</cde> reads the file.</part
+            >
+        </breakdown>
         <p>
             Visit number 2. Now look at the other half of the session, the file on the server. Use
             the id the page printed:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker exec sessions cat /tmp/sess_YOUR_ID</code-block>
+        <breakdown>
+            <part code="docker exec sessions"
+                >Run a command inside the running container named <cde>sessions</cde>.</part
+            >
+            <part code="cat">Print a file's contents.</part>
+            <part code="/tmp/sess_YOUR_ID"
+                >The session file, inside the container. Put your id in place of
+                <cde>YOUR_ID</cde>.</part
+            >
+        </breakdown>
         <p>
             <cde>visits|i:2;</cde>: your count, in PHP's own format, on the server's disk. The
             cookie in <cde>jar.txt</cde> holds only the id. Now send an id you made up:
@@ -93,8 +121,9 @@ curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
         <code-block>curl -i -b 'PHPSESSID=madeup' http://localhost:8000</code-block>
         <p>
             Visit number 1, and a fresh id in <cde>Set-Cookie</cde>. That's
-            <cde>use_strict_mode</cde> at work: PHP refuses an id it didn't make.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> not even the
+            <cde>use_strict_mode</cde> at work: PHP refuses an id it didn't make. It's carved over
+            the door of every server room:
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> not even the
             ticket.
         </p>
         <p class="text-th-muted text-base">

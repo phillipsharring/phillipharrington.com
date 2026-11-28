@@ -134,12 +134,22 @@
         <!-- prettier-ignore -->
         <code-block>curl -I http://localhost:8000/
 curl -I http://localhost:8000/style.css</code-block>
+        <p class="text-th-muted text-base">
+            As in Content Types: <cde>-I</cde> asks for the headers only.
+        </p>
         <p>
             The page has <cde>X-Powered-By: PHP/8.4</cde> and more, because PHP made it. The
             stylesheet doesn't: nginx sent it alone. Last, look at the processes:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose top php</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="top php"
+                >List the programs running inside the <cde>php</cde> container, like a task
+                manager.</part
+            >
+        </breakdown>
         <p>
             One <cde>php-fpm: master process</cde>, and its workers, each
             <cde>php-fpm: pool www</cde>. <cde>Ctrl+C</cde> in the first terminal stops both.
@@ -189,7 +199,8 @@ curl -I http://localhost:8000/style.css</code-block>
                 <strong>Only run PHP files that exist.</strong> <cde>try_files $uri =404</cde> in
                 the PHP block stops an old trick, where a path like
                 <cde>/uploads/cat.jpg/x.php</cde> got an uploaded image run as PHP. Uploads are
-                input, and <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>; this one line keeps them from running.
+                input, and, as I may have mentioned,
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>; this one line keeps them from running.
             </li>
             <li>
                 <strong>The pool size is a memory budget.</strong> Every worker uses memory, so

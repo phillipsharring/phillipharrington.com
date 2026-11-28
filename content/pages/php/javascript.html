@@ -106,6 +106,10 @@
         <p>Start it:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p class="text-th-muted text-base">
+            The same server as before; <cde>-t public</cde> serves only the <cde>public</cde>
+            folder.
+        </p>
         <p>
             Open <cde>http://localhost:8000/?name=Alice</cde> and pick a size. The menu wasn't in
             the HTML PHP sent: JavaScript built it from the data. Now try to break out of the script

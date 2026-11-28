@@ -126,6 +126,10 @@ App\Text\Shout     src/Text/Shout.php</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <p class="text-th-muted text-base">
+            The Composer command from <lnk to="/php/tools#composer">Tools</lnk>: the
+            <cde>composer:2</cde> image, running <cde>composer install</cde> in your folder.
+        </p>
         <p>
             There's no package to download yet, so it just writes <cde>vendor/autoload.php</cde> and
             a <cde>composer.lock</cde>. Now <cde>hello.php</cde>, with a single <cde>require</cde>:

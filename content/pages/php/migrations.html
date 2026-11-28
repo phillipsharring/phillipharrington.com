@@ -155,6 +155,13 @@ FROM `migrations`;</code-block>
         <!-- prettier-ignore -->
         <code-block>cp later/2026_11_27_1000_drop_phone_from_users.sql migrations/
 docker compose run --rm php php migrate.php</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="migrations/"
+                >When the last thing given to <cde>cp</cde> is a folder, the copy goes into it,
+                under the same name.</part
+            >
+        </breakdown>
         <p>
             Only the new one runs. Look at <cde>users</cde> again, and the phone column is gone,
             Alice's number with it. That's what undoing it means, and now it's a decision written
@@ -165,6 +172,13 @@ docker compose run --rm php php migrate.php</code-block>
         <!-- prettier-ignore -->
         <code-block>rm migrations/2026_11_27_1000_drop_phone_from_users.sql
 docker compose down -v</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="rm"
+                >Remove a file. There's no trash can; it's gone, so read the name before you press
+                Enter.</part
+            >
+        </breakdown>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
         </p>

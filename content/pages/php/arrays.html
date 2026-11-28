@@ -119,6 +119,13 @@
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/query.php?tag=php'
 curl -g 'http://localhost:8000/query.php?tag[]=php&amp;tag[]=web&amp;size[shirt]=large'</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="-g"
+                >Turn off curl's own meaning for <cde>[]</cde> and <cde>{}</cde> in a URL (it uses
+                them to ask for a range of URLs), so the brackets go out as typed.</part
+            >
+        </breakdown>
         <p>
             The second request made <cde>$_GET['tag']</cde> a list and <cde>$_GET['size']</cde> a
             named-key array, just by putting brackets in the names. (<cde>-g</cde> tells curl to

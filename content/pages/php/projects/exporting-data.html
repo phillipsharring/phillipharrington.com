@@ -123,6 +123,14 @@
         <!-- prettier-ignore -->
         <code-block>curl -u 'editor:correct horse battery staple' -OJ http://localhost:8000/export.php
 curl -u 'editor:correct horse battery staple' -OJ 'http://localhost:8000/export.php?since=2026-11-15'</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-O">Save the response to a file instead of printing it.</part>
+            <part code="-J"
+                >Name that file what the server's <cde>Content-Disposition</cde> header says, not
+                after the URL.</part
+            >
+        </breakdown>
         <p>
             Open the file in any spreadsheet. Every row has five columns, <cde>Acme, Inc.</cde> is
             one cell, the accents and the Japanese name are intact, and the strange name is just
@@ -160,6 +168,7 @@ Zoë Łukasiewicz,zoe@example.com,Café "Kraków",13.99
         </p>
         <heading h2 id="fix-it">Fix It</heading>
         <p>
+            You've read this one so many times you could set it to music.
             <strong>Never trust input,</strong> and that includes input that's been sitting in your
             database. Look at the real export's version of the same row:
         </p>

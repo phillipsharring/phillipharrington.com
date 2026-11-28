@@ -135,6 +135,17 @@
         <code-block>curl -s -c jar http://localhost:8000 | grep -o 'name="csrf" value="[a-f0-9]*"' | head -1
 curl -b jar -d csrf=PASTE_TOKEN -d action=add -d product=1 -d price_cents=1 http://localhost:8000/cart.php
 curl -b jar http://localhost:8000/cart.php</code-block>
+        <p>What's new:</p>
+        <breakdown>
+            <part code="grep -o '...'"
+                >Print only the part of each line that matches, not the whole line: here, the hidden
+                form field with the token in it.</part
+            >
+            <part code="| head -1">Keep just the first line of that.</part>
+            <part code="PASTE_TOKEN"
+                >A placeholder: put the token from the first command here.</part
+            >
+        </breakdown>
         <p>
             The mug is in at $14.00.
             <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> the cart

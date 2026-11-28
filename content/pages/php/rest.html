@@ -123,6 +123,10 @@ curl -i http://localhost:8000/notes/3
 curl -i -X PUT -H 'Content-Type: application/json' -d '{"body":"Buy more beans"}' http://localhost:8000/notes/3
 curl -i -X DELETE http://localhost:8000/notes/3
 curl -i http://localhost:8000/notes/3</code-block>
+        <p class="text-th-muted text-base">
+            The same curl flags as before: <cde>-X</cde> picks the method, <cde>-H</cde> adds a
+            header, <cde>-d</cde> sends the body, and <cde>-i</cde> shows the response's headers.
+        </p>
         <p>
             <cde>200</cde>, <cde>201</cde> with a <cde>Location</cde>, <cde>200</cde>,
             <cde>200</cde>, <cde>204</cde>, and finally <cde>404</cde>: the note is gone. Send a
@@ -138,8 +142,9 @@ curl -i -X PATCH http://localhost:8000/notes/1</code-block>
         <p>
             <cde>415</cde>, <cde>400</cde>, <cde>422</cde>, and <cde>405</cde> with
             <cde>Allow: GET, PUT, DELETE</cde>. Each says exactly what was wrong, so the developer
-            on the other end can fix their code without asking you.
-            <lnk to="/php/never-trust-input">Never trust input</lnk>: a JSON body is input, and
+            on the other end can fix their code without asking you. Archimedes, asked what he'd need
+            to move the world, said a lever, a place to stand, and to
+            <lnk to="/php/never-trust-input">never trust input</lnk>: a JSON body is input, and
             "it's JSON" says nothing about what's inside it.
         </p>
         <p class="text-th-muted text-base">

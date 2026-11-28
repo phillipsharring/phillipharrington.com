@@ -147,6 +147,10 @@
         <!-- prettier-ignore -->
         <code-block>docker compose exec app php bin/send.php issues/2026-11.txt --dry-run
 docker compose exec app php bin/send.php issues/2026-11.txt</code-block>
+        <p class="text-th-muted text-base">
+            Same as before: <cde>exec app</cde> runs the command inside the <cde>app</cde>
+            container that's already running.
+        </p>
         <p>
             In Mailpit, open the issue and look at its headers: <cde>List-Unsubscribe</cde> is
             there. Follow the link at the bottom, press Unsubscribe, and send again. Nobody gets it.
@@ -188,9 +192,9 @@ done</code-block>
             the way a bot would, and the page says thanks and sends nothing.
         </p>
         <p>
-            <strong>Never trust input</strong>, and an email address is an odd kind of input: it's a
-            claim about someone else. Until the owner answers from their own inbox, it's just a
-            string someone typed.
+            By now you could teach this part. <strong>Never trust input</strong>, and an email
+            address is an odd kind of input: it's a claim about someone else. Until the owner
+            answers from their own inbox, it's just a string someone typed.
         </p>
 
         <side-story title="A Signup Form, Used as a Weapon">

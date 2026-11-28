@@ -118,6 +118,10 @@ ON DUPLICATE KEY UPDATE `name` = `new`.`name`;</code-block>
         <code-block>docker compose up -d --wait db
 docker compose run --rm php php subscribe.php alice@example.com Alice
 docker compose run --rm php php subscribe.php bo@example.com Bo</code-block>
+        <p class="text-th-muted text-base">
+            Same as before: <cde>docker compose run --rm php</cde> starts a fresh PHP container that
+            can reach the database, and everything after it is the command.
+        </p>
         <p>
             Subscribers #1 and #2. Now Alice signs up again, with her full name, and then once more,
             the same way:
@@ -144,9 +148,9 @@ FROM `subscribers`;</code-block>
         <!-- prettier-ignore -->
         <code-block>docker compose run --rm php php subscribe.php 'nope' Mallory</code-block>
         <p>
-            Refused before it gets anywhere near the table. <strong>Never trust input</strong>,
-            least of all input you're about to keep. <cde>docker compose down -v</cde> when you're
-            done.
+            Refused before it gets anywhere near the table. Handed down, generation to generation:
+            <strong>never trust input</strong>, least of all input you're about to keep.
+            <cde>docker compose down -v</cde> when you're done.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.

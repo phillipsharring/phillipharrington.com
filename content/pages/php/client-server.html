@@ -133,6 +133,17 @@
         <p>Then, in a terminal, in that folder, start the server:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>What's new:</p>
+        <breakdown>
+            <part code="-p 8000:8000"
+                >Connect port 8000 on your computer to port 8000 in the container. Your computer's
+                side comes first.</part
+            >
+            <part code="-S">Start PHP's built-in web server instead of running one file.</part>
+            <part code="0.0.0.0:8000"
+                >The address and port for it to listen on: every address, port 8000.</part
+            >
+        </breakdown>
         <p>
             That's step one from above: the server binds to a port and listens. Most of that line is
             Docker. It starts a container with PHP in it, shares your folder with it, and connects
@@ -163,6 +174,14 @@
         <p>Two more things to try. Ask again with a different client, from a second terminal:</p>
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8000</code-block>
+        <breakdown>
+            <part code="curl"
+                >A web client for the terminal. It sends a request and prints the response.</part
+            >
+            <part code="http://localhost:8000"
+                >The address to ask: your own computer, port 8000.</part
+            >
+        </breakdown>
         <p>
             Same server, same answer, different client. Then go back to the first terminal, stop the
             server with <cde>Ctrl+C</cde>, and reload the browser. It can't connect, because nobody

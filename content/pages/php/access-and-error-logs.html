@@ -139,9 +139,17 @@
         <!-- prettier-ignore -->
         <code-block>mkdir logs
 docker compose up</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="mkdir logs">Make a folder called <cde>logs</cde>.</part>
+        </breakdown>
         <p>In a second terminal, follow the access log:</p>
         <!-- prettier-ignore -->
         <code-block>tail -f logs/access.log</code-block>
+        <p class="text-th-muted text-base">
+            From <lnk to="/php/tools#reading-logs">Tools</lnk>: <cde>tail -f</cde> prints new lines
+            as they're written, until <cde>Ctrl+C</cde>.
+        </p>
         <p>And in a third, make some requests:</p>
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8000/
@@ -161,6 +169,13 @@ curl http://localhost:8000/broken</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -A 'Not a browser' http://localhost:8000/</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-A 'Not a browser'"
+                >Set the <cde>User-Agent</cde> header: what the client says it is. Anything you
+                like.</part
+            >
+        </breakdown>
         <p>
             The log shows <cde>"Not a browser"</cde> as the user agent, because the log writes down
             whatever the client said. Last, break the middle. Stop PHP and ask again:
@@ -168,6 +183,13 @@ curl http://localhost:8000/broken</code-block>
         <!-- prettier-ignore -->
         <code-block>docker compose stop php
 curl http://localhost:8000/</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="stop php"
+                >Stop one container, the one called <cde>php</cde> in <cde>compose.yml</cde>, and
+                leave the rest running.</part
+            >
+        </breakdown>
         <p>
             After three seconds, nginx gives up and answers with a 504 (or a 502, depending on your
             computer). The access log has the status; <cde>logs/error.log</cde> has the reason,
@@ -217,7 +239,8 @@ curl http://localhost:8000/</code-block>
             <li>
                 <strong>Logs grow until the disk is full.</strong> Servers rotate them: every day or
                 week, the log is renamed, compressed, and eventually deleted, and a new one starts.
-                On Linux, a tool called logrotate does it. A full disk takes the whole site down with it.
+                On Linux, a tool called logrotate does it. A full disk takes the whole site down
+                with it.
             </li>
             <li>
                 <strong>The address may not be the visitor's.</strong> Behind a proxy or a CDN, the
@@ -239,6 +262,23 @@ curl http://localhost:8000/</code-block>
             </p>
             <!-- prettier-ignore -->
             <code-block>awk '{print $9}' logs/access.log | sort | uniq -c | sort -rn</code-block>
+            <breakdown>
+                <part code="awk '{print $9}' logs/access.log"
+                    >Go through the log line by line and print only the ninth word of each, the
+                    status code.</part
+                >
+                <part code="|"
+                    >The pipe: hand the output of one command to the next, instead of to the
+                    screen.</part
+                >
+                <part code="sort">Sort the lines, so the same codes end up together.</part>
+                <part code="uniq -c"
+                    >Squash each run of identical lines into one, with a count in front.</part
+                >
+                <part code="sort -rn"
+                    >Sort again, by that count (<cde>-n</cde>), biggest first (<cde>-r</cde>).</part
+                >
+            </breakdown>
             <p>
                 A pile of 404s you didn't expect is a broken link or a scanner. Any 500s at all are
                 a reason to open the error log.

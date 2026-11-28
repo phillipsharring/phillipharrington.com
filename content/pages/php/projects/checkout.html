@@ -66,6 +66,9 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <p class="text-th-muted text-base">
+            Same as ever: <cde>composer install</cde> fetches the exact versions in the lock file.
+        </p>
 
         <heading h3 id="step-2-the-orders-tables">Step 2: The Orders Tables</heading>
         <p>Add these to the end of <cde>init.sql</cde>:</p>
@@ -130,8 +133,8 @@ CREATE TABLE order_items (
         <heading h3 id="step-4-the-checkout-page">Step 4: The Checkout Page</heading>
         <code-block example="project-checkout/public/checkout.php" />
         <p>
-            An email for the receipt, a name, and a button.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> it reads
+            An email for the receipt, a name, and a button. And you couldn't possibly forget to
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk>.</strong> It reads
             those two fields and the tokens, and nothing else. If someone adds
             <cde>total_cents=1</cde> or a card number to the request, nothing ever looks at it.
         </p>
@@ -170,6 +173,20 @@ CREATE TABLE order_items (
         <!-- prettier-ignore -->
         <code-block>grep 4242 logs/app.log
 docker compose exec db mysqldump --no-tablespaces -uapp -papp-password course | grep 4242</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code="grep 4242 logs/app.log"
+                >Search a file directly, rather than the output of another command.</part
+            >
+            <part code="mysqldump"
+                >MySQL's backup tool. It prints the whole database as SQL: every table, every
+                row.</part
+            >
+            <part code="--no-tablespaces"
+                >Leave out the tablespace details, which the <cde>app</cde> user isn't allowed to
+                read. Without it, the dump stops with an error.</part
+            >
+        </breakdown>
         <!-- prettier-ignore -->
         <code-block>[27-Nov-2026 20:30:00 UTC] checkout: {"email":"bo@example.com","card_number":"4242424242424242","card_expiry":"12\/34","card_cvc":"123","total_cents":"2800"}
 INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34','123',2800);</code-block>

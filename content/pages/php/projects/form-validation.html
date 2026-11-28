@@ -69,6 +69,14 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require --dev phpunit/phpunit</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code="--dev"
+                >Record the package under <cde>require-dev</cde> in <cde>composer.json</cde>: needed
+                to work on the project, not to run it.</part
+            >
+            <part code="phpunit/phpunit">The package: PHPUnit, the testing tool.</part>
+        </breakdown>
         <code-block example="project-form-validation/composer.json" />
 
         <heading h3 id="the-validator">The Validator</heading>
@@ -115,6 +123,10 @@
         <p>Run them:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php vendor/bin/phpunit</code-block>
+        <p class="text-th-muted text-base">
+            As in <lnk to="/php/testing">Testing</lnk>: <cde>vendor/bin/phpunit</cde> is the test
+            runner Composer installed.
+        </p>
         <p>
             Twelve dots and <cde>OK (12 tests, 28 assertions)</cde>. Break the validator on purpose,
             say by changing <cde>mb_strlen</cde> to <cde>strlen</cde>, and run them again: the

@@ -115,6 +115,13 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -b 'visits=41' http://localhost:8000</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-b 'visits=41'"
+                >Send this cookie with the request, the way a browser would: name, equals sign,
+                value.</part
+            >
+        </breakdown>
         <p>
             Try <cde>-b 'visits=banana'</cde>, too. The <cde>(int)</cde> in the code turns nonsense
             into 0, so you get visit 1, not an error. That one cast is the code not trusting its

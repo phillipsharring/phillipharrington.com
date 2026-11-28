@@ -122,6 +122,10 @@
         <p>Start the server, and look at the cookie it hands out:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p class="text-th-muted text-base">
+            Same as before: <cde>-p 8000:8000</cde> connects port 8000 on your computer to the
+            container's, and <cde>curl -I</cde> asks for only the headers.
+        </p>
         <!-- prettier-ignore -->
         <code-block>curl -I http://localhost:8000/naive.php</code-block>
         <!-- prettier-ignore -->

@@ -153,6 +153,16 @@
         <code-block>curl -A 'Definitely a real browser' -e 'https://example.com/trust-me' \
     -b 'admin=yes' -H 'X-Forwarded-For: 1.2.3.4' -d 'price=1' \
     'http://localhost:8000/show.php?id[]=7&amp;id[]=8'</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-e 'https://example.com/trust-me'"
+                >The referer: the page the request claims it came from. Any address will do.</part
+            >
+            <part code="\"
+                >At the end of a line, it means "the command keeps going on the next line." It's
+                there so a long command fits on the page.</part
+            >
+        </breakdown>
         <p>
             Every line comes back exactly as you wrote it. A browser you never ran, a page you never
             came from, a cookie the server never set, an address that isn't yours, a form field the

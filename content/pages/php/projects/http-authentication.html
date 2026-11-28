@@ -117,6 +117,13 @@
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000
 curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code="-u 'user:password'"
+                >Sign in with this user name and password, using HTTP's Basic authentication. The
+                quotes keep the spaces in the password.</part
+            >
+        </breakdown>
         <p>
             The first gets the 401 and its <cde>WWW-Authenticate</cde> header. The second shows, in
             curl's <cde>&gt;</cde> lines, exactly what went out:
@@ -126,6 +133,13 @@ curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-blo
         <p>Decode it:</p>
         <!-- prettier-ignore -->
         <code-block>echo 'ZWRpdG9yOmNvcnJlY3QgaG9yc2UgYmF0dGVyeSBzdGFwbGU=' | base64 -d</code-block>
+        <breakdown>
+            <part code="echo '...'">Print the text in the quotes.</part>
+            <part code="| base64 -d"
+                >Hand that text to <cde>base64</cde>, which decodes it (<cde>-d</cde>) back to the
+                original bytes.</part
+            >
+        </breakdown>
         <p>
             There's the password. Base64 is a way to write bytes as plain letters, not a lock.
             Anyone who sees the request sees the password, on every request, which is why Basic

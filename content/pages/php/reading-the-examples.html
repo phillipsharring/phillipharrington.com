@@ -172,6 +172,18 @@
         <p>Run it with PHP, in a container:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php cheat-sheet.php</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="php:8.4-cli"
+                >The image: PHP, version 8.4, the command-line build. It's the one every lesson
+                uses.</part
+            >
+            <part code="php">The command to run inside the container: PHP itself.</part>
+            <part code="cheat-sheet.php"
+                >The file for PHP to run. Since <cde>/app</cde> is your folder, it finds the one you
+                just made.</part
+            >
+        </breakdown>
         <p>
             Match each line of output to the line that printed it. Then change things: a different
             name, a fourth size, a <cde>price</cde> in the shirt. Run it again after each change.

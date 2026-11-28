@@ -201,6 +201,17 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
         <code-block example="rate-limiting/guess.sh" />
         <!-- prettier-ignore -->
         <code-block>sh guess.sh http://localhost:8000/naive.php</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="sh"
+                >The shell: the program that reads the commands you type. Given a file, it runs the
+                commands in it.</part
+            >
+            <part code="guess.sh">The file of commands to run, a shell script.</part>
+            <part code="http://localhost:8000/naive.php"
+                >An argument for the script: the page to attack.</part
+            >
+        </breakdown>
         <!-- prettier-ignore -->
         <code-block>401 123456
 401 password

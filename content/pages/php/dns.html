@@ -136,6 +136,13 @@
         <p>Run it in a container, the same way as last time, giving it a name to look up:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php example.com</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="example.com"
+                >Anything after the file name is handed to the script as an argument. This script
+                looks up whatever name you give it.</part
+            >
+        </breakdown>
         <p>
             The first line is one address: <cde>gethostbyname()</cde> asks the question the way a
             browser would and takes the first answer. Then <cde>dns_get_record()</cde> shows the
@@ -157,6 +164,13 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>nslookup example.com</code-block>
+        <breakdown>
+            <part code="nslookup"
+                >A DNS client. It asks your resolver for a name's records and prints the
+                answer.</part
+            >
+            <part code="example.com">The name to look up.</part>
+        </breakdown>
         <p>Same answer, different client. It also tells you which resolver answered, at the top.</p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.

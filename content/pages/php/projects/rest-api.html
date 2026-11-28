@@ -144,6 +144,17 @@ curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:800
 curl -i -H "$T" -H 'Content-Type: application/json' -d '{"title": "Try the API"}' http://localhost:8000/api/tasks
 curl -i -H "$T" -H 'Content-Type: application/json' -X PATCH -d '{"done": true}' http://localhost:8000/api/tasks/4
 curl -i -H "$T" -X DELETE http://localhost:8000/api/tasks/4</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="T='...'"
+                >Save the header in a terminal variable named <cde>T</cde>, so you type the token
+                once. No spaces around the <cde>=</cde>.</part
+            >
+            <part code='-H "$T"'
+                >Use it. In double quotes, the terminal swaps in what <cde>T</cde> holds, spaces and
+                all.</part
+            >
+        </breakdown>
         <p>
             <cde>201</cde> with <cde>Location: /api/tasks/4</cde>, <cde>200</cde> with the change,
             <cde>204</cde>. Then try the read-only token, <cde>wnp_annro_8e2b7c4d1a9f3e56</cde>, on

@@ -107,6 +107,14 @@
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install
 docker compose run --rm php
 docker compose down -v</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="docker compose run --rm php"
+                >With no command after the service name, it runs the one
+                <cde>compose.yml</cde> gives that service: here, <cde>php demo.php</cde>. The
+                database starts first, because the service depends on it.</part
+            >
+        </breakdown>
         <p>
             The note goes in and comes back as a <cde>Note</cde>, emoji and all. A blank body is
             refused before it gets near the table. Then the interesting part: the demo slips a blank

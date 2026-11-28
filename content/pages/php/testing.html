@@ -130,6 +130,14 @@
         <p>Run them, in the course's PHP:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli vendor/bin/phpunit</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="vendor/bin/phpunit"
+                >The command to run, in place of <cde>php</cde> and a file: PHPUnit, which Composer
+                installed into <cde>vendor/bin</cde>. It finds its settings in
+                <cde>phpunit.xml</cde>.</part
+            >
+        </breakdown>
         <p>
             Thirteen dots and <cde>OK (13 tests, 15 assertions)</cde>: nine test methods, one of
             them run five times, and no mail server anywhere. Now break the code the way you did in
@@ -227,7 +235,8 @@ Tests: 13, Assertions: 15, Failures: 1.</code-block>
 
         <p>
             Half the tests in this lesson were about links someone tampered with. Everything that
-            comes from outside your code is like that. Next, in Security: never trust input.
+            comes from outside your code is like that. Next, in Security: never trust input. Yes,
+            that one. It finally gets a lesson of its own.
         </p>
 
         <!-- Next -->

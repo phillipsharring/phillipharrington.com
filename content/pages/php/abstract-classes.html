@@ -97,6 +97,16 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php -r 'require "Report.php"; new Report();'</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="-r"
+                >Run the PHP code that follows, right from the command line, instead of a file. No
+                <cde>&lt;?php</cde> needed.</part
+            >
+            <part code='require "Report.php"; new Report();'
+                >The code. It's in single quotes so the terminal passes it along untouched.</part
+            >
+        </breakdown>
         <p>
             <cde>Cannot instantiate abstract class Report</cde>. Then a report that forgot a method,
             <cde>broken.php</cde>:

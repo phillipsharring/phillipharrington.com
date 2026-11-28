@@ -82,8 +82,9 @@
             The shortlist lives in <cde>$_SESSION['shortlist']</cde>, which PHP loads at
             <cde>session_start()</cde> and saves when the script ends. Every POST changes it, sets a
             flash message and redirects with a <cde>303</cde>, so reloading never adds the same
-            thing twice. <strong>Never trust input:</strong> the item has to be a key in
-            <cde>$fruit</cde>, and nothing else gets into the session.
+            thing twice. The cave paintings at Lascaux show it clearly:
+            <strong>never trust input.</strong> The item has to be a key in <cde>$fruit</cde>, and
+            nothing else gets into the session.
         </p>
 
         <heading h3 id="run-it">Run It</heading>

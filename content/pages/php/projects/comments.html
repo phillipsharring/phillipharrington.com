@@ -159,6 +159,17 @@
         <code-block>for i in $(seq 1 20); do
     curl -s -o /dev/null -d name=Bot -d "body=Buy now $i http://spam.example" http://localhost:8000/naive.php
 done</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code="$(seq 1 20)"
+                ><cde>seq 1 20</cde> counts from 1 to 20, and <cde>$(...)</cde> drops its output
+                into the command, so the loop runs twenty times.</part
+            >
+            <part code='"body=Buy now $i ..."'
+                >Double quotes, so the terminal swaps in the value of <cde>$i</cde>: each comment
+                gets its own number.</part
+            >
+        </breakdown>
         <p>Reload the naive page: twenty advertisements, posted in about a second, all live.</p>
         <heading h2 id="fix-it">Fix It</heading>
         <p>

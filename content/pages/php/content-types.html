@@ -104,6 +104,10 @@
         <p>Start it the usual way:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p class="text-th-muted text-base">
+            Same as before: <cde>-p 8000:8000</cde> connects port 8000 on your computer to the
+            container's, and <cde>php -S</cde> is PHP's web server.
+        </p>
         <p>Then open each of these in your browser:</p>
         <list>
             <li><cde>http://localhost:8000/</cde>: a heading and a paragraph.</li>
@@ -124,6 +128,16 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -I "http://localhost:8000/?as=text"</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-I"
+                >Ask for the headers only (a HEAD request), and print them. No body.</part
+            >
+            <part code='"http://localhost:8000/?as=text"'
+                >The quotes keep the terminal from reading the <cde>?</cde> as one of its own
+                wildcards. Quote any URL with a query string in it.</part
+            >
+        </breakdown>
         <p>
             Notice PHP added <cde>;charset=UTF-8</cde> to the text types on its own. That comes
             next, under In PHP.

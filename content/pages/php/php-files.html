@@ -107,6 +107,13 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -e API_KEY=pretend-secret -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="-e API_KEY=pretend-secret"
+                >Set one environment variable inside the container: a name, an equals sign, a
+                value.</part
+            >
+        </breakdown>
         <p>
             Open <cde>http://localhost:8000</cde>, then view the page's source. The HTML is there,
             with the name and the time filled in, and only one of the two greetings. There's no PHP
@@ -119,6 +126,14 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -s http://localhost:8000/info.php | grep pretend-secret</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-s">Silent: no progress meter or messages from curl, just the page.</part>
+            <part code="|">Hand the page to the next command instead of the screen.</part>
+            <part code="grep pretend-secret"
+                >Print only the lines that contain <cde>pretend-secret</cde>.</part
+            >
+        </breakdown>
         <p>
             There it is, in the Environment section. On a real server, that's your database password
             and your API keys, on a page anyone can load.
@@ -131,6 +146,11 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm php:8.4-cli php -v
 docker run --rm php:8.4-cli php -m</code-block>
+        <p>New here, and no <cde>-v</cde> or <cde>-w</cde>, because neither needs your files:</p>
+        <breakdown>
+            <part code="php -v">PHP's version. (For PHP, <cde>-v</cde> means version.)</part>
+            <part code="php -m">The modules, or extensions, this PHP has built in.</part>
+        </breakdown>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
         </p>

@@ -123,6 +123,13 @@
         <code-block>curl 'http://localhost:8000/?name=Alice'
 curl --get --data-urlencode 'name=&lt;b&gt;Alice&lt;/b&gt;' http://localhost:8000/
 curl -i http://localhost:8000/too-late.php</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="--get"
+                >Put the data from <cde>--data-urlencode</cde> in the query string, as a GET,
+                instead of sending it as a POST body.</part
+            >
+        </breakdown>
         <p>
             The first says hello to Alice. The second sends HTML in the name, and gets back
             <cde>&amp;lt;b&amp;gt;Alice&amp;lt;/b&amp;gt;</cde>: escaped, so the browser shows the

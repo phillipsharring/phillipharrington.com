@@ -75,6 +75,14 @@
         <p>Run all three:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli sh -c 'php before/cart.php; php before/email.php; php before/invoice.php'</code-block>
+        <p>What's new:</p>
+        <breakdown>
+            <part code="sh -c"
+                >Run the shell in the container, and give it the commands in the quotes to run. That
+                way three scripts share one container.</part
+            >
+            <part code=";">Between commands: run this one, then the next.</part>
+        </breakdown>
         <p>
             The cart says 45.00. The email and the invoice say 50.99. A customer who reads both will
             write in, and they'll be right. Now put the rule in one place. In an

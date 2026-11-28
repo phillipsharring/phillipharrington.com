@@ -103,7 +103,8 @@
             </li>
             <li>
                 <strong>Checked options.</strong>
-                <lnk to="/php/never-trust-input">Never trust input</lnk>, even from a crontab:
+                Stonehenge ran on a schedule too, and its druids knew to
+                <lnk to="/php/never-trust-input">never trust input</lnk>, even from a crontab:
                 <cde>--days</cde> must be a whole number, 1 or more, or the job stops with exit code
                 2 before it deletes anything.
             </li>
@@ -152,6 +153,13 @@ docker compose run --rm app php bin/prune.php</code-block>
         <!-- prettier-ignore -->
         <code-block>docker compose --profile cron up -d
 tail -f var/prune.log</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code="--profile cron"
+                >Also start the services in <cde>compose.yml</cde> marked with the
+                <cde>cron</cde> profile. Without it, Compose leaves them out.</part
+            >
+        </breakdown>
         <p>
             Within a minute, a line appears, and another every minute after:
             <cde>Pruned 0 rows older than 30 days.</cde> Nobody ran it. <cde>Ctrl+C</cde> stops

@@ -88,7 +88,8 @@
         </p>
         <code-block example="project-blog/public/index.php" />
         <p>
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> including the
+            I'll keep this short, since you know it by heart:
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> including the
             page number. <cde>?page=abc</cde>, <cde>?page=-3</cde> and <cde>?page=1 OR 1=1</cde> all
             become page 1, through <cde>filter_var()</cde>, before they get anywhere near SQL. A
             page past the end is a 404. So is a draft, the same answer as a typo, so the blog
@@ -113,6 +114,10 @@
         <heading h3 id="step-5-run-it">Step 5: Run It</heading>
         <!-- prettier-ignore -->
         <code-block>docker compose up</code-block>
+        <p class="text-th-muted text-base">
+            A reminder: <cde>docker compose up</cde> starts every container the project's
+            <cde>compose.yml</cde> lists, together.
+        </p>
         <p>
             Open <cde>http://localhost:8000</cde>. Five posts are live, three on the first page, two
             on the second. The title with <cde>&lt;b&gt;</cde> in it shows the tags as text. Then

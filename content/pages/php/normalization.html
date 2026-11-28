@@ -129,6 +129,10 @@
         <!-- prettier-ignore -->
         <code-block>docker compose up -d --wait db
 docker compose exec db mysql -u app -papp-password course</code-block>
+        <p class="text-th-muted text-base">
+            As in SQL: start the database in the background, then open <cde>mysql</cde> inside its
+            container.
+        </p>
         <p>
             Alice gets a new email address. In the flat table, code that updates "the order she's
             looking at" changes one row:
@@ -197,8 +201,9 @@ GROUP BY `customers`.`id`;</code-block>
         <list>
             <li>
                 Read the current price from <cde>products</cde>, on the server, and copy it into the
-                order. <strong>Never trust input</strong>: a price that arrives in a form is
-                whatever the visitor decided to pay.
+                order. Who remembers the rule? Now let's not see the same hands.
+                <strong>Never trust input</strong>: a price that arrives in a form is whatever the
+                visitor decided to pay.
             </li>
             <li>
                 <cde>$pdo-&gt;beginTransaction()</cde> and <cde>$pdo-&gt;commit()</cde> around a

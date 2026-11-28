@@ -122,6 +122,14 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require stripe/stripe-php</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code="composer require"
+                >Add a library to the project: download it, and write it into
+                <cde>composer.json</cde> so the project remembers it needs it.</part
+            >
+            <part code="stripe/stripe-php">The library: its maker, a slash, and its name.</part>
+        </breakdown>
         <p>
             The pages go in <cde>public</cde>. First, <cde>public/stripe.php</cde>, which sets up
             the client from the environment, the way
@@ -143,6 +151,13 @@
         <p>From another terminal, press the button the way the browser would:</p>
         <!-- prettier-ignore -->
         <code-block>curl -i -X POST http://localhost:8000/checkout.php</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-X POST"
+                >Use this method. curl sends GET unless it has data to send, so this asks for a POST
+                with no data.</part
+            >
+        </breakdown>
         <p>
             <cde>303 See Other</cde>, with a <cde>Location</cde> on
             <cde>https://checkout.stripe.com/</cde>. That's the whole of your part. stripe-mock's
@@ -231,6 +246,14 @@
         <!-- prettier-ignore -->
         <code-block>curl -d 'card_number=4242424242424242&amp;card_expiry=12/34&amp;card_cvc=123' http://localhost:8000/naive.php
 docker compose logs shop</code-block>
+        <p>What's new:</p>
+        <breakdown>
+            <part code="docker compose logs"
+                >Print what a service has written to its output so far: here, the server's
+                log.</part
+            >
+            <part code="shop">The service to read, as named in <cde>compose.yml</cde>.</part>
+        </breakdown>
         <!-- prettier-ignore -->
         <code-block>shop-1  | [Fri Nov 27 20:11:18 2026] New order: {"card_number":"4242424242424242","card_expiry":"12\/34","card_cvc":"123"}</code-block>
         <p>
@@ -257,6 +280,12 @@ docker compose logs shop</code-block>
 docker compose up -d
 curl -X POST http://localhost:8000/checkout.php
 docker compose logs shop | grep -c 4242</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="grep -c"
+                >Count the matching lines instead of printing them. <cde>0</cde> means none.</part
+            >
+        </breakdown>
         <p>
             <cde>0</cde>. There's nothing to find, because there was never anything to log. No
             check, no encryption and no cleanup job: the card number never had a way in.

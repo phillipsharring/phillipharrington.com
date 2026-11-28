@@ -91,6 +91,16 @@
         <p>Be the thief. Look at the table:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec db mysql -uapp -papp-password course -e 'SELECT email, password_hash FROM users'</code-block>
+        <p>What's new:</p>
+        <breakdown>
+            <part code="-uapp"
+                >The same as <cde>-u app</cde>. For the user name, the space is optional.</part
+            >
+            <part code="-e '...'"
+                >Run this one statement, print the result, and quit, instead of opening the
+                <cde>mysql&gt;</cde> prompt.</part
+            >
+        </breakdown>
         <!-- prettier-ignore -->
         <code-block>alice@example.com    482c811da5d5b4bc6d497ffa98491e38
 bob@example.com      482c811da5d5b4bc6d497ffa98491e38</code-block>
@@ -175,8 +185,9 @@ dave@example.com     $2y$12$...</code-block>
         <p>
             Two long hashes, different from each other, for the same password. <cde>$2y$</cde> says
             bcrypt, and <cde>12$</cde> says the cost. Point <cde>crack.php</cde> at one of those and
-            it can't even start, and if it could, it would manage a handful of guesses a second.
-            <strong>Never trust input</strong> still applies to the rest of the form: try
+            it can't even start, and if it could, it would manage a handful of guesses a second. The
+            rule they'll put on a plaque outside your house someday,
+            <strong>never trust input</strong>, still applies to the rest of the form: try
             <cde>password1234</cde>, or Carol's address in capitals, and see what you get.
         </p>
 

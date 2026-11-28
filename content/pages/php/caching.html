@@ -217,6 +217,13 @@
         <!-- prettier-ignore -->
         <code-block>curl -i -w '%{time_total}s\n' http://localhost:8000/
 curl -i -w '%{time_total}s\n' http://localhost:8000/</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-w '%{time_total}s\n'"
+                >After the response, write out this line: <cde>%{time_total}</cde> becomes how long
+                the request took, in seconds, and <cde>\n</cde> ends the line.</part
+            >
+        </breakdown>
         <p>
             The first says <cde>X-Cache: MISS</cde> and takes two seconds. The second says
             <cde>HIT</cde>, takes a few thousandths of a second, and has the same "Built at" time.
@@ -225,6 +232,10 @@ curl -i -w '%{time_total}s\n' http://localhost:8000/</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-block>
+        <p class="text-th-muted text-base">
+            <cde>-H</cde> adds a header, as in What's in the Middle. Paste your own
+            <cde>ETag</cde> where it says to.
+        </p>
         <p>
             <cde>304 Not Modified</cde>, and no page at all. The browser already has it. Now
             invalidate: throw the copy away, and ask again with the same <cde>ETag</cde>.
@@ -232,6 +243,13 @@ curl -i -w '%{time_total}s\n' http://localhost:8000/</code-block>
         <!-- prettier-ignore -->
         <code-block>rm cache/*.html
 curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="cache/*.html"
+                >The <cde>*</cde> matches any name, so this is every <cde>.html</cde> file in
+                <cde>cache</cde>. The terminal fills in the list before <cde>rm</cde> runs.</part
+            >
+        </breakdown>
         <p>
             A miss, two seconds, a new "Built at" time, so a new fingerprint, and the whole page
             comes back with <cde>200</cde>. Wait a minute without deleting anything, and the same

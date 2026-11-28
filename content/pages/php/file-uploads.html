@@ -23,8 +23,9 @@
         <p>
             <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk> was about files you should
             never let out. Uploads are the other direction: files a stranger puts on your server. A
-            profile photo, a PDF, a spreadsheet.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>, and an upload is input all the way through: the bytes, the file's name, and the type
+            profile photo, a PDF, a spreadsheet. Leonardo wrote it in his notebooks, backward, so
+            nobody would steal it:
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>, and an upload is input all the way through: the bytes, the file's name, and the type
             the browser says it is. Get it wrong in the worst way, and the stranger can run any
             command on your server.
         </p>
@@ -199,6 +200,17 @@
         <p>Upload it:</p>
         <!-- prettier-ignore -->
         <code-block>curl -F 'photo=@attack/proof.php' http://localhost:8000/naive.php</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-F"
+                >Send a form the way a file upload form does (<cde>multipart/form-data</cde>), as a
+                POST.</part
+            >
+            <part code="photo=@attack/proof.php"
+                >The field is <cde>photo</cde>, and the <cde>@</cde> means "attach this file,"
+                rather than send the text after it.</part
+            >
+        </breakdown>
         <p>
             "Saved. It's at /uploads/proof.php." The <cde>accept="image/*"</cde> on the form never
             came into it; curl isn't a browser. Now visit it:
@@ -224,6 +236,15 @@ It can read your project: README.md, attack, public, storage</code-block>
         <!-- prettier-ignore -->
         <code-block>curl -F 'photo=@attack/proof.php' http://localhost:8000/
 curl -F 'photo=@attack/proof.php;type=image/png;filename=cat.png' http://localhost:8000/</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code=";type=image/png"
+                >Claim a content type for the file. curl sends whatever you say.</part
+            >
+            <part code=";filename=cat.png"
+                >Claim a filename, in place of the file's real name.</part
+            >
+        </breakdown>
         <p>
             Both get "That is not a PNG, JPEG or GIF," with a 422. The name and type were lies, and
             <cde>finfo</cde> read the bytes instead: <cde>text/x-php</cde>. Then the harder one,
@@ -233,6 +254,17 @@ curl -F 'photo=@attack/proof.php;type=image/png;filename=cat.png' http://localho
         <!-- prettier-ignore -->
         <code-block>printf 'GIF89a&lt;?php echo "This GIF just ran as PHP."; ?&gt;\n' &gt; attack/polyglot.gif
 curl -F 'photo=@attack/polyglot.gif' http://localhost:8000/</code-block>
+        <p>What's new:</p>
+        <breakdown>
+            <part code="printf '...\n'"
+                >Print the text in the quotes. The <cde>\n</cde> at the end becomes a new
+                line.</part
+            >
+            <part code="> attack/polyglot.gif"
+                >Send what was printed into that file instead of the screen, replacing anything
+                already in it.</part
+            >
+        </breakdown>
         <p>
             "Saved." It got through: to <cde>finfo</cde> and <cde>getimagesize()</cde>, it's a GIF.
             Now open the address it gave you. You get the file's bytes back, PHP code and all, as an

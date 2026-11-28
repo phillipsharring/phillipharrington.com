@@ -104,6 +104,14 @@
         <code-block>for i in 1 2 3 4 5; do
   curl -s -o /dev/null -d 'name=Prize&amp;email=victim@example.com&amp;copy=on&amp;message=You won! https://spam.example' http://localhost:8000/naive.php
 done</code-block>
+        <p>Only the new parts:</p>
+        <breakdown>
+            <part code="for i in 1 2 3 4 5; do"
+                >A loop. The terminal runs everything up to <cde>done</cde> once for each number,
+                with <cde>$i</cde> set to that number.</part
+            >
+            <part code="done">The end of the loop.</part>
+        </breakdown>
         <p>
             Mailpit now has ten new messages. Five went to the owner. The other five went to
             <cde>victim@example.com</cde>, who never visited your site, with "You won!" and a link,
@@ -124,8 +132,9 @@ done</code-block>
 Stack trace:
 #0 /app/vendor/symfony/mime/Address.php(100): ...</code-block>
         <p>
-            A crash, with your file paths and a stack trace, shown to whoever asked.
-            <strong>Never trust input</strong>, not even to be the shape the form said it would be.
+            A crash, with your file paths and a stack trace, shown to whoever asked, all because the
+            code didn't not trust the address. <strong>Never trust input</strong>, not even to be
+            the shape the form said it would be.
         </p>
 
         <!-- Fix it -->
@@ -179,6 +188,12 @@ Stack trace:
         <code-block>for i in 1 2 3 4 5; do
   curl -s -o /dev/null -w '%{http_code}\n' -d 'name=Prize&amp;email=victim@example.com&amp;copy=on&amp;message=You won!' http://localhost:8000/
 done</code-block>
+        <p>What's new:</p>
+        <breakdown>
+            <part code="-w '%{http_code}\n'"
+                >After each request, print only the status code, then a new line.</part
+            >
+        </breakdown>
         <p>
             <cde>303</cde>, <cde>303</cde>, <cde>303</cde>, <cde>429</cde>, <cde>429</cde>. Three
             messages reach Mailpit, all to <cde>owner@example.com</cde>, from

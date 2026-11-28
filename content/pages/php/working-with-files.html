@@ -92,8 +92,8 @@
         </ol>
         <p>
             Step two is the one that matters. A file name from a form, a query string or a command
-            line is input, and <cde>../</cde> climbs out of any folder you put in front of it.
-            <strong>Never trust input,</strong> least of all in a path.
+            line is input, and <cde>../</cde> climbs out of any folder you put in front of it. It's
+            an ancient proverb: <strong>never trust input,</strong> least of all in a path.
         </p>
 
         <!-- Try it -->
@@ -104,6 +104,14 @@
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php notes.php add "Buy milk"
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php notes.php add "Call the café about the order"
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php notes.php list</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="add">The first argument to the script: what to do.</part>
+            <part code='"Buy milk"'
+                >The second. The quotes make the two words one argument; without them,
+                <cde>Buy</cde> and <cde>milk</cde> would arrive separately.</part
+            >
+        </breakdown>
         <p>
             There's a <cde>data/notes.txt</cde> in your folder now, one note per line. Try adding a
             note that's only spaces, and it's refused. Each note is checked before it's written, and

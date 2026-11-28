@@ -74,8 +74,8 @@
             for anything secret.
         </p>
         <p>
-            And notice step one: "a person typing."
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> Whatever you
+            And notice step one: "a person typing." As I've said before,
+            <strong><lnk to="/php/never-trust-input">never trust input</lnk>.</strong> Whatever you
             expect in <cde>$_GET</cde>, someone can send anything else instead. A missing value, an
             empty one, a word where you wanted a number, a negative page, an array where you wanted
             a string. Your code decides what to accept.
@@ -88,6 +88,9 @@
         <p>Start it the usual way:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p class="text-th-muted text-base">
+            The usual server: PHP's built-in one, in a container, on port 8000.
+        </p>
         <p>Open this, and see what PHP made of it:</p>
         <!-- prettier-ignore -->
         <code-block>http://localhost:8000/?q=red+shoes&amp;page=2&amp;tag[]=sale&amp;tag[]=new</code-block>

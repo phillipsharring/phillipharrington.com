@@ -123,12 +123,24 @@
         <p>Install it with your package manager. On a Mac:</p>
         <!-- prettier-ignore -->
         <code-block>brew install git</code-block>
+        <breakdown>
+            <part code="brew">Homebrew, the package manager.</part>
+            <part code="install">Download and install something.</part>
+            <part code="git">The thing to install.</part>
+        </breakdown>
         <p>
             Git keeps the history of your code: every change, when, and why, so you can go back.
             Check it's there:
         </p>
         <!-- prettier-ignore -->
         <code-block>git --version</code-block>
+        <breakdown>
+            <part code="git">The Git command.</part>
+            <part code="--version"
+                >Print which version is installed, and nothing else. If you get a version number,
+                it's there.</part
+            >
+        </breakdown>
         <p>
             The lessons use a few Git commands as they come up. For the whole thing, the free
             <lnk to="https://git-scm.com/book" blank>Pro Git book</lnk> is the one.
@@ -157,6 +169,14 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>tail -f some.log</code-block>
+        <breakdown>
+            <part code="tail">Show the last few lines of a file.</part>
+            <part code="-f"
+                >Follow: keep the file open and print each new line as it's written, until you press
+                <cde>Ctrl+C</cde>.</part
+            >
+            <part code="some.log">The file to watch.</part>
+        </breakdown>
         <p>
             <cde>less +F some.log</cde> does the same, and lets you scroll back:
             <cde>Ctrl+C</cde> to stop following, <cde>q</cde> to quit. lnav, from your package

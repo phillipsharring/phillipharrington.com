@@ -106,6 +106,13 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="-t public"
+                >The document root: serve files from the <cde>public</cde> folder only, not the
+                folder you started in.</part
+            >
+        </breakdown>
         <p>
             Open <cde>http://localhost:8000</cde>: the greeting, read from the <cde>.env</cde>
             the page can't serve. Now go after the secret:
@@ -113,6 +120,13 @@
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8000/.env
 curl --path-as-is http://localhost:8000/../.env</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="--path-as-is"
+                >Send the path exactly as typed. Without it, curl tidies away the
+                <cde>/../</cde> before the request ever leaves.</part
+            >
+        </breakdown>
         <p>
             Both just get the greeting again. There's no <cde>.env</cde> in <cde>public</cde>, and
             the server won't climb out of it, so it hands the unknown path to <cde>index.php</cde>,

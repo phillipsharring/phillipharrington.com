@@ -150,9 +150,24 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>cp .env.example .env</code-block>
+        <breakdown>
+            <part code="cp">Copy a file.</part>
+            <part code=".env.example">The file to copy.</part>
+            <part code=".env"
+                >The name for the copy. If a file by that name is already there, it's
+                replaced.</part
+            >
+        </breakdown>
         <p>Start the server with <cde>--env-file .env</cde>, which loads it:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 --env-file .env -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
+        <p>Only the new part:</p>
+        <breakdown>
+            <part code="--env-file .env"
+                >Read <cde>.env</cde> and set each <cde>NAME=value</cde> line in it as an
+                environment variable inside the container.</part
+            >
+        </breakdown>
         <p>
             Open <cde>http://localhost:8000</cde>: "Shirt Shop, running in development," and the
             key's last four characters, never the whole thing. Stop it, and start it again without
@@ -165,6 +180,14 @@
         <!-- prettier-ignore -->
         <code-block>git init
 git status</code-block>
+        <breakdown>
+            <part code="git init"
+                >Make this folder a Git repository, so Git starts keeping track of it.</part
+            >
+            <part code="git status"
+                >Show what Git sees: new files, changed files, and what's ready to commit.</part
+            >
+        </breakdown>
         <p>
             Git lists <cde>.env.example</cde>, <cde>.gitignore</cde> and <cde>public/</cde>, and not
             <cde>.env</cde>. It can't commit a file it doesn't see.

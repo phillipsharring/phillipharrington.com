@@ -113,6 +113,13 @@ if (false) {                        // after: expired links now work</code-block
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php harness.php
 echo $?</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="echo $?"
+                >Print the exit code of the command before it: <cde>0</cde> means it worked,
+                anything else means it didn't.</part
+            >
+        </breakdown>
         <p>
             <cde>FAIL an expired link is refused</cde>, and an exit code of 1 instead of 0. The
             harness caught the bug the moment it was made. Put the line back.

