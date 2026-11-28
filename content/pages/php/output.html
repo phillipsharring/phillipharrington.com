@@ -161,7 +161,8 @@ curl -i http://localhost:8000/too-late.php</code-block>
             </li>
             <li>
                 <cde>htmlspecialchars($value)</cde> on anything from outside that goes into HTML.
-                <xref to="/php/xss">XSS and Escaping Output</xref>, in Security, is why.
+                <xref to="/php/xss">XSS and Escaping Output</xref>, in
+                <chapter to="security">Security</chapter>, is why.
             </li>
             <li>
                 <cde>header('Content-Type: text/plain')</cde> when the output isn't HTML, so the

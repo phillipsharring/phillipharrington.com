@@ -28,6 +28,7 @@
             with no <term def="javascript">JavaScript</term> at all. Your job is the other end:
             reading what arrives, and deciding whether to believe it.
         </p>
+        <p>This lesson has no jokes. Forms are no laughing matter.</p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-form">What's a Form?</heading>
@@ -38,7 +39,7 @@
 &lt;/form&gt;</code-block>
         <list>
             <li>
-                <strong>action</strong>: where to send it. Leave it off, and it goes back to the
+                <strong>action</strong>: where to send it. Leave it off, and the form sends to the
                 page it's on.
             </li>
             <li>
@@ -47,8 +48,8 @@
                 <term def="body">body</term>. The default is <cde>get</cde>.
             </li>
             <li>
-                <strong>name</strong>, on each field: the name it's sent under. A field without a
-                name isn't sent at all.
+                <strong>name</strong>, on each field: the name its value is sent under. A field
+                without a name isn't sent at all.
             </li>
             <li>
                 <strong>label</strong>: the field's visible name. Clicking it puts you in the field,
@@ -56,24 +57,93 @@
             </li>
             <li>
                 <strong>button</strong>, with <cde>type="submit"</cde>: sends the form. A button
-                with no type inside a form submits it anyway, but say so. It's clearer, and
+                with no type inside a form submits it anyway, but it's clearer to say so, and
                 <cde>type="button"</cde> is how you make one that doesn't.
             </li>
         </list>
+        <p>
+            <cde>get</cde> and <cde>post</cde> are HTTP methods, the same ones from
+            <xref to="/php/request-and-response">Request and Response</xref>, and they're the only
+            two a form can use on its own. Each field's <cde>name</cde> is the name in its
+            <cde>name=value</cde> pair, which is why a field without one goes nowhere. And give
+            every field a label, either wrapped around it, as here, or pointing at it with
+            <cde>for=</cde> and the field's <cde>id</cde>. Then clicking the words works like
+            clicking the field, which matters most for a checkbox, whose own target is tiny.
+        </p>
 
         <heading h3 id="fields">Fields</heading>
         <p>
-            <cde>input</cde> does most of the work, changing with its <cde>type</cde>:
-            <cde>text</cde>, <cde>email</cde>, <cde>number</cde>, <cde>password</cde>,
-            <cde>checkbox</cde>, <cde>radio</cde>, <cde>date</cde>, <cde>hidden</cde> and more. Then
-            <cde>select</cde> for a list to pick from, and <cde>textarea</cde> for writing more than
-            a line.
+            <cde>input</cde> does most of the work, changing with its <cde>type</cde>. The ones
+            you'll use most:
+        </p>
+        <div class="max-w-[60ch] overflow-x-auto">
+            <table class="w-full border-collapse text-left text-base max-sm:text-sm">
+                <thead>
+                    <tr>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            type=
+                        </th>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            For
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>text</cde></td>
+                        <td class="py-2 pr-4 align-top">a line of text</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>email</cde></td>
+                        <td class="py-2 pr-4 align-top">
+                            an email address; the browser checks for an @, and phones show an @ key
+                        </td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>number</cde></td>
+                        <td class="py-2 pr-4 align-top">a number, with up and down arrows</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>password</cde></td>
+                        <td class="py-2 pr-4 align-top">text that shows as dots while you type</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>checkbox</cde></td>
+                        <td class="py-2 pr-4 align-top">on or off; sent only when checked</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>radio</cde></td>
+                        <td class="py-2 pr-4 align-top">
+                            one choice from a group that shares a name
+                        </td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>date</cde></td>
+                        <td class="py-2 pr-4 align-top">a date, with a calendar to pick from</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-2 pr-4 align-top whitespace-nowrap"><cde>hidden</cde></td>
+                        <td class="py-2 pr-4 align-top">sent, never shown, and still input</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>
+            Then <cde>select</cde> for a list to pick from, and <cde>textarea</cde> for writing more
+            than a line.
         </p>
         <p>
             The browser can check some things before it sends: <cde>required</cde>,
             <cde>type="email"</cde>, <cde>min</cde> and <cde>max</cde>, <cde>maxlength</cde>. Use
-            them. They save people a round trip. But they're a courtesy to honest visitors, not a
-            defense, as <sect>Try It</sect> will show.
+            them. They save people a round trip to the server just to find out they missed
+            something. But they're a courtesy to honest visitors, not a defense, as
+            <sect>Try It</sect> will show.
         </p>
 
         <side-story title="PHP Was Born for This">
@@ -93,30 +163,45 @@
                 it's checked, and a disabled field isn't sent at all.
             </li>
             <li>
-                For <cde>get</cde>, those pairs become the query string. For <cde>post</cde>, they
-                go in the body, labeled <cde>application/x-www-form-urlencoded</cde> (or
-                <cde>multipart/form-data</cde>, when the form uploads a file).
+                If the form's method is <cde>get</cde>, those pairs become the query string. If it's
+                <cde>post</cde>, they go in the body, labeled
+                <cde>application/x-www-form-urlencoded</cde> (or <cde>multipart/form-data</cde>,
+                when the form uploads a file).
             </li>
             <li>PHP puts them in <cde>$_GET</cde> or <cde>$_POST</cde>.</li>
         </ol>
+        <!-- prettier-ignore -->
+        <diagram caption="One form, two ways to travel. Either way, PHP gets the same pairs.">
+            <svg viewBox="0 0 650 202" role="img" aria-label="A filled-in form goes through the browser's checks, which stop it if one fails, then becomes name=value pairs. With get they go in the URL and arrive in $_GET; with post they go in the request body and arrive in $_POST." class="block h-auto w-full"><defs><marker id="ah9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><rect x="10" y="78" width="110" height="54" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="65.0" y="102.0" text-anchor="middle" font-size="13.5" font-weight="600" style="fill:var(--th-text)">The form</text><text x="65.0" y="122" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">filled in</text><rect x="150" y="78" width="130" height="54" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="215.0" y="102.0" text-anchor="middle" font-size="13.5" font-weight="600" style="fill:var(--th-text)">Browser checks</text><text x="215.0" y="122" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">a courtesy</text><rect x="310" y="78" width="130" height="54" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="375.0" y="110.0" text-anchor="middle" font-size="13.5" font-weight="400" class="font-mono" style="fill:var(--th-text)">name=value</text><rect x="470" y="14" width="170" height="54" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="555.0" y="38.0" text-anchor="middle" font-size="13.5" font-weight="600" style="fill:var(--th-text)">get</text><text x="555.0" y="58" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">in the URL → $_GET</text><rect x="470" y="142" width="170" height="54" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="555.0" y="166.0" text-anchor="middle" font-size="13.5" font-weight="600" style="fill:var(--th-text)">post</text><text x="555.0" y="186" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">in the body → $_POST</text><line x1="122" y1="105" x2="147" y2="105" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah9)"/><line x1="282" y1="105" x2="307" y2="105" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah9)"/><path d="M442,95 C455,95 455,41 467,41" style="fill:none;stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah9)"/><path d="M442,115 C455,115 455,169 467,169" style="fill:none;stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah9)"/><line x1="215" y1="134" x2="215" y2="176" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah9)"/><text x="215" y="192" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">a check fails: nothing sent</text></svg>
+        </diagram>
         <p>
             Use <cde>get</cde> for forms that look something up, like a search, so the result has a
             <term def="url">URL</term> you can share. Use <cde>post</cde> for forms that change
             something: signups, comments, orders.
         </p>
-        <p>
-            Then the part that matters most.
-            <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> Step two
-            only happens in a browser that behaves. Anyone can delete <cde>required</cde> in their
-            developer tools, or skip the page entirely and send whatever they like with curl. Every
-            check that matters runs again on the server.
-        </p>
+        <nti>
+            <p>
+                Then the part that matters most.
+                <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> Step
+                two only happens in a browser that behaves. Anyone can delete <cde>required</cde> in
+                their developer tools, send whatever they like with curl, or post to your form from
+                a page of their own (which is how CSRF works, in
+                <chapter to="security">Security</chapter>). Every check that matters must be run
+                again on the server.
+            </p>
+        </nti>
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
             A shirt order that checks everything twice: once in the browser, for courtesy, and once
-            on the server, for real. In a folder, make <cde>index.php</cde>:
+            on the server, for real. In a folder, make <cde>index.php</cde>.
+        </p>
+        <p>
+            This is the biggest example yet, about forty lines, and that's fine. Half of it is HTML
+            you already know. The PHP at the top does three things: reads the fields, checks them,
+            and decides what to say. The HTML at the bottom shows the answer and the form. Read it
+            top to bottom once, then we'll poke at it.
         </p>
         <code-block example="forms/index.php" />
         <p>Start it the usual way:</p>
@@ -124,13 +209,43 @@
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p>
             Open <cde>http://localhost:8000</cde> and press Order with nothing filled in: the
-            browser stops you. That's <cde>required</cde>. Fill it in properly, and it thanks you.
+            browser stops you. That's <cde>required</cde>.
         </p>
+        <screenshot
+            img="php/forms/name-required"
+            w="873"
+            h="567"
+            alt="The form with an empty Name field and the browser saying: Please fill out this field."
+            caption="The browser, being a courtesy."
+        />
+        <p>Fill it in properly, and it thanks you.</p>
+        <screenshot
+            img="php/forms/order-thanks"
+            w="810"
+            h="692"
+            alt="The form after ordering: Thanks, Phil: one large shirt."
+            caption="Thanks, Phil."
+        />
+        <screenshot
+            img="php/forms/order-thanks-gift-wrapped"
+            w="1142"
+            h="692"
+            alt="The form after ordering with Gift wrap checked: Thanks, Phil: one large shirt, gift wrapped."
+            caption="Had you checked the box: gift wrapped."
+        />
         <p>
             Now go around the browser, the way a script would, with a size that isn't on the list:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -d 'name=&amp;size=huge' http://localhost:8000</code-block>
+        <screenshot
+            img="php/forms/curl-server-catches-both"
+            wide
+            w="1333"
+            h="834"
+            alt="Terminal: curl posts an empty name and size huge; the HTML that comes back says: Your name, please. Pick a size from the list."
+            caption="Both caught, no browser involved."
+        />
         <p>
             The browser's checks never ran, and the server caught both problems anyway. One more:
             send a name with HTML in it.
@@ -145,12 +260,19 @@
                 data.</part
             >
         </breakdown>
+        <screenshot
+            img="php/forms/curl-html-escaped"
+            wide
+            w="1484"
+            h="834"
+            alt="Terminal: curl posts a name with HTML tags; the reply shows them escaped as &amp;lt;b&amp;gt;hi&amp;lt;/b&amp;gt;."
+            caption="The tags come back as harmless text."
+        />
         <p>
             Look at the HTML that comes back: <cde>&amp;lt;b&amp;gt;hi&amp;lt;/b&amp;gt;</cde>.
             <cde>htmlspecialchars()</cde> turned the tags into harmless text, in the message and in
-            the box. Every time you put input back into a page,
-            <term def="escaping">escape</term> it like that. The <term def="xss">XSS</term> lesson,
-            in Security, is why.
+            the box. Every time you put user input back into a page, escape it like that. The XSS
+            lesson, in <chapter to="security">Security</chapter>, is why.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -203,6 +325,37 @@
                 never trust input.
             </li>
         </list>
+
+        <nerd-out>
+            <heading h3 id="javascript-makes-it-weird">JavaScript Makes It Weird</heading>
+            <p>
+                Everything above is a form on its own. Add JavaScript and the rules loosen. A script
+                can read a field that has no <cde>name</cde>, by its <cde>id</cde> or any other way
+                it can find it, and send it anyway. It can send <cde>PUT</cde>, <cde>PATCH</cde> or
+                <cde>DELETE</cde>, which a plain form can't. It can submit without anyone pressing
+                the button, or send JSON instead of <cde>name=value</cde> pairs. None of it changes
+                the server's side: whatever arrives, however it got there, is still input.
+            </p>
+
+            <heading h3 id="php-at-the-top">PHP at the Top, Form at the Bottom</heading>
+            <p>
+                The example uses the most common shape there is for a PHP form, and you'll write it
+                a hundred times. One file does both jobs. The PHP at the top asks whether this
+                request is a <cde>POST</cde> (<cde>$posted</cde>), and only then reads the fields,
+                checks them, and decides what to say. When it isn't, the same variables just hold
+                their defaults, so the form shows up empty the first time and filled in with what
+                you sent after. The HTML at the bottom shows any message, then the form, which posts
+                back to the same file.
+            </p>
+            <!-- prettier-ignore -->
+            <diagram caption="One file, two visits: the first shows an empty form, the second reads what came back.">
+                <svg viewBox="0 0 650 270" role="img" aria-label="One file, index.php: PHP at the top decides whether this was a POST, and if so reads, checks and decides what to say, or else sets defaults. HTML at the bottom shows the message and the form, filled with what came in, and the form posts back to the same file." class="block h-auto w-full"><defs><marker id="ah10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><rect x="10" y="10" width="470" height="250" rx="8" style="fill:none;stroke:var(--th-border);stroke-width:1.5"/><text x="26" y="34" font-size="13" class="font-mono" style="fill:var(--th-text)">index.php</text><rect x="26" y="46" width="438" height="92" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="40" y="68" font-size="13.5" font-weight="600" style="fill:var(--th-text)">PHP at the top</text><text x="40" y="90" font-size="12.5" style="fill:var(--th-muted)">$posted: was this a POST?</text><text x="40" y="108" font-size="12.5" style="fill:var(--th-muted)">if posted: read, check, decide what to say</text><text x="40" y="126" font-size="12.5" style="fill:var(--th-muted)">not posted: set the defaults</text><rect x="26" y="150" width="438" height="94" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="40" y="172" font-size="13.5" font-weight="600" style="fill:var(--th-text)">HTML at the bottom</text><text x="40" y="194" font-size="12.5" style="fill:var(--th-muted)">the message, if there is one</text><text x="40" y="212" font-size="12.5" style="fill:var(--th-muted)">the form, its fields filled with what came in</text><text x="40" y="230" font-size="12.5" style="fill:var(--th-muted)">a submit button that posts back to this same file</text><path d="M466,214 C540,214 540,92 468,92" style="fill:none;stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah10)"/><text x="560" y="146" text-anchor="start" font-size="12" style="fill:var(--th-muted)">submit</text><text x="560" y="162" text-anchor="start" font-size="12" style="fill:var(--th-muted)">posts back</text></svg>
+            </diagram>
+        </nerd-out>
+
+        <!-- RANT (Phillip's to write): form fields, ESPECIALLY CHECKBOXES, with no label
+             connected to them. Tiny checkboxes are tiny targets; a connected label makes the
+             words clickable too. See notes in ~/Claude/php-course/read-through-notes.md. -->
 
         <!-- $2 tip -->
         <two-dollars title="Pick the right input type">

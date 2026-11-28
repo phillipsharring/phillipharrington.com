@@ -191,7 +191,7 @@ VALUES ('bo@example.com', 'Bo');</code-block>
             <li>
                 Deletes change things, so they come from a <cde>POST</cde>
                 <term def="form">form</term>, never a link. <xref to="/php/csrf">CSRF</xref>, in
-                Security, is why.
+                <chapter to="security">Security</chapter>, is why.
             </li>
             <li>
                 With soft deletes, add <cde>WHERE `deleted_at` IS NULL</cde> to every query. A view

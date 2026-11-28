@@ -1,0 +1,19 @@
+<!-- A screenshot in a lesson: centered, small by default (a browser window),
+     or as wide as the text with wide (a terminal, where the words need room).
+     img= is the path under /img without .webp; it expects name.webp and
+     name-400.webp. Links to the full-size image. -->
+<figure class="mx-auto w-full space-y-2 [[#if wide]]max-w-[60ch][[else]]max-w-sm[[/if]]">
+    <a href="/img/[[img]].webp" class="block">
+        <img
+            src="/img/[[img]].webp"
+            srcset="/img/[[img]]-400.webp 400w, /img/[[img]].webp [[w]]w"
+            sizes="[[#if wide]](min-width: 700px) 650px, 100vw[[else]]384px[[/if]]"
+            width="[[w]]"
+            height="[[h]]"
+            alt="[[alt]]"
+            loading="lazy"
+            class="border-th-border-strong w-full rounded-lg border"
+        />
+    </a>
+    <figcaption class="text-th-sub text-center font-serif italic">[[caption]]</figcaption>
+</figure>
