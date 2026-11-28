@@ -51,7 +51,7 @@
             </li>
             <li>
                 <strong>404</strong>: the status code sent back. From
-                <lnk to="/php/request-and-response">Request and Response</lnk>.
+                <xref to="/php/request-and-response">Request and Response</xref>.
             </li>
             <li><strong>24</strong>: the size of the response body, in bytes.</li>
             <li>
@@ -78,8 +78,8 @@
         <p>
             The web server's own problems: a file it couldn't open, a setting it didn't like, or,
             most often, PHP not answering. When a visitor gets a <cde>502</cde> or
-            <cde>504</cde> from <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>, this
-            is where the server says why.
+            <cde>504</cde> from <xref to="/php/whats-in-the-middle">What's in the Middle</xref>,
+            this is where the server says why.
         </p>
 
         <heading h3 id="phps-error-log">PHP's Error Log</heading>
@@ -93,8 +93,9 @@
         </p>
         <p>
             The official PHP Docker images ship with no settings file at all, so PHP's defaults
-            apply: errors displayed, and not logged. The Try It turns that around. The full story of
-            errors is in <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>.
+            apply: errors displayed, and not logged. The <sect>Try It</sect> turns that around. The
+            full story of errors is in
+            <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref>.
         </p>
 
         <!-- How it works -->
@@ -147,8 +148,8 @@ docker compose up</code-block>
         <!-- prettier-ignore -->
         <code-block>tail -f logs/access.log</code-block>
         <p class="text-th-muted text-base">
-            From <lnk to="/php/tools#reading-logs">Tools</lnk>: <cde>tail -f</cde> prints new lines
-            as they're written, until <cde>Ctrl+C</cde>.
+            From <xref to="/php/tools#reading-logs">Tools</xref>: <cde>tail -f</cde> prints new
+            lines as they're written, until <cde>Ctrl+C</cde>.
         </p>
         <p>And in a third, make some requests:</p>
         <!-- prettier-ignore -->
@@ -198,7 +199,7 @@ curl http://localhost:8000/</code-block>
             terminal stops both.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -228,8 +229,8 @@ curl http://localhost:8000/</code-block>
                 string, the user agent and the referrer are whatever the client sent.
                 <strong>Never trust input,</strong> and a log is full of it: escape it before you
                 show a log in a page, and don't let it into anything that runs. The
-                <lnk to="/php/never-trust-input">Never Trust Input</lnk> lesson, and the Log Viewer
-                project, come back to this.
+                <xref to="/php/never-trust-input">Never Trust Input</xref> lesson, and the Log
+                Viewer project, come back to this.
             </li>
             <li>
                 <strong>Query strings are logged.</strong> Anything in a URL ends up in access logs,
@@ -286,9 +287,9 @@ curl http://localhost:8000/</code-block>
         </two-dollars>
 
         <p>
-            In the Try It, nginx handed every request to PHP's built-in server, which is for
-            development only. Real servers do it differently. Next: How PHP Actually Runs: nginx and
-            PHP-FPM.
+            In the <sect>Try It</sect>, nginx handed every request to PHP's built-in server, which
+            is for development only. Real servers do it differently. Next: How PHP Actually Runs:
+            nginx and PHP-FPM.
         </p>
 
         <!-- Next -->

@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/selecting-data">Selecting Data</lnk> read rows and left them alone.
+            <xref to="/php/selecting-data">Selecting Data</xref> read rows and left them alone.
             <cde>UPDATE</cde> changes them: a new price, a new email address, one fewer in stock.
             It's the statement with the most famous mistake in SQL, and the mistake is a missing
             line. Leave off the <cde>WHERE</cde>, and it changes every row in the table, instantly,
@@ -138,7 +138,7 @@ SET `price_cents` = 0;</code-block>
         <p>
             Refused: <cde>You are using safe update mode</cde>. Type <cde>exit</cde>, and open it
             again without the option. This time, start a transaction first, which holds the change
-            until you say otherwise (<lnk to="/php/transactions">Transactions</lnk> has the
+            until you say otherwise (<xref to="/php/transactions">Transactions</xref> has the
             details):
         </p>
         <!-- prettier-ignore -->
@@ -165,7 +165,7 @@ FROM `products`;</code-block>
             <cde>exit</cde>, and <cde>docker compose down -v</cde> when you're done.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->

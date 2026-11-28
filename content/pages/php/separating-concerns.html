@@ -106,9 +106,9 @@ docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0
         <p>
             <cde>http://localhost:8000</cde> shows the same three posts both times: newest first, no
             draft, nothing from the future, the café spelled right (UTF-8 in the file and in the
-            page's <cde>meta charset</cde>; see <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>),
-            and the script tag printed as harmless text. The difference is what you can do now. Make
-            <cde>after/check.php</cde>:
+            page's <cde>meta charset</cde>; see
+            <xref to="/php/text-and-utf-8">Text and UTF-8</xref>), and the script tag printed as
+            harmless text. The difference is what you can do now. Make <cde>after/check.php</cde>:
         </p>
         <code-block example="separating-concerns/after/check.php" />
         <!-- prettier-ignore -->
@@ -119,7 +119,7 @@ docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0
             and something to read the HTML.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -128,7 +128,7 @@ docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0
             <li>
                 <strong>Functions or classes</strong> for reading and deciding, in files that only
                 declare (see
-                <lnk to="/php/declaring-vs-causing">Declaring Symbols vs. Causing Changes</lnk>).
+                <xref to="/php/declaring-vs-causing">Declaring Symbols vs. Causing Changes</xref>).
             </li>
             <li>
                 <strong>A plain PHP file as a template</strong>, using <cde>&lt;?= ?&gt;</cde> and
@@ -137,13 +137,13 @@ docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0
             </li>
             <li>
                 <strong><cde>public/</cde> for the entry point only</strong>, and everything else
-                beside it, out of reach, as in <lnk to="/php/document-root">Document Root</lnk>.
+                beside it, out of reach, as in <xref to="/php/document-root">Document Root</xref>.
             </li>
             <li>
                 <strong>Check the data where it's read.</strong> <cde>loadPosts()</cde> treats the
                 file as input: a row without a title is skipped, and a missing
                 <cde>draft</cde> counts as a draft.
-                <lnk to="/php/never-trust-input">Never trust input</lnk>, even a file you wrote.
+                <xref to="/php/never-trust-input">Never trust input</xref>, even a file you wrote.
             </li>
         </list>
 
@@ -159,7 +159,7 @@ docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0
             <li>
                 <strong>Escaping belongs to showing.</strong> Don't store titles pre-escaped, or
                 escape them in the rules. The template knows it's writing HTML, so the template
-                escapes, every time; see <lnk to="/php/xss">XSS and Escaping Output</lnk>.
+                escapes, every time; see <xref to="/php/xss">XSS and Escaping Output</xref>.
             </li>
             <li>
                 <strong>More files isn't the goal.</strong> A twenty-line page doesn't need three

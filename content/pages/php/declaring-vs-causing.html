@@ -58,7 +58,7 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 Files that declare hold your functions and classes. One class per file, once you use
-                <lnk to="/php/autoloading">Composer's autoloader</lnk>.
+                <xref to="/php/autoloading">Composer's autoloader</xref>.
             </li>
             <li>
                 A few files cause: the entry points, like <cde>public/index.php</cde> or a
@@ -110,7 +110,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/page.php</code-bloc
             nav bar, its settings and its log line, because the page asked for them.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -130,8 +130,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/page.php</code-bloc
             </li>
             <li>
                 PHP_CodeSniffer's PSR-12 check, from
-                <lnk to="/php/coding-standards">Coding Standards</lnk>, warns about a file that does
-                both.
+                <xref to="/php/coding-standards">Coding Standards</xref>, warns about a file that
+                does both.
             </li>
         </list>
 
@@ -148,7 +148,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/page.php</code-bloc
                 <strong>A constructor that connects is a side effect too.</strong> A class whose
                 constructor opens a database connection does it the moment anything makes one. Pass
                 the connection in instead; that's
-                <lnk to="/php/dependency-injection">Dependency Injection</lnk>.
+                <xref to="/php/dependency-injection">Dependency Injection</xref>.
             </li>
             <li>
                 <strong><cde>declare(strict_types=1)</cde> isn't a side effect.</strong> It's a

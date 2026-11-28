@@ -156,7 +156,7 @@ FROM `subscribers`;</code-block>
             </p>
         </nti>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -165,8 +165,8 @@ FROM `subscribers`;</code-block>
             <li>
                 <cde>$pdo-&gt;prepare('INSERT ... VALUES (?, ?)')</cde>, then
                 <cde>execute([$email, $name])</cde>. Every value from outside goes in as a
-                placeholder. <lnk to="/php/never-trust-input">Never trust input</lnk>, and never
-                glue it into the SQL; <lnk to="/php/sql-injection">SQL Injection</lnk> shows why.
+                placeholder. <xref to="/php/never-trust-input">Never trust input</xref>, and never
+                glue it into the SQL; <xref to="/php/sql-injection">SQL Injection</xref> shows why.
             </li>
             <li>
                 <cde>$pdo-&gt;lastInsertId()</cde> returns the new id, as a string. Call it right
@@ -210,7 +210,7 @@ FROM `subscribers`;</code-block>
                 <strong>Capitals count as the same email.</strong> With the default collation,
                 <cde>ALICE@EXAMPLE.COM</cde> is a duplicate of <cde>alice@example.com</cde>, and the
                 upsert updates her row.
-                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk> is
+                <xref to="/php/character-sets-and-collation">Character Sets and Collation</xref> is
                 why.
             </li>
         </list>

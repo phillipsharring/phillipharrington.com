@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/pdo">Working with a Database</lnk> sent queries from PHP and got rows
+            <xref to="/php/pdo">Working with a Database</xref> sent queries from PHP and got rows
             back. The queries themselves were strings in another language: SQL. This section is
             about that language, and about the database on the other end. PHP's job is small: hand
             SQL to the database, safely, and do something with what comes back. Most of the real
@@ -204,7 +204,7 @@ WHERE `title` = 'Beloved';</code-block>
         <p>
             Five books, oldest first, and <cde>Charlotte Brontë</cde> with her accent intact,
             because every hop (the file, the connection, the table) is UTF-8.
-            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> is why that matters, and Character
+            <xref to="/php/text-and-utf-8">Text and UTF-8</xref> is why that matters, and Character
             Sets and Collation is the database's side of it. Then try
             <cde>books.php "1900 OR 1=1"</cde>: it refuses. The year came from the command line, and
             <strong>never trust input</strong>, so it's checked before it goes anywhere near the
@@ -221,7 +221,7 @@ WHERE `title` = 'Beloved';</code-block>
             >
         </breakdown>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -253,9 +253,9 @@ WHERE `title` = 'Beloved';</code-block>
             <li>
                 <strong>Never build SQL out of input.</strong> Gluing a value from a form or a URL
                 into the SQL string lets whoever sent it rewrite your query.
-                <lnk to="/php/never-trust-input">Never trust input</lnk>: use placeholders, always.
-                <lnk to="/php/sql-injection">SQL Injection</lnk>, in Security, shows what happens if
-                you don't.
+                <xref to="/php/never-trust-input">Never trust input</xref>: use placeholders,
+                always. <xref to="/php/sql-injection">SQL Injection</xref>, in Security, shows what
+                happens if you don't.
             </li>
             <li>
                 <strong>Single quotes for text, backticks for names.</strong> MySQL also accepts

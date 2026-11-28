@@ -39,7 +39,8 @@
             <li>
                 <strong>script-src 'self'</strong>: scripts only from files on your own site. An
                 inline <cde>&lt;script&gt;</cde> in the page, or an <cde>onclick</cde> attribute, is
-                refused. So a script that an <lnk to="/php/xss">XSS</lnk> hole lets in doesn't run.
+                refused. So a script that an <xref to="/php/xss">XSS</xref> hole lets in doesn't
+                run.
             </li>
             <li><strong>default-src 'self'</strong>: everything else, from your site only.</li>
             <li><strong>object-src 'none'</strong>: no plugins.</li>
@@ -58,8 +59,8 @@
 
         <heading h3 id="x-content-type-options">X-Content-Type-Options</heading>
         <p>
-            <cde>nosniff</cde>: use the <lnk to="/php/content-types">Content-Type</lnk> I sent, and
-            don't guess. Without it, a browser can decide an uploaded "image" looks like HTML or
+            <cde>nosniff</cde>: use the <xref to="/php/content-types">Content-Type</xref> I sent,
+            and don't guess. Without it, a browser can decide an uploaded "image" looks like HTML or
             script and treat it as such.
         </p>
 
@@ -67,8 +68,8 @@
         <p>
             HSTS: from now on, for this long, only ever reach this site over HTTPS. After one visit,
             the browser changes any <cde>http://</cde> link to <cde>https://</cde> itself, before
-            anything is sent. See <lnk to="/php/http">HTTP, HTTPS and TLS</lnk>. Browsers ignore it
-            when it arrives over plain HTTP.
+            anything is sent. See <xref to="/php/http">HTTP, HTTPS and TLS</xref>. Browsers ignore
+            it when it arrives over plain HTTP.
         </p>
 
         <heading h3 id="referrer-and-permissions">Referrer-Policy and Permissions-Policy</heading>
@@ -148,7 +149,7 @@ curl -I http://localhost:8000/</code-block>
             <cde>app.js</cde> runs on both, because it's a file on your own site.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -157,7 +158,7 @@ curl -I http://localhost:8000/</code-block>
             <li>
                 <cde>header('Name: value')</cde>, before any output. One function that sends them
                 all, called at the top of every page, or once in a
-                <lnk to="/php/single-point-of-entry">single point of entry</lnk>.
+                <xref to="/php/single-point-of-entry">single point of entry</xref>.
             </li>
             <li>
                 <cde>header_remove('X-Powered-By')</cde>, or <cde>expose_php = Off</cde> in
@@ -198,7 +199,7 @@ curl -I http://localhost:8000/</code-block>
             <li>
                 <strong>Headers go on every response, files included.</strong>
                 <cde>nosniff</cde> matters most on uploads and downloads, like the images from
-                <lnk to="/php/file-uploads">File Uploads</lnk>.
+                <xref to="/php/file-uploads">File Uploads</xref>.
             </li>
             <li>
                 <strong>Skip <cde>X-XSS-Protection</cde>.</strong> It controlled a filter browsers
@@ -223,9 +224,9 @@ curl -I http://localhost:8000/</code-block>
         <p>
             (In a real attack this page is on another site. There, a session cookie with
             <cde>SameSite=Lax</cde>, from
-            <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>, isn't sent to
-            the frame at all, which helps. But not every page needs a login to do damage, and a page
-            on your own site, or a sibling subdomain, gets the cookie anyway.)
+            <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref>, isn't sent
+            to the frame at all, which helps. But not every page needs a login to do damage, and a
+            page on your own site, or a sibling subdomain, gets the cookie anyway.)
         </p>
 
         <heading h3 id="fix-it">Fix It</heading>

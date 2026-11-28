@@ -21,12 +21,12 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/strings">Strings</lnk> said a string is a row of bytes, and quietly
+            <xref to="/php/strings">Strings</xref> said a string is a row of bytes, and quietly
             assumed one byte is one letter. That's true for plain English, and false for "café," for
             "Zoë," for Chinese, for emoji, and for a good share of your visitors' names. This is the
             whole story: what the bytes mean, how PHP counts them, and the four places on every trip
-            where text gets mangled. <lnk to="/php/content-types">Content Types</lnk> introduced the
-            <cde>charset</cde>; this is what it's for.
+            where text gets mangled. <xref to="/php/content-types">Content Types</xref> introduced
+            the <cde>charset</cde>; this is what it's for.
         </p>
 
         <!-- What is/are -->
@@ -99,7 +99,7 @@
             <li>
                 <strong>The database.</strong> The table, and the connection to it, both have to be
                 UTF-8. In MySQL that's <cde>utf8mb4</cde>, the subject of
-                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk>.
+                <xref to="/php/character-sets-and-collation">Character Sets and Collation</xref>.
             </li>
             <li>
                 <strong>The page again, or an email.</strong> Out it goes, with the charset said
@@ -145,7 +145,7 @@ curl 'http://localhost:8000/?name=caf%E9'</code-block>
             the page or a database.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -211,7 +211,7 @@ curl 'http://localhost:8000/?name=caf%E9'</code-block>
                 <strong>The invisible BOM.</strong> Some editors start a UTF-8 file with three
                 bytes, <cde>EF BB BF</cde>, called a byte order mark. In a PHP file, they're output
                 before <cde>&lt;?php</cde>, and headers already sent, as in
-                <lnk to="/php/output">Output</lnk>. Save as UTF-8 without a BOM.
+                <xref to="/php/output">Output</xref>. Save as UTF-8 without a BOM.
             </li>
         </list>
 

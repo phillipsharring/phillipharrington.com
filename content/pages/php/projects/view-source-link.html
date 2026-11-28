@@ -36,16 +36,16 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/query-strings">Query Strings</lnk>: which file to show, in
+                <xref to="/php/query-strings">Query Strings</xref>: which file to show, in
                 <cde>?file=</cde>.
             </li>
             <li>
-                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: the query string is the
+                <xref to="/php/never-trust-input">Never Trust Input</xref>: the query string is the
                 visitor's, not yours.
             </li>
-            <li><lnk to="/php/arrays">Arrays</lnk>: an allow list, as keys and values.</li>
+            <li><xref to="/php/arrays">Arrays</xref>: an allow list, as keys and values.</li>
             <li>
-                <lnk to="/php/request-and-response">Request and Response</lnk>: a 404 when the
+                <xref to="/php/request-and-response">Request and Response</xref>: a 404 when the
                 answer is no.
             </li>
         </list>
@@ -95,7 +95,7 @@ curl 'http://localhost:8000/source.php?file=/etc/passwd'</code-block>
             one is a file as far as this code is concerned.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Gotchas -->
@@ -106,7 +106,7 @@ curl 'http://localhost:8000/source.php?file=/etc/passwd'</code-block>
                 <cde>highlight_file(__DIR__ . '/' . $_GET['file'])</cde>, shows your page, and also
                 <cde>../.env</cde>, <cde>/etc/passwd</cde>, and every other file the server can
                 read. That's path traversal, and the
-                <lnk to="/php/projects/log-viewer">Log Viewer</lnk> project breaks it on purpose.
+                <xref to="/php/projects/log-viewer">Log Viewer</xref> project breaks it on purpose.
                 Checking for <cde>..</cde> is a deny list, and deny lists miss things. The allow
                 list can't.
             </li>
@@ -114,8 +114,8 @@ curl 'http://localhost:8000/source.php?file=/etc/passwd'</code-block>
                 <strong>Showing the source shows everything in it.</strong> A password or API key in
                 a file on the list is now on the page. Keep secrets in settings outside
                 <cde>public</cde>, as in
-                <lnk to="/php/configuration-and-the-environment"
-                    >Configuration and the Environment</lnk>, and never put a settings file on the list.
+                <xref to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</xref>, and never put a settings file on the list.
             </li>
             <li>
                 <strong>Source isn't the whole story.</strong> If a page includes other files, its

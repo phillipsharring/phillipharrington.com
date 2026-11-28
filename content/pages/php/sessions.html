@@ -24,9 +24,9 @@
         <!-- Intro -->
         <p>
             HTTP forgets you the moment it answers. Every request arrives alone, with no memory of
-            the one before. <lnk to="/php/cookies">Cookies</lnk> gave the browser a way to remember
-            a little. Sessions put the memory on the server instead, where the visitor can't read it
-            or change it, and hand the browser only a ticket.
+            the one before. <xref to="/php/cookies">Cookies</xref> gave the browser a way to
+            remember a little. Sessions put the memory on the server instead, where the visitor
+            can't read it or change it, and hand the browser only a ticket.
         </p>
 
         <!-- What is/are -->
@@ -124,12 +124,12 @@ curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
                 Visit number 1, and a fresh id in <cde>Set-Cookie</cde>. That's
                 <cde>use_strict_mode</cde> at work: PHP refuses an id it didn't make. It's carved
                 over the door of every server room:
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> not even
-                the ticket.
+                <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong> not
+                even the ticket.
             </p>
         </nti>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -164,8 +164,8 @@ curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
             <li>
                 <strong>The id is the key to the account.</strong> Whoever has it is that visitor,
                 as far as PHP knows. That's why the cookie needs its flags, and why a login gets a
-                new id. <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>, in
-                Security, is all about it.
+                new id. <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref>,
+                in Security, is all about it.
             </li>
             <li>
                 <strong>Sessions lock.</strong> While one request has a visitor's session open, the
@@ -174,9 +174,9 @@ curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
             </li>
             <li>
                 <strong>Files live on one server.</strong> Behind a load balancer, from
-                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>, the next request may
-                land on a server that has never heard of you. Busy sites keep sessions in a database
-                or a cache like Redis instead.
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>, the next request
+                may land on a server that has never heard of you. Busy sites keep sessions in a
+                database or a cache like Redis instead.
             </li>
             <li>
                 <strong>Sessions expire.</strong> By default PHP treats a session as garbage after

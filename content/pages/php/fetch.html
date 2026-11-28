@@ -42,7 +42,7 @@ const body = await response.json();</code-block>
         <p>
             <cde>await</cde> means wait for the answer without freezing the page. The response has a
             status, headers and a body, exactly the ones from
-            <lnk to="/php/request-and-response">Request and Response</lnk>.
+            <xref to="/php/request-and-response">Request and Response</xref>.
         </p>
 
         <heading h3 id="whats-ajax">What's AJAX?</heading>
@@ -80,8 +80,8 @@ const body = await response.json();</code-block>
                 From PHP's side, nothing is new. It's a request, with a method, a query string,
                 maybe a body. Your JavaScript made it, but nothing proves that: anyone can call the
                 same URL with curl and send whatever they like. Stop me if you've heard this one:
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> even from
-                your own scripts. An endpoint checks everything a form handler checks.
+                <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong> even
+                from your own scripts. An endpoint checks everything a form handler checks.
             </p>
         </nti>
 
@@ -112,7 +112,7 @@ const body = await response.json();</code-block>
             checked <cde>response.ok</cde> instead of assuming.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -129,11 +129,11 @@ const body = await response.json();</code-block>
             <li>
                 A <cde>fetch()</cde> that sends a <cde>FormData</cde> body arrives in
                 <cde>$_POST</cde>, like a form. One that sends JSON doesn't: it's in
-                <cde>php://input</cde>, and the <lnk to="/php/json">JSON</lnk> lesson reads it.
+                <cde>php://input</cde>, and the <xref to="/php/json">JSON</xref> lesson reads it.
             </li>
             <li>
                 A <cde>fetch()</cde> that changes something is a request that changes something:
-                POST, and the same <lnk to="/php/csrf">CSRF</lnk> protection as a form.
+                POST, and the same <xref to="/php/csrf">CSRF</xref> protection as a form.
             </li>
         </list>
 

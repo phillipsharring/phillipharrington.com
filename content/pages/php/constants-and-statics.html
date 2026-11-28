@@ -126,7 +126,7 @@
             1, every time. Each request gets a fresh PHP, statics and all.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- When not to -->
@@ -141,7 +141,7 @@
             So in this course, and in code you'll be glad you wrote, the rule is: no static methods
             on your own classes. Give an object what it needs, through its constructor, and call
             methods on that.
-            <lnk to="/php/dependency-injection">Dependency Injection</lnk> is that whole idea.
+            <xref to="/php/dependency-injection">Dependency Injection</xref> is that whole idea.
         </p>
         <p>
             You'll still see statics everywhere. Plenty of libraries and frameworks use them,
@@ -183,7 +183,7 @@
             <li>
                 <strong>Statics don't remember visitors.</strong> They reset every request, so
                 they're no place for a hit counter or a cart. That's what
-                <lnk to="/php/sessions">sessions</lnk> and databases are for.
+                <xref to="/php/sessions">sessions</xref> and databases are for.
             </li>
             <li>
                 <strong>Except when they do.</strong> Some servers, like FrankenPHP's worker mode,
@@ -198,7 +198,7 @@
             <li>
                 <strong>A constant is not a secret.</strong> <cde>const API_KEY = '...'</cde> puts
                 the key in your code, and your code goes in git.
-                <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk> has the fix.
+                <xref to="/php/secrets-out-of-code">Secrets Out of Code</xref> has the fix.
             </li>
         </list>
 
@@ -216,7 +216,7 @@
                 When you catch yourself typing a bare number, like 50, 900 or 3, stop and give it a
                 class constant: <cde>private const MAX_LOGIN_ATTEMPTS = 10;</cde>. The name explains
                 it, the next change is one line, and a search finds every use.
-                <lnk to="/php/magic-numbers">Magic Numbers in Code</lnk> has more.
+                <xref to="/php/magic-numbers">Magic Numbers in Code</xref> has more.
             </p>
         </two-dollars>
 

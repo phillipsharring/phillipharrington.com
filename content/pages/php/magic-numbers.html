@@ -100,11 +100,11 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
             <cde>9</cde>, which isn't anything, and <cde>before.php</cde> calls it "paid" anyway,
             because "not 3" was all it checked. <cde>after.php</cde> asks the enum, gets
             <cde>null</cde> back from <cde>tryFrom()</cde>, and says so. Rows from the database are
-            input like any other: <lnk to="/php/never-trust-input">never trust input</lnk>, even
+            input like any other: <xref to="/php/never-trust-input">never trust input</xref>, even
             your own.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -147,8 +147,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
                 <strong>Some "constants" are really settings.</strong> A tax rate depends on where
                 you are and changes when the law does. Values like that belong in configuration, not
                 in code; see
-                <lnk to="/php/configuration-and-the-environment"
-                    >Configuration and the Environment</lnk>.
+                <xref to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</xref>.
             </li>
             <li>
                 <strong>86400 isn't always a day.</strong> In a time zone with daylight saving time,

@@ -21,8 +21,8 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/updating-data">Updating Data</lnk> ended with every price in the shop set
-            to zero, and a <cde>ROLLBACK</cde> to put them back. <cde>DELETE</cde> has the same
+            <xref to="/php/updating-data">Updating Data</xref> ended with every price in the shop
+            set to zero, and a <cde>ROLLBACK</cde> to put them back. <cde>DELETE</cde> has the same
             missing-<cde>WHERE</cde> mistake, and a worse result: the rows are gone, along with
             anything set up to go with them. This lesson is about deleting exactly what you mean to,
             and about the times you shouldn't delete at all.
@@ -42,7 +42,7 @@ WHERE `id` = 1;</code-block>
         <heading h3 id="what-happens-to-the-children">What Happens to the Children</heading>
         <p>
             When a row has other rows pointing at it with a foreign key, as in
-            <lnk to="/php/relating-tables">Relating Tables</lnk>, the key says what happens when
+            <xref to="/php/relating-tables">Relating Tables</xref>, the key says what happens when
             it's deleted:
         </p>
         <list>
@@ -164,7 +164,7 @@ VALUES ('bo@example.com', 'Bo');</code-block>
             other price of soft deletes. <cde>docker compose down -v</cde> when you're done.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -182,7 +182,7 @@ VALUES ('bo@example.com', 'Bo');</code-block>
             </li>
             <li>
                 Deletes change things, so they come from a <cde>POST</cde> form, never a link.
-                <lnk to="/php/csrf">CSRF</lnk>, in Security, is why.
+                <xref to="/php/csrf">CSRF</xref>, in Security, is why.
             </li>
             <li>
                 With soft deletes, add <cde>WHERE `deleted_at` IS NULL</cde> to every query. A view

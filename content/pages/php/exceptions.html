@@ -27,8 +27,8 @@
             that "zero people" is nonsense, but it has no idea whether it's running in a web page, a
             command, or a test, so it can't decide what to show anyone. It needs a way to stop and
             hand the problem to whoever called it. That's an exception.
-            <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk> introduced them;
-            this lesson is what to do with one.
+            <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref> introduced
+            them; this lesson is what to do with one.
         </p>
 
         <!-- What is/are -->
@@ -58,7 +58,7 @@
             <li>
                 <strong>Error</strong>: mistakes in the code itself, thrown by PHP. Calling a
                 function that doesn't exist, a class that isn't found, a <cde>TypeError</cde> from
-                <lnk to="/php/variables-and-types">strict types</lnk>,
+                <xref to="/php/variables-and-types">strict types</xref>,
                 <cde>DivisionByZeroError</cde>.
             </li>
         </list>
@@ -115,7 +115,7 @@ curl -i 'http://localhost:8000/?cents=lots&amp;people=3'</code-block>
             <cde>334, 333, 333</cde>: ten dollars, three ways, adding up to the cent. Then two 400s,
             each saying what was wrong. <cde>wholeNumber()</cde> threw a <cde>BadRequest</cde>, and
             the <cde>catch</cde> around the call turned it into an answer. That's the input check,
-            and <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: the query string is whatever anyone typed, and <cde>filter_var()</cde> takes only a
+            and <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the query string is whatever anyone typed, and <cde>filter_var()</cde> takes only a
             whole number in range. Now the unplanned one:
         </p>
         <!-- prettier-ignore -->
@@ -126,7 +126,7 @@ curl -i 'http://localhost:8000/?cents=lots&amp;people=3'</code-block>
             file, line and stack trace, where you can read it and the visitor can't.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->

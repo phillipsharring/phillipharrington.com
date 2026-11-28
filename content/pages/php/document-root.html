@@ -140,7 +140,7 @@ curl --path-as-is http://localhost:8000/../.env</code-block>
         <code-block>curl http://localhost:8000/.env</code-block>
         <p>There's your API key, for anyone who asks. That's the whole lesson in one command.</p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -162,10 +162,11 @@ curl --path-as-is http://localhost:8000/../.env</code-block>
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>Deploying the project folder as the web root.</strong> The Try It's second
-                run, for real: <cde>.env</cde>, the <cde>.git</cde> folder with your whole history,
-                logs, and everything else become downloads. Automated scanners ask every site for
-                <cde>/.env</cde> and <cde>/.git/</cde> all day long.
+                <strong>Deploying the project folder as the web root.</strong> The
+                <sect>Try It</sect>'s second run, for real: <cde>.env</cde>, the
+                <cde>.git</cde> folder with your whole history, logs, and everything else become
+                downloads. Automated scanners ask every site for <cde>/.env</cde> and
+                <cde>/.git/</cde> all day long.
             </li>
             <li>
                 <strong>Leftovers in the web root.</strong> A <cde>config.php.bak</cde> or an
@@ -179,7 +180,7 @@ curl --path-as-is http://localhost:8000/../.env</code-block>
             <li>
                 <strong>Uploads in the web root.</strong> If someone can upload a file into a served
                 folder and then visit it, they can upload a <cde>.php</cde> file and run it.
-                <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and
+                <strong><xref to="/php/never-trust-input">Never trust input</xref>,</strong> and
                 uploads are input. File Uploads, in Security, is about this.
             </li>
         </list>

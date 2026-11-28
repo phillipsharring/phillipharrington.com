@@ -36,21 +36,21 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/projects/shopping-cart">Shopping Cart</lnk>: the cart, the pricing,
+                <xref to="/php/projects/shopping-cart">Shopping Cart</xref>: the cart, the pricing,
                 and the pages, copied in
             </li>
             <li>
-                <lnk to="/php/dont-touch-cards">Don't Touch Cards</lnk>: why no card number should
+                <xref to="/php/dont-touch-cards">Don't Touch Cards</xref>: why no card number should
                 ever reach your server
             </li>
-            <li><lnk to="/php/transactions">Transactions</lnk>: an order is all or nothing</li>
+            <li><xref to="/php/transactions">Transactions</xref>: an order is all or nothing</li>
             <li>
-                <lnk to="/php/inserting-data">Inserting Data</lnk>: a row, its id, and the rows that
-                belong to it
+                <xref to="/php/inserting-data">Inserting Data</xref>: a row, its id, and the rows
+                that belong to it
             </li>
             <li>
-                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>: what ends up
-                in it
+                <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref>: what ends
+                up in it
             </li>
         </list>
 
@@ -59,7 +59,7 @@
 
         <heading h3 id="step-1-start-from-the-cart">Step 1: Start from the Cart</heading>
         <p>
-            Copy the <lnk to="/php/projects/shopping-cart">Shopping Cart</lnk> project: its
+            Copy the <xref to="/php/projects/shopping-cart">Shopping Cart</xref> project: its
             containers, <cde>composer.json</cde> and lock file, <cde>src/</cde>, the test, and both
             pages. The cart page gets one more line under the table, a link to
             <cde>/checkout.php</cde>. Then install:
@@ -96,13 +96,13 @@ CREATE TABLE order_items (
     FOREIGN KEY (order_id) REFERENCES orders (id),
     FOREIGN KEY (product_id) REFERENCES products (id)
 );</code-block>
-        <p>The whole file, with comments and one more table for Break It:</p>
+        <p>The whole file, with comments and one more table for <sect>Break It</sect>:</p>
         <code-block example="project-checkout/init.sql" />
         <list>
             <li>
                 <strong>Order items copy the name and price.</strong> This is the place to break the
-                "say it once" rule from <lnk to="/php/normalization">Normalization</lnk> on purpose:
-                the order must say what was paid, even after the mug costs $16.
+                "say it once" rule from <xref to="/php/normalization">Normalization</xref> on
+                purpose: the order must say what was paid, even after the mug costs $16.
             </li>
             <li>
                 <strong><cde>public_id</cde> is random.</strong> Order 41 in a URL invites someone
@@ -135,8 +135,8 @@ CREATE TABLE order_items (
         <nti>
             <p>
                 An email for the receipt, a name, and a button. And you couldn't possibly forget to
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk>.</strong> It reads
-                those two fields and the tokens, and nothing else. If someone adds
+                <strong><xref to="/php/never-trust-input">never trust input</xref>.</strong> It
+                reads those two fields and the tokens, and nothing else. If someone adds
                 <cde>total_cents=1</cde> or a card number to the request, nothing ever looks at it.
             </p>
         </nti>
@@ -156,7 +156,7 @@ CREATE TABLE order_items (
             still only one. Open the order's URL in a private window: 404.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->
@@ -196,7 +196,7 @@ INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34'
             Number, expiry and security code: everything needed to use the card, in two places, in
             plain text. Think about who can read those. Everyone with access to the server. Every
             backup, wherever it's copied. Whatever service you send logs to. And anyone who finds a
-            hole like the one in <lnk to="/php/projects/log-viewer">Log Viewer</lnk>. Card rules,
+            hole like the one in <xref to="/php/projects/log-viewer">Log Viewer</xref>. Card rules,
             the PCI DSS, forbid keeping the security code at all after a payment is authorized, and
             holding card numbers puts your whole server under a long list of audits.
         </p>
@@ -235,7 +235,7 @@ INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34'
             <li>
                 <strong>Taking stock at order time means giving it back.</strong> This checkout
                 takes stock when the order is placed, before payment. Orders that are never paid
-                hold stock forever, unless a <lnk to="/php/projects/cron-jobs">cron job</lnk>
+                hold stock forever, unless a <xref to="/php/projects/cron-jobs">cron job</xref>
                 cancels old unpaid orders and returns it.
             </li>
             <li>

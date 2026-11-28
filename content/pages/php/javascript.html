@@ -46,7 +46,7 @@
         <heading h3 id="the-dom">The DOM</heading>
         <p>
             The tree of elements the browser built from the HTML, from the
-            <lnk to="/php/html">HTML</lnk> lesson. JavaScript sees the page as that tree:
+            <xref to="/php/html">HTML</xref> lesson. JavaScript sees the page as that tree:
             <cde>document.getElementById('size')</cde> finds an element, and changing it changes the
             page on the spot.
         </p>
@@ -90,7 +90,7 @@
             doesn't run, and have the script read and parse it. The danger is the data itself. If a
             value contains <cde>&lt;/script&gt;</cde>, it closes the tag early, and whatever follows
             is HTML, and maybe a script of the visitor's choosing.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> not even on
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>,</strong> not even on
             its way into JavaScript.
         </p>
 
@@ -126,7 +126,7 @@
             would have read the name as HTML.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -137,7 +137,7 @@
                     >json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
                     | JSON_THROW_ON_ERROR)</cde>
                 for any data printed into a page for JavaScript. The
-                <lnk to="/php/json">JSON</lnk> lesson is the rest of it.
+                <xref to="/php/json">JSON</xref> lesson is the rest of it.
             </li>
             <li>
                 <cde>data-</cde> attributes are the other safe way, for a value or two:
@@ -156,7 +156,7 @@
         <list>
             <li>
                 <strong>Checks in JavaScript are a courtesy.</strong> Like the browser's checks in
-                <lnk to="/php/forms">Forms</lnk>, they save honest visitors a round trip, and stop
+                <xref to="/php/forms">Forms</xref>, they save honest visitors a round trip, and stop
                 nobody else. The server checks everything again.
             </li>
             <li>

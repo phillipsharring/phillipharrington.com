@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/includes">Includes</lnk> read a PHP file and ran it. Most files aren't
+            <xref to="/php/includes">Includes</xref> read a PHP file and ran it. Most files aren't
             code: logs, exports, settings, uploads, a cache. PHP reads and writes them with a few
             functions, and the functions are the easy part. The hard parts are where the file lives,
             who else can read it, and what happens when a visitor gets to choose its name.
@@ -32,8 +32,8 @@
         <p>
             A named row of bytes on disk, at a path. PHP reads them into strings and writes strings
             out to them. It doesn't care whether the bytes are text, JSON or a photo. If they're
-            text, they should be UTF-8, like everything else (<lnk to="/php/text-and-utf-8"
-                >Text and UTF-8</lnk>).
+            text, they should be UTF-8, like everything else (<xref to="/php/text-and-utf-8"
+                >Text and UTF-8</xref>).
         </p>
 
         <heading h3 id="whole-files">Whole Files at Once</heading>
@@ -134,7 +134,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php search.php /etc/passwd ro
             third the server's list of users.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -167,7 +167,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php search.php /etc/passwd ro
             </li>
             <li>
                 <cde>fgetcsv()</cde> and <cde>fputcsv()</cde>: spreadsheets, in
-                <lnk to="/php/csv">CSV</lnk>.
+                <xref to="/php/csv">CSV</xref>.
             </li>
         </list>
 
@@ -190,7 +190,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php search.php /etc/passwd ro
                 <strong>Don't write into the web root.</strong> Anything PHP writes inside
                 <cde>public/</cde> can be downloaded, or run, if it ends in <cde>.php</cde>. Keep
                 data, logs and uploads outside it, like
-                <lnk to="/php/document-root">Document Root</lnk> said.
+                <xref to="/php/document-root">Document Root</xref> said.
             </li>
             <li>
                 <strong>Never fix "Permission denied" with <cde>chmod 777</cde>.</strong> It means

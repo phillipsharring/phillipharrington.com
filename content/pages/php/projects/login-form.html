@@ -36,24 +36,24 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/rate-limiting">Rate Limiting</lnk>: the lesson behind the first fix.
+                <xref to="/php/rate-limiting">Rate Limiting</xref>: the lesson behind the first fix.
             </li>
             <li>
-                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>: strict
+                <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref>: strict
                 mode, and the session id as the key to the account.
             </li>
             <li>
-                <lnk to="/php/passwords">Passwords: password_hash() and Nothing Else</lnk>:
+                <xref to="/php/passwords">Passwords: password_hash() and Nothing Else</xref>:
                 <cde>password_verify()</cde> and <cde>password_needs_rehash()</cde>.
             </li>
             <li>
-                <lnk to="/php/projects/signup-form">Signup Form</lnk> and
-                <lnk to="/php/projects/protected-page">Protected Page</lnk>: the same setup and the
-                same habits.
+                <xref to="/php/projects/signup-form">Signup Form</xref> and
+                <xref to="/php/projects/protected-page">Protected Page</xref>: the same setup and
+                the same habits.
             </li>
             <li>
-                <lnk to="/php/expressive-response-codes"
-                    >Expressive HTTP Response Codes, and When Not to Be</lnk>: one answer for a wrong address and a wrong password.
+                <xref to="/php/expressive-response-codes"
+                    >Expressive HTTP Response Codes, and When Not to Be</xref>: one answer for a wrong address and a wrong password.
             </li>
         </list>
 
@@ -87,7 +87,7 @@
             page says "Signed in as alice@example.com." It works.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->
@@ -224,11 +224,11 @@ curl -b 'PHPSESSID=attacker-chosen-2' http://localhost:8000/account.php</code-bl
                 proxy, and fifty failures locks out the whole world. Here, even Docker shows it: the
                 guessing script runs inside the container and arrives from <cde>127.0.0.1</cde>,
                 while your browser arrives from Docker's own network, so they're counted apart. See
-                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
             <li>
                 <strong>The failures table grows.</strong> Delete rows older than the window on a
-                schedule, as in the <lnk to="/php/projects/cron-jobs">Cron Jobs</lnk> project.
+                schedule, as in the <xref to="/php/projects/cron-jobs">Cron Jobs</xref> project.
             </li>
             <li>
                 <strong>Regenerate at every change of privilege.</strong> Signing in, signing out,

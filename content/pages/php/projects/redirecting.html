@@ -37,17 +37,18 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/request-and-response">Request and Response</lnk>: status codes, the
+                <xref to="/php/request-and-response">Request and Response</xref>: status codes, the
                 <cde>Location</cde> header, Post/Redirect/Get.
             </li>
             <li>
-                <lnk to="/php/anatomy-of-a-url">Anatomy of a URL</lnk>: what makes a URL point at
+                <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>: what makes a URL point at
                 another site.
             </li>
             <li>
-                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: the destination is input.
+                <xref to="/php/never-trust-input">Never Trust Input</xref>: the destination is
+                input.
             </li>
-            <li><lnk to="/php/projects/cookies">Cookies</lnk>: the setting being saved.</li>
+            <li><xref to="/php/projects/cookies">Cookies</xref>: the setting being saved.</li>
         </list>
 
         <!-- Build it -->
@@ -56,8 +57,8 @@
         <heading h3 id="two-helpers">Two Helpers</heading>
         <p>
             <cde>src/redirect.php</cde> has <cde>redirect()</cde>, which sends the header and stops,
-            <cde>local_path()</cde>, which you'll need in Fix It, and <cde>theme()</cde>, which
-            reads the saved setting through an allow list:
+            <cde>local_path()</cde>, which you'll need in <sect>Fix It</sect>, and
+            <cde>theme()</cde>, which reads the saved setting through an allow list:
         </p>
         <code-block example="project-redirecting/src/redirect.php" />
         <p>
@@ -95,7 +96,7 @@
             Dark, and save. You land back on About. It works.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->

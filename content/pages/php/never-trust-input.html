@@ -40,25 +40,25 @@
         <list>
             <li>
                 <strong>The URL</strong>: the path and the query string, <cde>$_GET</cde>. See
-                <lnk to="/php/query-strings">Query Strings</lnk>.
+                <xref to="/php/query-strings">Query Strings</xref>.
             </li>
             <li>
                 <strong>Form fields</strong>, <cde>$_POST</cde>, hidden ones included. See
-                <lnk to="/php/forms">Forms</lnk>.
+                <xref to="/php/forms">Forms</xref>.
             </li>
             <li>
                 <strong>Cookies</strong>, <cde>$_COOKIE</cde>. You set them, but the browser sends
                 them back, and anyone can change them first. See
-                <lnk to="/php/cookies">Cookies</lnk>.
+                <xref to="/php/cookies">Cookies</xref>.
             </li>
             <li>
                 <strong>Headers</strong>, in <cde>$_SERVER['HTTP_...']</cde>: <cde>User-Agent</cde>,
                 <cde>Referer</cde>, <cde>Host</cde>, <cde>X-Forwarded-For</cde>, all of them. See
-                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
             <li>
                 <strong>Uploads</strong>, <cde>$_FILES</cde>: the file, its name and the type the
-                browser claims for it. See <lnk to="/php/file-uploads">File Uploads</lnk>.
+                browser claims for it. See <xref to="/php/file-uploads">File Uploads</xref>.
             </li>
             <li>
                 <strong>The request body</strong>, from <cde>php://input</cde>: the JSON an API
@@ -80,7 +80,7 @@
             quantity, which file to open, which row to change, what HTML goes on the page, who is
             logged in. The browser is a program the visitor controls, and so is curl. Any value it
             sends can be anything at all: missing, empty, an array, a million characters long, not
-            even valid <lnk to="/php/text-and-utf-8">UTF-8</lnk>.
+            even valid <xref to="/php/text-and-utf-8">UTF-8</xref>.
         </p>
 
         <side-story title="The Line That Was Too Long">
@@ -130,8 +130,8 @@
             Steps two to five keep out values that are wrong. Step six is for values that are
             perfectly valid and still dangerous in the wrong place: a name like
             <cde>O'Brien</cde> is a fine name and a broken SQL query. You need both halves, every
-            time. The next two lessons, <lnk to="/php/sql-injection">SQL Injection</lnk> and
-            <lnk to="/php/xss">XSS and Escaping Output</lnk>, are what happens when step six is
+            time. The next two lessons, <xref to="/php/sql-injection">SQL Injection</xref> and
+            <xref to="/php/xss">XSS and Escaping Output</xref>, are what happens when step six is
             missing.
         </p>
 
@@ -179,7 +179,7 @@
             input too, encoding and all.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -215,7 +215,7 @@
             </li>
             <li>
                 On the way out: <cde>htmlspecialchars()</cde>, prepared statements with
-                <lnk to="/php/pdo">PDO</lnk>, <cde>escapeshellarg()</cde>,
+                <xref to="/php/pdo">PDO</xref>, <cde>escapeshellarg()</cde>,
                 <cde>rawurlencode()</cde> and <cde>http_build_query()</cde>,
                 <cde>json_encode()</cde>.
             </li>
@@ -260,7 +260,7 @@
             <li>
                 <strong>The browser's checks don't count.</strong> <cde>required</cde>,
                 <cde>maxlength</cde> and <cde>type="email"</cde> are for honest visitors. The server
-                checks again, every time, as in <lnk to="/php/forms">Forms</lnk>.
+                checks again, every time, as in <xref to="/php/forms">Forms</xref>.
             </li>
             <li>
                 <strong>The <cde>Host</cde> header is input.</strong> Build a password reset link

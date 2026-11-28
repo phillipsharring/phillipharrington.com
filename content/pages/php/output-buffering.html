@@ -24,7 +24,7 @@
         <!-- Intro -->
         <p>
             A response is headers, a blank line, then the body, in that order, from
-            <lnk to="/php/request-and-response">Request and Response</lnk>. Once the first byte of
+            <xref to="/php/request-and-response">Request and Response</xref>. Once the first byte of
             the body goes out, the headers have gone with it, and there's no calling them back. So
             <cde>session_start()</cde>, <cde>setcookie()</cde> and <cde>header()</cde> all have to
             run before you print anything. Output buffering is how PHP lets you print first and
@@ -72,7 +72,7 @@
             PHP's settings can open a buffer for you before your code even starts:
             <cde>output_buffering</cde>. The <cde>php.ini</cde> files PHP ships with set it to 4096
             bytes. The Docker image, with no <cde>php.ini</cde> at all, leaves it off. That
-            difference matters, as Gotchas will show.
+            difference matters, as <sect>Gotchas</sect> will show.
         </p>
 
         <!-- Try it -->
@@ -109,10 +109,10 @@ curl -i http://localhost:8000/buffered.php</code-block>
             The page, with a <cde>Content-Length</cde> header: the code knew the page's size before
             it sent any of it. Send a name with HTML in it, <cde>?name=&lt;b&gt;Ada&lt;/b&gt;</cde>,
             and it comes back as harmless text. The name is from the query string, and
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: the template escapes it.
+            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the template escapes it.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -152,7 +152,7 @@ curl -i http://localhost:8000/buffered.php</code-block>
                 <cde>?&gt;</cde> in an included file is output. So is a byte order mark, three
                 invisible bytes some editors put at the start of a UTF-8 file. Either one sends the
                 headers. Save files as UTF-8 without a BOM;
-                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> has more.
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref> has more.
             </li>
             <li>
                 <strong>A buffer is memory.</strong> Everything in it sits in RAM until it's sent.

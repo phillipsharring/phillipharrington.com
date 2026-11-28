@@ -67,8 +67,8 @@
             </li>
             <li>
                 <strong>A place things are kept</strong>, like <cde>PostsTable</cde>: where the
-                records live, and how they're found. (<lnk to="/php/model-table-mapper"
-                    >Model, Table, Mapper</lnk>
+                records live, and how they're found. (<xref to="/php/model-table-mapper"
+                    >Model, Table, Mapper</xref>
                 has more.)
             </li>
         </list>
@@ -87,13 +87,13 @@
                 the email address, turn " Alice@Example.com " into "alice@example.com". It runs
                 first, so everything after sees one shape. It is not escaping for HTML: that happens
                 on the way <em>out</em>, at the moment you print, and it's the
-                <lnk to="/php/xss">XSS lesson</lnk>. "Sanitizing" input for HTML on the way in
+                <xref to="/php/xss">XSS lesson</xref>. "Sanitizing" input for HTML on the way in
                 mangles your data and still misses things.
             </li>
             <li>
                 <strong>Validation</strong> asks about the <em>input</em>: is this acceptable? Is
                 the title there, is the email an email? It runs on everything that arrives, because
-                you <lnk to="/php/never-trust-input">never trust input</lnk>.
+                you <xref to="/php/never-trust-input">never trust input</xref>.
             </li>
             <li>
                 <strong>An invariant</strong> is about the <em>thing</em>: a rule that must always
@@ -128,7 +128,7 @@
                 <strong>An event and its listeners</strong> are the
                 <strong>Observer</strong> pattern: one thing announces, any number of others react,
                 and the announcer doesn't know who's listening.
-                <lnk to="/php/observers">Observers</lnk> has the details.
+                <xref to="/php/observers">Observers</xref> has the details.
             </li>
             <li>
                 <strong>Rules you can swap</strong>, like different policies or validation rules
@@ -137,7 +137,7 @@
             <li>
                 <strong>A line of checks</strong>, where each one handles what it can and passes the
                 rest along, is <strong>Chain of Responsibility</strong>. It's how
-                <lnk to="/php/middleware">middleware</lnk> works.
+                <xref to="/php/middleware">middleware</xref> works.
             </li>
         </list>
         <p>
@@ -181,7 +181,7 @@
         <p>
             The usual reason things end up in the wrong place is that putting them in the right
             place is a hassle: one more class to create, pass around and wire up. A
-            <lnk to="/php/dependency-injection">dependency injection</lnk> container takes the
+            <xref to="/php/dependency-injection">dependency injection</xref> container takes the
             hassle away. Your action asks for a policy and a table in its constructor, and gets
             them. When asking for the right piece costs nothing, you stop building the wrong one in
             place.
@@ -205,7 +205,7 @@
             PSR-1: classes in <cde>StudlyCaps</cde> (<cde>PostSaved</cde>), methods in
             <cde>camelCase</cde> (<cde>maySave</cde>), constants in <cde>UPPER_CASE</cde>.
             True-or-false things read as questions: <cde>isPublished</cde>, <cde>hasComments</cde>,
-            <cde>canEdit</cde>. <lnk to="/php/good-variable-names">Good Variable Names</lnk>, in
+            <cde>canEdit</cde>. <xref to="/php/good-variable-names">Good Variable Names</xref>, in
             Style, goes further.
         </p>
 
@@ -246,7 +246,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
             Every name in the second file tells you where to look.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -255,7 +255,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
             <li>
                 One class per kind of thing, named for what it is, in a file of the same name:
                 <cde>PostSaved.php</cde> holds <cde>PostSaved</cde>.
-                <lnk to="/php/autoloading">Autoloading</lnk> depends on it.
+                <xref to="/php/autoloading">Autoloading</xref> depends on it.
             </li>
             <li>
                 Namespaces group by what things are about, then what they are:

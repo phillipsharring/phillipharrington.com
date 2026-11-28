@@ -21,11 +21,11 @@
 
         <!-- Intro -->
         <p>
-            Client/Server drew two boxes and a line between them. Every Try It so far has been
-            exactly that: your browser, straight to PHP on your own computer. On the real web, the
-            line is a chain. A request passes through several servers before it reaches your code,
-            and each one can answer it, change it, or stop it. Each is a server to whatever is in
-            front of it, and a client to whatever is behind.
+            Client/Server drew two boxes and a line between them. Every <sect>Try It</sect> so far
+            has been exactly that: your browser, straight to PHP on your own computer. On the real
+            web, the line is a chain. A request passes through several servers before it reaches
+            your code, and each one can answer it, change it, or stop it. Each is a server to
+            whatever is in front of it, and a client to whatever is behind.
         </p>
 
         <!-- What is/are -->
@@ -160,13 +160,13 @@ curl http://localhost:8000</code-block>
                 PHP gets <cde>1.2.3.4</cde> first, then your real address. The proxy didn't replace
                 what you sent; it added what it saw to the end. Everything before the last entry
                 came from the client, which means from anyone. As you may recall,
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> and that
-                includes headers. Trust only the entry your own proxy added: the last one, or the
-                last few if you run several layers. <cde>Ctrl+C</cde> stops both.
+                <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong> and
+                that includes headers. Trust only the entry your own proxy added: the last one, or
+                the last few if you run several layers. <cde>Ctrl+C</cde> stops both.
             </p>
         </nti>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->

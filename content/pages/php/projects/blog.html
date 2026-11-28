@@ -35,18 +35,19 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/projects/cms">Content Management System</lnk>: pages from a table,
+                <xref to="/php/projects/cms">Content Management System</xref>: pages from a table,
                 plain text to paragraphs
             </li>
             <li>
-                <lnk to="/php/selecting-data">Selecting Data</lnk>: <cde>ORDER BY</cde>,
+                <xref to="/php/selecting-data">Selecting Data</xref>: <cde>ORDER BY</cde>,
                 <cde>LIMIT</cde> and <cde>OFFSET</cde>
             </li>
-            <li><lnk to="/php/indexes">Indexes</lnk>: on the column every query sorts by</li>
+            <li><xref to="/php/indexes">Indexes</xref>: on the column every query sorts by</li>
             <li>
-                <lnk to="/php/query-strings">Query Strings</lnk>: <cde>?page=2</cde>, which is input
+                <xref to="/php/query-strings">Query Strings</xref>: <cde>?page=2</cde>, which is
+                input
             </li>
-            <li><lnk to="/php/content-types">Content Types</lnk>: the feed isn't HTML</li>
+            <li><xref to="/php/content-types">Content Types</xref>: the feed isn't HTML</li>
         </list>
 
         <!-- Build it -->
@@ -55,7 +56,7 @@
         <heading h3 id="step-1-the-posts">Step 1: The Posts</heading>
         <p>
             <cde>compose.yml</cde>, the <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones
-            from <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            from <xref to="/php/projects/translation">Translation</xref>, with the database called
             <cde>blog</cde> and one more setting, <cde>SITE_URL</cde>, for Step 4:
         </p>
         <code-block example="project-blog/compose.yml" />
@@ -90,8 +91,8 @@
         <nti>
             <p>
                 I'll keep this short, since you know it by heart:
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> including
-                the page number. <cde>?page=abc</cde>, <cde>?page=-3</cde> and
+                <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong>
+                including the page number. <cde>?page=abc</cde>, <cde>?page=-3</cde> and
                 <cde>?page=1 OR 1=1</cde> all become page 1, through <cde>filter_var()</cde>, before
                 they get anywhere near SQL. A page past the end is a 404. So is a draft, the same
                 answer as a typo, so the blog doesn't confirm that an unpublished post exists.
@@ -136,7 +137,7 @@ curl http://localhost:8000/feed</code-block>
             it appears, with nothing else to do.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="Web Log, We Blog">

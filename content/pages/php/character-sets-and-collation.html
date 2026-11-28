@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            At the end of <lnk to="/php/indexes">Indexes</lnk>, an email address in capitals found
+            At the end of <xref to="/php/indexes">Indexes</xref>, an email address in capitals found
             the same customer as one in lowercase. The database decided those were equal, and it
             could have decided otherwise. Text in a database comes with two settings: how its
             characters are stored as bytes, and how they're compared. Get the first wrong and names
@@ -32,9 +32,9 @@
         <heading h2 id="whats-a-character-set">What's a Character Set?</heading>
         <p>
             The rule for turning characters into bytes and back.
-            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> has the full story; the short version
-            is that UTF-8 can store every character there is, using one to four bytes each, and it's
-            the only one you should use. In MySQL, that's called <cde>utf8mb4</cde>.
+            <xref to="/php/text-and-utf-8">Text and UTF-8</xref> has the full story; the short
+            version is that UTF-8 can store every character there is, using one to four bytes each,
+            and it's the only one you should use. In MySQL, that's called <cde>utf8mb4</cde>.
         </p>
 
         <heading h3 id="mysqls-utf8-isnt">MySQL's utf8 Isn't</heading>
@@ -179,7 +179,7 @@ VALUES ('café');</code-block>
             someone by adding an accent. <cde>docker compose down -v</cde> when you're done.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->

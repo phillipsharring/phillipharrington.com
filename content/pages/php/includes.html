@@ -50,7 +50,7 @@
         <heading h3 id="paths">Paths</heading>
         <p>
             Build every include path from <cde>__DIR__</cde>, the folder the current file is in, as
-            <lnk to="/php/document-root">Document Root</lnk> did:
+            <xref to="/php/document-root">Document Root</xref> did:
             <cde>require __DIR__ . '/functions.php';</cde>. A bare <cde>'functions.php'</cde> is
             looked up through a setting called <cde>include_path</cde> and the current directory,
             which can be anything depending on how PHP was started.
@@ -96,7 +96,7 @@
             Shared scope is handy for templates: the header can print
             <cde>$config['site_name']</cde> without being handed it. It's also why a big include can
             quietly overwrite a variable you were using. Files of functions don't have that problem,
-            because each function gets its own scope, as <lnk to="/php/scope">Scope</lnk> showed.
+            because each function gets its own scope, as <xref to="/php/scope">Scope</xref> showed.
         </p>
 
         <!-- Try it -->
@@ -150,7 +150,7 @@
             cold.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -177,8 +177,8 @@
                 <cde>require "pages/$page.php"</cde> with <cde>$page</cde> straight from the query
                 string lets a visitor climb out with <cde>../</cde> and run files you never meant to
                 be pages. Check against an allow list, as the example does.
-                <lnk to="/php/projects/log-viewer">The Log Viewer project</lnk> attacks this kind of
-                path on purpose.
+                <xref to="/php/projects/log-viewer">The Log Viewer project</xref> attacks this kind
+                of path on purpose.
             </li>
             <li>
                 <strong>Relative paths depend on where PHP started.</strong>
@@ -194,7 +194,7 @@
             <li>
                 <strong>"Cannot redeclare."</strong> Including a file of functions twice, from two
                 different places, is fatal. <cde>require_once</cde> it, or later, let an autoloader
-                handle it: <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>.
+                handle it: <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref>.
             </li>
         </list>
 

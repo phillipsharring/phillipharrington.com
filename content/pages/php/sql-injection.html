@@ -21,18 +21,18 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/never-trust-input">Never Trust Input</lnk> ended with a rule for values on
-            their way out of your code: escape them for wherever they're going. SQL injection is
+            <xref to="/php/never-trust-input">Never Trust Input</xref> ended with a rule for values
+            on their way out of your code: escape them for wherever they're going. SQL injection is
             what happens when the place is a database query and nobody did. It's one of the oldest
             attacks on the web and still one of the most common, and in PHP the fix is one habit
-            you've had since <lnk to="/php/pdo">PDO and Prepared Statements</lnk>.
+            you've had since <xref to="/php/pdo">PDO and Prepared Statements</xref>.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-sql-injection">What's SQL Injection?</heading>
         <p>
             Your code builds a query by gluing input into a string of
-            <lnk to="/php/sql">SQL</lnk>:
+            <xref to="/php/sql">SQL</xref>:
         </p>
         <!-- prettier-ignore -->
         <code-block>$sql = "SELECT `name` FROM `members` WHERE `email` = '$email'";</code-block>
@@ -100,13 +100,13 @@
         <p>
             A members' club with a lookup page: give it an email, and it tells you the member's
             name. You need a database, so this is a Compose project like the one in
-            <lnk to="/php/sql">SQL</lnk>. In a folder, make <cde>compose.yml</cde>:
+            <xref to="/php/sql">SQL</xref>. In a folder, make <cde>compose.yml</cde>:
         </p>
         <code-block example="sql-injection/compose.yml" />
         <p>
             Then the two-line <cde>Dockerfile</cde> that adds MySQL support to PHP, and
             <cde>init.sql</cde>, which makes the table. The passwords are stored the right way, as
-            hashes, which <lnk to="/php/passwords">Passwords</lnk> explains:
+            hashes, which <xref to="/php/passwords">Passwords</xref> explains:
         </p>
         <code-block example="sql-injection/Dockerfile" />
         <code-block example="sql-injection/init.sql" />
@@ -130,10 +130,10 @@
         <code-block>curl --get --data-urlencode 'email=alice@example.com' http://localhost:8000/naive.php</code-block>
         <p>
             <cde>Found: Alice</cde>, and the query it ran. It works, for every honest visitor. Keep
-            it running for Break It.
+            it running for <sect>Break It</sect>.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -151,7 +151,7 @@
             <li>
                 <cde>charset=utf8mb4</cde> in the connection string, so PHP and MySQL agree on how
                 the bytes are read. See
-                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk>.
+                <xref to="/php/character-sets-and-collation">Character Sets and Collation</xref>.
             </li>
             <li>
                 <cde>$pdo-&gt;query()</cde> only for SQL with no input in it at all. If you're about
@@ -188,15 +188,15 @@
             <li>
                 <strong>Error messages help the attacker.</strong> The naive page printed MySQL's
                 complaint, with your file path. Turn <cde>display_errors</cde> off in production, as
-                in <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>.
+                in <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref>.
             </li>
         </list>
 
         <!-- Break it -->
         <heading h2 id="break-it">Break It</heading>
         <p>
-            <strong>Never trust input,</strong> and here's why. With Try It still running, start
-            with one quote:
+            <strong>Never trust input,</strong> and here's why. With <sect>Try It</sect> still
+            running, start with one quote:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl --get --data-urlencode "email='" http://localhost:8000/naive.php</code-block>

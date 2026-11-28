@@ -38,19 +38,20 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/sending-a-file">Sending a File</lnk>: <cde>Content-Type</cde>, and
+                <xref to="/php/sending-a-file">Sending a File</xref>: <cde>Content-Type</cde>, and
                 <cde>Content-Disposition</cde> for the download name
             </li>
-            <li><lnk to="/php/csv">CSV</lnk>: the format, and <cde>fputcsv()</cde></li>
+            <li><xref to="/php/csv">CSV</xref>: the format, and <cde>fputcsv()</cde></li>
             <li>
-                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: the byte order mark Excel wants
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: the byte order mark Excel
+                wants
             </li>
             <li>
-                <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>: customer data
-                is staff only
+                <xref to="/php/projects/http-authentication">HTTP Authentication</xref>: customer
+                data is staff only
             </li>
             <li>
-                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: input that waits in your
+                <xref to="/php/never-trust-input">Never Trust Input</xref>: input that waits in your
                 database for a spreadsheet
             </li>
         </list>
@@ -61,9 +62,9 @@
         <heading h3 id="step-1-the-contacts">Step 1: The Contacts</heading>
         <p>
             The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones from
-            <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <xref to="/php/projects/translation">Translation</xref>, with the database called
             <cde>crm</cde>. Copy <cde>auth.php</cde> and <cde>users.php</cde> from
-            <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>. Then some
+            <xref to="/php/projects/http-authentication">HTTP Authentication</xref>. Then some
             contacts, all of whom came in through a form:
         </p>
         <code-block example="project-exporting-data/init.sql" />
@@ -137,7 +138,7 @@ curl -u 'editor:correct horse battery staple' -OJ 'http://localhost:8000/export.
             text.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->

@@ -37,20 +37,22 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/projects/php-on-the-command-line">PHP on the Command Line</lnk>: the
+                <xref to="/php/projects/php-on-the-command-line">PHP on the Command Line</xref>: the
                 worker is a command-line script
             </li>
             <li>
-                <lnk to="/php/projects/sending-email">Sending Email</lnk>: the job, and Mailpit to
+                <xref to="/php/projects/sending-email">Sending Email</xref>: the job, and Mailpit to
                 catch it
             </li>
-            <li><lnk to="/php/transactions">Transactions</lnk>: taking a job so no one else can</li>
             <li>
-                <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk> and
-                <lnk to="/php/dependency-injection">Dependency Injection</lnk>: the classes, and
+                <xref to="/php/transactions">Transactions</xref>: taking a job so no one else can
+            </li>
+            <li>
+                <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref> and
+                <xref to="/php/dependency-injection">Dependency Injection</xref>: the classes, and
                 what they're given
             </li>
-            <li><lnk to="/php/json">JSON</lnk>: what each job carries</li>
+            <li><xref to="/php/json">JSON</xref>: what each job carries</li>
         </list>
 
         <!-- Build it -->
@@ -113,7 +115,7 @@
         </p>
         <code-block example="project-queues/src/WelcomeEmail.php" />
         <p>
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>, even when it comes back out of your own database. The address went in from a form; it
+            <strong><xref to="/php/never-trust-input">Never trust input</xref></strong>, even when it comes back out of your own database. The address went in from a form; it
             might have been written by a different version of your code, or by hand. Check it again
             where it's used.
         </p>
@@ -172,7 +174,7 @@
         <!-- prettier-ignore -->
         <code-block>UPDATE jobs SET status = 'queued', attempts = 0, available_at = NOW() WHERE status = 'failed';</code-block>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="Waiting in Line, Mathematically">

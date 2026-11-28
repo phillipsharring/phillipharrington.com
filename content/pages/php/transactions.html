@@ -21,12 +21,12 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/deleting-data">Deleting Data</lnk> used one as an undo button. That's the
-            smaller half of what a transaction is for. The bigger half: most real changes take more
-            than one statement. Moving money takes two updates, placing an order takes an insert and
-            a stock change. If the first one runs and the second one doesn't, because of an error, a
-            crash or a bug, the data is left half-changed. A transaction makes the statements one
-            change: all of them happen, or none do.
+            <xref to="/php/deleting-data">Deleting Data</xref> used one as an undo button. That's
+            the smaller half of what a transaction is for. The bigger half: most real changes take
+            more than one statement. Moving money takes two updates, placing an order takes an
+            insert and a stock change. If the first one runs and the second one doesn't, because of
+            an error, a crash or a bug, the data is left half-changed. A transaction makes the
+            statements one change: all of them happen, or none do.
         </p>
 
         <!-- What is/are -->
@@ -158,7 +158,7 @@ docker compose run --rm php php transfer.php 2 1 999999</code-block>
             when you're done.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -171,7 +171,7 @@ docker compose run --rm php php transfer.php 2 1 999999</code-block>
             <li>
                 The pattern: begin, then <cde>try</cde> every step, <cde>commit()</cde> at the end
                 of the <cde>try</cde>, and <cde>rollBack()</cde> in the <cde>catch</cde>.
-                <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk> has the rest of how
+                <xref to="/php/exceptions">Exceptions and Try/Catch</xref> has the rest of how
                 <cde>try</cde> works.
             </li>
             <li>

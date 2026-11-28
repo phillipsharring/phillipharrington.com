@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/sql-injection">SQL Injection</lnk> was input pasted into a query, where
+            <xref to="/php/sql-injection">SQL Injection</xref> was input pasted into a query, where
             the database ran it. XSS is input pasted into a page, where the visitor's browser runs
             it. The attacker's code runs on your site, as your site, for whoever is looking at the
             page. It can read what they see, act as them, and send it all somewhere else.
@@ -46,7 +46,7 @@
             <li>
                 <strong>Stored</strong>: the input is saved, a comment or a profile name, and shown
                 to everyone who visits. The attacker posts once, and the page attacks every reader.
-                The <lnk to="/php/projects/guestbook">Guestbook</lnk> project does this one.
+                The <xref to="/php/projects/guestbook">Guestbook</xref> project does this one.
             </li>
         </list>
 
@@ -127,7 +127,7 @@
             hello, and the name stays in the box. Now it's time to break it.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -137,7 +137,7 @@
                 <cde>htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')</cde>.
                 <cde>ENT_QUOTES</cde> escapes both kinds of quote, for attributes, and
                 <cde>ENT_SUBSTITUTE</cde> replaces invalid
-                <lnk to="/php/text-and-utf-8">UTF-8</lnk> instead of returning an empty string.
+                <xref to="/php/text-and-utf-8">UTF-8</xref> instead of returning an empty string.
                 Since PHP 8.1 those are the defaults; saying them costs nothing.
             </li>
             <li>
@@ -187,15 +187,15 @@
             <li>
                 <strong>HttpOnly limits the damage, not the hole.</strong> With it, a script can't
                 read the login cookie, but it can still act as the visitor on the page. See
-                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>.
+                <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref>.
             </li>
         </list>
 
         <!-- Break it -->
         <heading h2 id="break-it">Break It</heading>
         <p>
-            <strong>Never trust input.</strong> With Try It running, open this address in your
-            browser (it can take the characters as they are):
+            <strong>Never trust input.</strong> With <sect>Try It</sect> running, open this address
+            in your browser (it can take the characters as they are):
         </p>
         <!-- prettier-ignore -->
         <code-block>http://localhost:8000/naive.php?name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code-block>
@@ -237,7 +237,7 @@
             Note what fixed the third one: not escaping, which left
             <cde>javascript:</cde> untouched, but a check of what the value is allowed to be.
             Escaping and checking are the two halves of
-            <lnk to="/php/never-trust-input">Never Trust Input</lnk>, and this page needs both.
+            <xref to="/php/never-trust-input">Never Trust Input</xref>, and this page needs both.
         </p>
 
         <side-story title="Samy Is My Hero">

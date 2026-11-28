@@ -23,11 +23,11 @@
 
         <!-- Intro -->
         <p>
-            Most of what PHP sends is HTML. You've written bits of it in every Try It since
-            <lnk to="/php/forms">Forms</lnk>, and escaped what went into it since
-            <lnk to="/php/xss">XSS and Escaping Output</lnk>. This section steps back to the
-            technologies around PHP, starting with the one every page is made of: what HTML is, what
-            a whole page needs, and how to build one from PHP without letting input rewrite it.
+            Most of what PHP sends is HTML. You've written bits of it in every
+            <sect>Try It</sect> since <xref to="/php/forms">Forms</xref>, and escaped what went into
+            it since <xref to="/php/xss">XSS and Escaping Output</xref>. This section steps back to
+            the technologies around PHP, starting with the one every page is made of: what HTML is,
+            what a whole page needs, and how to build one from PHP without letting input rewrite it.
         </p>
 
         <!-- What is/are -->
@@ -64,7 +64,7 @@
             <li>
                 <cde>&lt;meta charset="utf-8"&gt;</cde>, early in the <cde>&lt;head&gt;</cde>, so
                 the browser reads the bytes as UTF-8. The
-                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> lesson is why that matters.
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref> lesson is why that matters.
             </li>
             <li>
                 <cde>&lt;meta name="viewport" ...&gt;</cde>, so phones show the page at their own
@@ -96,7 +96,7 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 The browser gets the response, sees <cde>text/html</cde> from
-                <lnk to="/php/content-types">Content Types</lnk>, and starts reading at the top.
+                <xref to="/php/content-types">Content Types</xref>, and starts reading at the top.
             </li>
             <li>
                 It turns the tags into a tree of elements, called the DOM: the html element, with
@@ -116,7 +116,7 @@
         <p>
             When PHP builds HTML, a value from outside is just more text in that stream, and the
             browser can't tell your tags from tags inside a visitor's name.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> every value
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>:</strong> every value
             goes through <cde>htmlspecialchars()</cde> on the way into the page.
         </p>
 
@@ -140,7 +140,7 @@
             all, not as Alice in italics. The visitor gets to choose the words, never the tags.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->

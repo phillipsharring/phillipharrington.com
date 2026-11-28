@@ -36,7 +36,7 @@
             with the right arguments.
         </p>
         <p>
-            It works because of an interface (see <lnk to="/php/interfaces">Interfaces</lnk>).
+            It works because of an interface (see <xref to="/php/interfaces">Interfaces</xref>).
             <cde>LogMailer</cde>, <cde>SmtpMailer</cde> and <cde>NullMailer</cde> all implement
             <cde>Mailer</cde>, so the code that sends email only ever needs to know that one name.
         </p>
@@ -81,7 +81,7 @@
             </li>
             <li>
                 If not, it builds the mailer and returns it, and the app passes it to whatever needs
-                one, as in <lnk to="/php/dependency-injection">Dependency Injection</lnk>.
+                one, as in <xref to="/php/dependency-injection">Dependency Injection</xref>.
             </li>
         </ol>
 
@@ -131,10 +131,10 @@ docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=abc -v
             log, none or smtp, got 'smpt'," and "SMTP_PORT must be 1 to 65535, got 'abc'." A mistake
             in the settings is found in the first second of a deploy, not by a customer a week
             later. Settings come from outside the code, and the same rule applies to them as to
-            anything else: <lnk to="/php/never-trust-input">never trust input</lnk>.
+            anything else: <xref to="/php/never-trust-input">never trust input</xref>.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -148,8 +148,8 @@ docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=abc -v
             <li>
                 <cde>getenv()</cde> with no argument returns every environment variable as an array,
                 which is what the factory gets here. See
-                <lnk to="/php/configuration-and-the-environment"
-                    >Configuration and the Environment</lnk>.
+                <xref to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</xref>.
             </li>
             <li>
                 <cde>filter_var($value, FILTER_VALIDATE_INT, ['options' =&gt; [...]])</cde> turns a

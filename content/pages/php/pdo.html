@@ -21,11 +21,11 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/working-with-files">Working with Files</lnk> ended at the limits of a text
-            file. A database is the next step: a separate server that stores your data, finds any
-            piece of it fast, and lets many requests read and write at once. PHP talks to it with
-            PDO. This lesson is about the connection and the one habit that matters from the very
-            first query: the query and the input travel separately, always.
+            <xref to="/php/working-with-files">Working with Files</xref> ended at the limits of a
+            text file. A database is the next step: a separate server that stores your data, finds
+            any piece of it fast, and lets many requests read and write at once. PHP talks to it
+            with PDO. This lesson is about the connection and the one habit that matters from the
+            very first query: the query and the input travel separately, always.
         </p>
 
         <!-- What is/are -->
@@ -33,9 +33,9 @@
         <p>
             For this course, MySQL: a server, like a web server, that PHP connects to over the
             network. It keeps data in tables of rows and columns, and you ask it for things in a
-            language called SQL. <lnk to="/php/sql">SQL</lnk>, next, and the whole Database section
-            after it, are about that language and those tables. This lesson is just getting PHP and
-            MySQL talking.
+            language called SQL. <xref to="/php/sql">SQL</xref>, next, and the whole Database
+            section after it, are about that language and those tables. This lesson is just getting
+            PHP and MySQL talking.
         </p>
 
         <heading h2 id="whats-pdo">What's PDO?</heading>
@@ -54,11 +54,12 @@
         <code-block>mysql:host=db;dbname=course;charset=utf8mb4</code-block>
         <p>
             <cde>charset=utf8mb4</cde> makes the connection itself UTF-8, real UTF-8, emoji
-            included, as <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> said. Recent versions
+            included, as <xref to="/php/text-and-utf-8">Text and UTF-8</xref> said. Recent versions
             default to it, older ones don't, so say it, and the connection is never the place text
             gets mangled. The user and password come from the environment, never from the code, as
             in
-            <lnk to="/php/configuration-and-the-environment">Configuration and the Environment</lnk>.
+            <xref to="/php/configuration-and-the-environment"
+                >Configuration and the Environment</xref>.
         </p>
 
         <heading h3 id="the-options">The Options</heading>
@@ -88,8 +89,8 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             values in order. Either way, whatever is in <cde>$title</cde>, quotes, SQL, anything, is
             stored as a title. It can't become part of the query, because the query was already
             settled before the value arrived. That's the defense against
-            <lnk to="/php/sql-injection">SQL injection</lnk>, and it's the only way this course ever
-            puts a value into SQL.
+            <xref to="/php/sql-injection">SQL injection</xref>, and it's the only way this course
+            ever puts a value into SQL.
         </p>
 
         <side-story title="The Functions That Went Away">
@@ -177,7 +178,7 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             too, so the next start loads <cde>init.sql</cde> fresh.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -229,14 +230,14 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             <li>
                 <strong>What comes out of the database is input.</strong> It got in from somewhere.
                 Escape it on the way into HTML, every time, or the database delivers a stored attack
-                to every visitor: <lnk to="/php/xss">XSS</lnk>.
+                to every visitor: <xref to="/php/xss">XSS</xref>.
             </li>
             <li>
                 <strong>Connection errors can leak.</strong> A failed <cde>new PDO()</cde> throws an
                 exception whose message names the database user, and sometimes the host. With
                 display_errors off, as
-                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk> said, it goes
-                to the log, not the page.
+                <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref> said, it
+                goes to the log, not the page.
             </li>
         </list>
 

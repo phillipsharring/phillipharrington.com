@@ -21,17 +21,17 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/passwords">Passwords</lnk> got someone logged in. From then on, the
-            password doesn't matter. <lnk to="/php/sessions">Sessions</lnk> showed how PHP remembers
-            them: a random id in a cookie, and a file on the server. Whoever has that id is logged
-            in. So the session cookie is the login, and it's worth as much as the password. PHP's
-            defaults don't protect it. This lesson does.
+            <xref to="/php/passwords">Passwords</xref> got someone logged in. From then on, the
+            password doesn't matter. <xref to="/php/sessions">Sessions</xref> showed how PHP
+            remembers them: a random id in a cookie, and a file on the server. Whoever has that id
+            is logged in. So the session cookie is the login, and it's worth as much as the
+            password. PHP's defaults don't protect it. This lesson does.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="the-flags">The Flags</heading>
         <p>
-            <lnk to="/php/cookies">Cookies</lnk> listed the settings that can follow a cookie's
+            <xref to="/php/cookies">Cookies</xref> listed the settings that can follow a cookie's
             value. Three of them are security, and a session cookie needs all three:
         </p>
         <!-- prettier-ignore -->
@@ -41,14 +41,14 @@
         <p>
             Only send the cookie over HTTPS. Without it, the browser also sends it with any plain
             <cde>http://</cde> request to your site, and anyone on the same network, like a café's
-            Wi-Fi, can read it off the wire. See <lnk to="/php/http">HTTP, HTTPS and TLS</lnk>.
+            Wi-Fi, can read it off the wire. See <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
         </p>
 
         <heading h3 id="httponly">HttpOnly</heading>
         <p>
             JavaScript in the page can't read the cookie. The browser still sends it with every
             request; only <cde>document.cookie</cde> leaves it out. If an
-            <lnk to="/php/xss">XSS</lnk> hole ever lets a script onto your page, that script can't
+            <xref to="/php/xss">XSS</xref> hole ever lets a script onto your page, that script can't
             simply send your visitors' session ids somewhere else.
         </p>
 
@@ -56,8 +56,8 @@
         <p>
             Whether the cookie goes with requests that another site starts. <cde>Lax</cde> sends it
             when someone follows a link to your site, but not with a form another site POSTs to
-            yours, which is most of <lnk to="/php/csrf">CSRF</lnk>. <cde>Strict</cde> never sends it
-            from another site, even on a link, so people arriving from a link look logged out.
+            yours, which is most of <xref to="/php/csrf">CSRF</xref>. <cde>Strict</cde> never sends
+            it from another site, even on a link, so people arriving from a link look logged out.
             <cde>None</cde> always sends it, and requires <cde>Secure</cde>.
         </p>
 
@@ -137,7 +137,7 @@
             there's your session id, readable by any script on the page.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -177,7 +177,7 @@
                 <strong>Don't decide Secure from the request.</strong> Code like
                 <cde>'secure' =&gt; isset($_SERVER['HTTPS'])</cde> looks right, and goes wrong the
                 day there's a CDN or proxy in front, because the last hop to PHP is plain HTTP. See
-                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>. Turn it on in
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>. Turn it on in
                 configuration, and leave it on.
             </li>
             <li>
@@ -194,7 +194,7 @@
             <li>
                 <strong>The session id is input.</strong> It arrives in a cookie, so anyone can send
                 any id. Strict mode and a new id at login are how you
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong> here:
+                <strong><xref to="/php/never-trust-input">never trust input</xref></strong> here:
                 don't let the visitor choose it.
             </li>
             <li>

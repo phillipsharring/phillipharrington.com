@@ -64,7 +64,7 @@
             <li>A request arrives, and an entry point builds the parts and calls a controller.</li>
             <li>
                 The controller reads the input it needs and checks it.
-                <lnk to="/php/never-trust-input">Never trust input</lnk>: this is the edge.
+                <xref to="/php/never-trust-input">Never trust input</xref>: this is the edge.
             </li>
             <li>It asks the model: "the drinks," "item 2."</li>
             <li>It hands the model's answer to a view, and gets back the page.</li>
@@ -77,7 +77,7 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             A café menu, in three parts, with Composer's autoloader (from
-            <lnk to="/php/autoloading">Autoloading with Composer and PSR-4</lnk>) finding the
+            <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref>) finding the
             classes. In a folder, make <cde>composer.json</cde>:
         </p>
         <code-block example="mvc/composer.json" />
@@ -91,7 +91,7 @@
         <code-block example="mvc/data/menu.php" />
         <p>
             The views: <cde>src/View/View.php</cde> runs a template and keeps what it printed (see
-            <lnk to="/php/output-buffering">Output Buffering</lnk>), and the templates go in
+            <xref to="/php/output-buffering">Output Buffering</xref>), and the templates go in
             <cde>views/</cde>. <cde>list.php</cde>:
         </p>
         <code-block example="mvc/src/View/View.php" />
@@ -130,7 +130,7 @@ curl -i 'http://localhost:8000/item.php?id=99'</code-block>
             controller; the model never saw the bad input, and the view never had to wonder.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -143,7 +143,7 @@ curl -i 'http://localhost:8000/item.php?id=99'</code-block>
             <li>
                 The controller gets what it needs through its constructor, here the
                 <cde>Menu</cde> and the <cde>View</cde>, rather than reaching for them. That's
-                <lnk to="/php/dependency-injection">Dependency Injection</lnk>, and it's why the
+                <xref to="/php/dependency-injection">Dependency Injection</xref>, and it's why the
                 controller can be tested with a made-up menu.
             </li>
             <li>
@@ -176,7 +176,7 @@ curl -i 'http://localhost:8000/item.php?id=99'</code-block>
             <li>
                 <strong>Two entry points that are nearly the same file.</strong>
                 <cde>index.php</cde> and <cde>item.php</cde> repeat their setup line for line, which
-                is exactly what <lnk to="/php/dry">DRY</lnk> warned about. With twenty pages,
+                is exactly what <xref to="/php/dry">DRY</xref> warned about. With twenty pages,
                 someone will forget a line in one.
             </li>
         </list>

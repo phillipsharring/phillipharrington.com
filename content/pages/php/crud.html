@@ -31,7 +31,7 @@
         <heading h2 id="whats-crud">What's CRUD?</heading>
         <p>
             Create, Read, Update, Delete. Each one has a SQL statement, from the
-            <lnk to="/php/sql">SQL</lnk> lessons, and a usual way to ask for it over HTTP:
+            <xref to="/php/sql">SQL</xref> lessons, and a usual way to ask for it over HTTP:
         </p>
         <list>
             <li>
@@ -55,7 +55,7 @@
             HTML forms can only send <cde>GET</cde> and <cde>POST</cde>, so a page in a browser uses
             <cde>POST</cde> for all three changes and tells them apart by URL. An API can use
             <cde>PUT</cde>, <cde>PATCH</cde> and <cde>DELETE</cde> too; that's
-            <lnk to="/php/rest">REST</lnk>, two lessons from now.
+            <xref to="/php/rest">REST</xref>, two lessons from now.
         </p>
 
         <side-story title="SEQUEL">
@@ -81,7 +81,7 @@
                 <strong>Create, Update and Delete</strong> are <cde>POST</cde>s. Each checks its
                 input, runs one prepared statement, and answers with a <cde>303</cde> redirect back
                 to a <cde>GET</cde> page: Post/Redirect/Get, from
-                <lnk to="/php/request-and-response">Request and Response</lnk>.
+                <xref to="/php/request-and-response">Request and Response</xref>.
             </li>
             <li>
                 <strong>Update and Delete</strong> first look the thing up. If it isn't there,
@@ -96,7 +96,7 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             A notes page that does all four. It needs MySQL, so it runs with Docker Compose, as in
-            <lnk to="/php/pdo">Working with a Database</lnk>. In a folder, make
+            <xref to="/php/pdo">Working with a Database</xref>. In a folder, make
             <cde>compose.yml</cde>:
         </p>
         <code-block example="crud/compose.yml" />
@@ -138,11 +138,11 @@ curl -i -X DELETE http://localhost:8000/notes/1</code-block>
             An empty note is a <cde>422</cde>, with the reason. Updating a note that isn't there is
             a <cde>404</cde>. A method the app doesn't take is a <cde>405</cde>. The browser's
             <cde>required</cde> and <cde>maxlength</cde> never ran, and the server caught it anyway:
-            <lnk to="/php/never-trust-input">never trust input</lnk>.
+            <xref to="/php/never-trust-input">never trust input</xref>.
             <cde>docker compose down -v</cde> stops it and throws the data away.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -150,7 +150,7 @@ curl -i -X DELETE http://localhost:8000/notes/1</code-block>
         <list>
             <li>
                 <cde>$db-&gt;prepare(...)-&gt;execute([...])</cde> for every statement with a value
-                from outside. Always. See <lnk to="/php/sql-injection">SQL Injection</lnk>.
+                from outside. Always. See <xref to="/php/sql-injection">SQL Injection</xref>.
             </li>
             <li>
                 <cde>$db-&gt;lastInsertId()</cde> after an <cde>INSERT</cde>, for the new row's id.
@@ -167,7 +167,7 @@ curl -i -X DELETE http://localhost:8000/notes/1</code-block>
             <li>
                 <cde>mb_strlen()</cde>, not <cde>strlen()</cde>, to count characters, so "café" is
                 four, matching the <cde>VARCHAR(500)</cde> limit in characters. See
-                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>.
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>.
             </li>
         </list>
 
@@ -182,7 +182,7 @@ curl -i -X DELETE http://localhost:8000/notes/1</code-block>
             <li>
                 <strong>This example leaves out CSRF protection.</strong> Any site could make your
                 browser submit these forms. A real app needs a token in every form that changes
-                something; see <lnk to="/php/csrf">CSRF</lnk>.
+                something; see <xref to="/php/csrf">CSRF</xref>.
             </li>
             <li>
                 <strong>Anyone can change anything here.</strong> There are no users, so there's

@@ -36,23 +36,23 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: bytes, characters, and where
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: bytes, characters, and where
                 text gets mangled
             </li>
             <li>
-                <lnk to="/php/character-sets-and-collation">Character Sets and Collation</lnk>:
+                <xref to="/php/character-sets-and-collation">Character Sets and Collation</xref>:
                 <cde>utf8mb4</cde> in MySQL
             </li>
             <li>
-                <lnk to="/php/request-and-response">Request and Response</lnk>: the
+                <xref to="/php/request-and-response">Request and Response</xref>: the
                 <cde>Accept-Language</cde>, <cde>Content-Language</cde> and <cde>Vary</cde> headers
             </li>
-            <li><lnk to="/php/cookies">Cookies</lnk>: remembering the choice</li>
+            <li><xref to="/php/cookies">Cookies</xref>: remembering the choice</li>
             <li>
-                <lnk to="/php/pdo">Working with a Database: PDO and Prepared Statements</lnk> and
-                <lnk to="/php/selecting-data">Selecting Data</lnk>: the fallback join
+                <xref to="/php/pdo">Working with a Database: PDO and Prepared Statements</xref> and
+                <xref to="/php/selecting-data">Selecting Data</xref>: the fallback join
             </li>
-            <li><lnk to="/php/html">HTML</lnk>: the <cde>lang</cde> attribute</li>
+            <li><xref to="/php/html">HTML</xref>: the <cde>lang</cde> attribute</li>
         </list>
 
         <!-- Build it -->
@@ -118,7 +118,7 @@
             <cde>negotiateLanguage()</cde> splits the header, skips any part that isn't shaped like
             a language tag, sorts by weight, and takes the first one on our list, counting
             <cde>fr-CA</cde> as <cde>fr</cde>.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> a header is
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>:</strong> a header is
             whatever the client typed, so the only languages that can come out are the four we put
             in.
         </p>
@@ -199,7 +199,7 @@ curl -H 'Accept-Language: de' http://localhost:8000</code-block>
             the database.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="i18n">

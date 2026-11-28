@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/security-headers">Security Headers</lnk> finished the work on your own
+            <xref to="/php/security-headers">Security Headers</xref> finished the work on your own
             code. But on most sites, your own code is the small part. One
             <cde>composer require</cde> brings in a package, and the packages it needs, and the ones
             they need. Every one of them runs with all the access your app has. When one of them has
@@ -32,9 +32,9 @@
         <heading h2 id="whats-a-dependency">What's a Dependency?</heading>
         <p>
             Code your project uses that someone else wrote and maintains: a library you installed
-            with <lnk to="/php/autoloading">Composer</lnk>, or with npm for JavaScript. The ones you
-            asked for are direct dependencies. The ones they brought with them are transitive, and
-            there are usually more of those.
+            with <xref to="/php/autoloading">Composer</xref>, or with npm for JavaScript. The ones
+            you asked for are direct dependencies. The ones they brought with them are transitive,
+            and there are usually more of those.
         </p>
 
         <heading h3 id="whats-a-lock-file">What's a Lock File?</heading>
@@ -86,8 +86,8 @@
                 it finds. <cde>composer require</cde> and <cde>composer update</cde> mention it too.
             </li>
             <li>
-                You update the package, run your <lnk to="/php/testing">tests</lnk>, and deploy. The
-                audit comes back clean.
+                You update the package, run your <xref to="/php/testing">tests</xref>, and deploy.
+                The audit comes back clean.
             </li>
         </ol>
         <p>
@@ -155,7 +155,7 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
             asked for is installed: Guzzle requires it.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -211,7 +211,7 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
                     Guzzle, a value decoded by a JSON library, a header from an API: it came from
                     outside your code. The Oracle at Delphi had it on the wall, right next to "know
                     thyself":
-                    <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>, whoever's code carried it in.
+                    <strong><xref to="/php/never-trust-input">never trust input</xref></strong>, whoever's code carried it in.
                 </nti>
             </li>
         </list>

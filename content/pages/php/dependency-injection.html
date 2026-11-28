@@ -23,7 +23,8 @@
 
         <!-- Intro -->
         <p>
-            In <lnk to="/php/constants-and-statics">Constants, Static Variables and Functions</lnk>,
+            In
+            <xref to="/php/constants-and-statics">Constants, Static Variables and Functions</xref>,
             a greeting that reached out for the clock could only ever tell you the time right now,
             and the same greeting, handed the hour, could tell you any time you liked. That's the
             whole idea, and it has a long name: dependency injection. Give an object what it needs,
@@ -66,7 +67,7 @@
 
         <heading h3 id="the-interface-is-the-type">The Interface Is the Type</heading>
         <p>
-            Ask for an <lnk to="/php/interfaces">interface</lnk>, not a class:
+            Ask for an <xref to="/php/interfaces">interface</xref>, not a class:
             <cde>Mailer $mailer</cde>, not <cde>SmtpMailer $mailer</cde>. Then the class works with
             any mailer: the real one in production, one that prints to the screen while you build,
             one that just keeps a list in a test.
@@ -109,7 +110,7 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             In a new folder, with autoloading set up as in
-            <lnk to="/php/autoloading">Autoloading</lnk>. This time there's a real package to
+            <xref to="/php/autoloading">Autoloading</xref>. This time there's a real package to
             install: PHP-DI, a container. First <cde>composer.json</cde>:
         </p>
         <code-block example="dependency-injection/composer.json" />
@@ -127,7 +128,7 @@
         <code-block example="dependency-injection/src/Welcome.php" />
         <p>
             The address and name came from a signup form, so they're input, and
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: the address has to be an address, and line breaks are taken out of the name before it
+            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the address has to be an address, and line breaks are taken out of the name before it
             goes near an email. Now wire it by hand, in <cde>by-hand.php</cde>:
         </p>
         <code-block example="dependency-injection/by-hand.php" />
@@ -147,7 +148,7 @@
             a real mailer, and every class that needs a <cde>Mailer</cde> gets the real one.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -155,8 +156,8 @@
         <list>
             <li>
                 <cde>public function __construct(private Mailer $mailer) {}</cde>: constructor
-                promotion, from <lnk to="/php/modern-php">Modern PHP</lnk>, makes injection one line
-                per dependency.
+                promotion, from <xref to="/php/modern-php">Modern PHP</xref>, makes injection one
+                line per dependency.
             </li>
             <li>
                 Type the parameter as an interface. Make the property <cde>private</cde>, and
@@ -199,7 +200,7 @@
             <li>
                 <strong>Settings aren't classes.</strong> A mail server's host name or a database
                 password can't be autowired. Define them in the container from your
-                <lnk to="/php/configuration-and-the-environment">configuration</lnk>, and keep the
+                <xref to="/php/configuration-and-the-environment">configuration</xref>, and keep the
                 secrets out of the code.
             </li>
         </list>

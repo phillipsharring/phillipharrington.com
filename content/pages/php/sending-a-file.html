@@ -26,9 +26,9 @@
             A web server can hand out any file in the document root by itself. The files that need
             PHP are the ones it shouldn't hand out to just anyone: a report for logged-in users, an
             invoice that belongs to one customer, an export built on request. PHP checks who's
-            asking, then sends the file. <lnk to="/php/content-types">Content Types</lnk> showed the
-            headers that turn a response into a download. This lesson sends a real file with them,
-            including one too big to fit in memory.
+            asking, then sends the file. <xref to="/php/content-types">Content Types</xref> showed
+            the headers that turn a response into a download. This lesson sends a real file with
+            them, including one too big to fit in memory.
         </p>
 
         <!-- What is/are -->
@@ -82,7 +82,7 @@
         <nti>
             <p>
                 Step two is where downloads go wrong. The name in the query string is input, and
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>. Build a path from it, and someone will ask for <cde>../.env</cde>, and get it,
+                <strong><xref to="/php/never-trust-input">never trust input</xref></strong>. Build a path from it, and someone will ask for <cde>../.env</cde>, and get it,
                 because, as the prophecy foretold, the code forgot to never trust input. Look it up
                 in a list of the files you offer instead, and anything not on the list is a 404.
             </p>
@@ -155,7 +155,7 @@ curl 'http://localhost:8000/all-at-once.php' | tail -c 300</code-block>
         <code-block>curl -i 'http://localhost:8000/download.php?file=../.gitignore'</code-block>
         <p>A 404. The list is the only way in.</p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -187,7 +187,7 @@ curl 'http://localhost:8000/all-at-once.php' | tail -c 300</code-block>
         <list>
             <li>
                 <strong>An open buffer undoes the streaming.</strong> If a buffer from
-                <lnk to="/php/output-buffering">Output Buffering</lnk> is open, everything
+                <xref to="/php/output-buffering">Output Buffering</xref> is open, everything
                 <cde>readfile()</cde> sends piles up in it, in memory. That's why the example closes
                 every buffer first.
             </li>

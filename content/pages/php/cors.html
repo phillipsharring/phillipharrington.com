@@ -33,7 +33,7 @@
         <heading h2 id="whats-an-origin">What's an Origin?</heading>
         <p>
             The scheme, host and port of a URL, from
-            <lnk to="/php/anatomy-of-a-url">Anatomy of a URL</lnk>. <cde>https://example.com</cde>
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>. <cde>https://example.com</cde>
             is one origin. Change any of the three, and it's another:
         </p>
         <list>
@@ -48,8 +48,8 @@
             The browser's rule that a page's JavaScript can read answers only from its own origin.
             Without it, any site you visited could quietly <cde>fetch()</cde> your email or your
             bank, with your cookies, and read the answer. The rule stops the reading. It doesn't
-            always stop the request from being sent, which is why <lnk to="/php/csrf">CSRF</lnk> is
-            a separate problem.
+            always stop the request from being sent, which is why
+            <xref to="/php/csrf">CSRF</xref> is a separate problem.
         </p>
 
         <heading h2 id="whats-cors">What's CORS?</heading>
@@ -106,7 +106,7 @@
             any program that isn't a browser. CORS protects your visitors from other sites' pages;
             it doesn't protect your server from anyone. The <cde>Origin</cde> header is a header,
             and from anything but a browser it says whatever the sender wants.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>:</strong> your API
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>:</strong> your API
             still checks who's asking, the way it would without CORS.
         </p>
 
@@ -149,7 +149,7 @@ curl -i -H 'Origin: http://evil.example' http://localhost:8000/</code-block>
             gets the message anyway. A browser would hide it from the page; curl just shows it.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -212,7 +212,7 @@ curl -i -H 'Origin: http://evil.example' http://localhost:8000/</code-block>
             <p>
                 If you control both sides, put them on one origin: serve the API at
                 <cde>/api</cde> on the same site, with a
-                <lnk to="/php/whats-in-the-middle">reverse proxy</lnk> sending those paths to the
+                <xref to="/php/whats-in-the-middle">reverse proxy</xref> sending those paths to the
                 API server. Same origin, no preflights, no headers to get wrong.
             </p>
         </two-dollars>

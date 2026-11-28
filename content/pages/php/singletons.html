@@ -107,7 +107,7 @@
         <p>
             And <cde>tests.php</cde>, two tests that run the same code and expect the same thing (a
             two-dollar harness, from
-            <lnk to="/php/two-dollar-test-harnesses">Two-Dollar Test Harnesses</lnk>):
+            <xref to="/php/two-dollar-test-harnesses">Two-Dollar Test Harnesses</xref>):
         </p>
         <code-block example="singletons/before/tests.php" />
         <p>Run them:</p>
@@ -142,7 +142,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block
             You got the "only one" without the "from anywhere."
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -163,7 +163,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block
                 languages.
             </li>
             <li>
-                The alternative is <lnk to="/php/dependency-injection">Dependency Injection</lnk>:
+                The alternative is <xref to="/php/dependency-injection">Dependency Injection</xref>:
                 constructor parameters, and one place that builds everything. A container can do the
                 building for you once the app is big.
             </li>
@@ -173,14 +173,16 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>Tests that pass alone and fail together.</strong> That's the Try It, and
-                it's the classic sign of a singleton or other static state somewhere underneath.
+                <strong>Tests that pass alone and fail together.</strong> That's the
+                <sect>Try It</sect>, and it's the classic sign of a singleton or other static state
+                somewhere underneath.
             </li>
             <li>
                 <strong>Static methods are the same problem, smaller.</strong> A class full of
                 <cde>Thing::doIt()</cde> calls has the same hidden dependencies, even with no
                 instance. See
-                <lnk to="/php/constants-and-statics">Constants, Static Variables and Functions</lnk>.
+                <xref to="/php/constants-and-statics"
+                    >Constants, Static Variables and Functions</xref>.
             </li>
             <li>
                 <strong>"Only one" is the app's decision, not the class's.</strong> Today there's

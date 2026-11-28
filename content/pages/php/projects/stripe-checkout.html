@@ -37,21 +37,22 @@
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
-            <li><lnk to="/php/projects/checkout">Checkout</lnk>: the orders, copied in</li>
+            <li><xref to="/php/projects/checkout">Checkout</xref>: the orders, copied in</li>
             <li>
-                <lnk to="/php/dont-touch-cards">Don't Touch Cards</lnk>: why the card goes to Stripe
+                <xref to="/php/dont-touch-cards">Don't Touch Cards</xref>: why the card goes to
+                Stripe
             </li>
             <li>
-                <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk>: the keys live in
+                <xref to="/php/secrets-out-of-code">Secrets Out of Code</xref>: the keys live in
                 <cde>.env</cde>, never in git
             </li>
             <li>
-                <lnk to="/php/projects/redirecting">Redirecting</lnk> and
-                <lnk to="/php/request-and-response">Request and Response</lnk>: the 303 to Stripe
+                <xref to="/php/projects/redirecting">Redirecting</xref> and
+                <xref to="/php/request-and-response">Request and Response</xref>: the 303 to Stripe
             </li>
             <li>
-                <lnk to="/php/projects/comments">Comments</lnk> and
-                <lnk to="/php/projects/newsletter">Newsletter</lnk>: checking an HMAC signature
+                <xref to="/php/projects/comments">Comments</xref> and
+                <xref to="/php/projects/newsletter">Newsletter</xref>: checking an HMAC signature
             </li>
         </list>
 
@@ -68,7 +69,7 @@
         <code-block example="project-stripe-checkout/.env.example" />
         <code-block example="project-stripe-checkout/.gitignore" />
         <p>
-            Then copy the <lnk to="/php/projects/checkout">Checkout</lnk> project, leaving out its
+            Then copy the <xref to="/php/projects/checkout">Checkout</xref> project, leaving out its
             naive checkout and logs, and add Stripe's PHP library:
         </p>
         <!-- prettier-ignore -->
@@ -120,7 +121,7 @@
         <p>
             Coming back to the success page proves nothing. It's a URL; anyone can visit it, and
             people close the tab before they get there.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and a
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>,</strong> and a
             visitor's arrival is input. The truth comes from Stripe, server to server, as a webhook:
             a POST to your app saying what happened.
         </p>
@@ -179,7 +180,7 @@ docker compose --profile stripe up</code-block>
             isn't there. It never came.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="Why 4242 Works">
@@ -211,13 +212,13 @@ docker compose --profile stripe up</code-block>
             </li>
             <li>
                 <strong>Answer the webhook fast.</strong> Stripe waits only a short while. Slow
-                work, like emailing a receipt, goes in a <lnk to="/php/projects/queues">queue</lnk>,
-                and the webhook answers 200 at once.
+                work, like emailing a receipt, goes in a
+                <xref to="/php/projects/queues">queue</xref>, and the webhook answers 200 at once.
             </li>
             <li>
                 <strong>Abandoned sessions are normal.</strong> Many people get to the payment page
                 and leave. The order stays awaiting payment, and the
-                <lnk to="/php/projects/cron-jobs">cron job</lnk> that cancels old unpaid orders
+                <xref to="/php/projects/cron-jobs">cron job</xref> that cancels old unpaid orders
                 handles it.
             </li>
         </list>

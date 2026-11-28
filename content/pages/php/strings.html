@@ -33,7 +33,7 @@
             A row of bytes, usually text. PHP doesn't care what the bytes are, so a string can hold
             a name, a whole HTML page, or the contents of an image. For text, those bytes are nearly
             always UTF-8, where one letter can take more than one byte.
-            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>, next, is about that. This lesson
+            <xref to="/php/text-and-utf-8">Text and UTF-8</xref>, next, is about that. This lesson
             sticks to plain English, where a byte and a letter are the same.
         </p>
 
@@ -116,7 +116,7 @@
             two decimals in six spaces, and <cde>%03d</cde> pads a number with zeros.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -133,7 +133,7 @@
             </li>
             <li>
                 <cde>strpos()</cde>: where something is, or <cde>false</cde>. Compare with
-                <cde>!== false</cde>, as in <lnk to="/php/documentation">Documentation</lnk>.
+                <cde>!== false</cde>, as in <xref to="/php/documentation">Documentation</xref>.
             </li>
             <li><cde>str_replace($find, $replace, $text)</cde>: every match, replaced.</li>
             <li><cde>substr($text, $start, $length)</cde>: a piece.</li>
@@ -170,7 +170,8 @@
             <li>
                 <strong>Don't build HTML or SQL by gluing input into strings.</strong> Escape it for
                 HTML, and put it in a prepared statement for SQL. Gluing is how
-                <lnk to="/php/xss">XSS</lnk> and <lnk to="/php/sql-injection">SQL injection</lnk>
+                <xref to="/php/xss">XSS</xref> and
+                <xref to="/php/sql-injection">SQL injection</xref>
                 happen.
             </li>
         </list>

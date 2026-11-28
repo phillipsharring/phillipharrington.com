@@ -37,23 +37,23 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk>: where the token lives
-                instead
+                <xref to="/php/secrets-out-of-code">Secrets Out of Code</xref>: where the token
+                lives instead
             </li>
             <li>
-                <lnk to="/php/configuration-and-the-environment"
-                    >Configuration and the Environment</lnk>: <cde>.env</cde> and <cde>getenv()</cde>
+                <xref to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</xref>: <cde>.env</cde> and <cde>getenv()</cde>
             </li>
             <li>
-                <lnk to="/php/projects/rest-api">REST API</lnk>: bearer tokens and status codes,
+                <xref to="/php/projects/rest-api">REST API</xref>: bearer tokens and status codes,
                 from the other side
             </li>
             <li>
-                <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk>: failures the caller can
+                <xref to="/php/exceptions">Exceptions and Try/Catch</xref>: failures the caller can
                 handle
             </li>
             <li>
-                <lnk to="/php/projects/php-on-the-command-line">PHP on the Command Line</lnk>: the
+                <xref to="/php/projects/php-on-the-command-line">PHP on the Command Line</xref>: the
                 client is a script
             </li>
         </list>
@@ -120,7 +120,7 @@
             </li>
             <li>
                 <strong>The answer is checked.</strong>
-                <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and an
+                <strong><xref to="/php/never-trust-input">Never trust input</xref>,</strong> and an
                 API's response is input. It has to be JSON, and an object, or it's an error.
             </li>
         </list>
@@ -146,8 +146,8 @@ docker compose run --rm client php bin/tasks.php</code-block>
 [ ] 3 &lt;script&gt;alert(1)&lt;/script&gt;</code-block>
         <p>
             In a terminal, that third title is harmless text. Put it in a web page, and it's the XSS
-            from <lnk to="/php/projects/comments">Comments</lnk>: data from an API gets escaped like
-            any other. Then the misbehaving addresses:
+            from <xref to="/php/projects/comments">Comments</xref>: data from an API gets escaped
+            like any other. Then the misbehaving addresses:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose run --rm client php bin/tasks.php /flaky
@@ -158,7 +158,7 @@ docker compose run --rm client php bin/tasks.php /broken</code-block>
             ten. The third says the answer wasn't JSON. None of them print the token.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->
@@ -284,15 +284,15 @@ docker compose logs api | grep -c "$(grep API_TOKEN .env | cut -d= -f2)"</code-b
         </two-dollars>
 
         <p>
+            I don't have to tell you this.
+            <xref to="/php/never-trust-input">Never trust user input</xref>.
+        </p>
+        <p>You are now ready to take the stone from my hand.</p>
+        <p>
             That's the last project. You've gone from two computers talking to a shop that takes
             payments without touching a card, an API, and a client that keeps its secrets. Back to
             the course, for anything you want to read again.
         </p>
-        <p>
-            I don't have to tell you this.
-            <lnk to="/php/never-trust-input">Never trust user input</lnk>.
-        </p>
-        <p>You are now ready to take the stone from my hand.</p>
 
         <!-- Next -->
         <hr />

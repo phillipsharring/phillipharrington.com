@@ -140,7 +140,7 @@ curl 'http://localhost:8000/extract.php?isAdmin=1'</code-block>
             over yours.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -159,7 +159,7 @@ curl 'http://localhost:8000/extract.php?isAdmin=1'</code-block>
                 Array keys are names too. <cde>$subscription['renewsOn']</cde> beats
                 <cde>$x[1]</cde>, and a class with typed properties beats both, once the shape is
                 used in more than one place (see
-                <lnk to="/php/classes-and-objects">Classes and Objects</lnk>).
+                <xref to="/php/classes-and-objects">Classes and Objects</xref>).
             </li>
             <li>
                 <cde>extract()</cde> turns an array's keys into variables. Never use it on input,
@@ -171,10 +171,10 @@ curl 'http://localhost:8000/extract.php?isAdmin=1'</code-block>
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>Never let input name your variables.</strong> That's the Try It's
-                <cde>extract.php</cde>: one query string, and you're an administrator.
-                <lnk to="/php/never-trust-input">Never trust input</lnk>, including the names in it.
-                PHP used to do this to every script, with a setting called
+                <strong>Never let input name your variables.</strong> That's the
+                <sect>Try It</sect>'s <cde>extract.php</cde>: one query string, and you're an
+                administrator. <xref to="/php/never-trust-input">Never trust input</xref>, including
+                the names in it. PHP used to do this to every script, with a setting called
                 <cde>register_globals</cde>; it was turned off by default in PHP 4.2 and removed in
                 PHP 5.4.
             </li>

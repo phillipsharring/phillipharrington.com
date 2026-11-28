@@ -23,11 +23,11 @@
 
         <!-- Intro -->
         <p>
-            Every Try It so far has used PHP's built-in server, <cde>php -S</cde>, sometimes with
-            nginx in front of it. That's the right tool on your own computer, and the wrong one on a
-            live server. Most real PHP sites run two programs: a web server, usually nginx, and
-            PHP-FPM, which keeps PHP ready to run. Document Root said a <cde>.php</cde> file gets
-            run instead of sent. This is how.
+            Every <sect>Try It</sect> so far has used PHP's built-in server, <cde>php -S</cde>,
+            sometimes with nginx in front of it. That's the right tool on your own computer, and the
+            wrong one on a live server. Most real PHP sites run two programs: a web server, usually
+            nginx, and PHP-FPM, which keeps PHP ready to run. Document Root said a
+            <cde>.php</cde> file gets run instead of sent. This is how.
         </p>
 
         <!-- What is/are -->
@@ -98,7 +98,7 @@
         <p>
             The pool has a limit, <cde>pm.max_children</cde>. When every worker is busy, new
             requests wait in line. If they wait long enough, nginx gives up, and the visitor gets
-            the 504 from <lnk to="/php/access-and-error-logs">Access and Error Logs</lnk>.
+            the 504 from <xref to="/php/access-and-error-logs">Access and Error Logs</xref>.
         </p>
 
         <!-- Try it -->
@@ -155,7 +155,7 @@ curl -I http://localhost:8000/style.css</code-block>
             <cde>php-fpm: pool www</cde>. <cde>Ctrl+C</cde> in the first terminal stops both.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -201,7 +201,7 @@ curl -I http://localhost:8000/style.css</code-block>
                     <cde>try_files $uri =404</cde> in the PHP block stops an old trick, where a path
                     like <cde>/uploads/cat.jpg/x.php</cde> got an uploaded image run as PHP. Uploads
                     are input, and, as I may have mentioned,
-                    <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>; this one line keeps them from running.
+                    <strong><xref to="/php/never-trust-input">never trust input</xref></strong>; this one line keeps them from running.
                 </nti>
             </li>
             <li>

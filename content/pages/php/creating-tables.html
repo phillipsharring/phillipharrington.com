@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            In <lnk to="/php/sql">SQL</lnk>, the <cde>books</cde> table was already there. Someone
+            In <xref to="/php/sql">SQL</xref>, the <cde>books</cde> table was already there. Someone
             had to decide what it holds: which columns, what type each one is, which ones can be
             empty. That decision is a <cde>CREATE TABLE</cde> statement, and it's worth getting
             right, because the database enforces it on every row, forever, whatever your code
@@ -55,7 +55,7 @@
                 <strong>Exact decimals</strong>: <cde>DECIMAL(10, 2)</cde>, ten digits with two
                 after the point. Never <cde>FLOAT</cde> or <cde>DOUBLE</cde> for money; they're
                 approximate, the same way they are in PHP. Or do what
-                <lnk to="/php/types-of-types">Types of Types</lnk> says and count cents in an
+                <xref to="/php/types-of-types">Types of Types</xref> says and count cents in an
                 <cde>INT</cde>.
             </li>
             <li>
@@ -187,7 +187,7 @@ docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block
             </p>
         </nti>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -196,7 +196,7 @@ docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block
             <li>
                 <cde>in_array($value, $allowed, true)</cde> is the allow list for a column like
                 <cde>format</cde>, the same check as the shirt sizes in
-                <lnk to="/php/forms">Forms</lnk>.
+                <xref to="/php/forms">Forms</xref>.
             </li>
             <li>
                 <cde>filter_var($value, FILTER_VALIDATE_INT)</cde> for anything bound for an integer
@@ -205,7 +205,8 @@ docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block
             <li>
                 <cde>mb_strlen()</cde>, not <cde>strlen()</cde>, to check text against a
                 <cde>VARCHAR</cde> length. The length counts characters, and
-                <cde>strlen()</cde> counts bytes. <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>
+                <cde>strlen()</cde> counts bytes.
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>
                 has the difference.
             </li>
             <li>

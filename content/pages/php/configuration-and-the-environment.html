@@ -85,7 +85,7 @@
             A text file of settings, one <cde>NAME=value</cde> per line, that something loads into
             the environment before your code runs. Docker reads one with <cde>--env-file</cde>, and
             Compose with <cde>env_file:</cde>. PHP libraries can read one too, once you have
-            <lnk to="/php/autoloading">Composer</lnk>.
+            <xref to="/php/autoloading">Composer</xref>.
         </p>
         <p>
             The file with the real values is called <cde>.env</cde>, and it never goes in git. Next
@@ -122,8 +122,8 @@
             On your computer, the <cde>.env</cde> file is fine. On a live server, a file full of
             secrets sitting on the disk is one more thing to steal. Better is a secrets manager, a
             service that holds them and hands them to the app when it starts, so they live only in
-            memory. <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk>, in Security, goes
-            further.
+            memory. <xref to="/php/secrets-out-of-code">Secrets Out of Code</xref>, in Security,
+            goes further.
         </p>
 
         <side-story title="Off the Disk">
@@ -193,7 +193,7 @@ git status</code-block>
             <cde>.env</cde>. It can't commit a file it doesn't see.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->

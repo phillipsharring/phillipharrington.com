@@ -35,19 +35,19 @@
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
-            <li><lnk to="/php/query-strings">Query Strings</lnk>: <cde>?ref=ALICE10</cde></li>
+            <li><xref to="/php/query-strings">Query Strings</xref>: <cde>?ref=ALICE10</cde></li>
             <li>
-                <lnk to="/php/cookies">Cookies</lnk> and
-                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>: 30 days of
-                memory
+                <xref to="/php/cookies">Cookies</xref> and
+                <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref>: 30 days
+                of memory
             </li>
             <li>
-                <lnk to="/php/projects/redirecting">Redirecting</lnk>: a redirect that can't be
+                <xref to="/php/projects/redirecting">Redirecting</xref>: a redirect that can't be
                 pointed elsewhere
             </li>
-            <li><lnk to="/php/projects/store-front">Store Front</lnk>: money in whole cents</li>
+            <li><xref to="/php/projects/store-front">Store Front</xref>: money in whole cents</li>
             <li>
-                <lnk to="/php/transactions">Transactions</lnk>: an order and its commission,
+                <xref to="/php/transactions">Transactions</xref>: an order and its commission,
                 together
             </li>
         </list>
@@ -58,7 +58,7 @@
         <heading h3 id="step-1-the-tables">Step 1: The Tables</heading>
         <p>
             The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones from
-            <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <xref to="/php/projects/translation">Translation</xref>, with the database called
             <cde>shop</cde>. Four tables: the affiliates, their clicks, orders, and commissions:
         </p>
         <code-block example="project-affiliate-program/init.sql" />
@@ -108,7 +108,7 @@
         </p>
         <code-block example="project-affiliate-program/public/buy.php" />
         <p>
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> The cookie
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> The cookie
             came back from the browser, and the browser's owner can set it to anything. An
             affiliate's code is public, it's in their links, so a cookie can only ever claim what
             any visitor could claim by clicking one. Codes that aren't real and active count for
@@ -144,7 +144,7 @@ curl -H 'Cookie: ref=ALICE10' -d email=alice@example.com http://localhost:8000/b
             report again: still $4.99.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="Paying for Links">
@@ -166,7 +166,7 @@ curl -H 'Cookie: ref=ALICE10' -d email=alice@example.com http://localhost:8000/b
                 <strong>Commissions wait for refunds.</strong> A commission stays pending until the
                 refund window has passed. If the order is refunded first, the commission is
                 reversed. Approving them is a nightly
-                <lnk to="/php/projects/cron-jobs">cron job</lnk>.
+                <xref to="/php/projects/cron-jobs">cron job</xref>.
             </li>
             <li>
                 <strong>Clicks are cheap to fake.</strong> Anyone can load a link a thousand times.

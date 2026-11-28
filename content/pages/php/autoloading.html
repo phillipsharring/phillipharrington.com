@@ -59,8 +59,8 @@ App\Text\Shout     src/Text/Shout.php</code-block>
 
         <heading h3 id="composer">Composer</heading>
         <p>
-            PHP's package manager, from <lnk to="/php/tools#composer">Tools</lnk>. It installs other
-            people's code into a <cde>vendor</cde> folder, and writes one autoloader,
+            PHP's package manager, from <xref to="/php/tools#composer">Tools</xref>. It installs
+            other people's code into a <cde>vendor</cde> folder, and writes one autoloader,
             <cde>vendor/autoload.php</cde>, for their classes and yours. Your project's settings go
             in <cde>composer.json</cde>.
         </p>
@@ -127,7 +127,7 @@ App\Text\Shout     src/Text/Shout.php</code-block>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
         <p class="text-th-muted text-base">
-            The Composer command from <lnk to="/php/tools#composer">Tools</lnk>: the
+            The Composer command from <xref to="/php/tools#composer">Tools</xref>: the
             <cde>composer:2</cde> image, running <cde>composer install</cde> in your folder.
         </p>
         <p>
@@ -140,11 +140,12 @@ App\Text\Shout     src/Text/Shout.php</code-block>
         <p>
             <cde>HELLO, ADA!</cde> and <cde>HELLO, ZOË!</cde>, with the ë intact, because
             <cde>Shout</cde> uses <cde>mb_strtoupper()</cde>; plain <cde>strtoupper()</cde> only
-            knows ASCII letters, and <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> is why. Add
-            a class to <cde>src</cde> and it just works, with no new <cde>require</cde> anywhere.
+            knows ASCII letters, and <xref to="/php/text-and-utf-8">Text and UTF-8</xref> is why.
+            Add a class to <cde>src</cde> and it just works, with no new
+            <cde>require</cde> anywhere.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -202,8 +203,8 @@ App\Text\Shout     src/Text/Shout.php</code-block>
             <li>
                 <strong>Packages are other people's code, running as yours.</strong> Anything you
                 install can read your files and your secrets.
-                <lnk to="/php/dependencies">Your Dependencies Are Your Code Too</lnk>, in Security,
-                has more.
+                <xref to="/php/dependencies">Your Dependencies Are Your Code Too</xref>, in
+                Security, has more.
             </li>
         </list>
 

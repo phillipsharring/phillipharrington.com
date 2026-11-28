@@ -22,10 +22,10 @@
         <!-- Intro -->
         <p>
             CRUD answered a browser, with forms, HTML and redirects. When the client is a program, a
-            phone app or JavaScript using <lnk to="/php/fetch">fetch()</lnk>, it wants
-            <lnk to="/php/json">JSON</lnk>, and it can use every HTTP method, not just the two forms
-            know. REST is the set of conventions most of those APIs follow, so that a developer who
-            has used one can guess how yours works.
+            phone app or JavaScript using <xref to="/php/fetch">fetch()</xref>, it wants
+            <xref to="/php/json">JSON</xref>, and it can use every HTTP method, not just the two
+            forms know. REST is the set of conventions most of those APIs follow, so that a
+            developer who has used one can guess how yours works.
         </p>
 
         <!-- What is/are -->
@@ -49,7 +49,7 @@
                 <strong>Status codes say how it went.</strong> <cde>201</cde> for created,
                 <cde>204</cde> for done with nothing to say, <cde>404</cde>, <cde>422</cde> and the
                 rest from
-                <lnk to="/php/expressive-response-codes">Expressive HTTP Response Codes</lnk>.
+                <xref to="/php/expressive-response-codes">Expressive HTTP Response Codes</xref>.
             </li>
         </list>
 
@@ -58,7 +58,7 @@
             Each request carries everything the server needs to answer it, including who's asking,
             usually as a token in the <cde>Authorization</cde> header. The server doesn't remember
             the last request. That's what lets an API run on many servers behind a load balancer,
-            from <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: any of them can
+            from <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: any of them can
             answer any request.
         </p>
 
@@ -145,12 +145,12 @@ curl -i -X PATCH http://localhost:8000/notes/1</code-block>
                 <cde>Allow: GET, PUT, DELETE</cde>. Each says exactly what was wrong, so the
                 developer on the other end can fix their code without asking you. Archimedes, asked
                 what he'd need to move the world, said a lever, a place to stand, and to
-                <lnk to="/php/never-trust-input">never trust input</lnk>: a JSON body is input, and
-                "it's JSON" says nothing about what's inside it.
+                <xref to="/php/never-trust-input">never trust input</xref>: a JSON body is input,
+                and "it's JSON" says nothing about what's inside it.
             </p>
         </nti>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -168,7 +168,7 @@ curl -i -X PATCH http://localhost:8000/notes/1</code-block>
             <li>
                 <cde>json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)</cde> sends
                 "café" as UTF-8 rather than <cde>café</cde>. Both are valid JSON; one is readable.
-                See <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>.
+                See <xref to="/php/text-and-utf-8">Text and UTF-8</xref>.
             </li>
             <li>
                 <cde>$_SERVER['CONTENT_TYPE']</cde> says what the client claims it sent. It's a

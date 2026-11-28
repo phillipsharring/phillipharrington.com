@@ -36,19 +36,19 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/cookies">Cookies</lnk>: <cde>setcookie()</cde> and
+                <xref to="/php/cookies">Cookies</xref>: <cde>setcookie()</cde> and
                 <cde>$_COOKIE</cde>.
             </li>
             <li>
-                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk>:
+                <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref>:
                 <cde>HttpOnly</cde>, <cde>Secure</cde> and <cde>SameSite</cde>.
             </li>
             <li>
-                <lnk to="/php/never-trust-input">Never Trust Input</lnk> and
-                <lnk to="/php/xss">XSS and Escaping Output</lnk>: a cookie is input.
+                <xref to="/php/never-trust-input">Never Trust Input</xref> and
+                <xref to="/php/xss">XSS and Escaping Output</xref>: a cookie is input.
             </li>
             <li>
-                <lnk to="/php/request-and-response">Request and Response</lnk>: Post/Redirect/Get.
+                <xref to="/php/request-and-response">Request and Response</xref>: Post/Redirect/Get.
             </li>
         </list>
 
@@ -72,7 +72,7 @@
             Welcome back. Close the tab, come back, and it still knows you. It works.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->
@@ -196,7 +196,7 @@ curl -b 'name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' http://localh
                 <strong>Secure has to know about HTTPS.</strong> Behind a CDN or proxy, PHP may only
                 ever see plain HTTP, so <cde>is_https()</cde> says no forever. Have the proxy tell
                 you, with <cde>X-Forwarded-Proto</cde>, and trust that header only from your own
-                proxy, as in <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+                proxy, as in <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
         </list>
 

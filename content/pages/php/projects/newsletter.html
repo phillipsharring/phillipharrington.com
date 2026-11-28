@@ -36,21 +36,23 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/projects/sending-email">Sending Email</lnk> and
-                <lnk to="/php/projects/queues">Queues</lnk>: Symfony Mailer and Mailpit, as before
+                <xref to="/php/projects/sending-email">Sending Email</xref> and
+                <xref to="/php/projects/queues">Queues</xref>: Symfony Mailer and Mailpit, as before
             </li>
             <li>
-                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: an address typed by
+                <xref to="/php/never-trust-input">Never Trust Input</xref>: an address typed by
                 someone who may not own it
             </li>
-            <li><lnk to="/php/rate-limiting">Rate Limiting</lnk>: per address, and per visitor</li>
             <li>
-                <lnk to="/php/projects/comments">Comments</lnk>: the honeypot, and signing with
+                <xref to="/php/rate-limiting">Rate Limiting</xref>: per address, and per visitor
+            </li>
+            <li>
+                <xref to="/php/projects/comments">Comments</xref>: the honeypot, and signing with
                 <cde>hash_hmac()</cde>
             </li>
             <li>
-                <lnk to="/php/passwords">Passwords</lnk>: store a hash of a secret token, never the
-                token
+                <xref to="/php/passwords">Passwords</xref>: store a hash of a secret token, never
+                the token
             </li>
         </list>
 
@@ -59,8 +61,8 @@
 
         <heading h3 id="step-1-the-setup">Step 1: The Setup</heading>
         <p>
-            The containers from <lnk to="/php/projects/queues">Queues</lnk>, without the worker, and
-            with two more settings: the site's address for links, and a secret for signing
+            The containers from <xref to="/php/projects/queues">Queues</xref>, without the worker,
+            and with two more settings: the site's address for links, and a secret for signing
             unsubscribe links. <cde>composer.json</cde>, <cde>composer.lock</cde>, the
             <cde>Dockerfile</cde> and <cde>src/Database.php</cde> are the same too.
         </p>
@@ -156,7 +158,7 @@ docker compose exec app php bin/send.php issues/2026-11.txt</code-block>
             there. Follow the link at the bottom, press Unsubscribe, and send again. Nobody gets it.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->

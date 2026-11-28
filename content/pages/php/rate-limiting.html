@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk> protected the
+            <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref> protected the
             login once someone has it. But a login form, out of the box, answers every guess as
             happily as the first, as fast as anyone can send them. Every password is guessable given
             enough tries. A rate limit decides how many tries "enough" is.
@@ -56,7 +56,7 @@
         <p>
             <cde>429 Too Many Requests</cde>, the status code for "slow down." It can come with a
             <cde>Retry-After</cde> header saying how many seconds to wait. See
-            <lnk to="/php/request-and-response">Request and Response</lnk> for the rest of the
+            <xref to="/php/request-and-response">Request and Response</xref> for the rest of the
             codes.
         </p>
 
@@ -84,9 +84,9 @@
         </ol>
         <p>
             Ten guesses every fifteen minutes is under a thousand a day. The hundred-word list that
-            takes eight seconds in Break It would take ten hours against one account, and a list of
-            a million would take years. The per-address limit makes spreading out across accounts
-            slow too.
+            takes eight seconds in <sect>Break It</sect> would take ten hours against one account,
+            and a list of a million would take years. The per-address limit makes spreading out
+            across accounts slow too.
         </p>
 
         <!-- Try it -->
@@ -99,7 +99,7 @@
         <code-block example="rate-limiting/compose.yml" />
         <p>
             The two-line <cde>Dockerfile</cde> and <cde>db.php</cde> are the same as in
-            <lnk to="/php/sql-injection">SQL Injection</lnk>. Then <cde>init.sql</cde>, with Alice
+            <xref to="/php/sql-injection">SQL Injection</xref>. Then <cde>init.sql</cde>, with Alice
             and a table for failed logins, indexed by email and by address, then time, because those
             are the two questions it answers:
         </p>
@@ -117,7 +117,7 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=sunsh
 curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigger' http://localhost:8000/naive.php</code-block>
         <p>"Wrong email or password," then "Welcome back." It works. Now pretend you don't know.</p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -136,7 +136,7 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
                 <cde>$_SERVER['REMOTE_ADDR']</cde> for the address, when PHP faces visitors
                 directly. Behind a proxy or CDN, take the entry your own layer added to
                 <cde>X-Forwarded-For</cde>, as in
-                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
             <li><cde>VARCHAR(45)</cde> holds any IPv4 or IPv6 address as text.</li>
         </list>
@@ -149,7 +149,7 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
                 <cde>REMOTE_ADDR</cde> behind a CDN, and fifty failures from anyone locks out
                 everyone. Count by the first <cde>X-Forwarded-For</cde> entry, and anyone can claim
                 a new address with every guess.
-                <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>; headers are input.
+                <strong><xref to="/php/never-trust-input">Never trust input</xref></strong>; headers are input.
             </li>
             <li>
                 <strong>A per-account limit is also a way to lock someone out.</strong> Anyone can
@@ -161,14 +161,14 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
                 <strong>Attackers spread out.</strong> Credential stuffing tries passwords leaked
                 from other sites, one or two per account, across thousands of accounts and
                 addresses. Limits slow it down;
-                <lnk to="/php/passwords">checking new passwords against leaks</lnk> and offering a
+                <xref to="/php/passwords">checking new passwords against leaks</xref> and offering a
                 second factor do more.
             </li>
             <li>
                 <strong>Parallel requests can slip past.</strong> Twenty guesses sent at the same
                 instant can all count zero failures before any of them records one. For a login, a
                 few extra guesses rarely matter. For something like redeeming a code, lock the row
-                or count in a <lnk to="/php/transactions">transaction</lnk>.
+                or count in a <xref to="/php/transactions">transaction</xref>.
             </li>
             <li>
                 <strong>The same answer, the same time.</strong> "Wrong email or password" for both
@@ -195,12 +195,21 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
         <heading h2 id="break-it">Break It</heading>
         <p>
             Play the attacker. Copy <cde>words.txt</cde>, the hundred common passwords from
-            <lnk to="/php/passwords">Passwords</lnk>, into the folder, and make <cde>guess.sh</cde>,
-            which tries each one against Alice's account and prints the status code it gets back:
+            <xref to="/php/passwords">Passwords</xref>, into the folder, and make
+            <cde>guess.sh</cde>, which tries each one against Alice's account and prints the status
+            code it gets back:
         </p>
         <code-block example="rate-limiting/guess.sh" />
         <!-- prettier-ignore -->
         <code-block>sh guess.sh http://localhost:8000/naive.php</code-block>
+        <!-- prettier-ignore -->
+        <code-block>401 123456
+401 password
+401 123456789
+...
+401 harley
+401 ranger
+200 tigger</code-block>
         <p>New here:</p>
         <breakdown>
             <part code="sh"
@@ -212,14 +221,6 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
                 >An argument for the script: the page to attack.</part
             >
         </breakdown>
-        <!-- prettier-ignore -->
-        <code-block>401 123456
-401 password
-401 123456789
-...
-401 harley
-401 ranger
-200 tigger</code-block>
         <p>
             Forty-three wrong answers and one right one, in about eight seconds. Nothing stopped it,
             nothing slowed it, and nothing anywhere noticed. With a bigger list and a few hours,
@@ -255,8 +256,8 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
         <side-story title="After the Fact">
             One of my apps got its login limit after the fact, not at launch: 10 failures per email
             address and 50 per IP, in 15 minutes, the same numbers as this lesson. Until then, its
-            login was the naive one in Break It. That's the trouble with guessing: when it works, it
-            looks like any other login.
+            login was the naive one in <sect>Break It</sect>. That's the trouble with guessing: when
+            it works, it looks like any other login.
         </side-story>
 
         <!-- $2 tip -->

@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/inserting-data">Inserting Data</lnk> put rows in. Almost every page of a
+            <xref to="/php/inserting-data">Inserting Data</xref> put rows in. Almost every page of a
             web app takes rows out: a list, a profile, an order with its items. <cde>SELECT</cde> is
             the statement you'll write most, and it can do a lot more than fetch a table. Done well,
             one query brings back exactly what a page needs. Done badly, a page asks the database a
@@ -181,7 +181,7 @@ docker compose run --rm php php list.php 2</code-block>
             when you're done.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -202,9 +202,9 @@ docker compose run --rm php php list.php 2</code-block>
             </li>
             <li>
                 Every value in a <cde>WHERE</cde> that came from outside is a placeholder.
-                <lnk to="/php/never-trust-input">Never trust input</lnk>, including the page number,
-                the sort order and the search box. A column name to sort by can't be a placeholder,
-                so pick it from an allow list of your own.
+                <xref to="/php/never-trust-input">Never trust input</xref>, including the page
+                number, the sort order and the search box. A column name to sort by can't be a
+                placeholder, so pick it from an allow list of your own.
             </li>
         </list>
 

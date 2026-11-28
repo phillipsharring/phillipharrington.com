@@ -122,7 +122,7 @@ curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/admin
 curl -i -H 'Authorization: Bearer root-token' http://localhost:8000/admin</code-block>
         <p>
             A stranger gets <cde>404</cde>. So does Alice, who is logged in but isn't an admin: from
-            <lnk to="/php/expressive-response-codes">Expressive HTTP Response Codes</lnk>, a page
+            <xref to="/php/expressive-response-codes">Expressive HTTP Response Codes</xref>, a page
             you can't have doesn't admit it exists. Only Ada, the admin, gets in.
             <cde>/account</cde> asks for a login, <cde>/admin.php</cde> is a <cde>404</cde> because
             there's no such route, and <cde>/style.css</cde> comes back as a stylesheet. A new page
@@ -130,7 +130,7 @@ curl -i -H 'Authorization: Bearer root-token' http://localhost:8000/admin</code-
             one of its own.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -165,8 +165,8 @@ curl -i -H 'Authorization: Bearer root-token' http://localhost:8000/admin</code-
                     <cde>require "pages/{$_GET['page']}.php"</cde> looks like a shortcut to the same
                     thing, and it lets a visitor pick any file on the server, with <cde>../</cde> to
                     climb out. That's called local file inclusion. Say it with me:
-                    <lnk to="/php/never-trust-input">never trust input</lnk>. The URL picks a row in
-                    your table, and your table names the file.
+                    <xref to="/php/never-trust-input">never trust input</xref>. The URL picks a row
+                    in your table, and your table names the file.
                 </nti>
             </li>
             <li>

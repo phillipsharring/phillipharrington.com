@@ -26,15 +26,15 @@
         <!-- Intro -->
         <p>
             So far, data has lived in variables and arrays, and the code that works on it has lived
-            in <lnk to="/php/functions">functions</lnk>, and nothing kept the two together. Any code
-            anywhere could reach into a cart array and set a price to minus ten dollars. A class
-            puts the data and the code that's allowed to change it in one place, and keeps
+            in <xref to="/php/functions">functions</xref>, and nothing kept the two together. Any
+            code anywhere could reach into a cart array and set a price to minus ten dollars. A
+            class puts the data and the code that's allowed to change it in one place, and keeps
             everything else out.
         </p>
 
         <side-story title="Two Hard Things">
-            The line on the stickers on <lnk to="/php/caching">Caching</lnk> and
-            <lnk to="/php/naming-things">Naming Things</lnk> is usually credited to Phil Karlton:
+            The line on the stickers on <xref to="/php/caching">Caching</xref> and
+            <xref to="/php/naming-things">Naming Things</xref> is usually credited to Phil Karlton:
             "There are only two hard things in computer science: cache invalidation and naming
             things." Someone, usually said to be Leon Bambrick, finished it properly: "...and
             off-by-one errors." Hence this sticker.
@@ -110,13 +110,13 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             The class goes in a file of its own, named after it. Make <cde>Cart.php</cde>. Prices
-            are whole cents, in an int, as in <lnk to="/php/types-of-types">Types of Types</lnk>:
+            are whole cents, in an int, as in <xref to="/php/types-of-types">Types of Types</xref>:
         </p>
         <code-block example="classes-and-objects/Cart.php" />
         <p>
             If <cde>add()</cde> is given a quantity under one, it throws an exception, which stops
             the program with a message.
-            <lnk to="/php/exceptions">Exceptions and Try/Catch</lnk> covers what else you can do
+            <xref to="/php/exceptions">Exceptions and Try/Catch</xref> covers what else you can do
             with one. Now <cde>shop.php</cde>, which uses the class:
         </p>
         <code-block example="classes-and-objects/shop.php" />
@@ -140,7 +140,7 @@
             through <cde>add()</cde>, and <cde>add()</cde> checks.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->

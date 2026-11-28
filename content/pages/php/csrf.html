@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/xss">XSS</lnk> needed the attacker's code on your page. CSRF doesn't. It
+            <xref to="/php/xss">XSS</xref> needed the attacker's code on your page. CSRF doesn't. It
             works from a page on a completely different site, which quietly makes your visitor's
             browser send a request to yours. The browser adds your cookies, as it always does, and
             your site sees a logged-in member asking to change their email address.
@@ -34,13 +34,13 @@
             cookie, sent by their own browser, that they never meant to send. Any page can contain a
             form aimed at any site, and a script can submit it the moment the page loads. The
             browser sends the target site's cookies with it, because that's how
-            <lnk to="/php/cookies">cookies</lnk> work: they go with every request to their site, no
-            matter which page started it.
+            <xref to="/php/cookies">cookies</xref> work: they go with every request to their site,
+            no matter which page started it.
         </p>
         <p>
             So a session cookie proves which browser sent a request. It doesn't prove the person
             meant to send it, or that it came from your page. A login cookie is input too, and
-            <strong>you <lnk to="/php/never-trust-input">never trust input</lnk></strong> to say
+            <strong>you <xref to="/php/never-trust-input">never trust input</xref></strong> to say
             more than it can.
         </p>
 
@@ -121,7 +121,7 @@
             so will the attack.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -149,7 +149,7 @@
             </li>
             <li>
                 <cde>session_set_cookie_params(['samesite' =&gt; 'Lax'])</cde> as a second layer.
-                <lnk to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</lnk> has the
+                <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref> has the
                 rest of the cookie's settings.
             </li>
         </list>
@@ -166,13 +166,13 @@
             <li>
                 <strong>SameSite doesn't stop the same site.</strong> <cde>SameSite=Lax</cde> keeps
                 cookies off POSTs from other sites, and it's worth setting. But a page on another
-                subdomain, or another port, is the same site, and the cookie goes. Try It is exactly
-                that case. The token works either way.
+                subdomain, or another port, is the same site, and the cookie goes.
+                <sect>Try It</sect> is exactly that case. The token works either way.
             </li>
             <li>
                 <strong>Don't put the token in a URL.</strong> URLs end up in logs, in history, and
                 in the <cde>Referer</cde> header sent to other sites. Hidden field for forms, a
-                request header for <lnk to="/php/fetch">fetch()</lnk>.
+                request header for <xref to="/php/fetch">fetch()</xref>.
             </li>
             <li>
                 <strong>XSS beats the token.</strong> A script running on your own page can read the
@@ -232,7 +232,7 @@
             <p>
                 Don't check the token in each page. Check it once, at the top of every POST, before
                 any page code runs: in a shared include today, in
-                <lnk to="/php/middleware">middleware</lnk> later. Then a new form is protected the
+                <xref to="/php/middleware">middleware</xref> later. Then a new form is protected the
                 day you write it, and forgetting isn't possible. Pages that truly need no token,
                 like a webhook from a payment company, get an explicit exception you can list.
             </p>

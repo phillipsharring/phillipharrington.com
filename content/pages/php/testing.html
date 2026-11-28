@@ -62,7 +62,7 @@
         <p>
             A stand-in for a dependency, so a test doesn't need the real thing. The
             <cde>MemoryMailer</cde> from
-            <lnk to="/php/dependency-injection">Dependency Injection</lnk> is one: it keeps emails
+            <xref to="/php/dependency-injection">Dependency Injection</xref> is one: it keeps emails
             in a list, and the test reads the list. This is where injection pays for itself. A class
             that makes its own mailer can't be handed a fake.
         </p>
@@ -103,7 +103,7 @@
         <p>
             Start a folder with the code from the last two lessons in <cde>src</cde>:
             <cde>verification.php</cde> from
-            <lnk to="/php/two-dollar-test-harnesses">Two-Dollar Test Harnesses</lnk>, and
+            <xref to="/php/two-dollar-test-harnesses">Two-Dollar Test Harnesses</xref>, and
             <cde>Mailer.php</cde>, <cde>MemoryMailer.php</cde> and <cde>Welcome.php</cde> from
             Dependency Injection. Then <cde>composer.json</cde>:
         </p>
@@ -123,7 +123,7 @@
         <p>
             <cde>tamperedLinks()</cde> is a data provider: one test, run once for each link in the
             list. Every one is a link someone edited, or made up, and
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>: each has to come back <cde>null</cde>. Then the welcome email, in
+            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: each has to come back <cde>null</cde>. Then the welcome email, in
             <cde>tests/WelcomeTest.php</cde>, with the fake mailer:
         </p>
         <code-block example="testing/tests/WelcomeTest.php" />
@@ -161,7 +161,7 @@ Tests: 13, Assertions: 15, Failures: 1.</code-block>
             <cde>--filter Expired</cde> to run only the tests with that in their name.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -210,7 +210,7 @@ Tests: 13, Assertions: 15, Failures: 1.</code-block>
             <li>
                 <strong>Statics and globals leak between tests.</strong> PHPUnit makes a fresh test
                 object every time, but a static property set in one test is still set in the next,
-                as <lnk to="/php/constants-and-statics">Constants and Statics</lnk> warned.
+                as <xref to="/php/constants-and-statics">Constants and Statics</xref> warned.
             </li>
             <li>
                 <strong>Test what it does, not how.</strong> A test that checks which private method

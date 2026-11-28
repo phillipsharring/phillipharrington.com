@@ -120,11 +120,11 @@ docker compose down -v</code-block>
             refused before it gets near the table. Then the interesting part: the demo slips a blank
             row straight into the database with SQL, the way a bug or an old script might, and the
             mapper won't turn it into a <cde>Note</cde>. The rows in your own database are input
-            too. <lnk to="/php/never-trust-input">Never trust input</lnk>, even from yourself, and
+            too. <xref to="/php/never-trust-input">Never trust input</xref>, even from yourself, and
             the model's constructor is where that's enforced, every time.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -136,12 +136,12 @@ docker compose down -v</code-block>
             </li>
             <li>
                 Constructor promotion, <cde>public function __construct(public string $body)</cde>,
-                keeps a model short. See <lnk to="/php/modern-php">Modern PHP</lnk>.
+                keeps a model short. See <xref to="/php/modern-php">Modern PHP</xref>.
             </li>
             <li>
                 The table takes the <cde>PDO</cde> in its constructor, never makes its own. That's
-                <lnk to="/php/dependency-injection">Dependency Injection</lnk>, and it's how a test
-                can hand it a test database.
+                <xref to="/php/dependency-injection">Dependency Injection</xref>, and it's how a
+                test can hand it a test database.
             </li>
             <li>
                 <cde>DateTimeImmutable::createFromFormat()</cde> to read a

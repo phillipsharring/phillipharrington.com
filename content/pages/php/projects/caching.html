@@ -35,18 +35,20 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/request-and-response">Request and Response</lnk>: headers both ways,
+                <xref to="/php/request-and-response">Request and Response</xref>: headers both ways,
                 and the 304 status
             </li>
             <li>
-                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: the caches you don't
-                run
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: the caches you
+                don't run
             </li>
             <li>
-                <lnk to="/php/working-with-files">Working with Files</lnk>: where the copies live
+                <xref to="/php/working-with-files">Working with Files</xref>: where the copies live
             </li>
-            <li><lnk to="/php/classes-and-objects">Classes and Objects</lnk>: the cache itself</li>
-            <li><lnk to="/php/json">JSON</lnk>: what's in each file</li>
+            <li>
+                <xref to="/php/classes-and-objects">Classes and Objects</xref>: the cache itself
+            </li>
+            <li><xref to="/php/json">JSON</xref>: what's in each file</li>
         </list>
 
         <!-- Build it -->
@@ -104,10 +106,10 @@
         <nti>
             <p>
                 The town crier rang his bell and shouted it in the square every morning:
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk>,</strong> and that
-                includes what goes into a cache key. The region must be one of four. If any string
-                were allowed, anyone could ask for a million made-up regions, and you'd make a
-                million slow reports and keep a million files.
+                <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong> and
+                that includes what goes into a cache key. The region must be one of four. If any
+                string were allowed, anyone could ask for a million made-up regions, and you'd make
+                a million slow reports and keep a million files.
             </p>
         </nti>
 
@@ -142,7 +144,7 @@ curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'</c
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php clear-cache.php</code-block>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="The Two Hard Things">

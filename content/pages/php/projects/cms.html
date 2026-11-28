@@ -37,25 +37,26 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/file-uploads">File Uploads</lnk>: <cde>$_FILES</cde>, and why every
+                <xref to="/php/file-uploads">File Uploads</xref>: <cde>$_FILES</cde>, and why every
                 part of it is a claim
             </li>
             <li>
-                <lnk to="/php/document-root">Document Root</lnk>: what's in the web root can be run
+                <xref to="/php/document-root">Document Root</xref>: what's in the web root can be
+                run
             </li>
             <li>
-                <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>: the lock on
+                <xref to="/php/projects/http-authentication">HTTP Authentication</xref>: the lock on
                 the admin
             </li>
             <li>
-                <lnk to="/php/csrf">CSRF</lnk> and <lnk to="/php/sessions">Sessions</lnk>: a token
-                on every admin form
+                <xref to="/php/csrf">CSRF</xref> and <xref to="/php/sessions">Sessions</xref>: a
+                token on every admin form
             </li>
             <li>
-                <lnk to="/php/inserting-data">Inserting Data</lnk>: one query that creates or
+                <xref to="/php/inserting-data">Inserting Data</xref>: one query that creates or
                 updates
             </li>
-            <li><lnk to="/php/xss">XSS and Escaping Output</lnk>: the page text</li>
+            <li><xref to="/php/xss">XSS and Escaping Output</xref>: the page text</li>
         </list>
 
         <!-- Build it -->
@@ -79,9 +80,9 @@
         uploads/             where the broken one puts files</code-block>
         <p>
             <cde>compose.yml</cde>, the <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the same
-            as in <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            as in <xref to="/php/projects/translation">Translation</xref>, with the database called
             <cde>cms</cde>. Copy <cde>auth.php</cde> and <cde>users.php</cde> from
-            <lnk to="/php/projects/http-authentication">HTTP Authentication</lnk>. A
+            <xref to="/php/projects/http-authentication">HTTP Authentication</xref>. A
             <cde>.gitignore</cde> keeps uploads out of git, since they're data, not code:
         </p>
         <code-block example="project-cms/.gitignore" />
@@ -116,10 +117,10 @@
 
         <heading h3 id="step-5-the-upload-checks">Step 5: The Upload Checks</heading>
         <p>
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>,</strong> and an upload
-            is input from top to bottom. The file name in <cde>$_FILES</cde> is whatever the client
-            said. So is the type. The only thing you can examine is the bytes, and even those were
-            chosen by someone else. <cde>src/uploads.php</cde> does five things:
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>,</strong> and an
+            upload is input from top to bottom. The file name in <cde>$_FILES</cde> is whatever the
+            client said. So is the type. The only thing you can examine is the bytes, and even those
+            were chosen by someone else. <cde>src/uploads.php</cde> does five things:
         </p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>Checks that the upload arrived, and isn't too big.</li>
@@ -161,7 +162,7 @@
             save, and look at the page.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->
@@ -177,7 +178,7 @@
 curl -F 'image=@shell.php' http://localhost:8000/upload-naive.php
 curl http://localhost:8000/uploads/shell.php</code-block>
         <p class="text-th-muted text-base">
-            From <lnk to="/php/file-uploads">File Uploads</lnk>:
+            From <xref to="/php/file-uploads">File Uploads</xref>:
             <cde>-F 'image=@shell.php'</cde> sends the file as the form's <cde>image</cde> field.
         </p>
         <p>

@@ -36,21 +36,21 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/types-of-types">Types of Types</lnk>: why floats are not for money
+                <xref to="/php/types-of-types">Types of Types</xref>: why floats are not for money
             </li>
             <li>
-                <lnk to="/php/relating-tables">Relating Tables: Keys and Foreign Keys</lnk>:
+                <xref to="/php/relating-tables">Relating Tables: Keys and Foreign Keys</xref>:
                 products and their categories
             </li>
             <li>
-                <lnk to="/php/query-strings">Query Strings</lnk>:
+                <xref to="/php/query-strings">Query Strings</xref>:
                 <cde>?category=mugs&amp;sort=price-low</cde>
             </li>
             <li>
-                <lnk to="/php/sql-injection">SQL Injection</lnk>: the part of a query a placeholder
-                can't protect
+                <xref to="/php/sql-injection">SQL Injection</xref>: the part of a query a
+                placeholder can't protect
             </li>
-            <li><lnk to="/php/projects/blog">Blog</lnk>: a page per row, at a clean address</li>
+            <li><xref to="/php/projects/blog">Blog</xref>: a page per row, at a clean address</li>
         </list>
 
         <!-- Build it -->
@@ -59,7 +59,7 @@
         <heading h3 id="step-1-the-products">Step 1: The Products</heading>
         <p>
             The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones from
-            <lnk to="/php/projects/translation">Translation</lnk>, with the database called
+            <xref to="/php/projects/translation">Translation</xref>, with the database called
             <cde>store</cde>. The tables:
         </p>
         <code-block example="project-store-front/init.sql" />
@@ -93,12 +93,12 @@
         <heading h3 id="step-4-the-pages">Step 4: The Pages</heading>
         <code-block example="project-store-front/public/index.php" />
         <p>
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> Both choices
-            in the query string are checked against lists before they're used: the category against
-            the categories in the database, the sort against the keys of <cde>SORTS</cde>. Anything
-            else, including an array where a string should be, quietly becomes the default. The
-            links are built with <cde>http_build_query()</cde>, which encodes each value, and then
-            escaped for the page.
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> Both
+            choices in the query string are checked against lists before they're used: the category
+            against the categories in the database, the sort against the keys of <cde>SORTS</cde>.
+            Anything else, including an array where a string should be, quietly becomes the default.
+            The links are built with <cde>http_build_query()</cde>, which encodes each value, and
+            then escaped for the page.
         </p>
 
         <heading h3 id="step-5-run-it">Step 5: Run It</heading>
@@ -118,7 +118,7 @@ curl -i http://localhost:8000/products/old-sticker</code-block>
             visitors know.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="The Penny Problem">

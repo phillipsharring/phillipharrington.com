@@ -36,21 +36,22 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/projects/php-on-the-command-line">PHP on the Command Line</lnk>:
+                <xref to="/php/projects/php-on-the-command-line">PHP on the Command Line</xref>:
                 options, <cde>STDERR</cde> and exit codes
             </li>
             <li>
-                <lnk to="/php/rate-limiting">Rate Limiting</lnk>: where the login attempts come from
+                <xref to="/php/rate-limiting">Rate Limiting</xref>: where the login attempts come
+                from
             </li>
             <li>
-                <lnk to="/php/deleting-data">Deleting Data</lnk>: a <cde>DELETE</cde> with a
+                <xref to="/php/deleting-data">Deleting Data</xref>: a <cde>DELETE</cde> with a
                 <cde>WHERE</cde>, and a <cde>LIMIT</cde>
             </li>
             <li>
-                <lnk to="/php/configuration-and-the-environment"
-                    >Configuration and the Environment</lnk>: where the settings come from
+                <xref to="/php/configuration-and-the-environment"
+                    >Configuration and the Environment</xref>: where the settings come from
             </li>
-            <li><lnk to="/php/indexes">Indexes</lnk>: on the date the job searches by</li>
+            <li><xref to="/php/indexes">Indexes</xref>: on the date the job searches by</li>
         </list>
 
         <!-- Build it -->
@@ -85,7 +86,7 @@
         <code-block example="project-cron-jobs/compose.yml" />
         <p>
             <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones, from
-            <lnk to="/php/projects/translation">Translation</lnk>.
+            <xref to="/php/projects/translation">Translation</xref>.
         </p>
 
         <heading h3 id="step-3-the-job">Step 3: The Job</heading>
@@ -105,7 +106,7 @@
                 <nti>
                     <strong>Checked options.</strong>
                     Stonehenge ran on a schedule too, and its druids knew to
-                    <lnk to="/php/never-trust-input">never trust input</lnk>, even from a crontab:
+                    <xref to="/php/never-trust-input">never trust input</xref>, even from a crontab:
                     <cde>--days</cde> must be a whole number, 1 or more, or the job stops with exit
                     code 2 before it deletes anything.
                 </nti>
@@ -168,7 +169,7 @@ tail -f var/prune.log</code-block>
             <cde>tail</cde>, and <cde>docker compose --profile cron down -v</cde> stops the rest.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="Older Than the Web">

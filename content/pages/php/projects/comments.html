@@ -36,25 +36,27 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/xss">XSS and Escaping Output</lnk>: escape on the way out, every time
+                <xref to="/php/xss">XSS and Escaping Output</xref>: escape on the way out, every
+                time
             </li>
             <li>
-                <lnk to="/php/never-trust-input">Never Trust Input</lnk>: every field, checked on
+                <xref to="/php/never-trust-input">Never Trust Input</xref>: every field, checked on
                 the server
             </li>
             <li>
-                <lnk to="/php/rate-limiting">Rate Limiting</lnk>: so many per address per minute
+                <xref to="/php/rate-limiting">Rate Limiting</xref>: so many per address per minute
             </li>
             <li>
-                <lnk to="/php/projects/guestbook">Guestbook</lnk>: the same stored-script attack,
+                <xref to="/php/projects/guestbook">Guestbook</xref>: the same stored-script attack,
                 met earlier
             </li>
             <li>
-                <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>: which address is the
-                visitor's
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: which address is
+                the visitor's
             </li>
             <li>
-                <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk>: refusing bytes that aren't text
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: refusing bytes that aren't
+                text
             </li>
         </list>
 
@@ -64,7 +66,7 @@
         <heading h3 id="step-1-the-tables">Step 1: The Tables</heading>
         <p>
             The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones from
-            <lnk to="/php/projects/translation">Translation</lnk>, with a database called
+            <xref to="/php/projects/translation">Translation</xref>, with a database called
             <cde>comments</cde> and a secret for signing form tokens:
         </p>
         <code-block example="project-comments/compose.yml" />
@@ -133,7 +135,7 @@
             more, and the sixth in ten minutes gets <cde>429 Too Many Requests</cde>.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->
@@ -215,7 +217,7 @@ done</code-block>
             <li>
                 <strong>Behind a proxy, every comment has the same address.</strong> Then five per
                 ten minutes is five for the whole world. Use the address your own proxy reports, as
-                in <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk>.
+                in <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
             <li>
                 <strong>Honeypots must be hidden from people, and from screen readers.</strong>

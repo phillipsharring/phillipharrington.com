@@ -21,7 +21,7 @@
 
         <!-- Intro -->
         <p>
-            Every Try It in this section started from an empty database, with an
+            Every <sect>Try It</sect> in this section started from an empty database, with an
             <cde>init.sql</cde> that built the tables from scratch. That only works once. A real
             app's database is full of rows that have to survive, and the tables still have to
             change: a new column, a new index, a new table, a column that turned out to be a
@@ -186,7 +186,7 @@ docker compose down -v</code-block>
             >
         </breakdown>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -220,7 +220,7 @@ docker compose down -v</code-block>
             <li>
                 <strong>One change per file.</strong> In MySQL, <cde>CREATE</cde>,
                 <cde>ALTER</cde> and <cde>DROP</cde> commit on their own, so they can't be wrapped
-                in a transaction (that was in <lnk to="/php/transactions">Transactions</lnk>). A
+                in a transaction (that was in <xref to="/php/transactions">Transactions</xref>). A
                 file with three changes that fails on the second leaves the first done and the file
                 not recorded. With one change per file, a failure leaves nothing half-done.
             </li>

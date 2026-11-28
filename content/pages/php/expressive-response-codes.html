@@ -24,7 +24,7 @@
         <!-- Intro -->
         <p>
             Every response starts with a status code, from
-            <lnk to="/php/request-and-response">Request and Response</lnk>. It's the first thing a
+            <xref to="/php/request-and-response">Request and Response</xref>. It's the first thing a
             browser, a script or a CDN reads, and often the only thing. A good one tells the client
             exactly what happened, so it knows what to do next. Then there's the other half of the
             lesson: some clients are attackers, and some exact answers are exactly what they came
@@ -69,7 +69,7 @@
             </li>
             <li>
                 <strong>429 Too Many Requests</strong>: slow down. <cde>Retry-After</cde> says for
-                how long; see <lnk to="/php/rate-limiting">Rate Limiting</lnk>.
+                how long; see <xref to="/php/rate-limiting">Rate Limiting</xref>.
             </li>
             <li>
                 <strong>500 Internal Server Error</strong>: our fault.
@@ -213,7 +213,7 @@ curl -i http://localhost:8000/login</code-block>
             client what to do next, and none of them tells an attacker anything about anyone.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -233,14 +233,14 @@ curl -i http://localhost:8000/login</code-block>
             </li>
             <li>
                 <cde>password_verify()</cde> against a dummy hash when the account doesn't exist, so
-                both answers take the same time. See <lnk to="/php/passwords">Passwords</lnk>.
+                both answers take the same time. See <xref to="/php/passwords">Passwords</xref>.
             </li>
             <li>
                 <nti>
                     <cde>$_SERVER['HTTP_AUTHORIZATION']</cde> and every field in
                     <cde>$_POST</cde> are input. You know the drill.
-                    <lnk to="/php/never-trust-input">Never trust input</lnk>: check that a token is
-                    one you issued, and that <cde>text</cde> is a string before you measure it.
+                    <xref to="/php/never-trust-input">Never trust input</xref>: check that a token
+                    is one you issued, and that <cde>text</cde> is a string before you measure it.
                 </nti>
             </li>
         </list>
@@ -257,7 +257,7 @@ curl -i http://localhost:8000/login</code-block>
                 <strong>A 500 should say nothing.</strong> "Something went wrong" for the user, and
                 the stack trace for your error log. A trace on the page shows file paths, queries
                 and sometimes secrets. See
-                <lnk to="/php/errors-and-the-error-log">Errors and the Error Log</lnk>.
+                <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref>.
             </li>
             <li>
                 <strong>Signup forms leak too.</strong> "That email is already registered" answers

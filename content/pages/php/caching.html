@@ -25,7 +25,7 @@
 
         <!-- Intro -->
         <p>
-            <lnk to="/php/output-buffering">Output Buffering</lnk> turned a whole page into a
+            <xref to="/php/output-buffering">Output Buffering</xref> turned a whole page into a
             string. A page you can hold, you can keep. If it took a second to make, and it will be
             the same for the next thousand visitors, there's no reason to make it a thousand times.
             Keeping it is caching.
@@ -95,17 +95,17 @@
             answers <cde>304 Not Modified</cde>, with no body, and the browser uses its copy for
             another lifetime. <cde>Last-Modified</cde> and <cde>If-Modified-Since</cde> do the same
             with a date instead of a fingerprint. Both are headers from
-            <lnk to="/php/request-and-response">Request and Response</lnk>.
+            <xref to="/php/request-and-response">Request and Response</xref>.
         </p>
 
         <heading h3 id="the-middle">The Middle</heading>
         <p>
-            <lnk to="/php/whats-in-the-middle">What's in the Middle</lnk> put a CDN at the front of
-            the chain, keeping copies close to visitors. It reads the same headers the browser does.
-            A <cde>public</cde> answer with a <cde>max-age</cde> can be handed out from a server on
-            another continent for that long, and your server never hears about it. Many CDNs also
-            have their own settings that override yours, so check them before you go looking for a
-            bug in your code.
+            <xref to="/php/whats-in-the-middle">What's in the Middle</xref> put a CDN at the front
+            of the chain, keeping copies close to visitors. It reads the same headers the browser
+            does. A <cde>public</cde> answer with a <cde>max-age</cde> can be handed out from a
+            server on another continent for that long, and your server never hears about it. Many
+            CDNs also have their own settings that override yours, so check them before you go
+            looking for a bug in your code.
         </p>
 
         <heading h3 id="your-app">Your App</heading>
@@ -207,7 +207,7 @@
             A page that's slow on purpose, made fast with a file cache, then made smaller still with
             an <cde>ETag</cde>. In a folder, make a <cde>public</cde> folder and an empty
             <cde>cache</cde> folder beside it, so the copies are kept outside the
-            <lnk to="/php/document-root">document root</lnk>. Then <cde>public/index.php</cde>:
+            <xref to="/php/document-root">document root</xref>. Then <cde>public/index.php</cde>:
         </p>
         <code-block example="caching/public/index.php" />
         <p>Serve <cde>public</cde>:</p>
@@ -257,8 +257,8 @@ curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-b
         </p>
         <p>
             <cde>If-None-Match</cde> is a header, and headers are input.
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> The page only
-            compares it with its own fingerprint, and never uses it for anything else.
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> The page
+            only compares it with its own fingerprint, and never uses it for anything else.
         </p>
         <p>One more file, a page about one person, <cde>public/hello.php</cde>:</p>
         <code-block example="caching/public/hello.php" />
@@ -267,15 +267,15 @@ curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-b
         <p>
             <cde>Cache-Control: private, no-store</cde>: no cache anywhere keeps this one. The name
             came from the query string, so it's checked and escaped, and the page says it's UTF-8,
-            so a name like Zoë arrives the way it was typed (<lnk to="/php/text-and-utf-8"
-                >Text and UTF-8</lnk>
+            so a name like Zoë arrives the way it was typed (<xref to="/php/text-and-utf-8"
+                >Text and UTF-8</xref>
             has why). <cde>Ctrl+C</cde> stops the server.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
         <p>
-            This is the idea, small. The <lnk to="/php/projects/caching">Caching project</lnk>
+            This is the idea, small. The <xref to="/php/projects/caching">Caching project</xref>
             builds a cache you can use for anything, with keys, lifetimes and a way to clear it all.
         </p>
 
@@ -333,8 +333,8 @@ curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-b
             </li>
             <li>
                 <strong>A browser may send several ETags.</strong> <cde>If-None-Match</cde> can be a
-                list, separated by commas. The Try It compares the whole header to keep it short;
-                the Caching project splits the list.
+                list, separated by commas. The <sect>Try It</sect> compares the whole header to keep
+                it short; the Caching project splits the list.
             </li>
             <li>
                 <strong>The ETag has to change when the page does.</strong> Make it from the body,

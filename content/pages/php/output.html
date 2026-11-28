@@ -95,7 +95,7 @@
         <p>
             PHP adds one header by itself: <cde>Content-Type: text/html; charset=UTF-8</cde>, unless
             you send your own. The <cde>charset</cde> tells the browser how to read the bytes;
-            <lnk to="/php/text-and-utf-8">Text and UTF-8</lnk> has the whole story.
+            <xref to="/php/text-and-utf-8">Text and UTF-8</xref> has the whole story.
         </p>
 
         <!-- Try it -->
@@ -139,7 +139,7 @@ curl -i http://localhost:8000/too-late.php</code-block>
             headers already sent."
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -152,7 +152,7 @@ curl -i http://localhost:8000/too-late.php</code-block>
             </li>
             <li>
                 <cde>htmlspecialchars($value)</cde> on anything from outside that goes into HTML.
-                <lnk to="/php/xss">XSS and Escaping Output</lnk>, in Security, is why.
+                <xref to="/php/xss">XSS and Escaping Output</xref>, in Security, is why.
             </li>
             <li>
                 <cde>header('Content-Type: text/plain')</cde> when the output isn't HTML, so the
@@ -178,7 +178,7 @@ curl -i http://localhost:8000/too-late.php</code-block>
                 <strong>It works on one server and not another.</strong> The sample
                 <cde>php.ini</cde> files PHP ships turn on output buffering, which holds the first 4
                 KB of output and hides a late header. The Docker image has no <cde>php.ini</cde>, so
-                it doesn't. <lnk to="/php/output-buffering">Output Buffering</lnk> has more. Don't
+                it doesn't. <xref to="/php/output-buffering">Output Buffering</xref> has more. Don't
                 rely on it to fix your order.
             </li>
             <li>

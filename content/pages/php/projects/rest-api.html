@@ -36,19 +36,19 @@
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
-            <li><lnk to="/php/rest">REST</lnk>: resources, and methods that act on them</li>
-            <li><lnk to="/php/json">JSON</lnk>: in and out</li>
+            <li><xref to="/php/rest">REST</xref>: resources, and methods that act on them</li>
+            <li><xref to="/php/json">JSON</xref>: in and out</li>
             <li>
-                <lnk to="/php/request-and-response">Request and Response</lnk> and
-                <lnk to="/php/expressive-response-codes"
-                    >Expressive HTTP Response Codes, and When Not to Be</lnk>
+                <xref to="/php/request-and-response">Request and Response</xref> and
+                <xref to="/php/expressive-response-codes"
+                    >Expressive HTTP Response Codes, and When Not to Be</xref>
             </li>
             <li>
-                <lnk to="/php/single-point-of-entry">Single Point of Entry</lnk>: one file sees
+                <xref to="/php/single-point-of-entry">Single Point of Entry</xref>: one file sees
                 every request
             </li>
             <li>
-                <lnk to="/php/passwords">Passwords</lnk>: a token is a password for a program, and
+                <xref to="/php/passwords">Passwords</xref>: a token is a password for a program, and
                 is stored the same careful way
             </li>
         </list>
@@ -89,7 +89,7 @@
             <li>
                 <strong><cde>readJson()</cde></strong> refuses a body that isn't labeled JSON,
                 <cde>415</cde>, or isn't valid JSON, <cde>400</cde>.
-                <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>: a body is whatever the caller sent, and the label on it is too.
+                <strong><xref to="/php/never-trust-input">Never trust input</xref></strong>: a body is whatever the caller sent, and the label on it is too.
             </li>
         </list>
 
@@ -165,7 +165,7 @@ curl -i -H "$T" -X DELETE http://localhost:8000/api/tasks/4</code-block>
         <!-- prettier-ignore -->
         <code-block>docker compose exec app php bin/make-token.php ann@example.com "My script" --write</code-block>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- Break it -->
@@ -235,12 +235,12 @@ curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:800
                 <strong>An API without limits is an invitation.</strong> Nothing here stops a client
                 asking ten thousand times a second. A real one answers
                 <cde>429 Too Many Requests</cde>, with <cde>Retry-After</cde>, from the
-                <lnk to="/php/rate-limiting">Rate Limiting</lnk> lesson.
+                <xref to="/php/rate-limiting">Rate Limiting</xref> lesson.
             </li>
             <li>
                 <strong>Browsers are a different client.</strong> An API called from JavaScript on
                 another site needs CORS headers, and a token kept in the browser can be read by any
-                script on the page. That's the <lnk to="/php/cors">CORS</lnk> lesson.
+                script on the page. That's the <xref to="/php/cors">CORS</xref> lesson.
             </li>
         </list>
 

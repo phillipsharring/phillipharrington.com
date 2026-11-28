@@ -22,11 +22,11 @@
         <!-- Intro -->
         <nti>
             <p>
-                <lnk to="/php/secrets-out-of-code">Secrets Out of Code</lnk> was about files you
+                <xref to="/php/secrets-out-of-code">Secrets Out of Code</xref> was about files you
                 should never let out. Uploads are the other direction: files a stranger puts on your
                 server. A profile photo, a PDF, a spreadsheet. Leonardo wrote it in his notebooks,
                 backward, so nobody would steal it:
-                <strong><lnk to="/php/never-trust-input">never trust input</lnk></strong>, and an upload is input all the way through: the bytes, the file's name, and the
+                <strong><xref to="/php/never-trust-input">never trust input</xref></strong>, and an upload is input all the way through: the bytes, the file's name, and the
                 type the browser says it is. Get it wrong in the worst way, and the stranger can run
                 any command on your server.
             </p>
@@ -38,8 +38,8 @@
             A form field of <cde>type="file"</cde>, in a form with <cde>method="post"</cde> and
             <cde>enctype="multipart/form-data"</cde>. The browser sends the file's bytes in the
             request body, with two labels that it, or whoever sent the request, chose: a file name
-            and a content type. See <lnk to="/php/forms">Forms</lnk> and
-            <lnk to="/php/content-types">Content Types</lnk>.
+            and a content type. See <xref to="/php/forms">Forms</xref> and
+            <xref to="/php/content-types">Content Types</xref>.
         </p>
 
         <heading h3 id="files">$_FILES</heading>
@@ -61,8 +61,8 @@
             A small script that runs whatever command it's sent, and sends back the result. A few
             lines of PHP. If someone can get one onto your server, somewhere the web server will run
             it, they can do anything your app can do: read its files and secrets, reach its
-            database, and use the machine for whatever they like. The Try It below uses a stand-in
-            that only proves it ran, rather than a real shell; the point is the same.
+            database, and use the machine for whatever they like. The <sect>Try It</sect> below uses
+            a stand-in that only proves it ran, rather than a real shell; the point is the same.
         </p>
 
         <!-- How it works -->
@@ -83,7 +83,7 @@
             </li>
             <li>
                 Move it to a folder outside the web root, where the web server can't hand it out or
-                run it. See <lnk to="/php/document-root">Document Root</lnk>.
+                run it. See <xref to="/php/document-root">Document Root</xref>.
             </li>
             <li>
                 To show it, a PHP script reads it and sends it back, with a content type you chose
@@ -122,7 +122,7 @@
             is not a PNG, JPEG or GIF."
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -159,9 +159,9 @@
             <li>
                 <strong>A file can be two things at once.</strong> The six bytes
                 <cde>GIF89a</cde> followed by PHP code is a valid GIF to <cde>finfo</cde> and
-                <cde>getimagesize()</cde>, and valid PHP to PHP. Break It uploads one. Type checks
-                aren't enough on their own; your own name and storage outside the web root are what
-                make it harmless.
+                <cde>getimagesize()</cde>, and valid PHP to PHP. <sect>Break It</sect> uploads one.
+                Type checks aren't enough on their own; your own name and storage outside the web
+                root are what make it harmless.
             </li>
             <li>
                 <strong>The claimed type is just a label.</strong> <cde>$_FILES[...]['type']</cde>
@@ -232,8 +232,8 @@ It can read your project: README.md, attack, public, storage</code-block>
 
         <heading h3 id="fix-it">Fix It</heading>
         <p>
-            The fixed page is the one from Try It. Send it the same file, then the same file
-            pretending to be a PNG:
+            The fixed page is the one from <sect>Try It</sect>. Send it the same file, then the same
+            file pretending to be a PNG:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -F 'photo=@attack/proof.php' http://localhost:8000/
@@ -291,7 +291,8 @@ curl -F 'photo=@attack/polyglot.gif' http://localhost:8000/</code-block>
                 any folder that holds user files. In nginx, a <cde>location</cde> block for the
                 folder with no PHP handler in it; on Apache running PHP as a module, an
                 <cde>.htaccess</cde> with <cde>php_flag engine off</cde>. Then a mistake in one
-                place, a misplaced folder or a bad deploy, doesn't become the Break It above.
+                place, a misplaced folder or a bad deploy, doesn't become the
+                <sect>Break It</sect> above.
             </p>
         </two-dollars>
 

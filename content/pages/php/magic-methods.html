@@ -142,7 +142,7 @@
             </li>
         </list>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <!-- In PHP -->
@@ -159,7 +159,7 @@
             </li>
             <li>
                 A class with <cde>__toString()</cde> automatically implements <cde>Stringable</cde>,
-                from <lnk to="/php/interfaces">Interfaces</lnk>.
+                from <xref to="/php/interfaces">Interfaces</xref>.
             </li>
             <li>
                 <cde>__get()</cde> only runs for properties that don't exist or can't be seen from
@@ -176,9 +176,9 @@
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>Typos stop being errors.</strong> As the Try It showed. If you do write a
-                <cde>__get()</cde>, have it throw for names it doesn't know, rather than return
-                <cde>null</cde>.
+                <strong>Typos stop being errors.</strong> As the <sect>Try It</sect> showed. If you
+                do write a <cde>__get()</cde>, have it throw for names it doesn't know, rather than
+                return <cde>null</cde>.
             </li>
             <li>
                 <strong>You can't see what an object has.</strong> Open the class file, and the
@@ -201,7 +201,7 @@
                 <cde>unserialize()</cde> on data from outside can build objects of your classes and
                 trigger their <cde>__wakeup()</cde>, <cde>__unserialize()</cde> and
                 <cde>__destruct()</cde>.
-                <strong><lnk to="/php/never-trust-input">Never trust input</lnk></strong>: use <cde>json_decode()</cde> for anything that came from outside.
+                <strong><xref to="/php/never-trust-input">Never trust input</xref></strong>: use <cde>json_decode()</cde> for anything that came from outside.
             </li>
         </list>
 

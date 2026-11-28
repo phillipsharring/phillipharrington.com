@@ -35,18 +35,18 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <lnk to="/php/request-and-response">Request and Response</lnk>: the 401 status and
+                <xref to="/php/request-and-response">Request and Response</xref>: the 401 status and
                 the headers both ways
             </li>
             <li>
-                <lnk to="/php/document-root">Document Root</lnk>: the password list lives outside
+                <xref to="/php/document-root">Document Root</xref>: the password list lives outside
                 <cde>public</cde>
             </li>
             <li>
-                <lnk to="/php/passwords">Passwords: password_hash() and Nothing Else</lnk>: store a
-                hash, check with <cde>password_verify()</cde>
+                <xref to="/php/passwords">Passwords: password_hash() and Nothing Else</xref>: store
+                a hash, check with <cde>password_verify()</cde>
             </li>
-            <li><lnk to="/php/http">HTTP, HTTPS and TLS</lnk>: why this only belongs on HTTPS</li>
+            <li><xref to="/php/http">HTTP, HTTPS and TLS</xref>: why this only belongs on HTTPS</li>
         </list>
 
         <!-- Build it -->
@@ -94,7 +94,7 @@
         </p>
         <code-block example="project-http-authentication/auth.php" />
         <p>
-            <strong><lnk to="/php/never-trust-input">Never trust input</lnk>.</strong> The
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> The
             <cde>Authorization</cde> header is whatever the client sent, so the name might be empty,
             absurdly long, or made of anything. It only ever gets used as an array key and checked
             against a hash, so none of that matters here. Notice the dummy hash: an unknown name
@@ -146,7 +146,7 @@ curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-blo
             authentication only ever goes over HTTPS.
         </p>
         <p class="text-th-muted text-base">
-            New to Docker or the terminal? <lnk to="/php/tools">Tools</lnk> has the setup.
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
 
         <side-story title="Older Than Most of the Web">
@@ -170,7 +170,7 @@ curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-blo
             <li>
                 <strong>Nothing stops guessing.</strong> The browser box will retry forever. A real
                 one needs a limit on failures, like the one in
-                <lnk to="/php/rate-limiting">Rate Limiting</lnk>.
+                <xref to="/php/rate-limiting">Rate Limiting</xref>.
             </li>
             <li>
                 <strong>Some setups hide the header from PHP.</strong> PHP's built-in server passes
