@@ -38,6 +38,16 @@
             by side.
         </p>
 
+        <side-story title="Running Out">
+            IPv4 has room for about 4.3 billion addresses, which sounded like plenty in 1981. By
+            2011 the last big blocks had been handed out, and the internet kept growing anyway,
+            mostly thanks to a trick: your home router gets one public address and gives every
+            device behind it a private one, like <cde>192.168.1.20</cde>, that only means something
+            inside your own network. That's how a laptop, a phone and a TV share one address on the
+            internet. The real fix is IPv6, with more addresses than there are grains of sand on
+            Earth, by a very wide margin. It's been arriving slowly ever since.
+        </side-story>
+
         <heading h2 id="whats-a-domain-name">What's a Domain Name?</heading>
         <p>
             The name people type instead of the number. It reads right to left, from general to
@@ -234,9 +244,10 @@
         <side-story title="It's Always DNS">
             Operations people have a haiku about outages: "It's not DNS. There's no way it's DNS. It
             was DNS." When everything is broken at once, DNS is the first thing to check. At one
-            job, the office's DNS went down and the business side went wild. The older engineer next
-            to me switched her computer to a public resolver and went on working while the panic
-            carried on around her.
+            job, the office's DNS went down and the business side went wild. Cassandra, the older
+            engineer who sat next to me, muttered "it's the DNS guys," and nobody listened. So she
+            switched her computer to a public resolver and went on working while the panic carried
+            on around her.
         </side-story>
 
         <!-- $2 tip -->
