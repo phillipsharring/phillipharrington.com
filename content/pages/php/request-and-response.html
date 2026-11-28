@@ -68,8 +68,9 @@ name=Alice&amp;comment=Hi</code-block>
         <p>
             The most important rule about methods: a GET must never change anything.
             <term def="browser">Browsers</term>, search engines and email scanners follow links
-            freely, assuming that's safe. Anything that changes data, deleting, approving, buying,
-            belongs behind a POST.
+            freely, assuming that's safe. Anything that changes data (deleting, approving, buying)
+            belongs behind a POST. There are a few more methods, like <cde>OPTIONS</cde>, which
+            comes up in CORS, but these are the ones you'll use.
         </p>
 
         <heading h3 id="request-headers">Request Headers</heading>
@@ -80,7 +81,10 @@ name=Alice&amp;comment=Hi</code-block>
                 <term def="server">server</term> can host many sites, and this is how it tells them
                 apart. It's the only one HTTP/1.1 requires.
             </li>
-            <li><strong>User-Agent</strong>: which program is asking: browser, curl, PHP.</li>
+            <li>
+                <strong>User-Agent</strong>: which program is asking: a web browser, curl, PHP, a
+                phone app.
+            </li>
             <li>
                 <strong>Accept</strong> and <strong>Accept-Language</strong>: what kinds of content,
                 and which languages, the client prefers.
@@ -100,7 +104,7 @@ name=Alice&amp;comment=Hi</code-block>
             thirty years.
         </side-story>
 
-        <heading h3 id="request-body">The Body</heading>
+        <heading h3 id="request-body">The Request Body</heading>
         <p>
             GETs usually don't have one. A POST from a form sends the fields as
             <cde>name=value</cde> pairs, like a query string. A POST from
@@ -145,8 +149,8 @@ Content-Length: 0</code-block>
             <li>
                 <strong>4xx, you did something wrong.</strong> <cde>400</cde> (that request makes no
                 sense), <cde>401</cde> (who are you?), <cde>403</cde> (I know who you are, and no),
-                <cde>404</cde> (no such thing), <cde>422</cde> (I understood it, and it's not
-                valid), <cde>429</cde> (slow down).
+                <cde>404</cde> (the classic "file not found"), <cde>422</cde> (I understood it, and
+                it's not valid), <cde>429</cde> (slow down).
             </li>
             <li>
                 <strong>5xx, I did something wrong.</strong> <cde>500</cde> (the code broke),
@@ -197,7 +201,7 @@ Content-Length: 0</code-block>
             Why the detour? If the server answered the POST with the page directly, reloading it
             would send the POST again, and you'd post your comment twice. After the
             <term def="redirect">redirect</term>, reloading just repeats the harmless GET. It's
-            called Post/Redirect/Get.
+            called Post/Redirect/Get, or PRG.
         </p>
 
         <!-- Try it -->
