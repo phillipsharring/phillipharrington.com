@@ -121,9 +121,10 @@ Content-Length: 20469
         </p>
 
         <side-story title="Free Certificates">
-            Until about 2015, certificates cost money and took paperwork to get, so most of the web
-            ran on plain HTTP. Then Let's Encrypt started giving them away, free and automatic, and
-            within a few years most page loads were HTTPS. Now a site without it gets a warning.
+            Until about 2015, certificates cost money and took paperwork to get (when I started, $70
+            and up, in 1990s dollars), so most of the web ran on plain HTTP. Then Let's Encrypt
+            started giving them away, free and automatic, and within a few years most page loads
+            were HTTPS. Now a site without it gets a warning.
         </side-story>
 
         <!-- Try it -->
@@ -206,11 +207,18 @@ Content-Length: 20469
             <li>
                 <strong>Certificates expire.</strong> Let's Encrypt certificates last 90 days, on
                 purpose, so that renewing is automated. If renewal isn't automated, it will be
-                forgotten, and the site will break on a Saturday.
+                forgotten, and the site will break on a Saturday, right as you leave for the lake.
             </li>
         </list>
 
         <!-- $2 tip -->
+        <side-story title="There Goes the Lake Trip">
+            Early on, a client called on a Friday afternoon: their certificate ran out Monday, and
+            could I renew it, today? I'd never done one. It took a certificate request I had to look
+            up how to make, a fax, two phone calls and most of the weekend, and somewhere in the
+            middle of it I said it out loud: "There goes the lake trip."
+        </side-story>
+
         <two-dollars title="curl -I">
             <p>
                 <cde>curl -I</cde> and a URL asks for just the status and headers, no page. It's the
