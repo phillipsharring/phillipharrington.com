@@ -21,10 +21,10 @@
 
         <!-- Intro -->
         <p>
-            Anatomy of a URL named the part after the <cde>?</cde>. It's the simplest way there is
-            to send a little data along with a <term def="request">request</term>: a search, a sort
-            order, a page number, a filter. It's also the most public. It sits right there in the
-            address bar, where anyone can read it, copy it, bookmark it, or change it.
+            Anatomy of a URL named the part after the <cde>?</cde>. It's the simplest way to send a
+            little data with a request: a search, a sort order, a page number, a filter. It's also
+            the most public. It sits in the address bar, where anyone can read it, copy it, bookmark
+            it, or change it.
         </p>
 
         <!-- What is/are -->
@@ -50,8 +50,8 @@
         <side-story title="Urchin's Leftovers">
             Ever seen <cde>utm_source=</cde> on the end of a link? UTM stands for Urchin Tracking
             Module. Urchin was a web analytics company, bought by Google in 2005, whose software
-            became Google Analytics. The company is long gone, and its name is still riding along on
-            links all over the internet.
+            became Google Analytics. The company is gone; its name still rides along on links all
+            over the internet.
         </side-story>
 
         <!-- How it works -->
@@ -81,9 +81,9 @@
             <p>
                 And notice step one: "a person typing." As I've said before,
                 <strong><xref to="/php/never-trust-input">never trust input</xref>.</strong>
-                Whatever you expect in <cde>$_GET</cde>, someone can send anything else instead. A
-                missing value, an empty one, a word where you wanted a number, a negative page, an
-                array where you wanted a <term def="string">string</term>. Your code decides what to
+                Whatever you expect in <cde>$_GET</cde>, someone can send something else. A missing
+                value, an empty one, a word where you wanted a number, a negative page, an array
+                where you wanted a <term def="string">string</term>. Your code decides what to
                 accept.
             </p>
         </nti>
@@ -137,8 +137,8 @@
             <li>
                 <cde>http_build_query()</cde> builds a query string from an array, encoding
                 everything: <cde>['q' =&gt; 'red shoes', 'page' =&gt; 2]</cde> becomes
-                <cde>q=red+shoes&amp;page=2</cde>. Use it for every link you build, never string
-                gluing.
+                <cde>q=red+shoes&amp;page=2</cde>. Use it for every link you build; don't glue
+                strings together.
             </li>
         </list>
 
@@ -158,7 +158,7 @@
             </li>
             <li>
                 <strong>A GET mustn't change anything.</strong> <cde>?delete=42</cde> is a link that
-                anything, a browser prefetching or an email scanner, might follow.
+                anything (a browser prefetching, an email scanner) might follow.
             </li>
             <li>
                 <strong>They have a length limit.</strong> Around 2,000 characters is safe
