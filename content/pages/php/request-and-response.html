@@ -1,0 +1,327 @@
+<layout name="default" title="Request and Response" />
+<page-head>
+    <meta
+        name="description"
+        content="An HTTP request and response, line by line: methods, headers, bodies, and status codes, and how PHP reads and writes each one. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="HTTP request, HTTP response, GET, POST, HTTP methods, HTTP headers, status codes, 404, 418, Post/Redirect/Get, getallheaders, http_response_code, header, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="An HTTP request and response, line by line. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="request-and-response">Request and Response</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The last lesson showed the shape of an <term def="http">HTTP</term> exchange: a
+            <term def="request">request</term> goes out, a
+            <term def="response">response</term> comes back, each with a first line, some
+            <term def="header">headers</term>, a blank line, and maybe a
+            <term def="body">body</term>. This one goes through them line by line, because nearly
+            everything a PHP app does is reading the one and writing the other.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="the-request">The Request</heading>
+        <!-- prettier-ignore -->
+        <code-block>POST /comments HTTP/1.1
+Host: example.com
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 21
+
+name=Alice&amp;comment=Hi</code-block>
+        <p>
+            The first line is the request line: a <term def="http-method">method</term>, a
+            <term def="path">path</term> (with any <term def="query-string">query string</term>),
+            and the <term def="protocol">protocol</term> version. Then headers, a blank line, and
+            the body, if there is one.
+        </p>
+
+        <heading h3 id="methods">Methods</heading>
+        <p>
+            The method is the verb: what the <term def="client">client</term> wants done with the
+            path.
+        </p>
+        <list>
+            <li><strong>GET</strong>: give me this. Following a link is a GET.</li>
+            <li>
+                <strong>POST</strong>: here's something for you. Submitting a
+                <term def="form">form</term> is a POST.
+            </li>
+            <li>
+                <strong>PUT</strong> and <strong>PATCH</strong>: replace this, or change part of it.
+            </li>
+            <li><strong>DELETE</strong>: remove this.</li>
+            <li>
+                <strong>HEAD</strong>: like GET, but only send the status and headers. It's what
+                <cde>curl -I</cde> uses.
+            </li>
+        </list>
+        <p>
+            The most important rule about methods: a GET must never change anything.
+            <term def="browser">Browsers</term>, search engines and email scanners follow links
+            freely, assuming that's safe. Anything that changes data (deleting, approving, buying)
+            belongs behind a POST. There are a few more methods, like <cde>OPTIONS</cde>, which
+            comes up in CORS, but these are the ones you'll use.
+        </p>
+
+        <heading h3 id="request-headers">Request Headers</heading>
+        <p>Name, colon, value, one per line. Some you'll see on almost every request:</p>
+        <list>
+            <li>
+                <strong>Host</strong>: which site this is for. One
+                <term def="server">server</term> can host many sites, and this is how it tells them
+                apart. It's the only one HTTP/1.1 requires.
+            </li>
+            <li>
+                <strong>User-Agent</strong>: which program is asking: a web browser, curl, PHP, a
+                phone app.
+            </li>
+            <li>
+                <strong>Accept</strong> and <strong>Accept-Language</strong>: what kinds of content,
+                and which languages, the client prefers.
+            </li>
+            <li><strong>Cookie</strong>: what the server asked the browser to remember.</li>
+            <li><strong>Referer</strong>: the page the link was on.</li>
+            <li>
+                <strong>Content-Type</strong> and <strong>Content-Length</strong>: what's in the
+                body, and how big it is, when there is a body.
+            </li>
+        </list>
+
+        <side-story title="Referer, Sic">
+            "Referrer" has two R's in the middle. The HTTP header has one. It was misspelled in the
+            1996 spec, and by the time anyone noticed, every browser and server already used the
+            wrong spelling, so it stayed. Programmers have been typing it wrong on purpose for
+            thirty years.
+        </side-story>
+
+        <heading h3 id="request-body">The Request Body</heading>
+        <p>
+            GETs usually don't have one. A POST from a form sends the fields as
+            <cde>name=value</cde> pairs, like a query string. A POST from
+            <term def="javascript">JavaScript</term> often sends
+            <term def="json">JSON</term> instead. The <cde>Content-Type</cde> header says which.
+        </p>
+
+        <heading h2 id="the-response">The Response</heading>
+        <!-- prettier-ignore -->
+        <code-block>HTTP/1.1 303 See Other
+Location: /post#comments
+Content-Length: 0</code-block>
+        <p>
+            The first line is the status line: the protocol version, a
+            <term def="status-code">status code</term>, and a short reason. Then headers, a blank
+            line, and the body.
+        </p>
+
+        <heading h3 id="status-codes">Status Codes</heading>
+        <p>The first digit tells you the family. The classic summary:</p>
+        <quote citation="Steve Losh, on Twitter">
+            <p>
+                HTTP status ranges in a nutshell:<br />
+                1xx: hold on<br />
+                2xx: here you go<br />
+                3xx: go away<br />
+                4xx: you fucked up<br />
+                5xx: I fucked up
+            </p>
+        </quote>
+        <p>You'll rarely see a 1xx. The rest, with the ones you'll meet most:</p>
+        <list>
+            <li>
+                <strong>2xx, it worked.</strong> <cde>200 OK</cde>, <cde>201 Created</cde>,
+                <cde>204 No Content</cde>.
+            </li>
+            <li>
+                <strong>3xx, look elsewhere.</strong> <cde>301</cde> (moved for good),
+                <cde>302</cde> and <cde>303</cde> (go here instead, for now), and
+                <cde>304 Not Modified</cde> (the copy you already have is still good).
+            </li>
+            <li>
+                <strong>4xx, you did something wrong.</strong> <cde>400</cde> (that request makes no
+                sense), <cde>401</cde> (who are you?), <cde>403</cde> (I know who you are, and no),
+                <cde>404</cde> (the classic "file not found"), <cde>422</cde> (I understood it, and
+                it's not valid), <cde>429</cde> (slow down).
+            </li>
+            <li>
+                <strong>5xx, I did something wrong.</strong> <cde>500</cde> (the code broke),
+                <cde>502</cde> and <cde>503</cde> (something behind me is down or overloaded).
+            </li>
+        </list>
+        <p>
+            Be specific, and pick the code that says what actually happened: a client can act on a
+            <cde>429</cde> in a way it can't on a vague <cde>400</cde>. With one big exception: be
+            vague with anything an attacker could learn from. A login that fails says "wrong email
+            or password," never which one. That gets a lesson of its own, in Style.
+        </p>
+
+        <side-story title="I'm a Teapot">
+            Status <cde>418</cde> is "I'm a teapot," from an April Fools' spec in 1998 for
+            controlling coffee pots over HTTP. A teapot asked to brew coffee must refuse with 418.
+            It's a joke, and it's been implemented all over the place anyway. Every API I've built,
+            I've wanted to return 418 somewhere. I never have. I couldn't do it in good conscience.
+            PHP's own built-in server doesn't get it, though: try it below.
+        </side-story>
+
+        <heading h3 id="response-headers">Response Headers</heading>
+        <list>
+            <li>
+                <strong>Content-Type</strong>: what the body is. The next lesson is all about it.
+            </li>
+            <li><strong>Content-Length</strong>: how big the body is.</li>
+            <li>
+                <strong>Location</strong>: where to go instead, with a 3xx. The browser follows it.
+            </li>
+            <li>
+                <strong>Set-Cookie</strong>: something for the browser to remember and send back.
+            </li>
+            <li><strong>Cache-Control</strong>: whether, and how long, anyone may keep a copy.</li>
+        </list>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>The two examples above are one real exchange, the one that runs every comment form:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>You fill in the form and press Submit. The browser sends the POST.</li>
+            <li>The server saves the comment.</li>
+            <li>
+                It answers <cde>303 See Other</cde>, with a <cde>Location</cde> back to the post.
+            </li>
+            <li>The browser follows it with a GET, and shows the page with your comment.</li>
+        </ol>
+        <p>
+            Why the detour? If the server answered the POST with the page directly, reloading it
+            would send the POST again, and you'd post your comment twice. After the
+            <term def="redirect">redirect</term>, reloading just repeats the harmless GET. It's
+            called Post/Redirect/Get, or PRG.
+        </p>
+
+        <!-- prettier-ignore -->
+        <diagram caption="Post/Redirect/Get. A reload repeats only the last exchange, the harmless one.">
+            <svg viewBox="0 0 640 244" role="img" aria-label="Post/Redirect/Get: the browser sends POST /comments; the server answers 303 See Other with a Location of /post; the browser sends GET /post; the server answers 200 OK with the page. Reloading repeats only the GET and its answer." class="block h-auto w-full"><defs><marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><text x="80" y="22" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Browser</text><line x1="80" y1="32" x2="80" y2="236" style="stroke:var(--th-border);stroke-width:1.5"/><text x="520" y="22" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Server</text><line x1="520" y1="32" x2="520" y2="236" style="stroke:var(--th-border);stroke-width:1.5"/><line x1="84" y1="66" x2="514" y2="66" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="59" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">POST /comments</text><line x1="516" y1="110" x2="86" y2="110" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="103" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">303 See Other, Location: /post</text><line x1="84" y1="154" x2="514" y2="154" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="147" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">GET /post</text><line x1="516" y1="198" x2="86" y2="198" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="191" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">200 OK, the page</text><path d="M538,138 h6 V204 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="552" y="167.0" font-size="12" style="fill:var(--th-muted)">a reload</text><text x="552" y="182.0" font-size="12" style="fill:var(--th-muted)">repeats this</text></svg>
+        </diagram>
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            Make a server that shows you the request it got. In a folder, make
+            <cde>index.php</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block example="request-and-response/index.php" />
+        <p>Start it the usual way:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <p>
+            Open <cde>http://localhost:8000/hello</cde> in a browser: the method, the path, and
+            every header your browser sent. (Any path works, because PHP's built-in server sends a
+            path that isn't a file to <cde>index.php</cde>. Only the built-in server does that on
+            its own; nginx, Apache and the rest have to be told to, which is
+            Single Point of Entry.) Then, from a second
+            <term def="terminal">terminal</term>, send a POST with a body:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -d 'name=Alice&amp;comment=Hi' http://localhost:8000/comments</code-block>
+        <code-note>New here:</code-note>
+        <breakdown>
+            <part code="-d">Send this data as the request body. That makes it a POST.</part>
+            <part code="'name=Alice&comment=Hi'"
+                >The data, as form fields. The single quotes keep the terminal from treating the
+                <cde>&amp;</cde> as a command of its own.</part
+            >
+        </breakdown>
+        <p>
+            Now it's a POST, with a <cde>Content-Type</cde>, a <cde>Content-Length</cde>, and the
+            body at the bottom. Last, look at the response instead. <cde>-i</cde> shows the status
+            line and headers:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -i http://localhost:8000/teapot</code-block>
+        <breakdown>
+            <part code="-i"
+                >Include the response's status line and headers in the output, above the body.</part
+            >
+        </breakdown>
+        <p>
+            <cde>418</cde>, and PHP's built-in server calls it "Unknown Status Code." It never got
+            the joke.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                Reading the request: <cde>$_SERVER['REQUEST_METHOD']</cde>,
+                <cde>getallheaders()</cde>, <cde>$_GET</cde> for the query string,
+                <cde>$_POST</cde> for form fields, and <cde>file_get_contents('php://input')</cde>
+                for any other body, like JSON.
+            </li>
+            <li>
+                Writing the response: <cde>http_response_code()</cde> for the status,
+                <cde>header()</cde> for each header, and anything you <cde>echo</cde> is the body.
+            </li>
+            <li>
+                A redirect is both at once:
+                <cde>header('Location: /post', true, 303);</cde> and then <cde>exit;</cde>.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>"Headers already sent."</strong> Headers go before the body, so once PHP has
+                sent any output, even one space or a blank line before <cde>&lt;?php</cde>, it's too
+                late for <cde>header()</cde>. PHP says so: "Warning: Cannot modify header
+                information - headers already sent by (output started at index.php:1)." And if your
+                code sets five headers, you get five of them, stacked up the page, every one blaming
+                the same invisible space.
+            </li>
+            <li>
+                <strong>A redirect doesn't stop your script.</strong>
+                <cde>header('Location: ...')</cde> only adds a header. Without <cde>exit</cde> after
+                it, the rest of the code keeps running.
+            </li>
+            <li>
+                <strong>Something in the middle can rewrite your errors.</strong> A
+                <term def="cdn">CDN</term> can be set to swap any 404 for its own error page, body,
+                headers and all. I had one doing that to an <term def="api">API</term>'s 403s, so
+                the app that called it got an <term def="html">HTML</term> page where it expected an
+                explanation. Know what sits between your code and the browser.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Read the Network tab">
+            <p>
+                Every browser's developer tools have a Network tab that lists each request a page
+                makes, with its method, status, request headers and response headers. When a page
+                misbehaves, it's the first place to look: you see exactly what was asked, and
+                exactly what came back.
+            </p>
+        </two-dollars>
+
+        <p>
+            One of those headers, <cde>Content-Type</cde>, decides what the browser does with
+            everything after the blank line. Next: <term def="content-type">content types</term>.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php/http">&larr; HTTP, HTTPS and TLS</lnk>
+            <lnk to="/php/content-types">Next: Content Types &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

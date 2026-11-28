@@ -1,0 +1,199 @@
+<layout name="default" title="Query Strings" />
+<page-head>
+    <meta
+        name="description"
+        content="The simplest way to send data with a request: name=value pairs after the question mark. How they're built, how PHP reads them, arrays, and why every one of them is input you don't trust. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="query string, $_GET, URL parameters, http_build_query, filter_var, FILTER_VALIDATE_INT, urlencode, query string arrays, never trust input, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="Name=value pairs after the question mark. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="query-strings">Query Strings</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Anatomy of a URL named the part after the <cde>?</cde>. It's the simplest way to send a
+            little data with a request: a search, a sort order, a page number, a filter. It's also
+            the most public. It sits in the address bar, where anyone can read it, copy it, bookmark
+            it, or change it.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-query-string">What's a Query String?</heading>
+        <!-- prettier-ignore -->
+        <code-block>/search?q=red+shoes&amp;page=2&amp;tag[]=sale&amp;tag[]=new</code-block>
+        <p>Everything after the <cde>?</cde>:</p>
+        <list>
+            <li>Pairs of <cde>name=value</cde>, joined with <cde>&amp;</cde>.</li>
+            <li>
+                <term def="encoding">Encoded</term>, so they survive the trip: a space is
+                <cde>+</cde> or <cde>%20</cde>, an <cde>&amp;</cde> inside a value is
+                <cde>%26</cde>.
+            </li>
+            <li>
+                Repeatable. PHP's convention: a name ending in <cde>[]</cde>, like <cde>tag[]</cde>,
+                collects every value into an <term def="array">array</term>.
+                <cde>filter[color]=red</cde>
+                makes an array with keys.
+            </li>
+        </list>
+
+        <side-story title="Urchin's Leftovers">
+            Ever seen <cde>utm_source=</cde> on the end of a link? UTM stands for Urchin Tracking
+            Module. Urchin was a web analytics company, bought by Google in 2005, whose software
+            became Google Analytics. Its name has been hitchhiking on links ever since, long after
+            the company it named stopped existing.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Something builds the <term def="url">URL</term>: a link, a search
+                <term def="form">form</term>, <term def="javascript">JavaScript</term>, or a person
+                typing.
+            </li>
+            <li>
+                The <term def="browser">browser</term> sends it as part of the request line:
+                <cde>GET /search?q=red+shoes</cde>.
+            </li>
+            <li>
+                PHP splits it up, decodes it, builds any arrays, and hands it to you as
+                <cde>$_GET</cde>.
+            </li>
+        </ol>
+        <!-- prettier-ignore -->
+        <diagram caption="One string in, one array out. PHP does the splitting and decoding before your code runs.">
+            <svg viewBox="0 0 650 182" role="img" aria-label="The query string q=red+shoes&amp;page=2&amp;tag[]=sale&amp;tag[]=new, split into its pairs, becomes $_GET: q is red shoes with the plus turned into a space, page is 2, and tag is an array holding sale and new." class="block h-auto w-full"><defs><marker id="ah8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><text x="10" y="20" font-size="13" font-weight="600" style="fill:var(--th-text)">The query string, split at each &amp;</text><text x="370" y="20" font-size="13" font-weight="600" style="fill:var(--th-text)">What PHP hands you in $_GET</text><rect x="0" y="34" width="200" height="142" rx="4" style="fill:var(--th-tint-strong)"/><rect x="360" y="34" width="280" height="142" rx="4" style="fill:var(--th-tint-strong)"/><text x="14" y="62" font-size="14.5" class="font-mono" style="fill:var(--th-text)">q=red+shoes</text><text x="374" y="62" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">[q] =&gt; red shoes</text><line x1="208" y1="57" x2="350" y2="57" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="14" y="96" font-size="14.5" class="font-mono" style="fill:var(--th-text)">page=2</text><text x="374" y="96" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">[page] =&gt; 2</text><line x1="208" y1="91" x2="350" y2="91" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="14" y="130" font-size="14.5" class="font-mono" style="fill:var(--th-text)">tag[]=sale</text><text x="374" y="130" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">[tag] =&gt; [0] =&gt; sale</text><line x1="208" y1="125" x2="350" y2="125" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="14" y="164" font-size="14.5" class="font-mono" style="fill:var(--th-text)">tag[]=new</text><text x="374" y="164" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">           [1] =&gt; new</text><line x1="208" y1="159" x2="350" y2="159" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="279" y="51" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">+ becomes a space</text><text x="279" y="119" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">[] collects into an array</text></svg>
+        </diagram>
+        <p>
+            Use a <term def="query-string">query string</term> for things that describe what to
+            show: what to search for, how to sort, which page. Those are safe to repeat, worth
+            bookmarking, and worth sharing. Don't use one for anything that changes data (that's a
+            POST, from Request and Response), or for anything secret.
+        </p>
+        <nti>
+            <p>
+                And notice step one: "a person typing." As I've said before,
+                <strong>never trust input.</strong>
+                Whatever you expect in <cde>$_GET</cde>, someone can send something else. A missing
+                value, an empty one, a word where you wanted a number, a negative page number, an
+                array where you wanted a <term def="string">string</term>. Your code decides what to
+                accept.
+            </p>
+        </nti>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>A pretend search page that trusts nothing. In a folder, make <cde>index.php</cde>:</p>
+        <code-block example="query-strings/index.php" />
+        <p>Start the server the usual way:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <code-note>
+            The usual <term def="server">server</term>: PHP's built-in one, in a
+            <term def="container">container</term>, on <term def="port">port</term> 8000.
+        </code-note>
+        <p>Open this, and see what PHP made of it:</p>
+        <!-- prettier-ignore -->
+        <code-block>http://localhost:8000/?q=red+shoes&amp;page=2&amp;tag[]=sale&amp;tag[]=new</code-block>
+        <p>
+            The <cde>+</cde> became a space, and <cde>tag</cde> became an array. Now send it
+            garbage, the way someone eventually will, with a bot, a hundred times a minute:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>http://localhost:8000/?q[]=x&amp;page=banana&amp;tag=solo</code-block>
+        <p>
+            Look at the raw <cde>$_GET</cde> at the bottom: <cde>q</cde> arrived as an array and
+            <cde>page</cde> as a word. The code at the top shrugged both off: an empty search, page
+            1. Try <cde>page=-5</cde> too, or try to make the Page line say anything but a positive
+            whole number. The PHP script won't let you. And try a search for
+            <cde>&lt;script&gt;alert(1)&lt;/script&gt;</cde>: it comes back as plain text, because
+            the page says it's <cde>text/plain</cde>. On an <term def="html">HTML</term> page you'd
+            have to <term def="escaping">escape</term> it yourself. That's the
+            <term def="xss">XSS</term> lesson, in Security.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                <cde>$_GET</cde> is the query string, decoded, with arrays already built. Every
+                value in it is input. Check it.
+            </li>
+            <li>
+                <cde>filter_var()</cde> checks and converts in one step:
+                <cde>FILTER_VALIDATE_INT</cde> with a <cde>min_range</cde> is a page number,
+                <cde>FILTER_VALIDATE_EMAIL</cde> an email address. It returns <cde>false</cde> when
+                the value doesn't qualify.
+            </li>
+            <li>
+                <cde>http_build_query()</cde> builds a query string from an array, encoding
+                everything: <cde>['q' =&gt; 'red shoes', 'page' =&gt; 2]</cde> becomes
+                <cde>q=red+shoes&amp;page=2</cde>. Use it for every link you build; don't glue
+                strings together.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>A string can arrive as an array.</strong> Add <cde>[]</cde> to any name, and
+                PHP makes it an array. Code that passes <cde>$_GET['q']</cde> straight to a function
+                expecting a string then crashes. Check the <term def="type">type</term> before you
+                use it.
+            </li>
+            <li>
+                <strong>Query strings are public.</strong> They're written to server logs, saved in
+                browser history, and can be passed to the next site you visit. Never put a password
+                or a secret in one. (A private window keeps your own searches out of your history,
+                but the site's server logs still get them.)
+            </li>
+            <li>
+                <strong>A GET mustn't change anything.</strong> Browsers prefetch links, email
+                scanners follow them, and search engines crawl them, so a link like
+                <cde>?delete=42</cde> will get followed by something that never meant to delete
+                anything. That's the server's job to prevent: change things only on a POST, and
+                refuse to on a GET.
+            </li>
+            <li>
+                <strong>They have a length limit.</strong> Around 2,000 characters is safe
+                everywhere. Big data goes in a POST <term def="body">body</term> instead.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Put the page's state in the URL">
+            <p>
+                If a page shows a search, a filter, a sort order or a page number, keep it in the
+                query string. Then the Back button works, a reload shows the same thing, and a
+                bookmark or a pasted link brings someone exactly where you were.
+            </p>
+        </two-dollars>
+
+        <p>
+            You built these by hand to see how they work. Forms can build them for you, and can send
+            their data in a POST body instead. Next: forms.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php/cookies">&larr; Cookies</lnk>
+            <span class="text-th-muted">Next: Forms (coming soon)</span>
+        </nav>
+    </spaced>
+</article>

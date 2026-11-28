@@ -72,6 +72,27 @@
     --th-logo-hover-filter: grayscale(0%);
     --th-logo-detail-filter: grayscale(40%);
     --th-logo-detail-hover-filter: none;
+
+    /* Code highlighting (handlr-build + Shiki's css-variables theme). Every
+       color clears 4.5:1 on the code block's tinted background. */
+    --shiki-foreground: #1f2937;
+    --shiki-token-keyword: #476b20;
+    --shiki-token-string: #8a3b12;
+    --shiki-token-string-expression: #8a3b12;
+    --shiki-token-comment: #545b66;
+    --shiki-token-constant: #2a4a8c;
+    --shiki-token-function: #0e5a68;
+    --shiki-token-parameter: #1f2937;
+    --shiki-token-punctuation: #374151;
+    --shiki-token-link: #8a3b12;
+
+    /* The burst sticker: a step louder than everything else, on purpose. */
+    --burst-fill: #aed0ec;
+    --burst-text: #0c2236;
+    --nti-fill: #f0d58c;
+    --nti-text: #2e2205;
+    --soak-fill: #bcdc90;
+    --soak-text: #19280b;
 }
 
 /* ── Dark theme ───────────────────────────────────────────── */
@@ -100,6 +121,24 @@
     --th-logo-hover-filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(141, 198, 64, 0.3));
     --th-logo-detail-filter: brightness(1.15);
     --th-logo-detail-hover-filter: brightness(1.3) drop-shadow(0 0 6px rgba(141, 198, 64, 0.2));
+
+    --shiki-foreground: #d1d5db;
+    --shiki-token-keyword: #8dc640;
+    --shiki-token-string: #f0a37a;
+    --shiki-token-string-expression: #f0a37a;
+    --shiki-token-comment: #9ca3af;
+    --shiki-token-constant: #93b4ff;
+    --shiki-token-function: #7fd3e0;
+    --shiki-token-parameter: #d1d5db;
+    --shiki-token-punctuation: #b6bcc6;
+    --shiki-token-link: #f0a37a;
+
+    --burst-fill: #8fb8db;
+    --burst-text: #0c2236;
+    --nti-fill: #d9bd6c;
+    --nti-text: #2e2205;
+    --soak-fill: #a9cf74;
+    --soak-text: #19280b;
 }
 
 @theme {

@@ -21,4 +21,12 @@ export default {
     // module (text/javascript) and the browser refuses it as a stylesheet.
     // Build ignores this (prod uses the hashed CSS from the manifest).
     devCss: '/styles/style.css?direct',
+    // Where <code-file> reads from: the PHP course's examples, a sibling checkout
+    // of github.com/phillipsharring/web-nerdism-php (the dev container mounts it
+    // at the same relative path; see docker-compose.yml). The build fails if a
+    // page includes a file that isn't there.
+    codeRoot: '../web-nerdism-php',
+    // Build-time syntax highlighting for <code-file> (needs shiki). Colors are
+    // the --shiki-* variables in src/styles/style.css, light and dark.
+    highlight: true,
 };

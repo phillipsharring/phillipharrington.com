@@ -1,0 +1,19 @@
+<!-- A block of code or terminal commands.
+     With example="dns/dns.php" it's self-closing, and the code comes from that
+     file in the web-nerdism-php repo (siteConfig.codeRoot) at build time, so the
+     page always shows the tested copy; a small link to the file goes under it.
+     Without it, the slot is the code: write it flush left (a pre keeps every
+     space), with a prettier-ignore comment on the line before, or Prettier
+     reflows it.
+     The 60ch wrapper is at body size, so the block is exactly as wide as the
+     paragraphs (60ch on the pre itself measured its own, smaller font, and
+     came out narrower). Long lines wrap rather than scroll. An example file is
+     highlighted at build time (site.config.js highlight), so its base text is
+     the neutral --shiki-foreground; inline blocks keep the accent green. The link line under it
+     drops the site's 60ch cap on paragraphs, which at its smaller size stopped it
+     short of the right edge. -->
+<div class="max-w-[60ch]">
+    <!-- prettier-ignore -->
+    <pre class="bg-th-tint-strong [[#if example]]text-[var(--shiki-foreground)][[else]]text-th-accent-text[[/if]] rounded px-4 py-3 font-mono text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]"><code>[[#if example]]<code-file src="[[example]]" />[[else]][[slot]][[/if]]</code></pre>
+    [[#if example]]<p class="mt-1 max-w-none text-right text-sm"><lnk to="https://github.com/phillipsharring/web-nerdism-php/blob/main/[[example]]" blank>[[example]] on GitHub</lnk></p>[[/if]]
+</div>

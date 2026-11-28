@@ -1,0 +1,295 @@
+<layout name="default" title="Reading the Examples" />
+<page-head>
+    <meta
+        name="description"
+        content="A one-page key to the PHP in the early examples: the opening tag, variables, semicolons, echo, quotes, joining strings, ??, arrays, function calls, if, foreach and comments. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="PHP cheat sheet, PHP syntax, PHP variables, echo, single vs double quotes, string concatenation, null coalescing operator, PHP arrays, PHP comments, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="A one-page key to reading the PHP in the examples. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Before You Start</p>
+        <heading h1 id="reading-the-examples">Reading the Examples</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Listen, I'm not gonna lie to you: there's gonna be some code. This page is a key to the
+            code in the early lessons. The first sections of the course are about the web, not PHP,
+            but every lesson has a <sect>Try It</sect>, and every <sect>Try It</sect> has a little
+            PHP in it. PHP itself starts properly in PHP Basics.
+        </p>
+        <p>
+            So here's every piece you'll see in the early examples, what it does in a sentence, and
+            where it's explained for real. Some of it is going to look like line noise. Stay with
+            me. You don't need to memorize any of it, and by the end of the page you'll be able to
+            read a whole example top to bottom. Come back whenever a line looks strange.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-in-an-example">What's in an Example?</heading>
+
+        <heading h3 id="the-opening-tag">The Opening Tag</heading>
+        <p>
+            A PHP file usually starts with <cde>&lt;?php</cde>. Everything after it is PHP. In a
+            file that mixes PHP with <term def="html">HTML</term>, <cde>?&gt;</cde> switches back to
+            HTML, and <cde>&lt;?= $name ?&gt;</cde> is a short way to print one value in the middle
+            of it. Properly:
+            PHP Files, Escaping into PHP, and phpinfo().
+        </p>
+
+        <heading h3 id="variables">Variables</heading>
+        <p>
+            A <cde>$</cde> and a name: <cde>$name</cde>, <cde>$count</cde>. A single
+            <cde>=</cde> puts a value in it: <cde>$count = 3;</cde>. PHP has a lot of dollar signs.
+            That's how some developers afford the Lambo. Properly:
+            Variables, Types and strict_types.
+        </p>
+
+        <heading h3 id="the-semicolon">The Semicolon</heading>
+        <p>
+            Every statement ends with <cde>;</cde>, the way a sentence ends with a period. Lines
+            that open a block with <cde>{</cde> don't get one. Properly:
+            PHP Files.
+        </p>
+
+        <heading h3 id="echo">echo</heading>
+        <p>
+            Prints. <cde>echo 'Hello';</cde> sends <cde>Hello</cde> to the
+            <term def="browser">browser</term>, or to the <term def="terminal">terminal</term>.
+            Commas print several things in a row: <cde>echo 'Hi, ', $name;</cde>. Properly:
+            Output.
+        </p>
+
+        <heading h3 id="quotes">Single and Double Quotes</heading>
+        <p>
+            Both make a <term def="string">string</term>, a piece of text. Double quotes fill in
+            <term def="variable">variables</term> and understand <cde>\n</cde>, a new line:
+            <cde>"Hello, $name\n"</cde> prints <cde>Hello, Alice</cde> and ends the line. Single
+            quotes print exactly what's between them, dollar sign and all. Properly:
+            Strings.
+        </p>
+
+        <heading h3 id="the-dot">The Dot</heading>
+        <p>
+            Joins strings: <cde>'Hello, ' . $name</cde>. Not <cde>+</cde>, which is only for
+            numbers. Properly: Operators.
+        </p>
+
+        <heading h3 id="casting">Casting: (int)</heading>
+        <p>
+            A type in parentheses in front of a value converts it: <cde>(int) '42'</cde> is the
+            number <cde>42</cde>, and <cde>(int) 'banana'</cde> is <cde>0</cde>. The examples cast
+            input to the type they expect, so a stranger's nonsense turns into something harmless.
+            Properly: Variables, Types and strict_types.
+        </p>
+
+        <heading h3 id="arrays">Arrays and =&gt;</heading>
+        <p>
+            A list in square brackets: <cde>['small', 'medium', 'large']</cde>. Counting starts at
+            0, so <cde>$sizes[0]</cde> is <cde>small</cde>. An <term def="array">array</term> can
+            have names instead of numbers, written with <cde>=&gt;</cde>:
+            <cde>['size' =&gt; 'large']</cde>, and then <cde>$shirt['size']</cde> is
+            <cde>large</cde>. <cde>$errors[] = 'Oops';</cde> adds one to the end. Properly:
+            Arrays.
+        </p>
+
+        <heading h3 id="the-double-question-mark">??</heading>
+        <p>
+            "This, or if it's missing, that." <cde>$_GET['page'] ?? 1</cde> is the
+            <cde>page</cde> from the <term def="url">URL</term>, or 1 if there isn't one. The
+            examples use it everywhere, because input is so often missing. Properly:
+            Operators.
+        </p>
+
+        <heading h3 id="comparing">Comparing and Deciding</heading>
+        <p>
+            <cde>===</cde> asks "exactly equal?", and <cde>!==</cde> asks the opposite.
+            <cde>&amp;&amp;</cde> is and, <cde>||</cde> is or, <cde>!</cde> is not.
+            <cde>$wrap ? 'yes' : 'no'</cde> picks one of two values. Properly:
+            Operators.
+        </p>
+
+        <heading h3 id="calling-a-function">Calling a Function</heading>
+        <p>
+            A name, then parentheses with what you give it: <cde>strtoupper($name)</cde>,
+            <cde>count($sizes)</cde>. PHP comes with thousands of them, and php.net explains every
+            one. Properly: Functions, and
+            Documentation: php.net.
+        </p>
+
+        <heading h3 id="if-and-foreach">if and foreach</heading>
+        <p>
+            <cde>if (test) { ... }</cde> runs the block in braces only when the test is true.
+            <cde>foreach ($sizes as $size) { ... }</cde> runs it once for each item. In files full
+            of HTML you'll see them written with a colon instead: <cde>if (...):</cde> through
+            <cde>endif;</cde>, and <cde>foreach (...):</cde> through <cde>endforeach;</cde>. Same
+            thing, easier to spot between the tags.
+        </p>
+
+        <heading h3 id="comments">Comments</heading>
+        <p>
+            Notes for people, skipped by PHP: <cde>//</cde> or <cde>#</cde> to the end of the line,
+            and <cde>/* ... */</cde> around as many lines as you like. Properly:
+            PHP Files.
+        </p>
+
+        <heading h3 id="what-came-in">What Came In</heading>
+        <nti>
+            <p>
+                Names in capitals with an underscore, like <cde>$_GET</cde>, <cde>$_POST</cde>,
+                <cde>$_COOKIE</cde> and <cde>$_SERVER</cde>, are arrays PHP fills in from the
+                <term def="request">request</term>: the
+                <term def="query-string">query string</term>, the <term def="form">form</term>, the
+                <term def="cookie">cookies</term>, and everything else it knows. They all come from
+                outside, so the examples check them before using them. Properly:
+                <xref to="/php/query-strings">Query Strings</xref>,
+                Forms, and
+                Never Trust Input.
+            </p>
+        </nti>
+
+        <side-story title="Where the Dollar Sign Came From">
+            The first PHP, in 1994 and 1995, was a set of Perl scripts Rasmus Lerdorf wrote for his
+            own home page, later rewritten in C. The dollar sign on every variable is the same one
+            Perl and the Unix shell use.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When PHP runs a file:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>It starts at the top.</li>
+            <li>
+                Anything outside the PHP tags, <cde>&lt;?php</cde> and <cde>?&gt;</cde>, like HTML,
+                is sent along exactly as it is.
+            </li>
+            <li>
+                Anything inside <cde>&lt;?php ... ?&gt;</cde> runs, one statement at a time, top to
+                bottom, except where an <cde>if</cde> skips a block or a <cde>foreach</cde> repeats
+                one.
+            </li>
+            <li>
+                Whatever it prints becomes the answer: the page in your browser, or the text in your
+                terminal.
+            </li>
+        </ol>
+        <p>
+            So you can read an example the same way: from the top, and anything it echoes is what
+            you'll see.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            This is the part where it clicks. Every piece above, in one file, with a comment over
+            each line. In a folder, make
+            <cde>cheat-sheet.php</cde>:
+        </p>
+        <code-block example="reading-the-examples/cheat-sheet.php" />
+        <p>Run it with PHP, in a <term def="container">container</term>:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php cheat-sheet.php</code-block>
+        <code-note>New here:</code-note>
+        <breakdown>
+            <part code="php:8.4-cli"
+                >The image: PHP, version 8.4, the command-line build. It's the one every lesson
+                uses.</part
+            >
+            <part code="php">The command to run inside the container: PHP itself.</part>
+            <part code="cheat-sheet.php"
+                >The file for PHP to run. Since <cde>/app</cde> is your folder, it finds the one you
+                just made.</part
+            >
+        </breakdown>
+        <p>
+            Match each line of output to the line that printed it. Then change things: a different
+            name, a fourth size, a <cde>price</cde> in the shirt. Run it again after each change.
+            Delete a semicolon, too, and read the error. Everyone sees that one a lot, and now it
+            won't scare you.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <p>The <term def="function">functions</term> you'll meet most before PHP Basics:</p>
+        <list>
+            <li>
+                <cde>header()</cde> sets a <term def="response">response</term>
+                <term def="header">header</term>, like the
+                <term def="content-type">content type</term>.
+            </li>
+            <li>
+                <cde>htmlspecialchars()</cde> makes text safe to put in a page. The
+                XSS lesson is why.
+            </li>
+            <li><cde>print_r()</cde> prints an array so you can see what's in it.</li>
+            <li>
+                <cde>isset()</cde> asks whether something exists and isn't
+                <term def="null">null</term>, PHP's word for no value.
+            </li>
+            <li><cde>trim()</cde> cuts the spaces off both ends of a string.</li>
+            <li><cde>in_array()</cde> asks whether a value is in a list.</li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>One <cde>=</cde> sets, three compare.</strong> <cde>$a = 1</cde> puts 1 in
+                <cde>$a</cde>. <cde>$a === 1</cde> asks whether it's 1.
+            </li>
+            <li>
+                <strong>A missing semicolon is reported on the next line.</strong> PHP only notices
+                when the next statement starts, so look one line up from the error.
+            </li>
+            <li>
+                <strong>Single quotes don't fill anything in.</strong> <cde>'Hello, $name\n'</cde>
+                prints those exact characters, the backslash and n included.
+            </li>
+            <li>
+                <strong>Adding strings is an error.</strong> <cde>'Hello' + 'there'</cde> stops the
+                script with a TypeError. Use the dot.
+            </li>
+        </list>
+
+        <side-story title="Reading Code Nobody Could Run">
+            In 1843, Ada Lovelace published a translation of an article about Charles Babbage's
+            Analytical Engine, with notes of her own longer than the article. The last, Note G, sets
+            out step by step how the engine could calculate Bernoulli numbers. It's often called the
+            first published computer program, and nobody could run it: the engine was never built.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Try one line at a time">
+            <p>
+                <cde>docker run --rm -it php:8.4-cli php -a</cde> opens PHP's interactive shell.
+                Type <cde>echo strtoupper('hi');</cde>, press Enter, and see the answer. When a line
+                in an example puzzles you, paste it in and poke at it. Type <cde>exit</cde> to
+                leave.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's enough PHP to read every example until PHP Basics. The semicolons will still get
+            you. They get everyone. The course itself starts with the two programs at either end of
+            every web page. Next: Client/Server.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php/tools">&larr; Tools</lnk>
+            <lnk to="/php/client-server">Next: Client/Server &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

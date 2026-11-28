@@ -1,0 +1,259 @@
+<layout name="default" title="Tools" />
+<page-head>
+    <meta
+        name="description"
+        content="The few tools to set up once before Web Nerdism w/ PHP 101: a terminal, Docker, a package manager, Git, an editor, a way to read logs, and Composer in a container."
+    />
+    <meta
+        name="keywords"
+        content="terminal, Docker, Homebrew, apt, winget, Git, VS Code, tail -f, reading logs, Composer, learn PHP, web development setup"
+    />
+    <meta
+        property="og:description"
+        content="Set up once, come back as needed. The tools behind Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Before You Start</p>
+        <heading h1 id="tools">Tools</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <p>
+            Setup is the boring part. Let's get it over with. These aren't lessons. They're the
+            handful of things you set up once and come back to when a lesson needs them. The course
+            assumes you know your way around your own computer: installing an app, finding a file,
+            getting into a folder. It won't walk you through where to click. If you've never opened
+            a <term def="terminal">terminal</term>, start at the top.
+        </p>
+        <p>
+            One rule runs through all of it: you install as little as possible on your own computer.
+            Docker is the one real install. Everything else, PHP included, runs in a
+            <term def="container">container</term>.
+        </p>
+
+        <heading h2 id="terminal">The Terminal</heading>
+        <p>
+            A window where you type commands instead of clicking. On a Mac it's Terminal, in
+            Applications, Utilities. On Linux, you already know.
+        </p>
+        <p>
+            On Windows, Windows Terminal opens PowerShell by default, which works differently from
+            everything else in this course. Install WSL instead: run <cde>wsl --install</cde> in
+            Windows Terminal once, restart, and you'll have Ubuntu, a real Linux, running inside
+            Windows. Open its terminal, and every command in the course works exactly as written.
+            Docker Desktop on Windows runs on WSL anyway.
+        </p>
+        <p>Four things get you a long way:</p>
+        <list>
+            <li><cde>pwd</cde> says which folder you're in.</li>
+            <li><cde>ls</cde> lists what's in it.</li>
+            <li>
+                <cde>cd some-folder</cde> goes into a folder, and <cde>cd ..</cde> goes back up.
+            </li>
+            <li><cde>Ctrl+C</cde> stops whatever is running.</li>
+        </list>
+        <p>
+            The up arrow brings back the commands you typed before. And type the first few letters
+            of a file or folder, then press Tab: the terminal finishes the name for you. If nothing
+            happens, it isn't where you think it is.
+        </p>
+        <p>
+            I got serious about the terminal at my first job that had me wrangling
+            <term def="csv">CSV</term> files all day, and I've run a few bad commands since. One of
+            them I'm still too embarrassed to tell anyone about. Read a command before you press
+            Enter, especially one that deletes.
+        </p>
+
+        <side-story title="Why Is It Called a Terminal?">
+            It's called a terminal because it used to be one: a screen and keyboard wired to a
+            computer somewhere else, like DEC's VT100 from 1978. The window on your screen is still
+            pretending to be one, codes and all.
+        </side-story>
+
+        <heading h2 id="package-managers">Package Managers</heading>
+        <p>
+            For the few things that do have to live on your computer, use your system's
+            <term def="package-manager">package manager</term> rather than downloading installers
+            from websites. It installs, updates and removes things with one command each.
+        </p>
+        <list>
+            <li>
+                Mac: <lnk to="https://brew.sh" blank>Homebrew</lnk>. For example,
+                <cde>brew install git</cde>.
+            </li>
+            <li>
+                Linux, including Ubuntu in WSL: apt, built in. For example,
+                <cde>sudo apt install git</cde>.
+            </li>
+        </list>
+
+        <heading h2 id="docker">Docker</heading>
+        <p>
+            Docker runs containers: small sealed boxes with exactly the software a lesson needs.
+            When you're done, the box goes away, and nothing was installed on your machine. It's how
+            every lesson runs PHP.
+        </p>
+        <p>
+            Why bother? Because I've done it the other way. At one job, most of our apps ran on a
+            current PHP and one ran on an old one, so we had a pair of commands to switch which PHP
+            Homebrew pointed at, and we had to remember to run them. At another, we renamed PHP's
+            folder by hand to switch between versions 7 and 8 for different apps, because nobody had
+            time to update the old ones. That lasted until a security hole made updating a priority,
+            and then we got hacked anyway: one setting, left at its default in an old PDF library,
+            opened the door for everything that followed. With containers, every app brings its own
+            PHP, and nothing on your computer has to change.
+        </p>
+        <p>
+            Get
+            <lnk to="https://www.docker.com/products/docker-desktop/" blank>Docker Desktop</lnk> on
+            a Mac or Windows (on a Mac, <cde>brew install --cask docker-desktop</cde> does it). On
+            Linux, install Docker Engine with your package manager. Docker Desktop has to be running
+            before any <cde>docker</cde> command works. Check it:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm hello-world</code-block>
+        <breakdown>
+            <part code="docker">The Docker command. Everything after it is instructions.</part>
+            <part code="run"
+                >Start a new container, run what's in it, and show you the output.</part
+            >
+            <part code="--rm">Remove the container when it's done, so they don't pile up.</part>
+            <part code="hello-world"
+                >The image: what goes in the container. This one is Docker's tiny test image. Docker
+                downloads an image the first time you use it, and reuses it after.</part
+            >
+        </breakdown>
+        <p>If it prints "Hello from Docker!", you're set.</p>
+        <side-story title="Is Docker Free?">
+            For you, almost certainly: Docker Desktop is free for personal use, education, open
+            source and small businesses (under 250 people and under $10 million a year), so ask
+            first on a big company's computer.
+        </side-story>
+
+        <heading h2 id="git">Git</heading>
+        <p>Install it with your package manager. On a Mac:</p>
+        <!-- prettier-ignore -->
+        <code-block>brew install git</code-block>
+        <breakdown>
+            <part code="brew">Homebrew, the package manager.</part>
+            <part code="install">Download and install something.</part>
+            <part code="git">The thing to install.</part>
+        </breakdown>
+        <p>
+            Git keeps the history of your code: every change, when, and why, so you can go back.
+            Check it's there:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>git --version</code-block>
+        <breakdown>
+            <part code="git">The Git command.</part>
+            <part code="--version"
+                >Print which version is installed, and nothing else. If you get a version number,
+                it's there.</part
+            >
+        </breakdown>
+        <p>
+            The lessons use a few Git commands as they come up. For the whole thing, the free
+            <lnk to="https://git-scm.com/book" blank>Pro Git book</lnk> is the one.
+        </p>
+
+        <heading h2 id="editor">Your Editor</heading>
+        <p>
+            Code is plain text, so you need a code editor, not a word processor.
+            <lnk to="https://code.visualstudio.com" blank>VS Code</lnk> is free, and fine to start
+            with. But if you're going to spend real time in PHP code, sincerely, get
+            <lnk to="https://www.jetbrains.com/phpstorm/" blank>PhpStorm</lnk> and learn it. It
+            understands PHP all the way down, out of the box, where VS Code gets partway there with
+            a pile of extensions. Students can get it free. I used it every day from 2012 until this
+            year, when AI started doing the heavy lifting.
+        </p>
+        <p>
+            A word from an old programmer: don't be macho about this. Writing code in a bare text
+            editor, or in a terminal editor you haven't learned yet, earns you nothing but typos and
+            lost afternoons. Use the editor that helps you: the one that colors your code, finds
+            things across files, and tells you about a mistake before you run it.
+        </p>
+
+        <heading h2 id="developer-tools">Your Browser's Developer Tools</heading>
+        <p>
+            Every browser has a set of tools for looking under the hood of a page. Open them with
+            F12, or Cmd+Option+I on a Mac (Ctrl+Shift+I elsewhere). In Safari, first turn on
+            Settings, Advanced, "Show features for web developers." The course uses four tabs:
+        </p>
+        <list>
+            <li><strong>Elements</strong>: the page's HTML, as the browser sees it right now.</li>
+            <li><strong>Console</strong>: messages and errors from the page's JavaScript.</li>
+            <li><strong>Network</strong>: every request the page makes, and every response.</li>
+            <li>
+                <strong>Application</strong> in Chrome, <strong>Storage</strong> in Firefox: the
+                cookies and everything else a site keeps in your browser.
+            </li>
+        </list>
+
+        <heading h2 id="reading-logs">Reading Logs</heading>
+        <p>
+            A log is a file a program writes lines to as things happen. Watching one while you click
+            around is half of debugging. To follow a log as it grows:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>tail -f some.log</code-block>
+        <breakdown>
+            <part code="tail">Show the last few lines of a file.</part>
+            <part code="-f"
+                >Follow: keep the file open and print each new line as it's written, until you press
+                <cde>Ctrl+C</cde>.</part
+            >
+            <part code="some.log">The file to watch.</part>
+        </breakdown>
+        <p>
+            <cde>less +F some.log</cde> does the same, and lets you scroll back:
+            <cde>Ctrl+C</cde> to stop following, <cde>q</cde> to quit. lnav, from your package
+            manager, adds color and search. For a container, <cde>docker logs -f</cde> and the
+            container's name.
+        </p>
+
+        <heading h2 id="composer">Composer, in a Container</heading>
+        <p>
+            Composer is PHP's package manager: it fetches the libraries a project uses. You'll run
+            it in a container too, never installed:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -v "$PWD":/app -w /app composer:2 composer install</code-block>
+        <code-note>Only the new parts:</code-note>
+        <breakdown>
+            <part code="-it"
+                >Keep it interactive, so you see its output as it goes and can answer if it
+                asks.</part
+            >
+            <part code='-v "$PWD":/app'
+                >Share the folder you're in (<cde>$PWD</cde>) with the container, where it shows up
+                as <cde>/app</cde>. That's how a container works on your files.</part
+            >
+            <part code="-w /app">Start in that folder, inside the container.</part>
+            <part code="composer:2">The image: Composer, version 2.</part>
+            <part code="composer install">The command to run in it.</part>
+        </breakdown>
+        <p>The lessons that need Composer say so, and explain it there.</p>
+
+        <two-dollars title="Don't make it harder than it has to be">
+            <p>
+                You don't get points for doing it the hard way. Nobody grades you on being the
+                biggest nerd in the room; you get points for getting shit done. This work carries
+                plenty of mental load already, so take every bit of it off yourself that you can:
+                the helpful editor, the shortcut, the tool that does it for you.
+            </p>
+        </two-dollars>
+
+        <p>
+            That's the setup. One more page before the first lesson: a quick key to reading the code
+            in the examples.
+        </p>
+
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/reading-the-examples">Next: Reading the Examples &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,278 @@
+<layout name="default" title="DNS" />
+<page-head>
+    <meta
+        name="description"
+        content="How a name like phillipharrington.com turns into an address a computer can connect to: domain names, IP addresses, DNS records, resolvers, and caching. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="DNS, domain name system, IP address, A record, CNAME, MX record, TTL, resolver, nslookup, gethostbyname, dns_get_record, checkdnsrr, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How a name turns into an address. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="dns">DNS</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            In Client/Server, the <term def="server">server</term> had to be easy to find. Computers
+            find each other by number, the <term def="ip-address">IP address</term>, but people use
+            names. <term def="dns">DNS</term>, the Domain Name System, is how a name like
+            <cde>example.com</cde> turns into a number a <term def="client">client</term> can
+            connect to. It happens before every new connection, usually in a few milliseconds, and
+            you only notice it when it breaks.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-an-ip-address">What's an IP Address?</heading>
+        <p>
+            The number a computer is reached at, like a phone number. The older kind, IPv4, is four
+            numbers from 0 to 255 with dots between them: <cde>203.0.113.7</cde>. The newer kind,
+            IPv6, is much longer and written in hexadecimal with colons. Both are still in use, side
+            by side.
+        </p>
+
+        <side-story title="Running Out">
+            IPv4 has room for about 4.3 billion addresses, which sounded like plenty in 1981. By
+            2011 the last big blocks had been handed out, and the internet kept growing anyway,
+            mostly thanks to a trick: your home router gets one public address and gives every
+            device behind it a private one, like <cde>192.168.1.20</cde>, that only means something
+            inside your own network. That's how a laptop, a phone and a TV share one address on the
+            internet. The real fix is IPv6, with more addresses than there are grains of sand on
+            Earth, by a very wide margin. It's been arriving slowly ever since.
+        </side-story>
+
+        <heading h2 id="whats-a-domain-name">What's a Domain Name?</heading>
+        <p>
+            The name people type instead of the number. It reads right to left, from general to
+            specific: in <cde>www.example.com</cde>, <cde>com</cde> is the top-level
+            <term def="domain-name">domain</term>, <cde>example</cde> is the name someone registered
+            under it, and <cde>www</cde> is a <term def="subdomain">subdomain</term> the owner made
+            up. The owner can make as many subdomains as they like.
+        </p>
+
+        <heading h2 id="records">What's a DNS Record?</heading>
+        <p>
+            A domain's DNS is a short list of <term def="dns-record">records</term>, each one a fact
+            about the name. The ones you'll meet:
+        </p>
+        <list>
+            <li><strong>A</strong>: this name is at this IPv4 address.</li>
+            <li><strong>AAAA</strong>: the same, for an IPv6 address.</li>
+            <li><strong>CNAME</strong>: a name for another record; go look that one up instead.</li>
+            <li><strong>MX</strong>: mail for this name goes to this server.</li>
+            <li>
+                <strong>TXT</strong>: a note, usually proof to some service that you own the domain,
+                or rules about who may send its email.
+            </li>
+            <li><strong>NS</strong>: these servers are in charge of this name's records.</li>
+        </list>
+        <p>
+            Every record also has a <term def="ttl">TTL</term>, "time to live": how many seconds
+            anyone who looks it up may remember the answer before asking again.
+        </p>
+
+        <side-story title="One File for the Whole Internet">
+            Before DNS, every computer on the early internet kept a copy of one file, HOSTS.TXT,
+            listing every machine's name and number. It was maintained by hand at a single office at
+            the Stanford Research Institute, and you got updates by downloading it again. By the
+            early 1980s it was changing faster than anyone could copy it, so in 1983 Paul
+            Mockapetris designed DNS to replace it.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>
+            When your <term def="browser">browser</term> needs the address for a name, it goes like
+            this:
+        </p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The browser checks whether it looked this name up recently.</li>
+            <li>
+                If not, your computer checks its own memory, and a small file called the hosts file,
+                where you can pin names to addresses yourself.
+            </li>
+            <li>
+                If not, it asks a resolver: a DNS server run by your internet provider, or a public
+                one like Cloudflare's <cde>1.1.1.1</cde> or Google's <cde>8.8.8.8</cde>.
+            </li>
+            <li>
+                If the resolver doesn't know either, it starts at the top. It asks a root server,
+                "who's in charge of <cde>.com</cde>?" Then it asks the <cde>.com</cde> servers,
+                "who's in charge of <cde>example.com</cde>?" Then it asks that domain's own servers
+                for the record itself.
+            </li>
+            <li>
+                The answer comes back down the chain, and every step remembers it for as long as the
+                TTL allows.
+            </li>
+        </ol>
+        <!-- prettier-ignore -->
+        <diagram caption="A lookup the resolver doesn't have yet: three questions, from the top down, then the answer back to you.">
+            <svg viewBox="0 0 630 262" role="img" aria-label="Your browser asks a resolver for example.com. If the resolver doesn&#x27;t already know, it asks the root servers who runs .com, then the .com servers who runs example.com, then example.com&#x27;s own servers for the address, and passes the answer back, remembering it for the TTL." class="block h-auto w-full"><defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><rect x="10" y="95" width="130" height="70" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="75.0" y="129.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Your browser</text><text x="75.0" y="155" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">and your computer</text><rect x="230" y="95" width="130" height="70" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="295.0" y="129.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Resolver</text><text x="295.0" y="155" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">remembers for the TTL</text><rect x="450" y="12" width="170" height="62" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="535.0" y="48.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Root servers</text><line x1="363" y1="116" x2="447" y2="43" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah3)"/><circle cx="405.0" cy="79.5" r="9" style="fill:var(--th-page);stroke:var(--th-accent);stroke-width:1.2"/><text x="405.0" y="83.5" text-anchor="middle" font-size="11" style="fill:var(--th-text)">1</text><text x="535" y="70" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">"Who runs .com?"</text><rect x="450" y="102" width="170" height="62" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="535.0" y="138.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">.com servers</text><line x1="363" y1="130" x2="447" y2="133" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah3)"/><circle cx="405.0" cy="131.5" r="9" style="fill:var(--th-page);stroke:var(--th-accent);stroke-width:1.2"/><text x="405.0" y="135.5" text-anchor="middle" font-size="11" style="fill:var(--th-text)">2</text><text x="535" y="160" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">"Who runs example.com?"</text><rect x="450" y="192" width="170" height="62" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="535.0" y="228.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">example.com's servers</text><line x1="363" y1="144" x2="447" y2="223" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah3)"/><circle cx="405.0" cy="183.5" r="9" style="fill:var(--th-page);stroke:var(--th-accent);stroke-width:1.2"/><text x="405.0" y="187.5" text-anchor="middle" font-size="11" style="fill:var(--th-text)">3</text><text x="535" y="250" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">"Where is www?"</text><line x1="143" y1="122" x2="227" y2="122" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah3)"/><text x="185" y="114" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">example.com?</text><line x1="227" y1="140" x2="143" y2="140" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah3)"/><text x="185" y="156" text-anchor="middle" font-size="11" style="fill:var(--th-text)" class="font-mono">203.0.113.7</text></svg>
+        </diagram>
+        <p>
+            That memory is why DNS is fast: almost every lookup is answered from step one, two or
+            three. It's also why DNS changes are slow. Change a record, and the old answer lives on
+            in <term def="cache">caches</term> all over the world until their TTLs run out.
+        </p>
+        <p>
+            Notice the resolver is a server to you and a client to the root, the <cde>.com</cde>
+            servers and the domain's servers. Same relationship as last time, more links in the
+            chain.
+        </p>
+        <p>
+            Step back and it's remarkable. Nobody runs DNS. Thousands of separate organizations, the
+            root operators, every top-level domain's registry, every company and person with a
+            domain, each run their own small piece of it, and they cooperate on nothing but an
+            agreed set of rules. It was designed in 1983 for a few thousand computers, and the same
+            design now answers for billions of them, all day, mostly without anyone noticing. It's
+            one of the great pieces of engineering of the last century, and proof that the world can
+            agree on something.
+        </p>
+
+        <side-story title="Thirteen Names">
+            There are thirteen root server names, <cde>a.root-servers.net</cde> through
+            <cde>m.root-servers.net</cde>, run by twelve different organizations. But each name is
+            many actual machines around the world sharing one address, well over a thousand in all,
+            and you're answered by whichever is closest.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            PHP can do DNS lookups itself, so start there. In a folder, make a file called
+            <cde>dns.php</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block example="dns/dns.php" />
+        <p>
+            Run it in a <term def="container">container</term>, the same way as last time, giving it
+            a name to look up:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php example.com</code-block>
+        <code-note>Only the new part:</code-note>
+        <breakdown>
+            <part code="example.com"
+                >Anything after the file name is handed to the script as an argument. PHP keeps them
+                in <cde>$argv</cde>, which starts with the script's own name, so
+                <cde>example.com</cde> is <cde>$argv[1]</cde>. This script looks up whatever name
+                you give it.</part
+            >
+        </breakdown>
+        <p>
+            The first line is one address: <cde>gethostbyname()</cde> asks the question the way a
+            browser would and takes the first answer. Then <cde>dns_get_record()</cde> shows the
+            actual A records, each with its TTL. There's more than one: example.com sits behind a
+            <term def="cdn">CDN</term>, so the name points at more than one of the CDN's servers.
+        </p>
+        <p>
+            The MX record is where its email goes, and example.com's says "nowhere": priority 0, and
+            an empty target. That's a null MX, a domain announcing it takes no mail, so senders
+            don't even try. (example.com is reserved for examples like this one.) Try a name that
+            does take mail:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php gmail.com</code-block>
+        <p>
+            Five MX records, each with a priority number (<cde>pri</cde>). Senders try the lowest
+            number first, and work up the list if it doesn't answer. Then ask a different client,
+            the one that comes with every operating system:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>nslookup example.com</code-block>
+        <breakdown>
+            <part code="nslookup"
+                >A DNS client. It asks your resolver for a name's records and prints the
+                answer.</part
+            >
+            <part code="example.com">The name to look up.</part>
+        </breakdown>
+        <p>
+            Same answer, different client, and it works the same on every system. It also tells you
+            which resolver answered, at the top. (If <cde>nslookup</cde> isn't there, get it from
+            your package manager; on Ubuntu it's in <cde>dnsutils</cde>.) On a Mac or Linux,
+            <cde>dig example.com</cde> is the one the pros reach for: more detail, TTLs included.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <p>
+            Most of the time PHP does DNS for you without asking: connecting to a
+            <term def="database">database</term> by name, or fetching a <term def="url">URL</term>,
+            starts with a lookup. When you need one yourself, three
+            <term def="function">functions</term>
+            cover it:
+        </p>
+        <list>
+            <li><cde>gethostbyname()</cde>: one IPv4 address for a name.</li>
+            <li><cde>dns_get_record()</cde>: the records themselves, any type.</li>
+            <li>
+                <cde>checkdnsrr()</cde>: does a record of this type exist? The classic use is a
+                signup <term def="form">form</term>: <cde>checkdnsrr($domain, 'MX')</cde> tells you
+                whether an email address's domain accepts mail at all, before you try to send to it.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>"I changed it, but I still see the old site."</strong> The old answer is
+                cached somewhere between you and the domain's servers. It goes away when the TTL
+                runs out. Waiting is the fix; so is the $2 tip below, next time.
+            </li>
+            <li>
+                <strong><cde>gethostbyname()</cde> doesn't fail like you'd expect.</strong> When a
+                name doesn't exist, it returns the name you gave it, unchanged, not
+                <cde>false</cde>. Check whether what came back is an address.
+            </li>
+            <li>
+                <strong>The hosts file wins.</strong> A name pinned in your hosts file never reaches
+                DNS at all. That's how local development names like <cde>myapp.test</cde> work, and
+                why a forgotten line in it can make one computer see a different site from everyone
+                else.
+            </li>
+        </list>
+
+        <side-story title="It's Always DNS">
+            Operations people have a haiku about outages: "It's not DNS. There's no way it's DNS. It
+            was DNS." When everything is broken at once, DNS is the first thing to check. At one
+            job, the office's DNS went down and the business side went wild. Cassandra, the older
+            engineer who sat next to me, muttered "it's the DNS guys," and nobody listened. She
+            switched her computer to a public resolver and went on working while the panic carried
+            on around her.
+        </side-story>
+
+        <!-- $2 tip -->
+        <two-dollars title="Turn the TTL down before you move">
+            <p>
+                Moving a site to a new server? A day before, lower the TTL on its records to five
+                minutes. Then, when you switch, the old address only lingers for five minutes
+                instead of a day. Once it's settled, turn the TTL back up.
+            </p>
+        </two-dollars>
+
+        <p>
+            Now the client has an address, and can open a connection. Next: the language they speak
+            once they're connected, <term def="http">HTTP</term>.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php/anatomy-of-a-url">&larr; Anatomy of a URL</lnk>
+            <lnk to="/php/http">Next: HTTP, HTTPS and TLS &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

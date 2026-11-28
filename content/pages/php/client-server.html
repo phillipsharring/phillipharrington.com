@@ -1,0 +1,244 @@
+<layout name="default" title="Client/Server" />
+<page-head>
+    <meta
+        name="description"
+        content="How computers talk over the Internet: what a server is, what a client is, how they interact, and what sits in the middle. The first lesson of Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="client server, what is a server, what is a client, web server, nginx, Apache, Caddy, CDN, reverse proxy, protocols, HTTP, learn PHP, web development basics"
+    />
+    <meta
+        property="og:description"
+        content="What a server is, what a client is, and how they talk. Lesson one of Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="client-server">Client/Server</heading>
+        <byline date="Nov 2026" updated>Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Most of the Internet works as <term def="client">clients</term> and
+            <term def="server">servers</term>: a server at one end of the conversation, a client at
+            the other. The two communicate using agreed-upon <term def="protocol">protocols</term>,
+            such as <term def="http">HTTP</term>, which gets a lesson of its own. A server listens
+            for <term def="request">requests</term>, and a client makes them.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-server">What's a Server?</heading>
+        <p>
+            The server is a program on a computer that binds to a <term def="port">port</term> on
+            that computer's network connection and listens for requests. Common server software
+            includes nginx, Apache and Caddy.
+        </p>
+
+        <side-story title="Ten Thousand at Once">
+            nginx exists because of a number. In 1999 an engineer named Dan Kegel asked how one
+            server could handle ten thousand connections at once, and called it the C10K problem.
+            Igor Sysoev, running a busy Russian web portal, wrote nginx to answer it. Today it
+            serves a big share of the web.
+        </side-story>
+
+        <heading h3 id="hardware">The Hardware</heading>
+        <p>
+            Both the client and the server are software, running on physical (or virtual) computers
+            that are connected to the Internet. The server has the added requirement of being easy
+            to find, either by <term def="ip-address">IP address</term> or, much more often, by a
+            <term def="domain-name">domain name</term>. (How a name turns into an address is the
+            <term def="dns">DNS</term> lesson.)
+        </p>
+        <p>
+            The computer the server software runs on is usually also called a server, which is nice
+            and confusing. Sometimes people say "physical server" to tell the machine apart from the
+            software. The server is also sometimes called a "<term def="host">host</term>," which is
+            where "hosting" and "web hosting" come from.
+        </p>
+        <p>
+            The physical server may be a powerful computer in a data center, a rack unit in an
+            office closet, or a forgotten PC under someone's desk. At a company that shall remain
+            nameless, an entire operations app ran on one, and the development server where I cut my
+            teeth was my own desktop. So long as it's connected to, and can be reached from, the
+            Internet, it can act as a server. These days it's very often a virtual machine or a
+            <term def="container">container</term> in somebody else's data center, which is all "the
+            cloud" means.
+        </p>
+
+        <side-story title="Do Not Power It Down">
+            The first <term def="web-server">web server</term> was Tim Berners-Lee's NeXT computer
+            at CERN, in 1990. It had a handwritten label stuck to it: "This machine is a server. DO
+            NOT POWER IT DOWN!!" Turning it off would have turned off the World Wide Web.
+        </side-story>
+
+        <heading h2 id="whats-a-client">What's a Client?</heading>
+        <p>
+            A client is the program you use to connect to a server. That can be a web
+            <term def="browser">browser</term>, an email program, an FTP program, a
+            <term def="terminal">terminal</term>, an app on your phone, and many other kinds of
+            programs. When you browse the web or check your email, you're using a client.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>A conversation goes like this:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>The server listens for connections (it binds to a port).</li>
+            <li>The client opens a connection (you click a link or check your email).</li>
+            <li>
+                The client sends a request, and the server responds with the information requested,
+                or some kind of error.
+            </li>
+            <li>The client displays the <term def="response">response</term>.</li>
+        </ol>
+
+        <heading h3 id="how-do-they-talk">How Do They Talk?</heading>
+        <p>
+            The Internet runs on protocols: agreed-upon rules for how computers talk. This is how a
+            Mac can talk to a Linux or Windows server. It's like musicians from different countries
+            who've never met: hand them the same chart and they can play together, without a word in
+            common. Music is the protocol.
+        </p>
+        <p>
+            HTTP is one such protocol, the one web pages (and most of the apps on your phone) travel
+            over, and it gets a lesson of its own soon. For now, just know that the
+            <cde>https://</cde> at the start of a web address names it: HTTP, plus an S for secure.
+        </p>
+
+        <heading h3 id="whats-in-the-middle">What's in the Middle?</heading>
+        <p>
+            Your client rarely talks straight to the server that does the work. On most sites, your
+            browser talks to a <term def="cdn">CDN</term>: a network of servers around the world
+            that keeps copies of pages close to you and passes everything else along to the real
+            server. There may be a <term def="load-balancer">load balancer</term> or a
+            <term def="reverse-proxy">reverse proxy</term> in there too.
+        </p>
+        <!-- prettier-ignore -->
+        <diagram caption="A request on its way in, and the response on its way back. Everything in the middle is a server to its left and a client to its right.">
+            <svg viewBox="0 0 600 78" role="img" aria-label="Your browser sends a request to a CDN, which passes it to a reverse proxy, which passes it to the app server. Each one in the middle is a server to the one before it and a client to the one after." class="block h-auto w-full"><defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><rect x="10" y="6" width="118" height="64" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="69.0" y="37.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Your browser</text><text x="69.0" y="60" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">client</text><rect x="164" y="6" width="118" height="64" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="223.0" y="37.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">CDN</text><text x="223.0" y="60" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">server, then client</text><rect x="318" y="6" width="118" height="64" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="377.0" y="37.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Reverse proxy</text><text x="377.0" y="60" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">server, then client</text><rect x="472" y="6" width="118" height="64" rx="6" style="fill:var(--th-tint-strong);stroke:var(--th-border);stroke-width:1"/><text x="531.0" y="37.0" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">App server</text><text x="531.0" y="60" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">server</text><line x1="131" y1="31.0" x2="161" y2="31.0" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah2)"/><line x1="161" y1="45.0" x2="131" y2="45.0" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah2)"/><line x1="285" y1="31.0" x2="315" y2="31.0" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah2)"/><line x1="315" y1="45.0" x2="285" y2="45.0" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah2)"/><line x1="439" y1="31.0" x2="469" y2="31.0" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah2)"/><line x1="469" y1="45.0" x2="439" y2="45.0" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah2)"/></svg>
+        </diagram>
+        <soaking>
+            <p>This page came to you through one.</p>
+        </soaking>
+        <p>
+            Each of those is a server to whatever is in front of it and a client to whatever is
+            behind it. Same relationship, more links in the chain. They get
+            a lesson of their own.
+        </p>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>
+            You're going to be both ends of the conversation: the server and the client, on one
+            computer. PHP comes with a small built-in web server, which is all you need, and you'll
+            run it in a container, so there's nothing to install but Docker. Make a folder, and in
+            it a file called <cde>index.php</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block example="client-server/index.php" />
+        <p>Then, in a terminal, in that folder, start the server:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <code-note>What's new:</code-note>
+        <breakdown>
+            <part code="-p 8000:8000"
+                >Connect port 8000 on your computer to port 8000 in the container. Your computer's
+                side comes first.</part
+            >
+            <part code="-S">Start PHP's built-in web server instead of running one file.</part>
+            <part code="0.0.0.0:8000"
+                >The address and port for it to listen on: every address, port 8000.</part
+            >
+        </breakdown>
+        <p>
+            That's step one from above: the server binds to a port and listens. Most of that line is
+            Docker; the PHP part is the end, <cde>php -S 0.0.0.0:8000</cde>.
+        </p>
+
+        <side-story title="Why Not Port 80?">
+            Why 8000 and not 80, the real web port? On Linux and most Unix systems, ports below 1024
+            are "privileged": only an administrator can open one. Plain web (80) and secure web
+            (443) both live down there, so development servers have always picked numbers like 8000
+            or 8080 instead.
+        </side-story>
+        <p>
+            Now be the client. Open <cde>http://localhost:8000</cde> in your browser.
+            <cde>localhost</cde> is the name every computer uses for itself. You'll see "Hello from
+            the server." And back in the terminal, the server has logged a line for your request:
+            one side of the conversation, written down.
+        </p>
+
+        <side-story title="No Place Like Home">
+            Underneath the name, <cde>localhost</cde> is the address 127.0.0.1, which every computer
+            reserves for talking to itself. Hence the classic nerd T-shirt: "There's no place like
+            127.0.0.1."
+        </side-story>
+        <p>Two more things to try. Ask again with a different client, from a second terminal:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl http://localhost:8000</code-block>
+        <breakdown>
+            <part code="curl"
+                >A web client for the terminal. It sends a request and prints the response.</part
+            >
+            <part code="http://localhost:8000"
+                >The address to ask: your own computer, port 8000.</part
+            >
+        </breakdown>
+        <p>
+            Same server, same answer, different client. Then go back to the first terminal, stop the
+            server with <cde>Ctrl+C</cde>, and reload the browser. It can't connect, because nobody
+            is listening on port 8000 anymore. That error is what "the server is down" looks like
+            from the client's end.
+        </p>
+        <p class="text-th-muted text-base">
+            No Docker yet? <xref to="/php/tools#docker">Tools</xref> has the one install (and WSL,
+            on Windows).
+        </p>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>"Port is already allocated."</strong> Something else is already listening on
+                8000. Pick another port on your side: <cde>-p 8001:8000</cde>, then open
+                <cde>localhost:8001</cde>.
+            </li>
+            <li>
+                <strong>Inside a container, localhost is the container.</strong> Not your computer.
+                A server in a container that listens only on
+                <term def="localhost">localhost</term> can't hear anything from outside it, which is
+                why <sect>Try It</sect> says <cde>0.0.0.0</cde>.
+            </li>
+            <li>
+                <strong>"Connection refused" isn't "timed out."</strong> Refused means the machine
+                answered, but nothing is listening on that port: your stopped server, for example.
+                Timed out means the machine never answered at all, so the problem is the address or
+                something on the way there.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Is it the client or the server?">
+            <p>
+                When something won't load, find out which end is broken before you fix anything. Try
+                a different client: another browser, <cde>curl</cde>, your phone with Wi-Fi off. If
+                the second client works, the server is fine and the problem is on your end. If
+                nothing can reach it, it's the server, or something between you and it, like DNS.
+            </p>
+        </two-dollars>
+
+        <p>
+            Everything you typed into the browser in <sect>Try It</sect> was a
+            <term def="url">URL</term>. Next: what each piece of one means.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php/reading-the-examples">&larr; Reading the Examples</lnk>
+            <lnk to="/php/anatomy-of-a-url">Next: Anatomy of a URL &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,239 @@
+<layout name="default" title="HTTP, HTTPS and TLS" />
+<page-head>
+    <meta
+        name="description"
+        content="The language browsers and servers speak: what HTTP looks like on the wire, what HTTPS and TLS add, what the padlock does and doesn't promise, and what HTTP/2 and 3 changed. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="HTTP, HTTPS, TLS, SSL, certificate, padlock, HTTP/2, HTTP/3, curl -v, file_get_contents, http_get_last_response_headers, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="The language browsers and servers speak. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="http-https-and-tls">HTTP, HTTPS and TLS</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            <term def="dns">DNS</term> gave the <term def="client">client</term> an address, and it
+            has opened a connection. Now the two of them need a language. On the web, that's
+            <term def="http">HTTP</term>, the Hypertext Transfer Protocol: the music from
+            Client/Server. It's simple on purpose. The client asks for something, the
+            <term def="server">server</term> answers, and that's one exchange.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-http">What's HTTP?</heading>
+        <p>
+            The rules for that one exchange: a <term def="request">request</term>, then a
+            <term def="response">response</term>. Each request stands on its own. The server doesn't
+            remember you from one request to the next unless something reminds it (that's what
+            <term def="cookie">cookies</term> are for, later). And in its classic form, it's plain
+            text you could read, or even type by hand.
+        </p>
+
+        <side-story title="One Page of Rules">
+            The first version of HTTP, from 1991, had one <term def="http-method">method</term>,
+            <cde>GET</cde>, no <term def="header">headers</term> and no
+            <term def="status-code">status codes</term>. You asked for a page, you got the page, and
+            the connection closed. Its whole description fit on about a page.
+        </side-story>
+
+        <heading h2 id="whats-https">What's HTTPS?</heading>
+        <p>
+            The same HTTP, sent through an <term def="encryption">encrypted</term> connection.
+            Nobody between you and the server (the coffee shop Wi-Fi, your internet provider, anyone
+            along the way) can read the conversation or change it.
+        </p>
+
+        <heading h2 id="whats-tls">What's TLS?</heading>
+        <p>
+            Transport Layer Security, the encryption that puts the S in
+            <term def="https">HTTPS</term>. Its older version was called SSL, and people still say
+            "SSL" out of habit, but SSL itself has been broken and retired for years.
+            <term def="tls">TLS</term> does two jobs: it scrambles the conversation, and it proves
+            the server is who it says it is, with a <term def="certificate">certificate</term>. A
+            certificate is the server's ID card, vouched for by a certificate authority your
+            <term def="browser">browser</term> already trusts.
+        </p>
+
+        <heading h3 id="the-padlock">What the Padlock Means</heading>
+        <p>
+            Two things: the connection is encrypted, and you're talking to the
+            <term def="domain-name">domain</term> in the address bar. That's all. It doesn't mean
+            the site is honest. A scam site can have a perfectly good certificate for its own scammy
+            domain.
+        </p>
+
+        <side-story title="The Padlock Went Away">
+            So many people read the padlock as "this site is safe" that in 2023 Chrome replaced it
+            with a neutral settings icon. By then nearly every site was encrypted, scams included,
+            so the padlock told you almost nothing, and people kept reading it as a seal of
+            approval.
+        </side-story>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>An HTTP request, as it travels, looks like this:</p>
+        <!-- prettier-ignore -->
+        <diagram caption="A request: a request line, headers, and a blank line to end it.">
+            <svg viewBox="0 0 600 114" role="img" aria-label="An HTTP request: the request line GET /hello HTTP/1.1, then the headers Host and Accept, then a blank line that ends the request." class="block h-auto w-full"><defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><rect x="0" y="0" width="340" height="106" rx="4" style="fill:var(--th-tint-strong)"/><text x="14" y="24" font-size="14.5" class="font-mono" style="fill:var(--th-text)">GET /hello HTTP/1.1</text><text x="14" y="48" font-size="14.5" class="font-mono" style="fill:var(--th-text)">Host: example.com</text><text x="14" y="72" font-size="14.5" class="font-mono" style="fill:var(--th-text)">Accept: text/html</text><path d="M352,10 h6 V26 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="368" y="22.0" text-anchor="start" font-size="12.5" style="fill:var(--th-muted)">method, path, version</text><path d="M352,34 h6 V74 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="368" y="58.0" text-anchor="start" font-size="12.5" style="fill:var(--th-muted)">headers</text><path d="M352,82 h6 V98 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="368" y="94.0" text-anchor="start" font-size="12.5" style="fill:var(--th-muted)">blank line: "that's my request"</text></svg>
+        </diagram>
+        <p>
+            A method (<cde>GET</cde>, "give me"), a <term def="path">path</term>, the
+            <term def="protocol">protocol</term> version, then a few headers, then a blank line to
+            say "that's my request." The response comes back in the same shape:
+        </p>
+        <!-- prettier-ignore -->
+        <diagram caption="A response: a status line, headers, a blank line, then the page.">
+            <svg viewBox="0 0 600 138" role="img" aria-label="An HTTP response: the status line HTTP/1.1 200 OK, then the headers, then a blank line, then the body, the page itself." class="block h-auto w-full"><defs><marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><rect x="0" y="0" width="340" height="130" rx="4" style="fill:var(--th-tint-strong)"/><text x="14" y="24" font-size="14.5" class="font-mono" style="fill:var(--th-text)">HTTP/1.1 200 OK</text><text x="14" y="48" font-size="14.5" class="font-mono" style="fill:var(--th-text)">Content-Type: text/html</text><text x="14" y="72" font-size="14.5" class="font-mono" style="fill:var(--th-text)">Content-Length: 20469</text><text x="14" y="120" font-size="14.5" class="font-mono" style="fill:var(--th-text)">&lt;!doctype html&gt;...</text><path d="M352,10 h6 V26 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="368" y="22.0" text-anchor="start" font-size="12.5" style="fill:var(--th-muted)">version, status</text><path d="M352,34 h6 V74 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="368" y="58.0" text-anchor="start" font-size="12.5" style="fill:var(--th-muted)">headers</text><path d="M352,82 h6 V98 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="368" y="94.0" text-anchor="start" font-size="12.5" style="fill:var(--th-muted)">blank line</text><path d="M352,106 h6 V122 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="368" y="118.0" text-anchor="start" font-size="12.5" style="fill:var(--th-muted)">the body: the page itself</text></svg>
+        </diagram>
+        <p>
+            A status line (<cde>200 OK</cde>, "here it is"), headers, a blank line, then the page
+            itself. Every part of those two has a job, and the next lesson goes through them line by
+            line.
+        </p>
+        <p>
+            With HTTPS, one thing happens first: the TLS handshake. The client says hello, the
+            server shows its certificate, the client checks it, and the two agree on keys. After
+            that, exactly the same request and response travel through the encrypted connection.
+        </p>
+
+        <heading h3 id="http-2-and-3">HTTP/2 and HTTP/3</heading>
+        <p>
+            HTTP/2 packs requests and responses into binary instead of text, and sends many of them
+            at once over one connection instead of one at a time. HTTP/3 does the same over a
+            different kind of connection that copes better with flaky networks, like a phone on a
+            train. The requests and responses mean exactly what they meant in HTTP/1.1, and your PHP
+            code sees no difference at all. Usually the
+            <term def="cdn">CDN</term> or <term def="web-server">web server</term> in front of your
+            app speaks HTTP/2 or 3 with browsers, and you get it for free.
+        </p>
+
+        <side-story title="Free Certificates">
+            Until about 2015, certificates cost money and took paperwork to get (when I started, $70
+            and up, in 1990s dollars), so most of the web ran on plain HTTP. Then Let's Encrypt
+            started giving them away, free and automatic, and within a few years most page loads
+            were HTTPS. Now a site without it gets a warning.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>PHP can be the client too. In a folder, make a file called <cde>http.php</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block example="http/http.php" />
+        <p>Run it:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php http.php</code-block>
+        <code-note>
+            Same as before: a throwaway PHP <term def="container">container</term>, with your folder
+            as <cde>/app</cde>, running one file.
+        </code-note>
+        <p>
+            The first line is the status line: <cde>HTTP/1.1 200 OK</cde>. Then the response
+            headers: the type of the content, when it was last changed, and a few that show a CDN
+            answered (Cloudflare's, for example.com). Then the size of the page itself.
+        </p>
+        <p>Now ask with curl, and add <cde>-v</cde>, for verbose:</p>
+        <!-- prettier-ignore -->
+        <code-block>curl -v https://example.com/ -o /dev/null</code-block>
+        <code-note>New here:</code-note>
+        <breakdown>
+            <part code="-v"
+                >Verbose: show everything curl does along the way, not just the page.</part
+            >
+            <part code="-o /dev/null"
+                >Write the page to a file instead of the screen. <cde>/dev/null</cde> is the file
+                that throws away whatever goes into it.</part
+            >
+        </breakdown>
+        <p>
+            The lines starting with <cde>*</cde> are the TLS handshake: the TLS version, the
+            certificate's name and who issued it, when it expires. The lines starting with
+            <cde>&gt;</cde> are the request curl sent, and <cde>&lt;</cde> the response.
+        </p>
+        <p>
+            Look closely and the two clients didn't speak the same version: PHP said
+            <cde>HTTP/1.1</cde>, and curl said <cde>HTTP/2</cde>. Same server, same page, same
+            meaning.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                The request you're answering is in <cde>$_SERVER</cde>:
+                <cde>$_SERVER['REQUEST_METHOD']</cde>, <cde>$_SERVER['SERVER_PROTOCOL']</cde>, and
+                <cde>$_SERVER['HTTPS']</cde>, which is set when the connection to PHP was HTTPS.
+            </li>
+            <li>
+                <cde>header()</cde> adds a response header, and <cde>http_response_code()</cde> sets
+                the status. Both have to happen before any of the page is sent.
+            </li>
+            <li>
+                <cde>file_get_contents()</cde> on a <term def="url">URL</term> makes a simple
+                request, and <cde>http_get_last_response_headers()</cde> shows what came back.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>Behind a CDN, PHP may think it's plain HTTP.</strong> The browser talks
+                HTTPS to the CDN, but the CDN may talk plain HTTP to your server, so
+                <cde>$_SERVER['HTTPS']</cde> is never set. Code that asks "is this HTTPS?" gets it
+                wrong. One app of mine sent its login cookies without the "HTTPS only" flag for
+                months because of exactly this.
+            </li>
+            <li>
+                <strong>Mixed content.</strong> An HTTPS page that loads an image or script over
+                plain <cde>http://</cde> gets that part blocked or flagged by the browser. Use
+                <cde>https://</cde>, or a link that starts with <cde>/</cde>.
+            </li>
+            <li>
+                <strong>Certificates expire.</strong> Let's Encrypt certificates last 90 days, on
+                purpose, so that renewing is automated. If renewal isn't automated, it will be
+                forgotten, and the site will break on a Saturday, right as you leave for the lake.
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <side-story title="There Goes the Lake Trip">
+            Early on, a client called on a Friday afternoon: their certificate ran out Monday, and
+            could I renew it, today? I'd never done one. It took a certificate request I had to look
+            up how to make, a fax, two phone calls and most of the weekend, and somewhere in the
+            middle of it I said it out loud: "There goes the lake trip."
+        </side-story>
+
+        <two-dollars title="curl -I">
+            <p>
+                <cde>curl -I</cde> and a URL asks for just the status and headers, no page. It's the
+                fastest way to see what a server is actually saying: is it a
+                <term def="redirect">redirect</term>, and to where? Is it
+                <term def="cache">cached</term>? Is it even up?
+            </p>
+        </two-dollars>
+
+        <p>
+            Every one of those request and response lines has a job. Next: the request and response,
+            line by line.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php/dns">&larr; DNS</lnk>
+            <lnk to="/php/request-and-response">Next: Request and Response &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>

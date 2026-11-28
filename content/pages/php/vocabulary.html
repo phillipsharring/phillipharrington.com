@@ -1,0 +1,425 @@
+<layout name="default" title="Vocabulary" />
+<page-head>
+    <meta
+        name="description"
+        content="Every web word Web Nerdism w/ PHP 101 uses, from API to XSS, each defined in a sentence or two, with a link to the lesson that explains it."
+    />
+    <meta
+        name="keywords"
+        content="web development glossary, web vocabulary, HTTP terms, PHP terms, what is a server, what is a URL, what is a cookie, learn PHP, web development basics"
+    />
+    <meta
+        property="og:description"
+        content="The web words the course uses, defined, with where each one is explained."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Reference</p>
+        <heading h1 id="vocabulary">Vocabulary</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            The web words the course uses, each in a sentence or two, with the lesson that explains
+            it. In a lesson, a word in italics with a dotted underline is one of these: the first
+            time a page uses it, it links here.
+        </p>
+
+        <heading h2 id="a">A</heading>
+        <heading h3 id="api">API</heading>
+        <p>
+            Application Programming Interface: the way one program offers to be used by another. On
+            the web, usually a set of URLs that take requests and answer in JSON. Explained in
+            REST (coming soon).
+        </p>
+        <heading h3 id="array">Array</heading>
+        <p>
+            An ordered collection of values, each stored under a key. In PHP one works as a list
+            (keys 0, 1, 2) or with named keys. Explained in Arrays (coming soon).
+        </p>
+
+        <heading h2 id="b">B</heading>
+        <heading h3 id="body">Body</heading>
+        <p>
+            The content of a request or response, after the headers and a blank line: the HTML of a
+            page, a form's fields, some JSON. Explained in
+            <xref to="/php/request-and-response">Request and Response</xref>.
+        </p>
+        <heading h3 id="browser">Browser</heading>
+        <p>
+            The program people use to visit the web: a client that sends requests, then shows the
+            HTML it gets back. Explained in <xref to="/php/client-server">Client/Server</xref>.
+        </p>
+        <heading h3 id="byte">Byte</heading>
+        <p>
+            Eight bits: one number from 0 to 255, the unit files, strings and network traffic are
+            measured in. One character can take more than one. Explained in
+            Text and UTF-8 (coming soon).
+        </p>
+
+        <heading h2 id="c">C</heading>
+        <heading h3 id="cache">Cache</heading>
+        <p>
+            A copy of an answer, kept somewhere closer or cheaper than where the answer comes from,
+            so it doesn't have to be made again. Browsers, CDNs and your own app all keep them.
+            Explained in Caching (coming soon).
+        </p>
+        <heading h3 id="cdn">CDN</heading>
+        <p>
+            Content delivery network: servers all over the world that keep copies of your files and
+            pages and answer from the one nearest the visitor. Explained in
+            What's in the Middle (coming soon).
+        </p>
+        <heading h3 id="certificate">Certificate</heading>
+        <p>
+            A server's ID card for HTTPS, vouched for by a certificate authority the browser trusts.
+            It proves the server is the one the name says. Explained in
+            <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
+        </p>
+        <heading h3 id="character-set">Character Set</heading>
+        <p>
+            A list that gives every character a number, and with it the rules for turning bytes into
+            letters. The charset in a Content-Type header says which one the bytes use. Explained in
+            <xref to="/php/content-types">Content Types</xref> and
+            Text and UTF-8 (coming soon).
+        </p>
+        <heading h3 id="client">Client</heading>
+        <p>
+            The program that connects to a server and asks for something: a browser, curl, a phone
+            app, another server. Explained in <xref to="/php/client-server">Client/Server</xref>.
+        </p>
+        <heading h3 id="container">Container</heading>
+        <p>
+            A small sealed box, run by Docker, with exactly the software one project needs, kept
+            apart from the rest of your computer. Explained in
+            <xref to="/php/tools#docker">Tools</xref>.
+        </p>
+        <heading h3 id="content-type">Content Type</heading>
+        <p>
+            A <cde>type/subtype</cde> label, like <cde>text/html</cde> or
+            <cde>application/json</cde>, that says what the bytes in a body are. Sent in the
+            Content-Type header. Explained in <xref to="/php/content-types">Content Types</xref>.
+        </p>
+        <heading h3 id="cookie">Cookie</heading>
+        <p>
+            A small name and value a browser keeps for one site. The server sets it with a
+            Set-Cookie header, and the browser sends it back with every request to that site.
+            Explained in <xref to="/php/cookies">Cookies</xref>.
+        </p>
+        <heading h3 id="csv">CSV</heading>
+        <p>
+            Comma-separated values: a table as plain text, one line per row, commas between the
+            fields. Explained in CSV (coming soon).
+        </p>
+
+        <heading h2 id="d">D</heading>
+        <heading h3 id="database">Database</heading>
+        <p>
+            A separate server that stores your data, finds any piece of it fast, and lets many
+            requests read and write at once. Explained in
+            Working with a Database: PDO and Prepared Statements (coming soon).
+        </p>
+        <heading h3 id="dns">DNS</heading>
+        <p>
+            The Domain Name System: how a name like <cde>example.com</cde> turns into an IP address
+            a client can connect to. Explained in <xref to="/php/dns">DNS</xref>.
+        </p>
+        <heading h3 id="dns-record">DNS Record</heading>
+        <p>
+            One fact about a domain name, such as its address (A, AAAA), an alias (CNAME) or where
+            its mail goes (MX). Explained in <xref to="/php/dns">DNS</xref>.
+        </p>
+        <heading h3 id="domain-name">Domain Name</heading>
+        <p>
+            The name people type instead of an IP address, like <cde>example.com</cde>, read right
+            to left from the most general part. Explained in <xref to="/php/dns">DNS</xref>.
+        </p>
+
+        <heading h2 id="e">E</heading>
+        <heading h3 id="element">Element</heading>
+        <p>
+            One piece of an HTML page: an opening tag, its content and a closing tag, like
+            <cde>&lt;p&gt;...&lt;/p&gt;</cde>. Explained in HTML (coming soon).
+        </p>
+        <heading h3 id="encoding">Encoding</heading>
+        <p>
+            Writing data in an agreed format so it survives the trip: characters as bytes (UTF-8),
+            or unsafe characters in a URL as <cde>%</cde> and two hex digits. Explained in
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref> and
+            Text and UTF-8 (coming soon).
+        </p>
+        <heading h3 id="encryption">Encryption</heading>
+        <p>
+            Scrambling data so only someone with the key can read it. Unlike a hash, it's two-way:
+            with the key, you get the original back. Explained in
+            <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
+        </p>
+        <heading h3 id="escaping">Escaping</heading>
+        <p>
+            Writing a character so it means itself instead of its job: <cde>&amp;lt;</cde> for
+            <cde>&lt;</cde> in HTML, so input shows as text instead of becoming a tag. Explained in
+            XSS and Escaping Output (coming soon).
+        </p>
+
+        <heading h2 id="f">F</heading>
+        <heading h3 id="form">Form</heading>
+        <p>
+            The part of an HTML page with fields to fill in and a button, which the browser sends to
+            the server as a request. Explained in Forms (coming soon).
+        </p>
+        <heading h3 id="fragment">Fragment</heading>
+        <p>
+            The part of a URL after a <cde>#</cde>: the name of a spot on the page. The browser
+            keeps it and never sends it to the server. Explained in
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>.
+        </p>
+        <heading h3 id="function">Function</heading>
+        <p>
+            A named piece of code that takes values in and hands one back, so you can write it once
+            and call it anywhere. Explained in Functions (coming soon).
+        </p>
+
+        <heading h2 id="h">H</heading>
+        <heading h3 id="header">Header</heading>
+        <p>
+            A <cde>Name: value</cde> line at the top of a request, a response or an email, carrying
+            facts about the message rather than the message itself. Explained in
+            <xref to="/php/request-and-response">Request and Response</xref>.
+        </p>
+        <heading h3 id="host">Host</heading>
+        <p>
+            A computer on a network, another word for a server. In a URL, the host is the part that
+            says which server: a name or an address. Explained in
+            <xref to="/php/client-server">Client/Server</xref> and
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>.
+        </p>
+        <heading h3 id="html">HTML</heading>
+        <p>
+            HyperText Markup Language: plain text with tags that say what each part of a page is.
+            Explained in HTML (coming soon).
+        </p>
+        <heading h3 id="http">HTTP</heading>
+        <p>
+            HyperText Transfer Protocol: the rules for one exchange on the web, a request and then a
+            response. Each request stands on its own. Explained in
+            <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
+        </p>
+        <heading h3 id="http-method">HTTP Method</heading>
+        <p>
+            The verb at the start of a request that says what the client wants done: GET, POST, PUT,
+            PATCH, DELETE. Explained in
+            <xref to="/php/request-and-response">Request and Response</xref>.
+        </p>
+        <heading h3 id="https">HTTPS</heading>
+        <p>
+            The same HTTP, sent through an encrypted TLS connection. Explained in
+            <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
+        </p>
+
+        <heading h2 id="i">I</heading>
+        <heading h3 id="ip-address">IP Address</heading>
+        <p>
+            The number a computer is reached at on a network, like a phone number:
+            <cde>93.184.215.14</cde> in IPv4, a longer one in IPv6. Explained in
+            <xref to="/php/dns">DNS</xref>.
+        </p>
+
+        <heading h2 id="j">J</heading>
+        <heading h3 id="javascript">JavaScript</heading>
+        <p>
+            The programming language built into every browser. It runs on the visitor's computer, so
+            the visitor controls it. Explained in JavaScript (coming soon).
+        </p>
+        <heading h3 id="json">JSON</heading>
+        <p>
+            JavaScript Object Notation: data written the way JavaScript writes it, with a few strict
+            rules. The usual format for APIs. Explained in JSON (coming soon).
+        </p>
+
+        <heading h2 id="l">L</heading>
+        <heading h3 id="load-balancer">Load Balancer</heading>
+        <p>
+            A server that spreads requests across several app servers and stops sending to any that
+            aren't healthy. Explained in
+            What's in the Middle (coming soon).
+        </p>
+        <heading h3 id="localhost">localhost</heading>
+        <p>
+            The name every computer uses for itself, address <cde>127.0.0.1</cde>. Explained in
+            <xref to="/php/client-server">Client/Server</xref>.
+        </p>
+
+        <heading h2 id="m">M</heading>
+        <heading h3 id="mime-type">MIME Type</heading>
+        <p>
+            Another name for a content type, also called a media type. MIME is Multipurpose Internet
+            Mail Extensions, where the labels started. Explained in
+            <xref to="/php/content-types">Content Types</xref>.
+        </p>
+
+        <heading h2 id="n">N</heading>
+        <heading h3 id="null">Null</heading>
+        <p>
+            No value at all, which is different from zero or an empty string. Explained in
+            Types of Types (coming soon).
+        </p>
+
+        <heading h2 id="p">P</heading>
+        <heading h3 id="package-manager">Package Manager</heading>
+        <p>
+            A program that installs, updates and removes software with one command each, like
+            Homebrew, apt or Composer. Explained in
+            <xref to="/php/tools#package-managers">Tools</xref>.
+        </p>
+        <heading h3 id="path">Path</heading>
+        <p>
+            Where something is. In a URL, the part after the host that says which thing on that
+            server; on disk, the folders down to a file. Explained in
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref> and
+            Includes (coming soon).
+        </p>
+        <heading h3 id="port">Port</heading>
+        <p>
+            A number that picks which door on a server to knock on: 80 for HTTP, 443 for HTTPS.
+            Explained in <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>.
+        </p>
+        <heading h3 id="protocol">Protocol</heading>
+        <p>
+            The agreed rules for how two computers talk: who speaks first, what each message looks
+            like, what the answers mean. HTTP is one. Explained in
+            <xref to="/php/client-server">Client/Server</xref>.
+        </p>
+
+        <heading h2 id="q">Q</heading>
+        <heading h3 id="query-string">Query String</heading>
+        <p>
+            The part of a URL after a <cde>?</cde>: name=value pairs, joined with <cde>&amp;</cde>,
+            that give the server extra instructions. Explained in
+            <xref to="/php/query-strings">Query Strings</xref>.
+        </p>
+
+        <heading h2 id="r">R</heading>
+        <heading h3 id="redirect">Redirect</heading>
+        <p>
+            A response that sends the browser somewhere else: a 3xx status code and a Location
+            header with the new URL. Explained in
+            <xref to="/php/request-and-response">Request and Response</xref>.
+        </p>
+        <heading h3 id="request">Request</heading>
+        <p>
+            What a client sends a server: a method, a URL, headers, and sometimes a body. Explained
+            in <xref to="/php/request-and-response">Request and Response</xref>.
+        </p>
+        <heading h3 id="response">Response</heading>
+        <p>
+            What the server sends back: a status code, headers, and usually a body. Explained in
+            <xref to="/php/request-and-response">Request and Response</xref>.
+        </p>
+        <heading h3 id="reverse-proxy">Reverse Proxy</heading>
+        <p>
+            A server in front of your app that takes every request, passes it along, and passes the
+            answer back. Explained in
+            What's in the Middle (coming soon).
+        </p>
+
+        <heading h2 id="s">S</heading>
+        <heading h3 id="scheme">Scheme</heading>
+        <p>
+            The first part of a URL, before the <cde>://</cde>, that says which protocol to use:
+            <cde>http</cde>, <cde>https</cde>, <cde>mailto</cde>. Explained in
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>.
+        </p>
+        <heading h3 id="server">Server</heading>
+        <p>
+            A program that listens on a port and answers requests, and the computer it runs on.
+            Explained in <xref to="/php/client-server">Client/Server</xref>.
+        </p>
+        <heading h3 id="session">Session</heading>
+        <p>
+            A way to remember a visitor between requests: a cookie holding a long random id, and
+            data kept on the server under that id. Explained in
+            Sessions (coming soon).
+        </p>
+        <heading h3 id="status-code">Status Code</heading>
+        <p>
+            The three-digit number at the top of a response that says how it went: 2xx worked, 3xx
+            look elsewhere, 4xx the client's mistake, 5xx the server's. Explained in
+            <xref to="/php/request-and-response">Request and Response</xref>.
+        </p>
+        <heading h3 id="string">String</heading>
+        <p>A row of bytes, usually text. Explained in Strings (coming soon).</p>
+        <heading h3 id="subdomain">Subdomain</heading>
+        <p>
+            A name to the left of a domain, like <cde>www</cde> or <cde>shop</cde> in
+            <cde>shop.example.com</cde>, chosen by the domain's owner. Explained in
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>.
+        </p>
+
+        <heading h2 id="t">T</heading>
+        <heading h3 id="terminal">Terminal</heading>
+        <p>
+            A window where you type commands instead of clicking. Explained in
+            <xref to="/php/tools#terminal">Tools</xref>.
+        </p>
+        <heading h3 id="tls">TLS</heading>
+        <p>
+            Transport Layer Security: what puts the S in HTTPS. It encrypts the connection and uses
+            a certificate to prove the server is who it says. Its old name was SSL. Explained in
+            <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
+        </p>
+        <heading h3 id="ttl">TTL</heading>
+        <p>
+            Time to live: how many seconds a copy of an answer, like a DNS record or a cached page,
+            may be kept before asking again. Explained in <xref to="/php/dns">DNS</xref>.
+        </p>
+        <heading h3 id="type">Type</heading>
+        <p>
+            The kind of value something is: a string, an integer, an array. In PHP the type belongs
+            to the value, not the variable. Explained in
+            Variables, Types and strict_types (coming soon).
+        </p>
+
+        <heading h2 id="u">U</heading>
+        <heading h3 id="url">URL</heading>
+        <p>
+            Uniform Resource Locator: a web address. It tells a client which protocol to use, which
+            server, which port, and what to ask for. Explained in
+            <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>.
+        </p>
+        <heading h3 id="utf-8">UTF-8</heading>
+        <p>
+            The web's character encoding: one to four bytes per character, with ASCII unchanged. Use
+            it everywhere. Explained in Text and UTF-8 (coming soon).
+        </p>
+
+        <heading h2 id="v">V</heading>
+        <heading h3 id="variable">Variable</heading>
+        <p>
+            A name for a value. In PHP it starts with <cde>$</cde> and comes into being when you
+            assign to it. Explained in
+            Variables, Types and strict_types (coming soon).
+        </p>
+
+        <heading h2 id="w">W</heading>
+        <heading h3 id="web-server">Web Server</heading>
+        <p>
+            A server that speaks HTTP: it takes requests for URLs and answers with files or with
+            what a program like PHP makes. nginx, Apache and Caddy are web servers. Explained in
+            <xref to="/php/client-server">Client/Server</xref>.
+        </p>
+
+        <heading h2 id="x">X</heading>
+        <heading h3 id="xss">XSS</heading>
+        <p>
+            Cross-site scripting: a page prints input that contains HTML, and the browser runs the
+            script in it as if it were yours. Explained in
+            XSS and Escaping Output (coming soon).
+        </p>
+
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+        </nav>
+    </spaced>
+</article>

@@ -1,0 +1,321 @@
+<layout name="default" title="Web Nerdism w/ PHP 101" />
+<page-head>
+    <meta
+        name="description"
+        content="A course in how the web works, taught with PHP: clients and servers, HTTP, databases, security, and small projects that put it all together."
+    />
+    <meta
+        name="keywords"
+        content="learn PHP, PHP course, web development course, how the web works, HTTP, SQL, web security, PHP projects, Phillip Harrington"
+    />
+    <meta
+        property="og:description"
+        content="How the web works, taught with PHP. Short lessons, then small projects that use them."
+    />
+</page-head>
+<article>
+    <spaced>
+        <heading h1 id="web-nerdism-w-php-101">Web Nerdism w/ PHP 101</heading>
+        <p>How the web works, taught with PHP.</p>
+        <p>
+            PHP?! What? Yes. It isn't fashionable, and it doesn't need to be. It runs on more than
+            70 percent of the websites whose server-side language
+            <lnk to="https://w3techs.com/technologies/details/pl-php" blank>W3Techs</lnk> can see,
+            WordPress and Wikipedia among them. It's free, it's fast enough, it's been quietly
+            getting better for thirty years, and it's still the shortest path from "I wrote some
+            code" to "it's on a web page." What you learn here carries over to whatever you use
+            next.
+        </p>
+        <p>
+            Short lessons, one page each, then small projects that use them. It starts before PHP,
+            with how two computers talk at all, and it ends with you building things that hold up
+            when someone tries to break them.
+        </p>
+        <p>
+            It's being written now, a lesson at a time. Linked lessons are up; the rest are on their
+            way.
+        </p>
+
+        <!-- The syllabus. Everything is in the page (search engines and screen
+             readers get all of it), but the script below shows it only as far as
+             the last lesson that's up, then fades out over about ten more and
+             hides the rest. It moves on its own as lessons get linked. Without
+             JavaScript the whole list shows. -->
+        <div data-syllabus class="space-y-5">
+            <heading h2 id="tools">Before You Start: <lnk to="/php/tools">Tools</lnk></heading>
+            <p>
+                Not lessons, just the few things you set up once and come back to. Everything else
+                in the course runs in a container, so the only thing you install is Docker.
+            </p>
+            <list>
+                <li><lnk to="/php/reading-the-examples">Reading the Examples</lnk></li>
+                <li><lnk to="/php/tools#terminal">The Terminal</lnk></li>
+                <li>
+                    <lnk to="/php/tools#package-managers"
+                        >Package managers: Homebrew, apt, winget, whichever is yours</lnk>
+                </li>
+                <li><lnk to="/php/tools#docker">Docker</lnk></li>
+                <li><lnk to="/php/tools#git">Git</lnk></li>
+                <li><lnk to="/php/tools#editor">Your Editor</lnk></li>
+                <li><lnk to="/php/tools#developer-tools">Your Browser's Developer Tools</lnk></li>
+                <li><lnk to="/php/tools#reading-logs">Reading Logs</lnk></li>
+                <li><lnk to="/php/tools#composer">Composer, in a Container</lnk></li>
+            </list>
+            <p>
+                Also: <xref to="/php/vocabulary">Vocabulary</xref>, every web word the course uses,
+                defined.
+            </p>
+
+            <heading h2 id="basics">Basics: How the Web Works</heading>
+            <list>
+                <li><lnk to="/php/client-server">Client/Server</lnk></li>
+                <li><lnk to="/php/anatomy-of-a-url">Anatomy of a URL</lnk></li>
+                <li><lnk to="/php/dns">DNS</lnk></li>
+                <li><lnk to="/php/http">HTTP, HTTPS and TLS</lnk></li>
+                <li><lnk to="/php/request-and-response">Request and Response</lnk></li>
+                <li><lnk to="/php/content-types">Content Types</lnk></li>
+                <li><lnk to="/php/cookies">Cookies</lnk></li>
+                <li><lnk to="/php/query-strings">Query Strings</lnk></li>
+                <li>Forms</li>
+                <li>What's in the Middle</li>
+            </list>
+
+            <heading h2 id="web-server-basics">Web Server Basics</heading>
+            <list>
+                <li>Document Root</li>
+                <li>Access and Error Logs</li>
+                <li>How PHP Actually Runs: nginx and PHP-FPM</li>
+                <li>
+                    Configuration and the Environment
+                </li>
+            </list>
+
+            <heading h2 id="php-basics">PHP Basics</heading>
+            <list>
+                <li>PHP Files, Escaping into PHP, and phpinfo()</li>
+                <li>Documentation: php.net</li>
+                <li>Output</li>
+                <li>Variables, Types and strict_types</li>
+                <li>Operators</li>
+                <li>Types of Types</li>
+                <li>Scope</li>
+                <li>Strings</li>
+                <li>Text and UTF-8</li>
+                <li>Arrays</li>
+                <li>Functions</li>
+                <li>Errors and the Error Log</li>
+                <li>Includes</li>
+                <li>Working with Files</li>
+                <li>
+                    Working with a Database: PDO and Prepared Statements
+                </li>
+            </list>
+
+            <heading h2 id="database">Database</heading>
+            <list>
+                <li>SQL</li>
+                <li>Creating Tables</li>
+                <li>Relating Tables: Keys and Foreign Keys</li>
+                <li>Normalization</li>
+                <li>Indexes</li>
+                <li>
+                    Character Sets and Collation
+                </li>
+                <li>Inserting Data</li>
+                <li>Selecting Data</li>
+                <li>Updating Data</li>
+                <li>Deleting Data</li>
+                <li>Transactions</li>
+                <li>Migrations</li>
+            </list>
+
+            <heading h2 id="php-not-so-basics">PHP Not So Basics</heading>
+            <list>
+                <li>Sessions</li>
+                <li>Output Buffering</li>
+                <li>Caching</li>
+                <li>Sending a File</li>
+                <li>Naming Things</li>
+                <li>Classes and Objects</li>
+                <li>Abstract Classes</li>
+                <li>Interfaces</li>
+                <li>Autoloading with Composer and PSR-4</li>
+                <li>Exceptions and Try/Catch</li>
+                <li>
+                    Constants, Static Variables and Functions
+                </li>
+                <li>Modern PHP</li>
+                <li>Magic Methods</li>
+                <li>Dependency Injection</li>
+                <li>Two-Dollar Test Harnesses</li>
+                <li>Testing</li>
+            </list>
+
+            <heading h2 id="security">Security</heading>
+            <p>Every lesson here starts by breaking it, then fixes it.</p>
+            <list>
+                <li>Never Trust Input</li>
+                <li>SQL Injection</li>
+                <li>XSS and Escaping Output</li>
+                <li>CSRF</li>
+                <li>Passwords: password_hash() and Nothing Else</li>
+                <li>Sessions and Cookie Flags</li>
+                <li>Rate Limiting</li>
+                <li>Secrets Out of Code</li>
+                <li>File Uploads</li>
+                <li>Don't Touch Cards</li>
+                <li>Security Headers</li>
+                <li>Your Dependencies Are Your Code Too</li>
+            </list>
+
+            <heading h2 id="web-technologies">Various Web Technologies</heading>
+            <list>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>fetch() and AJAX</li>
+                <li>JSON</li>
+                <li>CORS</li>
+                <li>CSV</li>
+                <li>HTMX</li>
+            </list>
+
+            <heading h2 id="projects">Projects</heading>
+            <p>
+                Small things to build, in order, each using the lessons before it. The ones where a
+                classic mistake lives come with a "Break it" section: build it the naive way, attack
+                your own copy, then fix it.
+            </p>
+            <list>
+                <li>Home Page</li>
+                <li>View Source Link</li>
+                <li>Useful Includes</li>
+                <li>Layout</li>
+                <li>Logging</li>
+                <li>Cookies</li>
+                <li>Sending Email</li>
+                <li>Contact Form</li>
+                <li>Form Validation</li>
+                <li>Redirecting</li>
+                <li>Guestbook</li>
+                <li>Sessions</li>
+                <li>Protected Page</li>
+                <li>Something Database-y</li>
+                <li>Signup Form</li>
+                <li>Login Form</li>
+                <li>Profile Page</li>
+                <li>Change Password Form</li>
+                <li>HTTP Authentication</li>
+                <li>Log Viewer</li>
+                <li>Translation</li>
+                <li>Content Management System</li>
+                <li>Blog</li>
+                <li>Comments</li>
+                <li>Caching</li>
+                <li>
+                    PHP on the Command Line
+                </li>
+                <li>Cron Jobs</li>
+                <li>Queues</li>
+                <li>Newsletter</li>
+                <li>Store Front</li>
+                <li>Shopping Cart</li>
+                <li>Checkout</li>
+                <li>
+                    Taking a Payment with Stripe Checkout
+                </li>
+                <li>Exporting Data</li>
+                <li>Affiliate Program</li>
+                <li>REST API</li>
+                <li>API Client</li>
+            </list>
+
+            <heading h2 id="style">Style</heading>
+            <list>
+                <li>Coding Standards</li>
+                <li>Good Variable Names</li>
+                <li>Magic Numbers in Code</li>
+                <li>
+                    Declaring Symbols vs. Causing Changes
+                </li>
+                <li>Defensive Programming</li>
+                <li>DRY</li>
+                <li>Return Early</li>
+                <li>Single Point of Return</li>
+                <li>
+                    Expressive HTTP Response Codes, and When Not to Be
+                </li>
+            </list>
+
+            <heading h2 id="patterns">Various Patterns</heading>
+            <list>
+                <li>Separating Concerns</li>
+                <li>MVC</li>
+                <li>Single Point of Entry</li>
+                <li>CRUD</li>
+                <li>Model, Table, Mapper</li>
+                <li>REST</li>
+                <li>Middleware and Pipelines</li>
+                <li>Singletons</li>
+                <li>Factories</li>
+                <li>Observers</li>
+            </list>
+
+            <heading h2 id="convictions">Convictions</heading>
+            <list>
+                <li>Code should be boring</li>
+                <li>The three virtues</li>
+                <li>Be liberal in what you accept, strict in what you output</li>
+                <li>
+                    Code should be written to be read by humans, and only incidentally run on
+                    computers
+                </li>
+                <li>Most PHP web/db programming problems are really SQL database problems</li>
+                <li>If you have to run the whole stack to test one thing, the thing is too big</li>
+            </list>
+
+            <heading h2 id="rants">Rants</heading>
+            <list>
+                <li>Why PHP Sucks but Isn't So Bad After All</li>
+                <li>PHP Doesn't Suck!</li>
+                <li>Why Magic Methods Are Bad</li>
+                <li>Why Inheritance Annoys Me</li>
+                <li>Why Hungarian Is Bad</li>
+                <li>Why Hungarian for Apps Isn't So Bad</li>
+            </list>
+        </div>
+        <p data-syllabus-more hidden class="text-th-muted italic"></p>
+        <script>
+            (function () {
+                var box = document.querySelector('[data-syllabus]');
+                var more = document.querySelector('[data-syllabus-more]');
+                var items = Array.prototype.slice.call(box.querySelectorAll('li'));
+                var last = -1;
+                items.forEach(function (li, i) {
+                    if (li.querySelector('a')) last = i;
+                });
+                var rest = items.slice(last + 1);
+                if (last < 0 || rest.length === 0) return;
+                var fadeOver = rest[Math.min(9, rest.length - 1)];
+                function fold() {
+                    box.style.maxHeight = '';
+                    box.style.maskImage = box.style.webkitMaskImage = '';
+                    var top = box.getBoundingClientRect().top;
+                    var from = items[last].getBoundingClientRect().bottom - top;
+                    var to = fadeOver.getBoundingClientRect().bottom - top;
+                    var mask =
+                        'linear-gradient(to bottom, #000 ' + from + 'px, transparent ' + to + 'px)';
+                    box.style.overflow = 'hidden';
+                    box.style.maxHeight = to + 'px';
+                    box.style.maskImage = box.style.webkitMaskImage = mask;
+                }
+                fold();
+                addEventListener('resize', fold);
+                // Web fonts change line heights when they arrive; measure again.
+                if (document.fonts) document.fonts.ready.then(fold);
+                more.textContent = 'And ' + rest.length + ' more lessons and projects on the way.';
+                more.hidden = false;
+            })();
+        </script>
+    </spaced>
+</article>

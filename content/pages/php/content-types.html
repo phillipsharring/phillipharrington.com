@@ -1,0 +1,302 @@
+<layout name="default" title="Content Types" />
+<page-head>
+    <meta
+        name="description"
+        content="How a browser knows what it was sent: the Content-Type header, media types, character sets, and why clicking a link sometimes downloads a file instead of showing it. A lesson in Web Nerdism w/ PHP 101."
+    />
+    <meta
+        name="keywords"
+        content="Content-Type, MIME type, media type, text/html, application/json, application/octet-stream, charset, UTF-8, Content-Disposition, attachment, download, nosniff, learn PHP"
+    />
+    <meta
+        property="og:description"
+        content="How a browser knows what it was sent. A lesson in Web Nerdism w/ PHP 101."
+    />
+</page-head>
+<article>
+    <spaced>
+        <p class="text-sm"><lnk to="/php">Web Nerdism w/ PHP 101</lnk> &rsaquo; Basics</p>
+        <heading h1 id="content-types">Content Types</heading>
+        <byline date="Nov 2026">Phillip Harrington</byline>
+
+        <!-- Intro -->
+        <p>
+            Ever clicked a link expecting a page, and your
+            <term def="browser">browser</term> downloaded a file instead? Or opened a page and got a
+            screen full of raw code? Both come down to one <term def="response">response</term>
+            <term def="header">header</term>, <cde>Content-Type</cde>. A response
+            <term def="body">body</term> is just <term def="byte">bytes</term>. The browser doesn't
+            look at the bytes, or at the end of the <term def="url">URL</term>, to decide what they
+            are. It believes the header.
+        </p>
+
+        <!-- What is/are -->
+        <heading h2 id="whats-a-content-type">What's a Content Type?</heading>
+        <p>
+            A label in the form <cde>type/subtype</cde>, also called a media type or
+            <term def="mime-type">MIME type</term>. The ones you'll see most:
+        </p>
+        <list>
+            <li><cde>text/html</cde>: a web page. Render it.</li>
+            <li><cde>text/plain</cde>: plain text. Show it, tags and all.</li>
+            <li><cde>text/css</cde> and <cde>text/javascript</cde>: a stylesheet, a script.</li>
+            <li>
+                <cde>application/json</cde>: data, usually for
+                <term def="javascript">JavaScript</term> to read.
+            </li>
+            <li><cde>image/png</cde>, <cde>image/jpeg</cde>, <cde>image/webp</cde>: pictures.</li>
+            <li><cde>application/pdf</cde>: a PDF.</li>
+            <li>
+                <cde>application/octet-stream</cde>: "some bytes, no idea what." The browser
+                downloads it.
+            </li>
+        </list>
+        <p>
+            <term def="request">Requests</term> have
+            <term def="content-type">content types</term> too, when they carry a body. A
+            <term def="form">form</term> posts <cde>application/x-www-form-urlencoded</cde>, the
+            <cde>name=value</cde> pairs from the last lesson, or <cde>multipart/form-data</cde> when
+            it includes a file.
+        </p>
+
+        <side-story title="Borrowed From Email">
+            MIME stands for Multipurpose Internet Mail Extensions. It was invented in the early
+            1990s so email could carry attachments, pictures and languages other than English. The
+            web borrowed the labels wholesale, which is why the header that tells your browser "this
+            is a web page" is named after email. Every web page you've ever seen is, technically, a
+            very elaborate attachment.
+        </side-story>
+
+        <heading h2 id="whats-a-charset">What's a Character Set?</heading>
+        <p>
+            Text types usually carry one more piece:
+            <cde>text/html; charset=utf-8</cde>. The <term def="character-set">charset</term> says
+            how the bytes become letters. <term def="utf-8">UTF-8</term> covers every language and
+            every emoji, and it's the only one you should use. Get it wrong, and Café Zoë, the
+            coffee shop that turns up later in the course, puts "CafÃ© ZoÃ«" on its sign.
+        </p>
+
+        <!-- How it works -->
+        <heading h2 id="how-it-works">How It Works</heading>
+        <p>When a response arrives, the browser reads <cde>Content-Type</cde> and decides:</p>
+        <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
+            <li>
+                Something it can show, like <term def="html">HTML</term>, an image or a PDF? It
+                shows it.
+            </li>
+            <li>Plain text? It shows the text as text.</li>
+            <li>Something it can't show, or "no idea"? It downloads it.</li>
+        </ol>
+        <p>
+            So the download mystery is the <term def="server">server</term>, labeling something the
+            browser can't display, or not labeling it at all. The file's extension doesn't enter
+            into it.
+        </p>
+        <soaking>
+            <p>
+                This site's own pages have no extension, <cde>/about</cde> and not
+                <cde>/about.html</cde>, so its deploy has to tell the server, page by page, "this
+                one is <cde>text/html</cde>." Without that label, the server would send them as
+                unknown bytes.
+            </p>
+        </soaking>
+        <p>
+            A second header can overrule the browser's choice.
+            <cde>Content-Disposition: attachment</cde> says "save this, don't show it," even for a
+            page the browser could show, and it can suggest a name for the file:
+            <cde>attachment; filename="report.csv"</cde>. That's how a site hands you a download
+            with a proper name. Sending files gets a lesson of its own, later.
+        </p>
+
+        <side-story title="Octets, Not Bytes">
+            Why "octet-stream" and not "byte stream"? On some early computers a byte wasn't eight
+            bits; it could be six, or nine. Network standards wanted to be exact, so they said
+            "octet," eight bits, every time. The name stuck around long after every byte became
+            eight bits anyway.
+        </side-story>
+
+        <!-- Try it -->
+        <heading h2 id="try-it">Try It</heading>
+        <p>One server, one body, four labels. In a folder, make <cde>index.php</cde>:</p>
+        <!-- prettier-ignore -->
+        <code-block example="content-types/index.php" />
+        <p>Start it the usual way:</p>
+        <!-- prettier-ignore -->
+        <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
+        <code-note>
+            Same as before: <cde>-p 8000:8000</cde> connects <term def="port">port</term> 8000 on
+            your computer to the <term def="container">container</term>'s, and <cde>php -S</cde> is
+            PHP's <term def="web-server">web server</term>.
+        </code-note>
+        <p>Then open each of these in your browser, all at <cde>http://localhost:8000</cde>:</p>
+        <div class="max-w-[60ch] overflow-x-auto">
+            <table class="w-full border-collapse text-left text-base max-sm:text-sm">
+                <thead>
+                    <tr>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            Open
+                        </th>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            Label it sends
+                        </th>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            What you see
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>text/html</cde></td>
+                        <td class="py-3 pr-4 align-top">a heading and a paragraph</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=text</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>text/plain</cde></td>
+                        <td class="py-3 pr-4 align-top">the same bytes, tags showing</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=json</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>application/json</cde></td>
+                        <td class="py-3 pr-4 align-top">an error: it isn't JSON</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=bytes</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>application/octet-stream</cde></td>
+                        <td class="py-3 pr-4 align-top">a download</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?save=1</cde></td>
+                        <td class="py-3 pr-4 align-top">
+                            <cde>text/html</cde>, plus <cde>Content-Disposition: attachment</cde>
+                        </td>
+                        <td class="py-3 pr-4 align-top">a download, named <cde>hello.html</cde></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>
+            The JSON one is the browser trying to read the page as data and giving up. Chrome's
+            error: <cde>Unexpected token '&lt;', "Hel"... is not valid JSON</cde>.
+        </p>
+        <p class="text-th-muted text-base">
+            <cde>as=</cde> and <cde>save=</cde> are just what this script happens to read. They mean
+            nothing to any other site.
+        </p>
+        <p>
+            The body never changed. Only the label did. To see the labels themselves, ask with
+            <cde>curl -I</cde>:
+        </p>
+        <!-- prettier-ignore -->
+        <code-block>curl -I "http://localhost:8000/?as=text"</code-block>
+        <code-note>New here:</code-note>
+        <breakdown>
+            <part code="-I"
+                >Ask for the headers only (a HEAD request), and print them. No body.</part
+            >
+            <part code='"http://localhost:8000/?as=text"'
+                >The quotes keep the terminal from reading the <cde>?</cde> as one of its own
+                wildcards. Quote any URL with a query string in it.</part
+            >
+        </breakdown>
+        <p>
+            Notice PHP added <cde>;charset=UTF-8</cde> to the text types on its own. That comes
+            next, under <sect>In PHP</sect>.
+        </p>
+        <p class="text-th-muted text-base">
+            New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
+        </p>
+
+        <!-- In PHP -->
+        <heading h2 id="in-php">In PHP</heading>
+        <list>
+            <li>
+                PHP sends <cde>text/html; charset=UTF-8</cde> unless you say otherwise, since what
+                it usually makes is a web page, and adds the charset to any <cde>text/</cde> type
+                you set. Both come from the <cde>default_mimetype</cde> and
+                <cde>default_charset</cde> settings.
+            </li>
+            <li>
+                <cde>header('Content-Type: application/json');</cde> before
+                <cde>echo json_encode($data);</cde> is how an <term def="api">API</term> answers.
+            </li>
+            <li>
+                <cde>header('Content-Disposition: attachment; filename="report.csv"');</cde> makes a
+                download.
+            </li>
+            <li>
+                <cde>mime_content_type()</cde> guesses a file's type from its contents, which is
+                what you want for a file on your own server.
+            </li>
+        </list>
+
+        <!-- Gotchas -->
+        <heading h2 id="gotchas">Gotchas</heading>
+        <list>
+            <li>
+                <strong>JSON labeled as HTML.</strong> Forget the header in an API, and every JSON
+                response goes out as <cde>text/html</cde>. Some clients won't mind. Some will refuse
+                it, and some will treat it as a page. Remember the CDN from
+                <xref to="/php/request-and-response">Request and Response</xref> that answered an
+                API's 403s with an HTML error page? Same mess, from the other side: the client
+                expected JSON and got a web page.
+            </li>
+            <li>
+                <nti>
+                    <strong
+                        >Never trust input. Not even the
+                        type a browser sends.</strong
+                    >
+                    An upload's content type comes from the client, which means from whoever is
+                    uploading. A script can arrive labeled <cde>image/png</cde>. File Uploads, in
+                    Security, is about exactly this.</nti
+                >
+            </li>
+            <li>
+                <strong>Strict browsers.</strong> Say your page has
+                <cde>&lt;script src="/app.js"&gt;</cde>, and the server sends
+                <cde>app.js</cde> labeled <cde>text/plain</cde> by mistake. Normally the browser
+                shrugs: the page asked for a script, and it looks like a script, so it runs it
+                anyway. That guessing is called sniffing. Send the
+                <cde>X-Content-Type-Options: nosniff</cde> response header, and the browser stops
+                guessing. The label says plain text, so it won't run it, whatever's inside. (A
+                stylesheet that isn't labeled <cde>text/css</cde> gets the same treatment: ignored.)
+                That's the point: an "image" someone uploaded with a script inside can never run as
+                one. When it refuses, the browser's console says so: "Refused to execute script…
+                strict MIME type checking is enabled."
+            </li>
+        </list>
+
+        <!-- $2 tip -->
+        <two-dollars title="Check the label first">
+            <p>
+                When a page downloads instead of showing, a script won't run, or your code can't
+                parse an API's response, run <cde>curl -I</cde> on it before anything else, and read
+                <cde>Content-Type</cde>. It's often the answer, and checking takes less time than
+                blaming JavaScript.
+            </p>
+        </two-dollars>
+
+        <p>
+            <cde>Content-Type</cde> tells the browser what it got. Another header,
+            <cde>Set-Cookie</cde>, asks it to remember something. Next:
+            <term def="cookie">cookies</term>.
+        </p>
+
+        <!-- Next -->
+        <hr />
+        <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
+            <lnk to="/php/request-and-response">&larr; Request and Response</lnk>
+            <lnk to="/php/cookies">Next: Cookies &rarr;</lnk>
+        </nav>
+    </spaced>
+</article>
