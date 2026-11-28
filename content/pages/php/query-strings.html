@@ -50,8 +50,8 @@
         <side-story title="Urchin's Leftovers">
             Ever seen <cde>utm_source=</cde> on the end of a link? UTM stands for Urchin Tracking
             Module. Urchin was a web analytics company, bought by Google in 2005, whose software
-            became Google Analytics. The company is gone; its name still rides along on links all
-            over the internet.
+            became Google Analytics. Its name has been hitchhiking on links ever since, long after
+            the company it named stopped existing.
         </side-story>
 
         <!-- How it works -->
@@ -71,6 +71,10 @@
                 <cde>$_GET</cde>.
             </li>
         </ol>
+        <!-- prettier-ignore -->
+        <diagram caption="One string in, one array out. PHP does the splitting and decoding before your code runs.">
+            <svg viewBox="0 0 650 182" role="img" aria-label="The query string q=red+shoes&amp;page=2&amp;tag[]=sale&amp;tag[]=new, split into its pairs, becomes $_GET: q is red shoes with the plus turned into a space, page is 2, and tag is an array holding sale and new." class="block h-auto w-full"><defs><marker id="ah8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><text x="10" y="20" font-size="13" font-weight="600" style="fill:var(--th-text)">The query string, split at each &amp;</text><text x="370" y="20" font-size="13" font-weight="600" style="fill:var(--th-text)">What PHP hands you in $_GET</text><rect x="0" y="34" width="200" height="142" rx="4" style="fill:var(--th-tint-strong)"/><rect x="360" y="34" width="280" height="142" rx="4" style="fill:var(--th-tint-strong)"/><text x="14" y="62" font-size="14.5" class="font-mono" style="fill:var(--th-text)">q=red+shoes</text><text x="374" y="62" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">[q] =&gt; red shoes</text><line x1="208" y1="57" x2="350" y2="57" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="14" y="96" font-size="14.5" class="font-mono" style="fill:var(--th-text)">page=2</text><text x="374" y="96" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">[page] =&gt; 2</text><line x1="208" y1="91" x2="350" y2="91" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="14" y="130" font-size="14.5" class="font-mono" style="fill:var(--th-text)">tag[]=sale</text><text x="374" y="130" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">[tag] =&gt; [0] =&gt; sale</text><line x1="208" y1="125" x2="350" y2="125" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="14" y="164" font-size="14.5" class="font-mono" style="fill:var(--th-text)">tag[]=new</text><text x="374" y="164" font-size="14.5" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">           [1] =&gt; new</text><line x1="208" y1="159" x2="350" y2="159" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah8)"/><text x="279" y="51" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">+ becomes a space</text><text x="279" y="119" text-anchor="middle" font-size="11" style="fill:var(--th-muted)">[] collects into an array</text></svg>
+        </diagram>
         <p>
             Use a <term def="query-string">query string</term> for things that describe what to
             show: what to search for, how to sort, which page. Those are safe to repeat, worth
@@ -104,14 +108,15 @@
         <code-block>http://localhost:8000/?q=red+shoes&amp;page=2&amp;tag[]=sale&amp;tag[]=new</code-block>
         <p>
             The <cde>+</cde> became a space, and <cde>tag</cde> became an array. Now send it
-            garbage, the way someone eventually will:
+            garbage, the way someone eventually will, usually at 3 a.m.:
         </p>
         <!-- prettier-ignore -->
         <code-block>http://localhost:8000/?q[]=x&amp;page=banana&amp;tag=solo</code-block>
         <p>
             Look at the raw <cde>$_GET</cde> at the bottom: <cde>q</cde> arrived as an array and
             <cde>page</cde> as a word. The code at the top shrugged both off: an empty search, page
-            1. Try <cde>page=-5</cde> too. And try a search for
+            1. Try <cde>page=-5</cde> too, or try to make the Page line say anything but a positive
+            whole number. The PHP script won't let you. And try a search for
             <cde>&lt;script&gt;alert(1)&lt;/script&gt;</cde>: it comes back as plain text, because
             the page says it's <cde>text/plain</cde>. On an <term def="html">HTML</term> page you'd
             have to <term def="escaping">escape</term> it yourself. That's the
@@ -180,8 +185,8 @@
         </two-dollars>
 
         <p>
-            You built these by hand to see how they work. On a real site, a form builds them for
-            you, and can send its data in a POST body instead. Next: forms.
+            You built these by hand to see how they work. Forms can build them for you, and can send
+            their data in a POST body instead. Next: forms.
         </p>
 
         <!-- Next -->
