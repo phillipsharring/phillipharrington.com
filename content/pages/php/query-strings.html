@@ -73,13 +73,15 @@
             use one for anything that changes data (that's a POST, from Request and Response), or
             for anything secret.
         </p>
-        <p>
-            And notice step one: "a person typing." As I've said before,
-            <strong><lnk to="/php/never-trust-input">never trust input</lnk>.</strong> Whatever you
-            expect in <cde>$_GET</cde>, someone can send anything else instead. A missing value, an
-            empty one, a word where you wanted a number, a negative page, an array where you wanted
-            a string. Your code decides what to accept.
-        </p>
+        <nti>
+            <p>
+                And notice step one: "a person typing." As I've said before,
+                <strong><lnk to="/php/never-trust-input">never trust input</lnk>.</strong> Whatever
+                you expect in <cde>$_GET</cde>, someone can send anything else instead. A missing
+                value, an empty one, a word where you wanted a number, a negative page, an array
+                where you wanted a string. Your code decides what to accept.
+            </p>
+        </nti>
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>

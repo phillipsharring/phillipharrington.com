@@ -1,0 +1,24 @@
+<!-- A small sticker that always says the same thing: wrap the paragraph it
+     belongs to. On wide screens it floats in the right margin beside the
+     paragraph; on narrow ones it floats inside it, small, and the text wraps
+     around it. Same family as the burst sticker, a different color
+     (--nti-* in style.css). The words never change; the sentences around it
+     can do all the escalating. -->
+<div class="relative">
+    <div
+        aria-hidden="true"
+        class="pointer-events-none relative float-right mb-1 ml-3 w-16 rotate-6 lg:absolute lg:top-0 lg:left-[calc(60ch+2rem)] lg:float-none lg:m-0 lg:w-20"
+    >
+        <svg viewBox="0 0 100 100" class="block h-auto w-full drop-shadow-sm">
+            <polygon
+                points="50.0,0.0 60.4,11.4 75.0,6.7 78.3,21.7 93.3,25.0 88.6,39.6 100.0,50.0 88.6,60.4 93.3,75.0 78.3,78.3 75.0,93.3 60.4,88.6 50.0,100.0 39.6,88.6 25.0,93.3 21.7,78.3 6.7,75.0 11.4,60.4 0.0,50.0 11.4,39.6 6.7,25.0 21.7,21.7 25.0,6.7 39.6,11.4"
+                fill="var(--nti-fill)"
+            />
+        </svg>
+        <span
+            class="font-display absolute inset-0 flex items-center justify-center px-[20%] text-center text-[0.5rem] leading-tight font-extrabold tracking-wide text-[var(--nti-text)] uppercase lg:text-[0.6rem]"
+            >Never trust input</span
+        >
+    </div>
+    [[slot]]
+</div>
