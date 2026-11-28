@@ -183,8 +183,9 @@
         </breakdown>
         <p>
             Same answer, different client, and it works the same on every system. It also tells you
-            which resolver answered, at the top. On a Mac or Linux, <cde>dig example.com</cde> is
-            the one the pros reach for: more detail, TTLs included.
+            which resolver answered, at the top. (If <cde>nslookup</cde> isn't there, get it from
+            your package manager; on Ubuntu it's in <cde>dnsutils</cde>.) On a Mac or Linux,
+            <cde>dig example.com</cde> is the one the pros reach for: more detail, TTLs included.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -232,7 +233,10 @@
 
         <side-story title="It's Always DNS">
             Operations people have a haiku about outages: "It's not DNS. There's no way it's DNS. It
-            was DNS." When everything is broken at once, DNS is the first thing to check.
+            was DNS." When everything is broken at once, DNS is the first thing to check. At one
+            job, the office's DNS went down and the business side went wild. The older engineer next
+            to me switched her computer to a public resolver and went on working while the panic
+            carried on around her.
         </side-story>
 
         <!-- $2 tip -->
