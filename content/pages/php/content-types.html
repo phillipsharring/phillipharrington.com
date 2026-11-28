@@ -167,7 +167,9 @@
                     <tr class="border-th-border-subtle border-b">
                         <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=json</cde></td>
                         <td class="py-3 pr-4 align-top"><cde>application/json</cde></td>
-                        <td class="py-3 pr-4 align-top">a JSON viewer, with nothing it can read as JSON</td>
+                        <td class="py-3 pr-4 align-top">
+                            a JSON viewer, with nothing it can read as JSON
+                        </td>
                     </tr>
                     <tr class="border-th-border-subtle border-b">
                         <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=bytes</cde></td>
@@ -205,7 +207,7 @@
             w="1444"
             h="447"
             alt="A Save As dialog suggesting the name: download."
-            caption="Labeled octet-stream: a download, and no name, so "download.""
+            caption="Labeled octet-stream: a download with no name, so it's called download."
         />
         <screenshot
             img="php/content-types/save-as-hello"
@@ -280,7 +282,8 @@
                 <nti>
                     <strong
                         ><xref to="/php/never-trust-input">Never trust input</xref>. Not even the
-                        type a browser sends.</strong>
+                        type a browser sends.</strong
+                    >
                     An upload's content type comes from the client, which means from whoever is
                     uploading. A script can arrive labeled <cde>image/png</cde>. File Uploads, in
                     <chapter to="security">Security</chapter>, is about exactly this.</nti
