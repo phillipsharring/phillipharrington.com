@@ -57,9 +57,10 @@
         </p>
         <p>
             The physical server may be a powerful computer in a data center, a rack unit in an
-            office closet, or a PC under someone's desk. So long as it's connected to, and can be
-            reached from, the Internet, it can act as a server. These days it's very often a virtual
-            machine or a container in somebody else's data center, which is all "the cloud" means.
+            office closet, or a forgotten PC under someone's desk. So long as it's connected to, and
+            can be reached from, the Internet, it can act as a server. These days it's very often a
+            virtual machine or a container in somebody else's data center, which is all "the cloud"
+            means.
         </p>
 
         <side-story title="Do Not Power It Down">
@@ -87,19 +88,14 @@
             </li>
             <li>The client displays the response.</li>
         </ol>
-        <p>
-            In the old days the server hung up after every response. Now the connection usually
-            stays open for the next request, which saves time. The conversation is the same either
-            way.
-        </p>
 
         <heading h3 id="how-do-they-talk">How Do They Talk?</heading>
         <p>
             The Internet works by using what are called "protocols." These are simply agreed-upon
             standards for communication between computers. This is how a Mac can talk to a Linux or
             Windows server. It's like an English speaker and a Japanese speaker who have both
-            learned Spanish. It's a second language for each of them, and the third language in the
-            room, the one they agreed on. Protocols are the Spanish.
+            learned Spanish. Spanish is a second language for both of them, and it's the one they
+            agreed on. Protocols are the Spanish.
         </p>
         <p>
             HTTP is one such protocol, the one web pages (and most of the apps on your phone) travel
@@ -109,11 +105,14 @@
 
         <heading h3 id="whats-in-the-middle">What's in the Middle?</heading>
         <p>
-            Your client rarely talks straight to the server that does the work. On most sites, this
-            one included, your browser talks to a CDN: a network of servers around the world that
-            keeps copies of pages close to you and passes everything else along to the real server.
-            There may be a load balancer or a reverse proxy in there too.
+            Your client rarely talks straight to the server that does the work. On most sites, your
+            browser talks to a CDN: a network of servers around the world that keeps copies of pages
+            close to you and passes everything else along to the real server. There may be a load
+            balancer or a reverse proxy in there too.
         </p>
+        <soaking>
+            <p>This page came to you through one.</p>
+        </soaking>
         <p>
             Each of those is a server to whatever is in front of it and a client to whatever is
             behind it. Same relationship, more links in the chain. They get
@@ -157,7 +156,7 @@
             Why 8000 and not 80, the real web port? On Linux and most Unix systems, ports below 1024
             are "privileged": only an administrator can open one. Plain web (80) and secure web
             (443) both live down there, so development servers have always picked numbers like 8000
-            and 8080 instead.
+            or 8080 instead.
         </side-story>
         <p>
             Now be the client. Open <cde>http://localhost:8000</cde> in your browser.

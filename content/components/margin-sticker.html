@@ -1,0 +1,24 @@
+<!-- A small sticker beside the element it wraps: in the right margin on wide
+     screens, floated into the element's corner on narrow ones. text= is what it
+     says; tone= picks its colors, --TONE-fill and --TONE-text in style.css. The
+     named stickers (never trust input, you're soaking in it) are built on this,
+     so they all match in size, position and tilt. -->
+<div class="relative">
+    <div
+        aria-hidden="true"
+        class="pointer-events-none relative float-right mb-1 ml-3 w-16 rotate-6 lg:absolute lg:top-0 lg:left-[calc(60ch+2rem)] lg:float-none lg:m-0 lg:w-20"
+    >
+        <svg viewBox="0 0 100 100" class="block h-auto w-full drop-shadow-sm">
+            <polygon
+                points="50.0,0.0 60.4,11.4 75.0,6.7 78.3,21.7 93.3,25.0 88.6,39.6 100.0,50.0 88.6,60.4 93.3,75.0 78.3,78.3 75.0,93.3 60.4,88.6 50.0,100.0 39.6,88.6 25.0,93.3 21.7,78.3 6.7,75.0 11.4,60.4 0.0,50.0 11.4,39.6 6.7,25.0 21.7,21.7 25.0,6.7 39.6,11.4"
+                style="fill: var(--[[tone]]-fill)"
+            />
+        </svg>
+        <span
+            class="font-display absolute inset-0 flex items-center justify-center px-[20%] text-center text-[0.5rem] leading-tight font-extrabold tracking-wide uppercase lg:text-[0.6rem]"
+            style="color: var(--[[tone]]-text)"
+            >[[text]]</span
+        >
+    </div>
+    [[slot]]
+</div>

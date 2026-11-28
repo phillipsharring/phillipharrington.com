@@ -91,6 +91,8 @@
     --burst-text: #19280b;
     --nti-fill: #f0d58c;
     --nti-text: #2e2205;
+    --soak-fill: #aed0ec;
+    --soak-text: #0c2236;
 }
 
 /* ── Dark theme ───────────────────────────────────────────── */
@@ -135,6 +137,8 @@
     --burst-text: #19280b;
     --nti-fill: #d9bd6c;
     --nti-text: #2e2205;
+    --soak-fill: #8fb8db;
+    --soak-text: #0c2236;
 }
 
 @theme {
