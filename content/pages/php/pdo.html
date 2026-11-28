@@ -58,8 +58,7 @@
             default to it, older ones don't, so say it, and the connection is never the place text
             gets mangled. The user and password come from the environment, never from the code, as
             in
-            <lnk to="/php/configuration-and-the-environment">Configuration and the Environment</lnk
-            >.
+            <lnk to="/php/configuration-and-the-environment">Configuration and the Environment</lnk>.
         </p>
 
         <heading h3 id="the-options">The Options</heading>
@@ -260,8 +259,7 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             <p>
                 <cde
                     >$pdo-&gt;query('SELECT id, title FROM books ORDER BY
-                    title')-&gt;fetchAll(PDO::FETCH_KEY_PAIR)</cde
-                >
+                    title')-&gt;fetchAll(PDO::FETCH_KEY_PAIR)</cde>
                 gives you <cde>[id =&gt; title]</cde>, ready for a <cde>select</cde> menu. (Plain
                 <cde>query()</cde> is fine here because there's no value in the SQL. The moment
                 there is one, <cde>prepare()</cde>.)
@@ -276,7 +274,7 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
         <!-- Next -->
         <hr />
         <nav aria-label="Lesson" class="flex justify-between gap-4 text-sm">
-            <lnk to="/php">&larr; Web Nerdism w/ PHP 101</lnk>
+            <lnk to="/php/working-with-files">&larr; Working with Files</lnk>
             <lnk to="/php/sql">Next: SQL &rarr;</lnk>
         </nav>
     </spaced>
