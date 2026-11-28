@@ -63,7 +63,8 @@
             MIME stands for Multipurpose Internet Mail Extensions. It was invented in the early
             1990s so email could carry attachments, pictures and languages other than English. The
             web borrowed the labels wholesale, which is why the header that tells your browser "this
-            is a web page" is named after email.
+            is a web page" is named after email. Every web page you've ever seen is, technically, a
+            very elaborate attachment.
         </side-story>
 
         <heading h2 id="whats-a-charset">What's a Character Set?</heading>
@@ -127,21 +128,66 @@
             your computer to the <term def="container">container</term>'s, and <cde>php -S</cde> is
             PHP's <term def="web-server">web server</term>.
         </code-note>
-        <p>Then open each of these in your browser:</p>
-        <list>
-            <li><cde>http://localhost:8000/</cde>: a heading and a paragraph.</li>
-            <li><cde>http://localhost:8000/?as=text</cde>: the same bytes, tags showing.</li>
-            <li>
-                <cde>http://localhost:8000/?as=json</cde>: labeled as data, and it isn't JSON. The
-                browser tries to read it as data and reports an error. Chrome's:
-                <cde>Unexpected token '&lt;', "Hel"... is not valid JSON</cde>.
-            </li>
-            <li><cde>http://localhost:8000/?as=bytes</cde>: a download.</li>
-            <li>
-                <cde>http://localhost:8000/?save=1</cde>: labeled as a web page, but downloaded
-                anyway, as <cde>hello.html</cde>.
-            </li>
-        </list>
+        <p>Then open each of these in your browser, all at <cde>http://localhost:8000</cde>:</p>
+        <div class="max-w-[60ch] overflow-x-auto">
+            <table class="w-full border-collapse text-left text-base max-sm:text-sm">
+                <thead>
+                    <tr>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            Open
+                        </th>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            Label it sends
+                        </th>
+                        <th
+                            scope="col"
+                            class="font-display text-th-accent border-th-border-strong border-b pt-1 pr-4 pb-3 text-xs font-semibold tracking-widest uppercase"
+                        >
+                            What you see
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>text/html</cde></td>
+                        <td class="py-3 pr-4 align-top">a heading and a paragraph</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=text</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>text/plain</cde></td>
+                        <td class="py-3 pr-4 align-top">the same bytes, tags showing</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=json</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>application/json</cde></td>
+                        <td class="py-3 pr-4 align-top">an error: it isn't JSON</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?as=bytes</cde></td>
+                        <td class="py-3 pr-4 align-top"><cde>application/octet-stream</cde></td>
+                        <td class="py-3 pr-4 align-top">a download</td>
+                    </tr>
+                    <tr class="border-th-border-subtle border-b">
+                        <td class="py-3 pr-4 align-top whitespace-nowrap"><cde>/?save=1</cde></td>
+                        <td class="py-3 pr-4 align-top">
+                            <cde>text/html</cde>, plus <cde>Content-Disposition: attachment</cde>
+                        </td>
+                        <td class="py-3 pr-4 align-top">a download, named <cde>hello.html</cde></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>
+            The JSON one is the browser trying to read the page as data and giving up. Chrome's
+            error: <cde>Unexpected token '&lt;', "Hel"... is not valid JSON</cde>.
+        </p>
         <p class="text-th-muted text-base">
             <cde>as=</cde> and <cde>save=</cde> are just what this script happens to read. They mean
             nothing to any other site.
@@ -198,9 +244,11 @@
         <list>
             <li>
                 <strong>JSON labeled as HTML.</strong> Forget the header in an API, and every JSON
-                response goes out as <cde>text/html</cde>. Some
-                <term def="client">clients</term> won't mind. Some will refuse it, and some will
-                treat it as a page.
+                response goes out as <cde>text/html</cde>. Some clients won't mind. Some will refuse
+                it, and some will treat it as a page. Remember the CDN from
+                <xref to="/php/request-and-response">Request and Response</xref> that answered an
+                API's 403s with an HTML error page? Same mess, from the other side: the client
+                expected JSON and got a web page.
             </li>
             <li>
                 <nti>
@@ -213,13 +261,17 @@
                 >
             </li>
             <li>
-                <strong>Strict browsers.</strong> Left to themselves, browsers forgive a wrong label
-                on a script or stylesheet: they look at the contents and guess, which is called
-                sniffing. The <cde>X-Content-Type-Options: nosniff</cde> response header, sent for
-                security, turns that off. Then a script served as <cde>text/plain</cde> won't run at
-                all, and a stylesheet with the wrong type is ignored. That's safer, since nothing
-                can sneak in disguised as something else, and baffling the first time your own
-                script silently does nothing because the server mislabeled it.
+                <strong>Strict browsers.</strong> Say your page has
+                <cde>&lt;script src="/app.js"&gt;</cde>, and the server sends
+                <cde>app.js</cde> labeled <cde>text/plain</cde> by mistake. Normally the browser
+                shrugs: the page asked for a script, and it looks like a script, so it runs it
+                anyway. That guessing is called sniffing. Send the
+                <cde>X-Content-Type-Options: nosniff</cde> response header, and the browser stops
+                guessing. The label says plain text, so it won't run it, whatever's inside. (A
+                stylesheet that isn't labeled <cde>text/css</cde> gets the same treatment: ignored.)
+                That's the point: an "image" someone uploaded with a script inside can never run as
+                one. It's also why, one day, your own script will silently do nothing. The browser's
+                console says why: "Refused to execute script… strict MIME type checking is enabled."
             </li>
         </list>
 
@@ -228,7 +280,8 @@
             <p>
                 When a page downloads instead of showing, a script won't run, or your code can't
                 parse an API's response, run <cde>curl -I</cde> on it before anything else, and read
-                <cde>Content-Type</cde>. It's the answer more often than it has any right to be.
+                <cde>Content-Type</cde>. It's often the answer, and checking takes less time than
+                blaming JavaScript.
             </p>
         </two-dollars>
 
