@@ -1,7 +1,8 @@
-<!-- A screenshot in a lesson: centered, small by default (a browser window),
+<!-- A screenshot in a lesson: centered under the text column, small by default (a browser window),
      or as wide as the text with wide (a terminal, where the words need room).
      img= is the path under /img without .webp; it expects name.webp and
      name-400.webp. Links to the full-size image. -->
+<div class="max-w-[60ch]">
 <figure class="mx-auto w-full space-y-2 [[#if wide]]max-w-[60ch][[else]]max-w-sm[[/if]]">
     <a href="/img/[[img]].webp" class="block">
         <img
@@ -17,3 +18,4 @@
     </a>
     <figcaption class="text-th-sub text-center font-serif italic">[[caption]]</figcaption>
 </figure>
+</div>

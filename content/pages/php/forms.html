@@ -329,23 +329,26 @@
         <nerd-out>
             <heading h3 id="javascript-makes-it-weird">JavaScript Makes It Weird</heading>
             <p>
-                Everything above is a form on its own. Add JavaScript and the rules loosen. A script
-                can read a field that has no <cde>name</cde>, by its <cde>id</cde> or any other way
-                it can find it, and send it anyway. It can send <cde>PUT</cde>, <cde>PATCH</cde> or
-                <cde>DELETE</cde>, which a plain form can't. It can submit without anyone pressing
-                the button, or send JSON instead of <cde>name=value</cde> pairs. None of it changes
-                the server's side: whatever arrives, however it got there, is still input.
+                Everything above is an HTML form on its own. Add JavaScript and the rules loosen. A
+                script can read a field that has no <cde>name</cde>, by its <cde>id</cde> or any
+                other way it can find it, and send it anyway. It can send <cde>PUT</cde>,
+                <cde>PATCH</cde> or <cde>DELETE</cde>, which a plain form can't. It can submit
+                without anyone pressing the button, or send JSON instead of
+                <cde>name=value</cde> pairs. None of it changes the server's side: whatever arrives,
+                however it got there, is still input.
             </p>
 
             <heading h3 id="php-at-the-top">PHP at the Top, Form at the Bottom</heading>
             <p>
-                The example uses the most common shape there is for a PHP form, and you'll write it
+                This example uses the most common shape there is for a PHP form, and you'll write it
                 a hundred times. One file does both jobs. The PHP at the top asks whether this
                 request is a <cde>POST</cde> (<cde>$posted</cde>), and only then reads the fields,
-                checks them, and decides what to say. When it isn't, the same variables just hold
-                their defaults, so the form shows up empty the first time and filled in with what
-                you sent after. The HTML at the bottom shows any message, then the form, which posts
-                back to the same file.
+                checks them, and decides what to say. The key: every variable gets a value before
+                the HTML starts, either what came in or a default, like an empty string. So the HTML
+                never has to ask whether anything exists. It just prints <cde>$name</cde>, with no
+                <cde>isset()</cde> in sight, and the form shows up empty the first time and filled
+                in after. The HTML at the bottom shows any message, then the form, which posts back
+                to the same file.
             </p>
             <!-- prettier-ignore -->
             <diagram caption="One file, two visits: the first shows an empty form, the second reads what came back.">
