@@ -131,11 +131,11 @@
             browser is sending the cookie back, and the server adds one each time.
         </p>
         <screenshot
-            img="php/cookies/visit-1"
-            w="480"
-            h="225"
-            alt="The page in a browser: Visit number 1."
-            caption="The first visit. Reload, and it counts."
+            img="php/cookies/visit-5"
+            w="455"
+            h="106"
+            alt="The page in a browser: Visit number 5."
+            caption="A few reloads later."
         />
         <p>
             Now break it. Open your browser's
@@ -147,12 +147,27 @@
             skip the browser entirely, and send any cookie you like:
         </p>
         <screenshot
-            img="php/cookies/devtools-application-cookies"
+            img="php/cookies/devtools-cookies-visits-1"
             wide
-            w="1438"
-            h="700"
+            w="1990"
+            h="985"
             alt="Chrome's developer tools, Application tab, Cookies, http://localhost:8000: one cookie, visits, with the value 1."
-            caption="Application, then Cookies, then your site. Double-click the value to change it."
+            caption="Application, then Cookies, then your site."
+        />
+        <screenshot
+            img="php/cookies/devtools-cookies-edit-41"
+            wide
+            w="1990"
+            h="300"
+            alt="The visits cookie being edited in developer tools, its value changed to 41."
+            caption="Double-click the value, and type whatever you like."
+        />
+        <screenshot
+            img="php/cookies/visit-42"
+            w="487"
+            h="106"
+            alt="The page in a browser: Visit number 42."
+            caption="Of course it is."
         />
         <!-- prettier-ignore -->
         <code-block>curl -b 'visits=41' http://localhost:8000</code-block>
