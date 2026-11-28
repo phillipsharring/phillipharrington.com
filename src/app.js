@@ -94,8 +94,24 @@ window.onReady(() => {
     if (themeToggle) {
         const THEMES = ['light', 'dark', 'system'];
 
+        // Storage can be blocked (privacy settings, "block all cookies"), and then
+        // reading it throws. Keep the choice in memory too, so the toggle still
+        // works for this visit.
+        let memoryPref = 'system';
+
         function getStoredPref() {
-            return localStorage.getItem('theme') || 'system';
+            try {
+                return localStorage.getItem('theme') || 'system';
+            } catch {
+                return memoryPref;
+            }
+        }
+
+        function storePref(pref) {
+            memoryPref = pref;
+            try {
+                localStorage.setItem('theme', pref);
+            } catch {}
         }
 
         function updateIcons(pref) {
@@ -118,7 +134,7 @@ window.onReady(() => {
         themeToggle.addEventListener('click', () => {
             const current = getStoredPref();
             const next = THEMES[(THEMES.indexOf(current) + 1) % THEMES.length];
-            localStorage.setItem('theme', next);
+            storePref(next);
             applyTheme(next);
         });
 
