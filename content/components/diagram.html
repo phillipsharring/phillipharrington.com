@@ -1,0 +1,8 @@
+<!-- A small diagram: put an inline SVG in the slot, and say what it shows in
+     caption=. Text-column wide, scales down on small screens. Draw with the
+     theme colors (var(--th-text), var(--th-accent) and so on) so it works in
+     light and dark. -->
+<figure class="max-w-[60ch] space-y-2">
+    [[slot]]
+    <figcaption class="text-th-muted text-base">[[caption]]</figcaption>
+</figure>
