@@ -23,10 +23,11 @@
         <p>
             <term def="http">HTTP</term> forgets you. Every
             <term def="request">request</term> stands on its own, so as far as the
-            <term def="server">server</term> knows, your second click comes from a stranger. Yet
-            sites keep you logged in, remember what's in your cart, and know you picked dark mode.
-            That's <term def="cookie">cookies</term>: a small piece of text the server asks your
-            <term def="browser">browser</term> to keep, and to hand back with every request after.
+            <term def="server">server</term> knows, your second click comes from a stranger. And
+            yet, sites keep you logged in, remember what's in your cart, and know you picked dark
+            mode. That's <term def="cookie">cookies</term>: a small piece of text the server asks
+            your <term def="browser">browser</term> to keep, and to hand back with every request
+            after.
         </p>
 
         <!-- What is/are -->
@@ -88,22 +89,34 @@
             <li>The server answers with a <cde>Set-Cookie</cde> header.</li>
             <li>The browser stores it, labeled with the site's name.</li>
             <li>
-                Every later request to that site, pages, images, scripts, all of them, includes it
+                Every later request to that site (pages, images, scripts, all of them) includes it
                 in a <cde>Cookie</cde> header, until it expires.
             </li>
         </ol>
+        <!-- prettier-ignore -->
+        <diagram caption="The server never remembers. The browser reminds it, every time.">
+            <svg viewBox="0 0 650 290" role="img" aria-label="Cookies over three requests: the first GET carries no cookie; the server answers with Set-Cookie visits=1; the next GET carries Cookie visits=1; the server answers Set-Cookie visits=2; the next GET carries Cookie visits=2." class="block h-auto w-full"><defs><marker id="ah7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><text x="80" y="22" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Browser</text><line x1="80" y1="32" x2="80" y2="282" style="stroke:var(--th-border);stroke-width:1.5"/><text x="520" y="22" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Server</text><line x1="520" y1="32" x2="520" y2="282" style="stroke:var(--th-border);stroke-width:1.5"/><line x1="84" y1="66" x2="514" y2="66" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah7)"/><text x="300.0" y="59" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">GET /</text><line x1="516" y1="110" x2="86" y2="110" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah7)"/><text x="300.0" y="103" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">200 OK  Set-Cookie: visits=1</text><line x1="84" y1="154" x2="514" y2="154" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah7)"/><text x="300.0" y="147" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">GET /  Cookie: visits=1</text><line x1="516" y1="198" x2="86" y2="198" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah7)"/><text x="300.0" y="191" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">200 OK  Set-Cookie: visits=2</text><line x1="84" y1="242" x2="514" y2="242" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah7)"/><text x="300.0" y="235" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)" xml:space="preserve">GET /  Cookie: visits=2</text><path d="M538,138 h6 V248 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="552" y="189.0" font-size="12" style="fill:var(--th-muted)">every request</text><text x="552" y="204.0" font-size="12" style="fill:var(--th-muted)">carries it back</text></svg>
+        </diagram>
         <p>
             To delete a cookie, the server sets it again with an expiry in the past, and the browser
             throws it away. In PHP, below, shows the one line it takes.
         </p>
         <p>
-            Notice step four. The cookie comes from the browser, which means from whoever controls
-            the browser. A cookie is input, and
-            <strong>you <xref to="/php/never-trust-input">never trust input</xref></strong>. Anyone can open their browser's developer tools and change a cookie to anything they
-            like. So a cookie should never say "role=admin" or "price=1.00". The usual move is to
-            put a long random ID in the cookie, and keep everything that matters on the server,
-            filed under that ID. That's a <term def="session">session</term>, and it gets a lesson
-            of its own.
+            <nti>
+                <p>
+                    Notice step four, above. The cookie comes from the browser, which means from
+                    whoever controls the browser. A cookie is input, and
+                    <strong>you <xref to="/php/never-trust-input">never trust input</xref></strong
+                    >. Anyone can open their browser's developer tools and change a cookie to
+                    anything they like. So a cookie should never say "role=admin" or "price=1.00".
+                </p>
+            </nti>
+        </p>
+
+        <p>
+            The usual move is to put a long random ID in the cookie, and keep everything that
+            matters on the server, filed under that ID. That's a <term def="session">session</term>,
+            and it gets a lesson of its own.
         </p>
 
         <!-- Try it -->
@@ -118,7 +131,8 @@
             browser is sending the cookie back, and the server adds one each time.
         </p>
         <p>
-            Now break it. Open your browser's developer tools, find the cookies for
+            Now break it. Open your browser's
+            <xref to="/php/tools#developer-tools">developer tools</xref>, find the cookies for
             <term def="localhost">localhost</term> (the Application tab in Chrome, Storage in
             Firefox), and change <cde>visits</cde> to <cde>41</cde>. Reload: "Visit number 42." You
             just told the server something false, and it believed you. Or skip the browser entirely,
@@ -134,9 +148,9 @@
             >
         </breakdown>
         <p>
-            Try <cde>-b 'visits=banana'</cde>, too. The <cde>(int)</cde> in the code turns nonsense
-            into 0, so you get visit 1, not an error. That one cast is the code not trusting its
-            input.
+            Try <cde>-b 'visits=banana'</cde>, too. The <cde>(int)</cde> in the code, a
+            <xref to="/php/reading-the-examples#casting">cast</xref>, turns nonsense into 0, so you
+            get visit 1, not an error. That one cast is the code not trusting its input.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -179,12 +193,14 @@
                 request.
             </li>
             <li>
-                <strong>Never trust a cookie.</strong> It's input. It can be edited, replayed, or
-                made up from scratch, as <sect>Try It</sect> showed.
+                <nti
+                    ><strong>Never trust a cookie.</strong> It's input. It can be edited, replayed,
+                    or made up from scratch, as <sect>Try It</sect> showed.</nti
+                >
             </li>
         </list>
 
-        <side-story title="This Site Sets None">
+        <side-story title="This Site Sets None (You're Not Soaking in It)">
             The footer of this site says it doesn't set any cookies, and it's true: no login, no
             tracking, so nothing to remember. The cookie banners on so many other sites exist
             because European privacy law requires asking before setting cookies that aren't strictly

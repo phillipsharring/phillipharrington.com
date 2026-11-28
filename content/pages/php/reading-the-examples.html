@@ -21,10 +21,10 @@
 
         <!-- Intro -->
         <p>
-            PHP has a lot of dollar signs. That's how some of us afford the Lambo. This page is a
-            key to the code in the early lessons. The first sections of the course are about the
-            web, not PHP, but every lesson has a <sect>Try It</sect>, and every
-            <sect>Try It</sect> has a little PHP in it. PHP itself starts properly in PHP Basics.
+            Listen, I'm not gonna lie to you: there's gonna be some code. This page is a key to the
+            code in the early lessons. The first sections of the course are about the web, not PHP,
+            but every lesson has a <sect>Try It</sect>, and every <sect>Try It</sect> has a little
+            PHP in it. PHP itself starts properly in PHP Basics.
         </p>
         <p>
             So here's every piece you'll see in the early examples, what it does in a sentence, and
@@ -48,7 +48,8 @@
         <heading h3 id="variables">Variables</heading>
         <p>
             A <cde>$</cde> and a name: <cde>$name</cde>, <cde>$count</cde>. A single
-            <cde>=</cde> puts a value in it: <cde>$count = 3;</cde>. Properly:
+            <cde>=</cde> puts a value in it: <cde>$count = 3;</cde>. PHP has a lot of dollar signs.
+            That's how some developers afford the Lambo. Properly:
             <xref to="/php/variables-and-types">Variables, Types and strict_types</xref>.
         </p>
 
@@ -80,6 +81,14 @@
         <p>
             Joins strings: <cde>'Hello, ' . $name</cde>. Not <cde>+</cde>, which is only for
             numbers. Properly: <xref to="/php/operators">Operators</xref>.
+        </p>
+
+        <heading h3 id="casting">Casting: (int)</heading>
+        <p>
+            A type in parentheses in front of a value converts it: <cde>(int) '42'</cde> is the
+            number <cde>42</cde>, and <cde>(int) 'banana'</cde> is <cde>0</cde>. The examples cast
+            input to the type they expect, so a stranger's nonsense turns into something harmless.
+            Properly: <xref to="/php/variables-and-types">Variables, Types and strict_types</xref>.
         </p>
 
         <heading h3 id="arrays">Arrays and =&gt;</heading>
