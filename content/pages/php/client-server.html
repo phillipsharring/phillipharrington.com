@@ -21,10 +21,10 @@
 
         <!-- Intro -->
         <p>
-            The main way computers interact over the Internet is called a client/server
-            relationship. At one end of the conversation is a server, and at the other end is a
-            client. The two communicate using agreed-upon protocols, such as HTTP, which gets a
-            lesson of its own. A server listens for requests, and a client makes them.
+            Most of the Internet works as clients and servers: a server at one end of the
+            conversation, a client at the other. The two communicate using agreed-upon protocols,
+            such as HTTP, which gets a lesson of its own. A server listens for requests, and a
+            client makes them.
         </p>
 
         <!-- What is/are -->
@@ -57,10 +57,10 @@
         </p>
         <p>
             The physical server may be a powerful computer in a data center, a rack unit in an
-            office closet, or a forgotten PC under someone's desk. So long as it's connected to, and
-            can be reached from, the Internet, it can act as a server. These days it's very often a
-            virtual machine or a container in somebody else's data center, which is all "the cloud"
-            means.
+            office closet, or a forgotten PC under someone's desk. (At a company that shall remain
+            nameless, an entire operations app ran on one.) So long as it's connected to, and can be
+            reached from, the Internet, it can act as a server. These days it's very often a virtual
+            machine or a container in somebody else's data center, which is all "the cloud" means.
         </p>
 
         <side-story title="Do Not Power It Down">
@@ -78,7 +78,7 @@
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
-        <p>The typical interaction between the client and the server goes something like this:</p>
+        <p>A conversation goes like this:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>The server listens for connections (it binds to a port).</li>
             <li>The client opens a connection (you click a link or check your email).</li>
@@ -91,11 +91,10 @@
 
         <heading h3 id="how-do-they-talk">How Do They Talk?</heading>
         <p>
-            The Internet works by using what are called "protocols." These are simply agreed-upon
-            standards for communication between computers. This is how a Mac can talk to a Linux or
-            Windows server. It's like an English speaker and a Japanese speaker who have both
-            learned Spanish. Spanish is a second language for both of them, and it's the one they
-            agreed on. Protocols are the Spanish.
+            The Internet runs on protocols: agreed-upon rules for how computers talk. This is how a
+            Mac can talk to a Linux or Windows server. It's like musicians from different countries
+            who've never met: hand them the same chart and they can play together, without a word in
+            common. Music is the protocol.
         </p>
         <p>
             HTTP is one such protocol, the one web pages (and most of the apps on your phone) travel
@@ -145,11 +144,7 @@
         </breakdown>
         <p>
             That's step one from above: the server binds to a port and listens. Most of that line is
-            Docker. It starts a container with PHP in it, shares your folder with it, and connects
-            port 8000 on your computer to port 8000 inside the container. The PHP part is the end:
-            <cde>php -S 0.0.0.0:8000</cde> starts PHP's server on port 8000. (The
-            <cde>0.0.0.0</cde> means "listen on every address," which a server inside a container
-            needs in order to hear anything from outside it.)
+            Docker; the PHP part is the end, <cde>php -S 0.0.0.0:8000</cde>.
         </p>
 
         <side-story title="Why Not Port 80?">
@@ -188,8 +183,8 @@
             from the client's end.
         </p>
         <p class="text-th-muted text-base">
-            No Docker yet, or on Windows? <xref to="/php/tools#docker">Tools</xref> has the one
-            install, and the one change PowerShell needs in that command.
+            No Docker yet? <xref to="/php/tools#docker">Tools</xref> has the one install (and WSL,
+            on Windows).
         </p>
 
         <!-- Gotchas -->
