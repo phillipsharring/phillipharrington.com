@@ -1,0 +1,13 @@
+# The PHP course pages that are reviewed and ready to go live, one slug per
+# line (projects as projects/<slug>). scripts/php-release.py copies only these
+# to the release branch. Add a section's slugs when its read-through is done.
+tools
+reading-the-examples
+client-server
+anatomy-of-a-url
+dns
+http
+request-and-response
+content-types
+cookies
+query-strings
