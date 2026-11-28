@@ -254,7 +254,8 @@
                 <nti>
                     <strong
                         ><xref to="/php/never-trust-input">Never trust input</xref>. Not even the
-                        type a browser sends.</strong>
+                        type a browser sends.</strong
+                    >
                     An upload's content type comes from the client, which means from whoever is
                     uploading. A script can arrive labeled <cde>image/png</cde>. File Uploads, in
                     Security, is about exactly this.</nti
@@ -270,8 +271,8 @@
                 guessing. The label says plain text, so it won't run it, whatever's inside. (A
                 stylesheet that isn't labeled <cde>text/css</cde> gets the same treatment: ignored.)
                 That's the point: an "image" someone uploaded with a script inside can never run as
-                one. It's also why, one day, your own script will silently do nothing. The browser's
-                console says why: "Refused to execute script… strict MIME type checking is enabled."
+                one. When it refuses, the browser's console says so: "Refused to execute script…
+                strict MIME type checking is enabled."
             </li>
         </list>
 
