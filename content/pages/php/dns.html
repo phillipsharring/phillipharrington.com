@@ -44,7 +44,7 @@
             specific: in <cde>www.example.com</cde>, <cde>com</cde> is the top-level
             <term def="domain-name">domain</term>, <cde>example</cde> is the name someone registered
             under it, and <cde>www</cde> is a <term def="subdomain">subdomain</term> the owner made
-            up. The owner can make as many of those as they like.
+            up. The owner can make as many subdomains as they like.
         </p>
 
         <heading h2 id="records">What's a DNS Record?</heading>
@@ -79,8 +79,8 @@
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <p>
-            When your <term def="browser">browser</term> needs the address for a name, it goes
-            something like this:
+            When your <term def="browser">browser</term> needs the address for a name, it goes like
+            this:
         </p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>The browser checks whether it looked this name up recently.</li>
@@ -119,8 +119,8 @@
             domain, each run their own small piece of it, and they cooperate on nothing but an
             agreed set of rules. It was designed in 1983 for a few thousand computers, and the same
             design now answers for billions of them, all day, mostly without anyone noticing. It's
-            one of the great pieces of engineering of the last century, and also one of the great
-            examples of the world agreeing to work together.
+            one of the great pieces of engineering of the last century, and proof that the world can
+            agree on something.
         </p>
 
         <side-story title="Thirteen Names">
@@ -147,8 +147,10 @@
         <p>Only the new part:</p>
         <breakdown>
             <part code="example.com"
-                >Anything after the file name is handed to the script as an argument. This script
-                looks up whatever name you give it.</part
+                >Anything after the file name is handed to the script as an argument. PHP keeps them
+                in <cde>$argv</cde>, which starts with the script's own name, so
+                <cde>example.com</cde> is <cde>$argv[1]</cde>. This script looks up whatever name
+                you give it.</part
             >
         </breakdown>
         <p>
@@ -179,7 +181,11 @@
             >
             <part code="example.com">The name to look up.</part>
         </breakdown>
-        <p>Same answer, different client. It also tells you which resolver answered, at the top.</p>
+        <p>
+            Same answer, different client, and it works the same on every system. It also tells you
+            which resolver answered, at the top. On a Mac or Linux, <cde>dig example.com</cde> is
+            the one the pros reach for: more detail, TTLs included.
+        </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
@@ -226,8 +232,7 @@
 
         <side-story title="It's Always DNS">
             Operations people have a haiku about outages: "It's not DNS. There's no way it's DNS. It
-            was DNS." Funny because it's true: when everything is broken at once, DNS is the first
-            thing to check.
+            was DNS." When everything is broken at once, DNS is the first thing to check.
         </side-story>
 
         <!-- $2 tip -->
