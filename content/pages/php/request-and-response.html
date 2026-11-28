@@ -167,8 +167,9 @@ Content-Length: 0</code-block>
         <side-story title="I'm a Teapot">
             Status <cde>418</cde> is "I'm a teapot," from an April Fools' spec in 1998 for
             controlling coffee pots over HTTP. A teapot asked to brew coffee must refuse with 418.
-            It's a joke, and it's been implemented all over the place anyway. PHP's own built-in
-            server doesn't get it, though: try it below.
+            It's a joke, and it's been implemented all over the place anyway. Every API I've built,
+            I've wanted to return 418 somewhere. I never have. Yet. PHP's own built-in server
+            doesn't get it, though: try it below.
         </side-story>
 
         <heading h3 id="response-headers">Response Headers</heading>
@@ -204,6 +205,10 @@ Content-Length: 0</code-block>
             called Post/Redirect/Get, or PRG.
         </p>
 
+        <!-- prettier-ignore -->
+        <diagram caption="Post/Redirect/Get. A reload repeats only the last exchange, the harmless one.">
+            <svg viewBox="0 0 640 244" role="img" aria-label="Post/Redirect/Get: the browser sends POST /comments; the server answers 303 See Other with a Location of /post; the browser sends GET /post; the server answers 200 OK with the page. Reloading repeats only the GET and its answer." class="block h-auto w-full"><defs><marker id="ah6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--th-faint)"/></marker></defs><text x="80" y="22" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Browser</text><line x1="80" y1="32" x2="80" y2="236" style="stroke:var(--th-border);stroke-width:1.5"/><text x="520" y="22" text-anchor="middle" font-size="14" font-weight="600" style="fill:var(--th-text)">Server</text><line x1="520" y1="32" x2="520" y2="236" style="stroke:var(--th-border);stroke-width:1.5"/><line x1="84" y1="66" x2="514" y2="66" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="59" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">POST /comments</text><line x1="516" y1="110" x2="86" y2="110" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="103" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">303 See Other, Location: /post</text><line x1="84" y1="154" x2="514" y2="154" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="147" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">GET /post</text><line x1="516" y1="198" x2="86" y2="198" style="stroke:var(--th-faint);stroke-width:1.5" marker-end="url(#ah6)"/><text x="300.0" y="191" text-anchor="middle" font-size="13" class="font-mono" style="fill:var(--th-text)">200 OK, the page</text><path d="M538,138 h6 V204 h-6" style="fill:none;stroke:var(--th-accent);stroke-width:1.5"/><text x="552" y="167.0" font-size="12" style="fill:var(--th-muted)">a reload</text><text x="552" y="182.0" font-size="12" style="fill:var(--th-muted)">repeats this</text></svg>
+        </diagram>
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
@@ -217,7 +222,10 @@ Content-Length: 0</code-block>
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p>
             Open <cde>http://localhost:8000/hello</cde> in a browser: the method, the path, and
-            every header your browser sent. Then, from a second
+            every header your browser sent. (Any path works, because PHP's built-in server sends a
+            path that isn't a file to <cde>index.php</cde>. Only the built-in server does that on
+            its own; nginx, Apache and the rest have to be told to, which is
+            <xref to="/php/single-point-of-entry">Single Point of Entry</xref>.) Then, from a second
             <term def="terminal">terminal</term>, send a POST with a body:
         </p>
         <!-- prettier-ignore -->
@@ -275,7 +283,10 @@ Content-Length: 0</code-block>
             <li>
                 <strong>"Headers already sent."</strong> Headers go before the body, so once PHP has
                 sent any output, even one space or a blank line before <cde>&lt;?php</cde>, it's too
-                late for <cde>header()</cde>.
+                late for <cde>header()</cde>. PHP says so: "Warning: Cannot modify header
+                information - headers already sent by (output started at index.php:1)." And if your
+                code sets five headers, you get five of them, stacked up the page, every one blaming
+                the same invisible space.
             </li>
             <li>
                 <strong>A redirect doesn't stop your script.</strong>
