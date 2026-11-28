@@ -21,12 +21,14 @@
 
         <!-- Intro -->
         <p>
-            Every <sect>Try It</sect> in this section started from an empty database, with an
-            <cde>init.sql</cde> that built the tables from scratch. That only works once. A real
-            app's database is full of rows that have to survive, and the tables still have to
-            change: a new column, a new index, a new table, a column that turned out to be a
-            mistake. And the change has to happen the same way on your laptop, on everyone else's,
-            and on the live server. Migrations are how.
+            Every <sect>Try It</sect> in this section started from an empty
+            <term def="database">database</term>, with an <cde>init.sql</cde> that built the
+            <term def="table">tables</term> from scratch. That only works once. A real app's
+            database is full of <term def="row">rows</term> that have to survive, and the tables
+            still have to change: a new <term def="column">column</term>, a new
+            <term def="index">index</term>, a new table, a column that turned out to be a mistake.
+            And the change has to happen the same way on your laptop, on everyone else's, and on the
+            live <term def="server">server</term>. <term def="migration">Migrations</term> are how.
         </p>
 
         <!-- What is/are -->
@@ -63,12 +65,13 @@
         <list>
             <li>
                 <strong>Nobody runs the downs.</strong> They're written once, rarely tested, and run
-                for the first time on the worst day, against production.
+                for the first time on the worst day, against
+                <term def="production">production</term>.
             </li>
             <li>
                 <strong>Undoing isn't free.</strong> The <cde>down()</cde> of "add a column" drops
                 it, along with everything people typed into it since. That should be a decision you
-                make and write down, not a side effect of a rollback.
+                make and write down, not a <term def="side-effect">side effect</term> of a rollback.
             </li>
             <li>
                 <strong>The history stays true.</strong> Every database got every change in the same
@@ -104,7 +107,7 @@
             </li>
             <li>
                 The deploy runs the runner on the live database, before the new code starts taking
-                requests.
+                <term def="request">requests</term>.
             </li>
             <li>
                 If the change was wrong, you write another file that fixes it, and it goes out the
@@ -220,9 +223,10 @@ docker compose down -v</code-block>
             <li>
                 <strong>One change per file.</strong> In MySQL, <cde>CREATE</cde>,
                 <cde>ALTER</cde> and <cde>DROP</cde> commit on their own, so they can't be wrapped
-                in a transaction (that was in <xref to="/php/transactions">Transactions</xref>). A
-                file with three changes that fails on the second leaves the first done and the file
-                not recorded. With one change per file, a failure leaves nothing half-done.
+                in a <term def="transaction">transaction</term> (that was in
+                <xref to="/php/transactions">Transactions</xref>). A file with three changes that
+                fails on the second leaves the first done and the file not recorded. With one change
+                per file, a failure leaves nothing half-done.
             </li>
             <li>
                 <strong>Big tables take time.</strong> An <cde>ALTER TABLE</cde> on a table with
@@ -250,7 +254,7 @@ docker compose down -v</code-block>
         <p>
             The database holds what an app knows for good: users, orders, posts. Between one request
             and the next, an app also needs to remember who's clicking, for a little while. Next, in
-            PHP Not So Basics: sessions.
+            PHP Not So Basics: <term def="session">sessions</term>.
         </p>
 
         <!-- Next -->

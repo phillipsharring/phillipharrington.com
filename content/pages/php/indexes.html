@@ -21,24 +21,28 @@
 
         <!-- Intro -->
         <p>
-            Every table so far has had a handful of rows, and every query has been instant. Real
-            tables grow. A login form that looks up an email address among a million customers will,
-            unless you've told the database otherwise, read all million to find one. It works on
-            your laptop, with ten rows, and falls over in production, a year in. The fix is usually
-            one line.
+            Every <term def="table">table</term> so far has had a handful of
+            <term def="row">rows</term>, and every <term def="query">query</term> has been instant.
+            Real tables grow. A login <term def="form">form</term> that looks up an email address
+            among a million customers will, unless you've told the
+            <term def="database">database</term> otherwise, read all million to find one. It works
+            on your laptop, with ten rows, and falls over in
+            <term def="production">production</term>, a year in. The fix is usually one line.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-an-index">What's an Index?</heading>
         <p>
-            A sorted copy of one or more columns, with a pointer from each value back to its row. It
-            works like the index at the back of a book: to find "foreign keys," you don't read every
-            page, you look it up under F and turn to the page it gives you. Without an index, the
-            database reads every row and checks each one. That's called a full table scan.
+            A sorted copy of one or more <term def="column">columns</term>, with a pointer from each
+            value back to its row. It works like the index at the back of a book: to find "foreign
+            keys," you don't read every page, you look it up under F and turn to the page it gives
+            you. Without an <term def="index">index</term>, the database reads every row and checks
+            each one. That's called a full table scan.
         </p>
         <p>
-            The primary key is always indexed. Foreign keys get one too, in MySQL. Anything else you
-            search by, sort by, or join on needs one of its own.
+            The <term def="primary-key">primary key</term> is always indexed.
+            <term def="foreign-key">Foreign keys</term> get one too, in MySQL. Anything else you
+            search by, sort by, or <term def="join">join</term> on needs one of its own.
         </p>
         <!-- prettier-ignore -->
         <code-block>CREATE INDEX `customers_city_index`
@@ -107,8 +111,9 @@ ON `customers` (`city`);</code-block>
 docker compose run --rm php php find.php user123456@example.com</code-block>
         <p>
             Found, in some tens of milliseconds, depending on your computer. That sounds fine until
-            you multiply it by every login, on every server. Ask the database how it found her. Open
-            the <cde>mysql</cde> command and put <cde>EXPLAIN</cde> in front of the query:
+            you multiply it by every login, on every <term def="server">server</term>. Ask the
+            database how it found her. Open the <cde>mysql</cde> command and put
+            <cde>EXPLAIN</cde> in front of the query:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec db mysql -u app -papp-password course</code-block>

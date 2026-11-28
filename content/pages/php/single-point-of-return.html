@@ -22,17 +22,18 @@
         <!-- Intro -->
         <p>
             Return Early said: answer the stopping cases first and get out. There's an older rule
-            that sounds like its opposite: a function gets one <cde>return</cde>, at the end. I
-            wrote code that way, strictly, for a few years, and I still think the rule is mostly
-            right. It just needs one exception, and the exception is Return Early.
+            that sounds like its opposite: a <term def="function">function</term> gets one
+            <cde>return</cde>, at the end. I wrote code that way, strictly, for a few years, and I
+            still think the rule is mostly right. It just needs one exception, and the exception is
+            Return Early.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-single-point-of-return">What's a Single Point of Return?</heading>
         <p>
-            A function with exactly one way out. It works out its answer into a variable, and the
-            last line returns that variable. However the answer was reached, it leaves through the
-            same door.
+            A function with exactly one way out. It works out its answer into a
+            <term def="variable">variable</term>, and the last line returns that variable. However
+            the answer was reached, it leaves through the same door.
         </p>
 
         <heading h3 id="what-its-good-for">What It's Good For</heading>
@@ -65,9 +66,9 @@
         <p>Here's how the two rules share a function:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                <strong>Guards at the top return early.</strong> Bad arguments, nothing to do, not
-                allowed. They leave before any work starts, so there's nothing to finish and nothing
-                to log.
+                <strong>Guards at the top return early.</strong> Bad
+                <term def="argument">arguments</term>, nothing to do, not allowed. They leave before
+                any work starts, so there's nothing to finish and nothing to log.
             </li>
             <li>
                 <strong>The work builds one result.</strong> One variable, named for what it is, set
@@ -133,8 +134,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block
             </li>
             <li>
                 <cde>try</cde>/<cde>finally</cde> runs the <cde>finally</cde> block on every way
-                out, returns and exceptions included. It's the tool for cleanup when a function
-                can't be shaped this way.
+                out, returns and <term def="exception">exceptions</term> included. It's the tool for
+                cleanup when a function can't be shaped this way.
             </li>
             <li>
                 A <cde>void</cde> function has no result, so the rule there is simply: no
@@ -179,9 +180,10 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block
         </two-dollars>
 
         <p>
-            Functions return values. A web app also returns something to the browser: a status code,
-            and it has a lot of them to choose from. Next: expressive HTTP response codes, and when
-            not to be.
+            Functions return values. A web app also returns something to the
+            <term def="browser">browser</term>: a <term def="status-code">status code</term>, and it
+            has a lot of them to choose from. Next: expressive <term def="http">HTTP</term> response
+            codes, and when not to be.
         </p>
 
         <!-- Next -->

@@ -23,13 +23,15 @@
         <p>
             HTTP Authentication put a page behind a password. Here's something worth hiding: your
             logs. You'll build a staff page that lists the files in a <cde>logs</cde> folder and
-            shows the last lines of whichever one you pick. Handy on a server where you can't easily
-            get a terminal.
+            shows the last lines of whichever one you pick. Handy on a
+            <term def="server">server</term> where you can't easily get a
+            <term def="terminal">terminal</term>.
         </p>
         <p>
             It's also the classic place for a hole called path traversal. A page that takes a file
-            name from the URL will open any file it's told to, unless you stop it. You'll build it
-            the naive way first, read the server's secrets with it, and then fix it.
+            name from the <term def="url">URL</term> will open any file it's told to, unless you
+            stop it. You'll build it the naive way first, read the server's secrets with it, and
+            then fix it.
         </p>
 
         <!-- What you'll use -->
@@ -59,7 +61,7 @@
         <heading h2 id="build-it">Build It</heading>
 
         <heading h3 id="step-1-the-project">Step 1: The Project</heading>
-        <p>The layout, with the web root kept small:</p>
+        <p>The layout, with the <term def="web-root">web root</term> kept small:</p>
         <!-- prettier-ignore -->
         <code-block>project-log-viewer/
     .env             a pretend secret
@@ -80,15 +82,19 @@
         <p>And two logs to read. An app log:</p>
         <code-block example="project-log-viewer/logs/app.log" />
         <p>
-            And an access log. Look at the third line: someone asked for <cde>/.env</cde> with a
-            script for a user agent. Visitors choose what goes in your logs.
+            And an <term def="access-log">access log</term>. Look at the third line: someone asked
+            for <cde>/.env</cde> with a script for a user agent. Visitors choose what goes in your
+            logs.
         </p>
         <code-block example="project-log-viewer/logs/access.log" />
 
         <heading h3 id="step-2-the-viewer">Step 2: The Viewer</heading>
         <p><cde>public/index.php</cde> does four things, top to bottom:</p>
         <list>
-            <li>Asks for a login, with the function from HTTP Authentication.</li>
+            <li>
+                Asks for a login, with the <term def="function">function</term> from HTTP
+                Authentication.
+            </li>
             <li>
                 Builds its allow list: the names of the <cde>.log</cde> files actually in the
                 folder.
@@ -99,7 +105,8 @@
             </li>
             <li>
                 Shows the last lines, read one at a time with <cde>SplFileObject</cde> so a gigabyte
-                log doesn't have to fit in memory, and escapes every one.
+                log doesn't have to fit in memory, and <term def="escaping">escapes</term> every
+                one.
             </li>
         </list>
         <code-block example="project-log-viewer/public/index.php" />
@@ -120,16 +127,18 @@
         <!-- Break it -->
         <heading h2 id="break-it">Break It</heading>
         <p>
-            Here's the viewer most people write first. It takes the name from the query string,
-            sticks it on the end of the logs folder, and sends the file:
+            Here's the viewer most people write first. It takes the name from the
+            <term def="query-string">query string</term>, sticks it on the end of the logs folder,
+            and sends the file:
         </p>
         <code-block example="project-log-viewer/public/naive.php" />
         <p>It works for the files you meant:</p>
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/naive.php?file=app.log'</code-block>
         <p>
-            Now ask for a name with <cde>../</cde> in it. In a path, <cde>..</cde> means "the folder
-            above," so <cde>logs/../.env</cde> is the <cde>.env</cde> next to <cde>logs</cde>:
+            Now ask for a name with <cde>../</cde> in it. In a <term def="path">path</term>,
+            <cde>..</cde> means "the folder above," so <cde>logs/../.env</cde> is the
+            <cde>.env</cde> next to <cde>logs</cde>:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/naive.php?file=../.env'</code-block>
@@ -141,9 +150,9 @@
         <code-block>curl 'http://localhost:8000/naive.php?file=../../../../../etc/passwd'
 curl 'http://localhost:8000/naive.php?file=../users.php'</code-block>
         <p>
-            The machine's list of accounts, and your password hashes, as plain text, with no login
-            asked. Putting the secrets outside the web root didn't help, because the hole is in your
-            code, and your code can read everything.
+            The machine's list of accounts, and your password <term def="hash">hashes</term>, as
+            plain text, with no login asked. Putting the secrets outside the web root didn't help,
+            because the hole is in your code, and your code can read everything.
         </p>
         <heading h2 id="fix-it">Fix It</heading>
         <nti>
@@ -159,8 +168,9 @@ curl 'http://localhost:8000/naive.php?file=../users.php'</code-block>
 curl -u 'editor:correct horse battery staple' 'http://localhost:8000/?file=app.log/../../.env'</code-block>
         <p>
             Both get <cde>No such log.</cde> and a 404. Neither is in the list, and nothing else
-            matters. Encoded dots, <cde>%2e%2e%2f</cde>, get the same answer: PHP decodes the query
-            string before your code sees it, and <cde>../.env</cde> still isn't on the list.
+            matters. <term def="encoding">Encoded</term> dots, <cde>%2e%2e%2f</cde>, get the same
+            answer: PHP decodes the query string before your code sees it, and
+            <cde>../.env</cde> still isn't on the list.
         </p>
         <p>
             Then delete <cde>naive.php</cde>. A broken file left in the web root is still a broken
@@ -168,11 +178,12 @@ curl -u 'editor:correct horse battery staple' 'http://localhost:8000/?file=app.l
         </p>
 
         <side-story title="Two Dots in Disguise">
-            In 2000, Microsoft's IIS web server had a traversal hole of exactly this kind. It
-            checked request paths for <cde>../</cde>, but a slash written in an unusual, overlong
-            UTF-8 form got past the check and was decoded into a real slash afterward. The Nimda
-            worm used it in 2001 to spread. The lesson stuck: check the name you'll actually use,
-            after all decoding, or better, don't build paths from input at all.
+            In 2000, Microsoft's IIS <term def="web-server">web server</term> had a traversal hole
+            of exactly this kind. It checked <term def="request">request</term> paths for
+            <cde>../</cde>, but a slash written in an unusual, overlong
+            <term def="utf-8">UTF-8</term> form got past the check and was decoded into a real slash
+            afterward. The Nimda worm used it in 2001 to spread. The lesson stuck: check the name
+            you'll actually use, after all decoding, or better, don't build paths from input at all.
         </side-story>
 
         <!-- Gotchas -->
@@ -197,14 +208,17 @@ curl -u 'editor:correct horse battery staple' 'http://localhost:8000/?file=app.l
                 served. The allow list is stricter.
             </li>
             <li>
-                <strong>Logs are full of input.</strong> User agents, URLs, form fields that got
-                logged: anyone can put HTML there. Show a log in a page, and you escape it like
-                anything else. A viewer that doesn't is an XSS hole aimed at your own staff.
+                <strong>Logs are full of input.</strong> User agents, URLs,
+                <term def="form">form</term> fields that got logged: anyone can put
+                <term def="html">HTML</term> there. Show a log in a page, and you escape it like
+                anything else. A viewer that doesn't is an <term def="xss">XSS</term> hole aimed at
+                your own staff.
             </li>
             <li>
                 <strong>Logs hold secrets too.</strong> Email addresses, tokens in URLs, the odd
                 password someone typed in the wrong field. A log viewer is a staff-only page, behind
-                a login, over HTTPS, with no cache keeping a copy.
+                a login, over <term def="https">HTTPS</term>, with no
+                <term def="cache">cache</term> keeping a copy.
             </li>
         </list>
 

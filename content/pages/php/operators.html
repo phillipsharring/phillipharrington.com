@@ -21,10 +21,11 @@
 
         <!-- Intro -->
         <p>
-            Variables hold values. Operators do things with them: add them, join them, compare them,
-            pick between them. Most work the way you'd guess from school. The comparisons are where
-            PHP's type juggling, from the last lesson, can let the wrong thing through, so they get
-            most of this page.
+            <term def="variable">Variables</term> hold values.
+            <term def="operator">Operators</term> do things with them: add them, join them, compare
+            them, pick between them. Most work the way you'd guess from school. The comparisons are
+            where PHP's <term def="type-juggling">type juggling</term>, from the last lesson, can
+            let the wrong thing through, so they get most of this page.
         </p>
 
         <!-- What is/are -->
@@ -39,7 +40,8 @@
         <list>
             <li>
                 <cde>+</cde> <cde>-</cde> <cde>*</cde> <cde>/</cde>, as usual. <cde>/</cde> gives a
-                float when it doesn't come out even: <cde>7 / 2</cde> is <cde>3.5</cde>.
+                <term def="float">float</term> when it doesn't come out even: <cde>7 / 2</cde> is
+                <cde>3.5</cde>.
             </li>
             <li>
                 <cde>%</cde> is the remainder: <cde>7 % 2</cde> is <cde>1</cde>.
@@ -50,9 +52,9 @@
 
         <heading h3 id="joining-strings">Joining Strings</heading>
         <p>
-            <cde>.</cde> joins two strings: <cde>'Hello, ' . $name</cde>. It's a dot, not a plus.
-            <cde>+</cde> is always math in PHP, so <cde>'1' + '1'</cde> is <cde>2</cde>, and
-            <cde>'a' + 'b'</cde> is a <cde>TypeError</cde>.
+            <cde>.</cde> joins two <term def="string">strings</term>: <cde>'Hello, ' . $name</cde>.
+            It's a dot, not a plus. <cde>+</cde> is always math in PHP, so <cde>'1' + '1'</cde> is
+            <cde>2</cde>, and <cde>'a' + 'b'</cde> is a <cde>TypeError</cde>.
         </p>
 
         <heading h3 id="assignment">Assignment and Its Shortcuts</heading>
@@ -108,8 +110,8 @@
             </li>
             <li>
                 <cde>$a ?: $b</cde>: <cde>$a</cde>, unless it counts as false (<cde>''</cde>,
-                <cde>0</cde>, <cde>'0'</cde>, <cde>null</cde>, <cde>false</cde>, an empty array);
-                then <cde>$b</cde>.
+                <cde>0</cde>, <cde>'0'</cde>, <cde>null</cde>, <cde>false</cde>, an empty
+                <term def="array">array</term>); then <cde>$b</cde>.
             </li>
             <li>
                 <cde>$test ? $yes : $no</cde>, the ternary: one value if the test is true, another
@@ -124,7 +126,7 @@
             <cde>=</cde> and made equality <cde>==</cde>. C kept that, and so did nearly everything
             that borrowed from C, PHP included. Typing <cde>=</cde> where you meant
             <cde>==</cde> has been a classic bug ever since. PHP then added a third, <cde>===</cde>,
-            for "and the same type."
+            for "and the same <term def="type">type</term>."
         </side-story>
 
         <!-- How it works -->
@@ -169,7 +171,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php compare.php</code-block>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p class="text-th-muted text-base">
-            The web server again: <cde>-it</cde> keeps it in your terminal, so <cde>Ctrl+C</cde>
+            The <term def="web-server">web server</term> again: <cde>-it</cde> keeps it in your
+            <term def="terminal">terminal</term>, so <cde>Ctrl+C</cde>
             stops it.
         </p>
         <p>From a second terminal, guess wrong, then guess <cde>0</cde>:</p>

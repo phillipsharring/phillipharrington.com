@@ -21,16 +21,19 @@
 
         <!-- Intro -->
         <p>
-            A redirect is a response that says "not here, go there": a status code in the 300s and a
-            <cde>Location</cde> header. You've used one already, after every form, so a reload
-            doesn't post again. This project uses two more: one for a page that moved, and one for a
-            settings form that sends you back to whatever page you were on.
+            A <term def="redirect">redirect</term> is a <term def="response">response</term> that
+            says "not here, go there": a <term def="status-code">status code</term> in the 300s and
+            a <cde>Location</cde> <term def="header">header</term>. You've used one already, after
+            every <term def="form">form</term>, so a reload doesn't post again. This project uses
+            two more: one for a page that moved, and one for a settings form that sends you back to
+            whatever page you were on.
         </p>
         <p>
-            That last one is where it goes wrong. "Back to where you were" means the request says
-            where to go. Let it say anywhere, and your site becomes a link that starts on your
-            domain and ends on someone else's. That's an open redirect, and you'll build one, use it
-            the way a phisher would, then close it.
+            That last one is where it goes wrong. "Back to where you were" means the
+            <term def="request">request</term> says where to go. Let it say anywhere, and your site
+            becomes a link that starts on your <term def="domain-name">domain</term> and ends on
+            someone else's. That's an open redirect, and you'll build one, use it the way a phisher
+            would, then close it.
         </p>
 
         <!-- What you'll use -->
@@ -41,8 +44,8 @@
                 <cde>Location</cde> header, Post/Redirect/Get.
             </li>
             <li>
-                <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>: what makes a URL point at
-                another site.
+                <xref to="/php/anatomy-of-a-url">Anatomy of a URL</xref>: what makes a
+                <term def="url">URL</term> point at another site.
             </li>
             <li>
                 <xref to="/php/never-trust-input">Never Trust Input</xref>: the destination is
@@ -64,7 +67,8 @@
         <p>
             <cde>redirect()</cde> is declared as returning <cde>never</cde>, which PHP enforces: it
             must end the script. That's the point. A <cde>header('Location: ...')</cde> without an
-            <cde>exit</cde> after it sends the browser away and keeps running the page anyway.
+            <cde>exit</cde> after it sends the <term def="browser">browser</term> away and keeps
+            running the page anyway.
         </p>
 
         <heading h3 id="a-moved-page">A Moved Page</heading>
@@ -104,14 +108,15 @@
         <nti>
             <p>
                 Pop quiz, no peeking: what's the rule? <strong>Never trust input,</strong> and
-                <cde>back</cde> is input, from the query string and then the form. Give it someone
-                else's site:
+                <cde>back</cde> is input, from the <term def="query-string">query string</term> and
+                then the form. Give it someone else's site:
             </p>
         </nti>
         <!-- prettier-ignore -->
         <code-block>curl -i -d 'theme=dark&amp;back=https://evil.example/login' http://localhost:8000/naive-settings.php</code-block>
         <p>
-            <cde>303 See Other</cde>, <cde>Location: https://evil.example/login</cde>. Your server
+            <cde>303 See Other</cde>, <cde>Location: https://evil.example/login</cde>. Your
+            <term def="server">server</term>
             just sent a visitor to a site you've never heard of.
         </p>
         <p>Here's how that gets used. An attacker sends this link to your users:</p>
@@ -121,9 +126,9 @@
             It's your domain, so it looks safe, and anyone who checks the link before clicking sees
             your name. They land on your real settings page, change something, press Save, and your
             site sends them to <cde>evil.example/login</cde>: a copy of your sign-in page that says
-            "your session expired." They type their password into the attacker's form. Spam filters
-            and link checkers also tend to trust a link to a known domain, which is why phishers go
-            looking for open redirects on big sites.
+            "your <term def="session">session</term> expired." They type their password into the
+            attacker's form. Spam filters and link checkers also tend to trust a link to a known
+            domain, which is why phishers go looking for open redirects on big sites.
         </p>
 
         <!-- Fix it -->
@@ -131,13 +136,14 @@
         <p>
             The settings page only ever needs to send people somewhere on your own site. So the fix
             is <cde>local_path()</cde>, from the helpers: the value must start with one
-            <cde>/</cde>, which makes it a path on this site, and it's refused if it's anything
-            sneakier:
+            <cde>/</cde>, which makes it a <term def="path">path</term> on this site, and it's
+            refused if it's anything sneakier:
         </p>
         <list>
             <li>
                 <strong><cde>//evil.example</cde></strong> starts with a slash, but two slashes make
-                it a scheme-relative URL: "the same scheme, on this other host."
+                it a scheme-relative URL: "the same <term def="scheme">scheme</term>, on this other
+                <term def="host">host</term>."
             </li>
             <li>
                 <strong><cde>/\evil.example</cde></strong> looks like a path, but browsers treat a
@@ -174,10 +180,10 @@ curl -i --data-urlencode 'back=/\evil.example/login' -d 'theme=dark' http://loca
         <list>
             <li>
                 <strong>Pick the right code.</strong> <cde>301</cde> is permanent, and browsers
-                cache it, sometimes for a very long time, so get it right or use
-                <cde>302</cde> while you're testing. <cde>303</cde> after a form means "now GET
-                this." <cde>307</cde> and <cde>308</cde> are the temporary and permanent ones that
-                keep the method, so a POST stays a POST.
+                <term def="cache">cache</term> it, sometimes for a very long time, so get it right
+                or use <cde>302</cde> while you're testing. <cde>303</cde> after a form means "now
+                GET this." <cde>307</cde> and <cde>308</cde> are the temporary and permanent ones
+                that keep the <term def="http-method">method</term>, so a POST stays a POST.
             </li>
             <li>
                 <strong>Checking the host with string tricks fails.</strong>
@@ -209,8 +215,9 @@ curl -i --data-urlencode 'back=/\evil.example/login' -d 'theme=dark' http://loca
         </two-dollars>
 
         <p>
-            The fixed settings page escapes the hidden field before it goes into the HTML. The next
-            project is what happens when a page forgets to. Next: a guestbook.
+            The fixed settings page <term def="escaping">escapes</term> the hidden field before it
+            goes into the <term def="html">HTML</term>. The next project is what happens when a page
+            forgets to. Next: a guestbook.
         </p>
 
         <!-- Next -->

@@ -28,8 +28,8 @@
         <p>
             And the hand-off is the point of this project. The obvious checkout has a card number
             field. Yours won't. You'll build the obvious one first, take a test card through it, and
-            then find that card number sitting in your log file and your database, where anyone who
-            ever reads either can copy it.
+            then find that card number sitting in your log file and your
+            <term def="database">database</term>, where anyone who ever reads either can copy it.
         </p>
 
         <!-- What you'll use -->
@@ -41,12 +41,12 @@
             </li>
             <li>
                 <xref to="/php/dont-touch-cards">Don't Touch Cards</xref>: why no card number should
-                ever reach your server
+                ever reach your <term def="server">server</term>
             </li>
             <li><xref to="/php/transactions">Transactions</xref>: an order is all or nothing</li>
             <li>
-                <xref to="/php/inserting-data">Inserting Data</xref>: a row, its id, and the rows
-                that belong to it
+                <xref to="/php/inserting-data">Inserting Data</xref>: a <term def="row">row</term>,
+                its id, and the rows that belong to it
             </li>
             <li>
                 <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref>: what ends
@@ -60,8 +60,9 @@
         <heading h3 id="step-1-start-from-the-cart">Step 1: Start from the Cart</heading>
         <p>
             Copy the <xref to="/php/projects/shopping-cart">Shopping Cart</xref> project: its
-            containers, <cde>composer.json</cde> and lock file, <cde>src/</cde>, the test, and both
-            pages. The cart page gets one more line under the table, a link to
+            <term def="container">containers</term>, <cde>composer.json</cde> and
+            <term def="lock-file">lock file</term>, <cde>src/</cde>, the test, and both pages. The
+            cart page gets one more line under the <term def="table">table</term>, a link to
             <cde>/checkout.php</cde>. Then install:
         </p>
         <!-- prettier-ignore -->
@@ -117,16 +118,17 @@ CREATE TABLE order_items (
 
         <heading h3 id="step-3-placing-an-order">Step 3: Placing an Order</heading>
         <p>
-            <cde>src/Orders.php</cde> does it in one transaction. It locks the products' rows with
-            <cde>FOR UPDATE</cde>, so two people buying the last mug take turns. It prices the cart
-            fresh, refuses if anything ran out, writes the order and its items, takes the stock, and
-            commits. If anything fails, it rolls back, and it's as if nothing happened.
+            <cde>src/Orders.php</cde> does it in one <term def="transaction">transaction</term>. It
+            locks the products' rows with <cde>FOR UPDATE</cde>, so two people buying the last mug
+            take turns. It prices the cart fresh, refuses if anything ran out, writes the order and
+            its items, takes the stock, and commits. If anything fails, it rolls back, and it's as
+            if nothing happened.
         </p>
         <code-block example="project-checkout/src/Orders.php" />
         <p>
             Problems the customer can fix are a <cde>CheckoutProblem</cde>, with a message meant for
-            them. Anything else, like the database going away, is a different exception and stays
-            out of the page.
+            them. Anything else, like the database going away, is a different
+            <term def="exception">exception</term> and stays out of the page.
         </p>
         <code-block example="project-checkout/src/CheckoutProblem.php" />
 
@@ -137,12 +139,13 @@ CREATE TABLE order_items (
                 An email for the receipt, a name, and a button. And you couldn't possibly forget to
                 <strong><xref to="/php/never-trust-input">never trust input</xref>.</strong> It
                 reads those two fields and the tokens, and nothing else. If someone adds
-                <cde>total_cents=1</cde> or a card number to the request, nothing ever looks at it.
+                <cde>total_cents=1</cde> or a card number to the <term def="request">request</term>,
+                nothing ever looks at it.
             </p>
         </nti>
         <p>
-            Then the order page, which only the browser that placed the order can see. An order that
-            isn't yours gets the same 404 as one that doesn't exist:
+            Then the order page, which only the <term def="browser">browser</term> that placed the
+            order can see. An order that isn't yours gets the same 404 as one that doesn't exist:
         </p>
         <code-block example="project-checkout/public/order.php" />
 
@@ -153,7 +156,7 @@ CREATE TABLE order_items (
             Add a few things at <cde>http://localhost:8000</cde>, open the cart, and check out. The
             order page shows what you bought and <cde>Status: awaiting payment</cde>. Press the
             browser's back button and Place Order again: you land on the same order, and there's
-            still only one. Open the order's URL in a private window: 404.
+            still only one. Open the order's <term def="url">URL</term> in a private window: 404.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -197,14 +200,16 @@ INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34'
             plain text. Think about who can read those. Everyone with access to the server. Every
             backup, wherever it's copied. Whatever service you send logs to. And anyone who finds a
             hole like the one in <xref to="/php/projects/log-viewer">Log Viewer</xref>. Card rules,
-            the PCI DSS, forbid keeping the security code at all after a payment is authorized, and
-            holding card numbers puts your whole server under a long list of audits.
+            the <term def="pci-dss">PCI DSS</term>, forbid keeping the security code at all after a
+            payment is authorized, and holding card numbers puts your whole server under a long list
+            of audits.
         </p>
         <heading h2 id="fix-it">Fix It</heading>
         <p>
-            The fix isn't encrypting the column or filtering the log. It's not having the card. Look
-            at the real checkout again: no card fields, nothing read but an email and a name. Send
-            it the same card anyway:
+            The fix isn't <term def="encryption">encrypting</term> the
+            <term def="column">column</term> or filtering the log. It's not having the card. Look at
+            the real checkout again: no card fields, nothing read but an email and a name. Send it
+            the same card anyway:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec db mysqldump --no-tablespaces -uapp -papp-password course | grep -c 4242424242424242</code-block>
@@ -229,8 +234,9 @@ INSERT INTO `naive_orders` VALUES (1,'bo@example.com','4242424242424242','12/34'
         <list>
             <li>
                 <strong>Logs collect what you'd never store on purpose.</strong> A debug line that
-                dumps <cde>$_POST</cde> logs passwords and card numbers the moment a form has them.
-                Log what happened, an order id and a status, not what was sent.
+                dumps <cde>$_POST</cde> logs passwords and card numbers the moment a
+                <term def="form">form</term> has them. Log what happened, an order id and a status,
+                not what was sent.
             </li>
             <li>
                 <strong>Taking stock at order time means giving it back.</strong> This checkout

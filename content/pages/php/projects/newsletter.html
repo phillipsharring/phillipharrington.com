@@ -26,10 +26,11 @@
             it, and whether they asked to be.
         </p>
         <p>
-            A signup form takes an email address, but it can't know whose address it is. Anyone can
-            type yours. You'll build the naive form, use it to fill a stranger's inbox and put them
-            on your list without asking, and then build the one that only ever mails people who
-            proved the address is theirs, and lets them leave with one click.
+            A signup <term def="form">form</term> takes an email address, but it can't know whose
+            address it is. Anyone can type yours. You'll build the naive form, use it to fill a
+            stranger's inbox and put them on your list without asking, and then build the one that
+            only ever mails people who proved the address is theirs, and lets them leave with one
+            click.
         </p>
 
         <!-- What you'll use -->
@@ -51,8 +52,8 @@
                 <cde>hash_hmac()</cde>
             </li>
             <li>
-                <xref to="/php/passwords">Passwords</xref>: store a hash of a secret token, never
-                the token
+                <xref to="/php/passwords">Passwords</xref>: store a <term def="hash">hash</term> of
+                a secret token, never the token
             </li>
         </list>
 
@@ -61,17 +62,18 @@
 
         <heading h3 id="step-1-the-setup">Step 1: The Setup</heading>
         <p>
-            The containers from <xref to="/php/projects/queues">Queues</xref>, without the worker,
-            and with two more settings: the site's address for links, and a secret for signing
-            unsubscribe links. <cde>composer.json</cde>, <cde>composer.lock</cde>, the
-            <cde>Dockerfile</cde> and <cde>src/Database.php</cde> are the same too.
+            The <term def="container">containers</term> from
+            <xref to="/php/projects/queues">Queues</xref>, without the worker, and with two more
+            settings: the site's address for links, and a secret for signing unsubscribe links.
+            <cde>composer.json</cde>, <cde>composer.lock</cde>, the <cde>Dockerfile</cde> and
+            <cde>src/Database.php</cde> are the same too.
         </p>
         <code-block example="project-newsletter/compose.yml" />
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
         <p>
-            Two tables: the subscribers, and a log of every email the signup form sends, which is
-            what the limits count:
+            Two <term def="table">tables</term>: the subscribers, and a log of every email the
+            signup form sends, which is what the limits count:
         </p>
         <code-block example="project-newsletter/init.sql" />
         <p>
@@ -81,7 +83,10 @@
         </p>
 
         <heading h3 id="step-2-the-rules">Step 2: The Rules</heading>
-        <p>All the decisions live in one class, <cde>src/Subscriptions.php</cde>:</p>
+        <p>
+            All the decisions live in one <term def="class">class</term>,
+            <cde>src/Subscriptions.php</cde>:
+        </p>
         <code-block example="project-newsletter/src/Subscriptions.php" />
         <list>
             <li>
@@ -99,8 +104,8 @@
             </li>
             <li>
                 <strong>A random token, stored as a hash.</strong> The token is only ever in the
-                email. Someone who reads your database can't confirm addresses with what they find
-                there.
+                email. Someone who reads your <term def="database">database</term> can't confirm
+                addresses with what they find there.
             </li>
             <li>
                 <strong>A signed unsubscribe link.</strong> The subscriber's id, signed with
@@ -108,7 +113,10 @@
                 for someone else's id.
             </li>
         </list>
-        <p><cde>src/services.php</cde> builds the objects every page needs:</p>
+        <p>
+            <cde>src/services.php</cde> builds the <term def="object">objects</term> every page
+            needs:
+        </p>
         <code-block example="project-newsletter/src/services.php" />
 
         <heading h3 id="step-3-the-pages">Step 3: The Pages</heading>
@@ -132,9 +140,9 @@
         <code-block example="project-newsletter/issues/2026-11.txt" />
         <p>
             <cde>bin/send.php</cde> sends it to confirmed subscribers and nobody else. Every copy
-            carries an unsubscribe link in the text, and two headers that mail programs turn into an
-            Unsubscribe button: <cde>List-Unsubscribe</cde>, with the link, and
-            <cde>List-Unsubscribe-Post</cde>, which says one POST to it is enough.
+            carries an unsubscribe link in the text, and two <term def="header">headers</term> that
+            mail programs turn into an Unsubscribe button: <cde>List-Unsubscribe</cde>, with the
+            link, and <cde>List-Unsubscribe-Post</cde>, which says one POST to it is enough.
         </p>
         <code-block example="project-newsletter/bin/send.php" />
 
@@ -144,7 +152,8 @@
         <p>
             Subscribe at <cde>http://localhost:8000</cde> three times with the same address. Open
             Mailpit at <cde>http://localhost:8025</cde>: one email. Open its link, press the button,
-            and you're confirmed. Then, from a second terminal, send the issue:
+            and you're confirmed. Then, from a second <term def="terminal">terminal</term>, send the
+            issue:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec app php bin/send.php issues/2026-11.txt --dry-run
@@ -176,9 +185,9 @@ done</code-block>
         <p>
             Open Mailpit. <cde>victim@example.com</cde> has ten emails they never asked for, and is
             on your list, marked subscribed, to get every issue from now on. Point the loop at a
-            list of real addresses, and your server is now sending mail to thousands of people who
-            never heard of you. Their mail providers mark you as spam, your own mail stops arriving
-            anywhere, and the people who got it can't make it stop.
+            list of real addresses, and your <term def="server">server</term> is now sending mail to
+            thousands of people who never heard of you. Their mail providers mark you as spam, your
+            own mail stops arriving anywhere, and the people who got it can't make it stop.
         </p>
         <heading h2 id="fix-it">Fix It</heading>
         <p>Now the same loop against the real form:</p>
@@ -197,7 +206,8 @@ done</code-block>
             <p>
                 By now you could teach this part. <strong>Never trust input</strong>, and an email
                 address is an odd kind of input: it's a claim about someone else. Until the owner
-                answers from their own inbox, it's just a string someone typed.
+                answers from their own inbox, it's just a <term def="string">string</term> someone
+                typed.
             </p>
         </nti>
 
@@ -205,8 +215,8 @@ done</code-block>
             One of my apps had a signup form that sent a verification email to whatever address was
             typed in. Someone found it and used it to flood strangers' inboxes: sign up a victim's
             address, over and over, and the app sent each one a verification email. The app's own
-            mail was the attack. The fix was to send nothing at signup, put rate limits on mail, and
-            add a bot check.
+            mail was the attack. The fix was to send nothing at signup, put
+            <term def="rate-limiting">rate limits</term> on mail, and add a bot check.
         </side-story>
 
         <tk
@@ -234,8 +244,9 @@ done</code-block>
             </li>
             <li>
                 <strong>Sending to thousands is a job for the queue.</strong> A loop that sends
-                every email in one script works for a small list. For a big one, queue a job per
-                subscriber, and use a mail service built for bulk sending.
+                every email in one script works for a small list. For a big one,
+                <term def="queue">queue</term> a job per subscriber, and use a mail service built
+                for bulk sending.
             </li>
             <li>
                 <strong>Bounces and complaints mean stop.</strong> An address that bounces, or a

@@ -24,17 +24,17 @@
             HTMX finished the tour of what runs around your PHP. This section is about the PHP
             itself: not whether it works, but how it reads. Code is read far more often than it's
             written, by other people and by you in six months, and the first thing a reader meets is
-            its layout. A coding standard settles the layout once, so nobody has to think about it
-            again.
+            its layout. A <term def="coding-standard">coding standard</term> settles the layout
+            once, so nobody has to think about it again.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-coding-standard">What's a Coding Standard?</heading>
         <p>
             A written set of rules for how code looks: indentation, where braces go, spaces around
-            operators, how to name things. None of it changes what the code does. All of it changes
-            how fast someone can read it, and how small your diffs are when two people touch the
-            same file.
+            <term def="operator">operators</term>, how to name things. None of it changes what the
+            code does. All of it changes how fast someone can read it, and how small your diffs are
+            when two people touch the same file.
         </p>
 
         <heading h3 id="psr-1-and-psr-12">PSR-1 and PSR-12</heading>
@@ -44,10 +44,12 @@
         </p>
         <list>
             <li>
-                <strong>PSR-1</strong>, the basics: files start with <cde>&lt;?php</cde>, are UTF-8
-                (see <xref to="/php/text-and-utf-8">Text and UTF-8</xref>), and either declare
-                things or do things, not both. Class names are <cde>StudlyCaps</cde>, methods are
-                <cde>camelCase</cde>, constants are <cde>UPPER_CASE</cde>.
+                <strong>PSR-1</strong>, the basics: files start with <cde>&lt;?php</cde>, are
+                <term def="utf-8">UTF-8</term> (see
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>), and either declare things or
+                do things, not both. <term def="class">Class</term> names are <cde>StudlyCaps</cde>,
+                <term def="method">methods</term> are <cde>camelCase</cde>,
+                <term def="constant">constants</term> are <cde>UPPER_CASE</cde>.
             </li>
             <li>
                 <strong>PSR-12</strong>, the layout: four spaces to indent, never tabs; one space
@@ -60,17 +62,18 @@
 
         <heading h3 id="per-coding-style">PER Coding Style</heading>
         <p>
-            PSRs are frozen once they're accepted, and PHP kept growing: enums, <cde>readonly</cde>,
-            <cde>match</cde>, attributes. So the FIG now keeps a PER, a PHP Evolving Recommendation,
-            called PER Coding Style. It starts from PSR-12 and gets new versions as the language
-            does. Code that follows PSR-12 is almost always fine under PER; PER just has answers for
-            the newer syntax.
+            PSRs are frozen once they're accepted, and PHP kept growing:
+            <term def="enum">enums</term>, <cde>readonly</cde>, <cde>match</cde>, attributes. So the
+            FIG now keeps a PER, a PHP Evolving Recommendation, called PER Coding Style. It starts
+            from PSR-12 and gets new versions as the language does. Code that follows PSR-12 is
+            almost always fine under PER; PER just has answers for the newer syntax.
         </p>
 
         <side-story title="Interop">
             The FIG began in 2009, when developers from several PHP frameworks agreed that code from
             one project should be easy to use in another. Their first standard, PSR-0, was about
-            autoloading, not style. PSR-4, which replaced it, is the one Composer uses in
+            <term def="autoloading">autoloading</term>, not style. PSR-4, which replaced it, is the
+            one Composer uses in
             <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref>.
         </side-story>
 
@@ -131,10 +134,10 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer fix fixed.php</code-b
         </p>
         <p>
             Open <cde>fixed.php</cde>. It passes the check now, and it's much closer to
-            <cde>after.php</cde>, but not the same: the long array is still on one line, and the
-            blank lines that group the code aren't there. The tool enforces the rules. Making code
-            pleasant to read is still yours. Run all three with <cde>php</cde>, and they print the
-            same receipt.
+            <cde>after.php</cde>, but not the same: the long <term def="array">array</term> is still
+            on one line, and the blank lines that group the code aren't there. The tool enforces the
+            rules. Making code pleasant to read is still yours. Run all three with <cde>php</cde>,
+            and they print the same receipt.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -146,7 +149,7 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer fix fixed.php</code-b
             <li>
                 <cde>squizlabs/php_codesniffer</cde>: <cde>phpcs</cde> and <cde>phpcbf</cde>, with
                 PSR-1 and PSR-12 built in. Install it with <cde>composer require --dev</cde>, since
-                production never needs it.
+                <term def="production">production</term> never needs it.
             </li>
             <li>
                 <cde>friendsofphp/php-cs-fixer</cde>: a fixer with rule sets for PSR-12 and PER
@@ -197,15 +200,16 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer fix fixed.php</code-b
         <two-dollars title="Reformat in a commit of its own">
             <p>
                 When you bring old code up to standard, do it in a commit that changes nothing else,
-                then list that commit's hash in a <cde>.git-blame-ignore-revs</cde> file. Git (with
-                <cde>blame.ignoreRevsFile</cde>) and GitHub skip it in blame, so "who wrote this
-                line" still points at the person who wrote it, not the person who fixed the spacing.
+                then list that commit's <term def="hash">hash</term> in a
+                <cde>.git-blame-ignore-revs</cde> file. Git (with <cde>blame.ignoreRevsFile</cde>)
+                and GitHub skip it in blame, so "who wrote this line" still points at the person who
+                wrote it, not the person who fixed the spacing.
             </p>
         </two-dollars>
 
         <p>
             A standard can tell you where the braces go, but not what to call the things between
-            them. Next: good variable names.
+            them. Next: good <term def="variable">variable</term> names.
         </p>
 
         <!-- Next -->

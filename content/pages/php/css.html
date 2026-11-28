@@ -23,23 +23,29 @@
 
         <!-- Intro -->
         <p>
-            HTML says what each part of a page is. CSS, Cascading Style Sheets, says how it looks:
-            colors, fonts, spacing, layout. It usually lives in its own file, a stylesheet, that the
-            browser fetches and the server sends as it is. PHP's part is small: link to it properly,
-            and make sure browsers get the new copy when it changes.
+            <term def="html">HTML</term> says what each part of a page is.
+            <term def="css">CSS</term>, Cascading Style Sheets, says how it looks: colors, fonts,
+            spacing, layout. It usually lives in its own file, a stylesheet, that the
+            <term def="browser">browser</term> fetches and the
+            <term def="server">server</term> sends as it is. PHP's part is small: link to it
+            properly, and make sure browsers get the new copy when it changes.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-css">What's CSS?</heading>
-        <p>A list of rules. Each one is a selector, then properties in braces:</p>
+        <p>
+            A list of rules. Each one is a <term def="selector">selector</term>, then properties in
+            braces:
+        </p>
         <!-- prettier-ignore -->
         <code-block>.note {
     color: #555;
     margin-top: 1rem;
 }</code-block>
         <p>
-            The selector, <cde>.note</cde>, picks which elements the rule applies to. Each property,
-            like <cde>color</cde>, gets a value and ends with a semicolon.
+            The selector, <cde>.note</cde>, picks which <term def="element">elements</term> the rule
+            applies to. Each property, like <cde>color</cde>, gets a value and ends with a
+            semicolon.
         </p>
 
         <heading h3 id="selectors">Selectors</heading>
@@ -85,20 +91,24 @@
                 <cde>&lt;link rel="stylesheet" href="/style.css"&gt;</cde>.
             </li>
             <li>
-                The browser asks for it: another request, answered from the
-                <xref to="/php/document-root">document root</xref> with <cde>text/css</cde>.
+                The browser asks for it: another <term def="request">request</term>, answered from
+                the <xref to="/php/document-root">document root</xref> with <cde>text/css</cde>.
             </li>
             <li>It matches every rule against the elements in the page.</li>
-            <li>Where rules disagree, the cascade decides, and the browser draws the result.</li>
             <li>
-                It keeps the file in its cache, so the next page doesn't ask again, sometimes for a
-                long time.
+                Where rules disagree, the <term def="cascade">cascade</term> decides, and the
+                browser draws the result.
+            </li>
+            <li>
+                It keeps the file in its <term def="cache">cache</term>, so the next page doesn't
+                ask again, sometimes for a long time.
             </li>
         </ol>
         <p>
             Step five is why a change to your stylesheet sometimes doesn't show. The browser is
-            still using the copy it kept. The fix is to change the URL whenever the file changes: a
-            new URL is a new file, as far as any cache knows.
+            still using the copy it kept. The fix is to change the
+            <term def="url">URL</term> whenever the file changes: a new URL is a new file, as far as
+            any cache knows.
         </p>
 
         <!-- Try it -->
@@ -127,8 +137,9 @@
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/?theme=%22%3E%3Cscript%3E'</code-block>
         <p>
-            The body's class is <cde>light</cde>. The theme goes into the page unescaped, so the
-            code takes only a value from its own list, and anything else gets the default.
+            The body's class is <cde>light</cde>. The theme goes into the page
+            <term def="escaping">unescaped</term>, so the code takes only a value from its own list,
+            and anything else gets the default.
             <strong><xref to="/php/never-trust-input">Never trust input</xref>,</strong> even when
             it's only picking a color.
         </p>
@@ -148,8 +159,9 @@
                 a style or a stylesheet.
             </li>
             <li>
-                PHP doesn't send the stylesheet. The web server does, from the document root, with
-                the right content type, as in
+                PHP doesn't send the stylesheet. The <term def="web-server">web server</term> does,
+                from the <term def="document-root">document root</term>, with the right
+                <term def="content-type">content type</term>, as in
                 <xref to="/php/how-php-runs">How PHP Actually Runs</xref>.
             </li>
         </list>
@@ -163,9 +175,11 @@
                 Mac), or check the version in the URL.
             </li>
             <li>
-                <strong>Input in a style is still input.</strong> A color from a form, put in a
-                <cde>style</cde> attribute, can close the attribute and add anything. Allow-list it,
-                or check it against a strict pattern like <cde>#</cde> and six hex digits.
+                <strong>Input in a style is still input.</strong> A color from a
+                <term def="form">form</term>, put in a <cde>style</cde>
+                <term def="attribute">attribute</term>, can close the attribute and add anything.
+                Allow-list it, or check it against a strict pattern like <cde>#</cde> and six hex
+                digits.
             </li>
             <li>
                 <strong><cde>!important</cde> wins, and then you're stuck.</strong> It jumps the
@@ -188,7 +202,7 @@
 
         <p>
             HTML for what things are, CSS for how they look, and one more language for what they do
-            in the browser. Next: JavaScript.
+            in the browser. Next: <term def="javascript">JavaScript</term>.
         </p>
 
         <!-- Next -->

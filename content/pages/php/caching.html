@@ -26,9 +26,9 @@
         <!-- Intro -->
         <p>
             <xref to="/php/output-buffering">Output Buffering</xref> turned a whole page into a
-            string. A page you can hold, you can keep. If it took a second to make, and it will be
-            the same for the next thousand visitors, there's no reason to make it a thousand times.
-            Keeping it is caching.
+            <term def="string">string</term>. A page you can hold, you can keep. If it took a second
+            to make, and it will be the same for the next thousand visitors, there's no reason to
+            make it a thousand times. Keeping it is <term def="cache">caching</term>.
         </p>
 
         <!-- What is/are -->
@@ -44,8 +44,8 @@
             </li>
             <li>
                 <strong>Fresh</strong> and <strong>stale</strong>: whether the copy is still young
-                enough to trust. How long it stays fresh is its lifetime, often called its TTL, for
-                "time to live."
+                enough to trust. How long it stays fresh is its lifetime, often called its
+                <term def="ttl">TTL</term>, for "time to live."
             </li>
             <li>
                 <strong>Invalidation</strong>: throwing a copy away because the real answer has
@@ -53,8 +53,8 @@
             </li>
         </list>
         <p>
-            A copy is never the truth. The database, the file, the other site: that's the truth, and
-            the cache is a bet that it hasn't changed since you looked.
+            A copy is never the truth. The <term def="database">database</term>, the file, the other
+            site: that's the truth, and the cache is a bet that it hasn't changed since you looked.
         </p>
 
         <side-story title="A Hiding Place">
@@ -68,7 +68,8 @@
 
         <heading h3 id="the-browser">The Browser</heading>
         <p>
-            The browser keeps copies of what it downloads, and your response headers say what it may
+            The <term def="browser">browser</term> keeps copies of what it downloads, and your
+            <term def="response">response</term> <term def="header">headers</term> say what it may
             keep and for how long. The main one is <cde>Cache-Control</cde>:
         </p>
         <list>
@@ -83,8 +84,8 @@
                 <cde>private</cde>: only this person's own browser may keep it. No shared cache.
             </li>
             <li>
-                <cde>no-cache</cde>: keep it if you like, but check with the server before every
-                use.
+                <cde>no-cache</cde>: keep it if you like, but check with the
+                <term def="server">server</term> before every use.
             </li>
             <li><cde>no-store</cde>: don't keep it anywhere, at all.</li>
         </list>
@@ -92,37 +93,37 @@
             When a copy goes stale, the browser doesn't have to download it again. If the response
             came with an <cde>ETag</cde>, a fingerprint of that version, the browser asks with
             <cde>If-None-Match</cde> and the fingerprint it has. If nothing changed, the server
-            answers <cde>304 Not Modified</cde>, with no body, and the browser uses its copy for
-            another lifetime. <cde>Last-Modified</cde> and <cde>If-Modified-Since</cde> do the same
-            with a date instead of a fingerprint. Both are headers from
-            <xref to="/php/request-and-response">Request and Response</xref>.
+            answers <cde>304 Not Modified</cde>, with no <term def="body">body</term>, and the
+            browser uses its copy for another lifetime. <cde>Last-Modified</cde> and
+            <cde>If-Modified-Since</cde> do the same with a date instead of a fingerprint. Both are
+            headers from <xref to="/php/request-and-response">Request and Response</xref>.
         </p>
 
         <heading h3 id="the-middle">The Middle</heading>
         <p>
-            <xref to="/php/whats-in-the-middle">What's in the Middle</xref> put a CDN at the front
-            of the chain, keeping copies close to visitors. It reads the same headers the browser
-            does. A <cde>public</cde> answer with a <cde>max-age</cde> can be handed out from a
-            server on another continent for that long, and your server never hears about it. Many
-            CDNs also have their own settings that override yours, so check them before you go
-            looking for a bug in your code.
+            <xref to="/php/whats-in-the-middle">What's in the Middle</xref> put a
+            <term def="cdn">CDN</term> at the front of the chain, keeping copies close to visitors.
+            It reads the same headers the browser does. A <cde>public</cde> answer with a
+            <cde>max-age</cde> can be handed out from a server on another continent for that long,
+            and your server never hears about it. Many CDNs also have their own settings that
+            override yours, so check them before you go looking for a bug in your code.
         </p>
 
         <heading h3 id="your-app">Your App</heading>
         <p>
             The caches above keep whole responses. Your own code can keep anything expensive: the
-            result of a slow query, an answer from another site's API, a page built from a dozen
-            pieces. Make it once, keep it with a time on it, and hand out the copy until it's too
-            old.
+            result of a slow <term def="query">query</term>, an answer from another site's
+            <term def="api">API</term>, a page built from a dozen pieces. Make it once, keep it with
+            a time on it, and hand out the copy until it's too old.
         </p>
         <p>
             Where to keep it depends on the size of the site. A file on disk is the simplest place,
             and needs nothing installed. Memory is faster: APCu is a PHP extension that keeps values
-            in the server's memory between requests, with <cde>apcu_store()</cde> and
-            <cde>apcu_fetch()</cde>. It isn't in the <cde>php:8.4-cli</cde> image, and every server
-            has its own, so it suits a site on one machine. Redis and Memcached are shared caches
-            that several servers can use at once. Each one is a different place to put the copy; the
-            idea doesn't change.
+            in the server's memory between <term def="request">requests</term>, with
+            <cde>apcu_store()</cde> and <cde>apcu_fetch()</cde>. It isn't in the
+            <cde>php:8.4-cli</cde> image, and every server has its own, so it suits a site on one
+            machine. Redis and Memcached are shared caches that several servers can use at once.
+            Each one is a different place to put the copy; the idea doesn't change.
         </p>
         <p>
             PHP already caches for you, too. OPcache, which comes with PHP, keeps your scripts in
@@ -132,9 +133,10 @@
 
         <heading h2 id="invalidation">Invalidation</heading>
         <p>
-            "There are only two hard things in Computer Science: cache invalidation and naming
-            things." The line is usually credited to Phil Karlton. Making the copy is easy. Knowing
-            when it stopped being true is the hard part. There are three ways to handle it:
+            "There are only two hard things in Computer Science:
+            <term def="cache-invalidation">cache invalidation</term> and naming things." The line is
+            usually credited to Phil Karlton. Making the copy is easy. Knowing when it stopped being
+            true is the hard part. There are three ways to handle it:
         </p>
         <list>
             <li>
@@ -147,8 +149,9 @@
                 has to remember to do it.
             </li>
             <li>
-                <strong>Change the name.</strong> Put a version in the URL or the key, and a change
-                makes a new copy under a new name. The old one is never asked for again.
+                <strong>Change the name.</strong> Put a version in the <term def="url">URL</term> or
+                the key, and a change makes a new copy under a new name. The old one is never asked
+                for again.
             </li>
         </list>
         <p>
@@ -213,7 +216,7 @@
         <p>Serve <cde>public</cde>:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
-        <p>From a second terminal, ask twice, and time each one:</p>
+        <p>From a second <term def="terminal">terminal</term>, ask twice, and time each one:</p>
         <!-- prettier-ignore -->
         <code-block>curl -i -w '%{time_total}s\n' http://localhost:8000/
 curl -i -w '%{time_total}s\n' http://localhost:8000/</code-block>
@@ -266,8 +269,10 @@ curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-b
         <code-block>curl -i 'http://localhost:8000/hello.php?name=Ada'</code-block>
         <p>
             <cde>Cache-Control: private, no-store</cde>: no cache anywhere keeps this one. The name
-            came from the query string, so it's checked and escaped, and the page says it's UTF-8,
-            so a name like Zoë arrives the way it was typed (<xref to="/php/text-and-utf-8"
+            came from the <term def="query-string">query string</term>, so it's checked and
+            <term def="escaping">escaped</term>, and the page says it's
+            <term def="utf-8">UTF-8</term>, so a name like Zoë arrives the way it was typed (<xref
+                to="/php/text-and-utf-8"
                 >Text and UTF-8</xref>
             has why). <cde>Ctrl+C</cde> stops the server.
         </p>
@@ -292,8 +297,8 @@ curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-b
                 <cde>hash('sha256', $body)</cde> makes a good one.
             </li>
             <li>
-                <cde>$_SERVER['HTTP_IF_NONE_MATCH']</cde> is the fingerprint the client says it has.
-                It's input: compare it, don't use it.
+                <cde>$_SERVER['HTTP_IF_NONE_MATCH']</cde> is the fingerprint the
+                <term def="client">client</term> says it has. It's input: compare it, don't use it.
             </li>
             <li>
                 <cde>http_response_code(304);</cde> then <cde>exit;</cde> when they match. A 304 has
@@ -325,7 +330,7 @@ curl -i -H 'If-None-Match: "paste-the-etag-here"' http://localhost:8000/</code-b
                 <strong>Starting a session changes your cache headers.</strong> By default,
                 <cde>session_start()</cde> sends headers that tell every cache not to keep the page,
                 which is right for pages about one person and wasted on pages that aren't. Only
-                start a session where you need one.
+                start a <term def="session">session</term> where you need one.
             </li>
             <li>
                 <strong>Cache what you've measured, not what you guess.</strong> Every cache is one

@@ -22,18 +22,18 @@
         <!-- Intro -->
         <p>
             <xref to="/php/relating-tables">Relating Tables</xref> moved the authors out of the
-            books table and into their own, so each name is written once. Normalization is that
-            move, made into a habit: say each fact once, in the table it's about. It has a
-            reputation for theory and numbered forms, but the idea fits in a sentence, and the
-            reason for it fits in one <sect>Try It</sect>.
+            books <term def="table">table</term> and into their own, so each name is written once.
+            <term def="normalization">Normalization</term> is that move, made into a habit: say each
+            fact once, in the table it's about. It has a reputation for theory and numbered forms,
+            but the idea fits in a sentence, and the reason for it fits in one <sect>Try It</sect>.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-normalization">What's Normalization?</heading>
         <p>
             Arranging tables so that every fact is stored in exactly one place. A customer's email
-            is a fact about the customer, so it lives in one row of <cde>customers</cde>. Not on
-            every order she's ever placed.
+            is a fact about the customer, so it lives in one <term def="row">row</term> of
+            <cde>customers</cde>. Not on every order she's ever placed.
         </p>
         <p>
             When a fact is written in two places, the two can disagree, and then nobody knows which
@@ -42,14 +42,14 @@
 
         <heading h3 id="the-normal-forms">The Normal Forms</heading>
         <p>
-            Database books number the rules. The first three are the ones that matter day to day,
-            and each fits in a line:
+            <term def="database">Database</term> books number the rules. The first three are the
+            ones that matter day to day, and each fits in a line:
         </p>
         <list>
             <li>
-                <strong>First</strong>: one value per column. No list of tags in a
-                <cde>tags</cde> column, no <cde>phone1</cde>, <cde>phone2</cde>, <cde>phone3</cde>.
-                A list is rows in another table.
+                <strong>First</strong>: one value per <term def="column">column</term>. No list of
+                tags in a <cde>tags</cde> column, no <cde>phone1</cde>, <cde>phone2</cde>,
+                <cde>phone3</cde>. A list is rows in another table.
             </li>
             <li>
                 <strong>Second</strong>: when the key is more than one column, every other column
@@ -86,9 +86,9 @@
             </li>
             <li>
                 Move each fact that's about something else into that thing's table, and leave a
-                foreign key in its place: <cde>customer_id</cde>.
+                <term def="foreign-key">foreign key</term> in its place: <cde>customer_id</cde>.
             </li>
-            <li>When you need them together again, join.</li>
+            <li>When you need them together again, <term def="join">join</term>.</li>
         </ol>
         <p>
             Some facts look like copies and aren't. An order's price is what the customer paid that
@@ -108,13 +108,13 @@
             <li>Every piece of code that adds or removes an order updates the count, too.</li>
             <li>Both changes happen together, or not at all.</li>
             <li>
-                You know which one is the truth (the orders), and you have a query that rebuilds the
-                copy from it.
+                You know which one is the truth (the orders), and you have a
+                <term def="query">query</term> that rebuilds the copy from it.
             </li>
         </list>
         <p>
             Do it when you've measured a real cost, not in advance. Most counts are cheap to work
-            out, given the right index.
+            out, given the right <term def="index">index</term>.
         </p>
 
         <!-- Try it -->
@@ -131,7 +131,7 @@
 docker compose exec db mysql -u app -papp-password course</code-block>
         <p class="text-th-muted text-base">
             As in SQL: start the database in the background, then open <cde>mysql</cde> inside its
-            container.
+            <term def="container">container</term>.
         </p>
         <p>
             Alice gets a new email address. In the flat table, code that updates "the order she's
@@ -201,10 +201,11 @@ GROUP BY `customers`.`id`;</code-block>
         <list>
             <li>
                 <nti>
-                    Read the current price from <cde>products</cde>, on the server, and copy it into
-                    the order. Who remembers the rule? Now let's not see the same hands.
-                    <strong>Never trust input</strong>: a price that arrives in a form is whatever
-                    the visitor decided to pay.
+                    Read the current price from <cde>products</cde>, on the
+                    <term def="server">server</term>, and copy it into the order. Who remembers the
+                    rule? Now let's not see the same hands. <strong>Never trust input</strong>: a
+                    price that arrives in a <term def="form">form</term> is whatever the visitor
+                    decided to pay.
                 </nti>
             </li>
             <li>

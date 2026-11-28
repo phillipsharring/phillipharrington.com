@@ -24,10 +24,11 @@
         <!-- Intro -->
         <p>
             You changed the code that makes the "verify your email" link. Does it still work? One
-            way to find out: start the site, the database and a mail server, fill in the signup
-            form, open the email, click the link. Ten minutes, if nothing else is broken, and you'll
-            do it once and hope. The other way takes a second, and you'll run it every time you
-            save: a short script that loads that one piece and calls it.
+            way to find out: start the site, the <term def="database">database</term> and a mail
+            <term def="server">server</term>, fill in the signup <term def="form">form</term>, open
+            the email, click the link. Ten minutes, if nothing else is broken, and you'll do it once
+            and hope. The other way takes a second, and you'll run it every time you save: a short
+            script that loads that one piece and calls it.
         </p>
 
         <!-- What is/are -->
@@ -35,9 +36,9 @@
         <p>
             Code whose only job is to run other code and check what it does. It sets up the inputs,
             calls the piece, and says whether the answer was right. Frameworks like PHPUnit, in the
-            next lesson, are test harnesses with a lot of conveniences. A two-dollar one is the same
-            idea with none: a plain PHP file, a <cde>require</cde>, a few calls, and
-            <cde>ok</cde> or <cde>FAIL</cde>.
+            next lesson, are <term def="test-harness">test harnesses</term> with a lot of
+            conveniences. A two-dollar one is the same idea with none: a plain PHP file, a
+            <cde>require</cde>, a few calls, and <cde>ok</cde> or <cde>FAIL</cde>.
         </p>
 
         <heading h3 id="too-big">When a Piece Is Too Big</heading>
@@ -64,9 +65,10 @@ mail($_POST['email'], 'Verify your email', "Click here: {$link}");</code-block>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>Find the piece you want to prove. Here, making the link and checking it.</li>
             <li>
-                Move it into a function, in a file of its own, that takes everything it needs as
-                arguments: the email, the expiry time, the secret. No <cde>$_POST</cde>, no
-                <cde>time()</cde>, no <cde>getenv()</cde> inside.
+                Move it into a <term def="function">function</term>, in a file of its own, that
+                takes everything it needs as <term def="argument">arguments</term>: the email, the
+                expiry time, the secret. No <cde>$_POST</cde>, no <cde>time()</cde>, no
+                <cde>getenv()</cde> inside.
             </li>
             <li>
                 Have the page call the function, passing in the real values. The page still does the
@@ -93,9 +95,10 @@ mail($_POST['email'], 'Verify your email', "Click here: {$link}");</code-block>
         </p>
         <code-block example="two-dollar-test-harnesses/src/verification.php" />
         <p>
-            The link will come back to your site in a request, and
-            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: anyone can edit a URL. The signature, made with a secret only the server knows, is
-            what proves the server wrote it. Now the harness, <cde>harness.php</cde>:
+            The link will come back to your site in a <term def="request">request</term>, and
+            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: anyone can edit a <term def="url">URL</term>. The signature, made with a secret only
+            the server knows, is what proves the server wrote it. Now the harness,
+            <cde>harness.php</cde>:
         </p>
         <code-block example="two-dollar-test-harnesses/harness.php" />
         <!-- prettier-ignore -->
@@ -103,7 +106,8 @@ mail($_POST['email'], 'Verify your email', "Click here: {$link}");</code-block>
         <p>
             The link, then five lines of <cde>ok</cde>: a good link works; a changed email, an
             expired link, the wrong secret and junk are all refused. No database, no mail server, no
-            browser, and it took about as long as it took you to press Enter.
+            <term def="browser">browser</term>, and it took about as long as it took you to press
+            Enter.
         </p>
         <p>Now break it on purpose. In <cde>src/verification.php</cde>, change the expiry check:</p>
         <!-- prettier-ignore -->
@@ -199,8 +203,9 @@ echo $?</code-block>
         </two-dollars>
 
         <p>
-            Five checks in an array is fine. Fifty, with setup, failures that show what came back
-            instead, and a report at the end, is a framework. Next: testing.
+            Five checks in an <term def="array">array</term> is fine. Fifty, with setup, failures
+            that show what came back instead, and a report at the end, is a framework. Next:
+            testing.
         </p>
 
         <!-- Next -->

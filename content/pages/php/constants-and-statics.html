@@ -25,9 +25,11 @@
         <p>
             The bill splitter in the last lesson takes 1 to 50 people. Those numbers sit in the code
             bare, and the next person to read it has to guess what 50 means, or find every other 50
-            when the limit changes. A constant gives a value a name. Then there's the other thing
-            PHP calls "static": values and methods that belong to a class, or a function, instead of
-            to any one object. Constants are an easy yes. Statics need more care.
+            when the limit changes. A <term def="constant">constant</term> gives a value a name.
+            Then there's the other thing PHP calls "static": values and
+            <term def="method">methods</term> that belong to a <term def="class">class</term>, or a
+            <term def="function">function</term>, instead of to any one
+            <term def="object">object</term>. Constants are an easy yes. Statics need more care.
         </p>
 
         <!-- What is/are -->
@@ -39,7 +41,7 @@
         <list>
             <li>
                 <strong><cde>const MAX_PEOPLE = 50;</cde></strong> at the top of a file, or in a
-                namespace.
+                <term def="namespace">namespace</term>.
             </li>
             <li>
                 <strong><cde>define('APP_NAME', '...')</cde></strong>, which works anywhere, even inside an <cde>if</cde>, and can build the name at run
@@ -56,15 +58,16 @@
         <p>The word means two related things in PHP.</p>
         <heading h3 id="static-variables">A Static Variable</heading>
         <p>
-            A variable inside a function, declared with <cde>static</cde>, that keeps its value from
-            one call to the next instead of starting over.
+            A <term def="variable">variable</term> inside a function, declared with
+            <cde>static</cde>, that keeps its value from one call to the next instead of starting
+            over.
         </p>
         <heading h3 id="static-properties-and-methods">Static Properties and Methods</heading>
         <p>
-            A property or method that belongs to the class, not to any object made from it. A static
-            property has one value, shared by every object of that class. A static method is called
-            on the class, <cde>Counter::everyone()</cde>, with no object, so it has no
-            <cde>$this</cde>. Inside the class, <cde>self::</cde> reaches them.
+            A <term def="property">property</term> or method that belongs to the class, not to any
+            object made from it. A static property has one value, shared by every object of that
+            class. A static method is called on the class, <cde>Counter::everyone()</cde>, with no
+            object, so it has no <cde>$this</cde>. Inside the class, <cde>self::</cde> reaches them.
         </p>
 
         <!-- How it works -->
@@ -80,8 +83,8 @@
                 piece of code that can see it, shares the same one.
             </li>
             <li>
-                All three last until the end of the request, and no longer. The next request starts
-                PHP fresh.
+                All three last until the end of the <term def="request">request</term>, and no
+                longer. The next request starts PHP fresh.
             </li>
         </ol>
         <p>
@@ -134,8 +137,9 @@
         <p>
             Static methods are easy to call from anywhere, and that's the problem. A class that
             calls <cde>Clock::hour()</cde>, <cde>Db::query()</cde> or <cde>Mail::send()</cde> has a
-            dependency you can't see from outside and can't swap out. To test it, you need the real
-            clock, the real database, the real mail server. To change it, you hunt down every call.
+            <term def="dependency">dependency</term> you can't see from outside and can't swap out.
+            To test it, you need the real clock, the real <term def="database">database</term>, the
+            real mail <term def="server">server</term>. To change it, you hunt down every call.
         </p>
         <p>
             So in this course, and in code you'll be glad you wrote, the rule is: no static methods
@@ -148,7 +152,8 @@
             especially for "named constructors," like <cde>Money::fromCents(500)</cde>, a static
             method that just makes an object. Read them, use them where a library gives you no
             choice, and don't write your own. Constants are fine. A static variable inside a small
-            function, for something like caching a value you worked out once, is usually fine.
+            function, for something like <term def="cache">caching</term> a value you worked out
+            once, is usually fine.
         </p>
 
         <!-- In PHP -->
@@ -164,7 +169,7 @@
             </li>
             <li>
                 Class constants can have a visibility, <cde>private const</cde>, and, since PHP 8.3,
-                a type: <cde>public const int MIN_PEOPLE = 1;</cde>
+                a <term def="type">type</term>: <cde>public const int MIN_PEOPLE = 1;</cde>
             </li>
             <li><cde>static $number = 0;</cde> inside a function.</li>
             <li>

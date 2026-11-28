@@ -21,18 +21,19 @@
 
         <!-- Intro -->
         <p>
-            Most of the Internet works as clients and servers: a server at one end of the
-            conversation, a client at the other. The two communicate using agreed-upon protocols,
-            such as HTTP, which gets a lesson of its own. A server listens for requests, and a
-            client makes them.
+            Most of the Internet works as <term def="client">clients</term> and
+            <term def="server">servers</term>: a server at one end of the conversation, a client at
+            the other. The two communicate using agreed-upon <term def="protocol">protocols</term>,
+            such as <term def="http">HTTP</term>, which gets a lesson of its own. A server listens
+            for <term def="request">requests</term>, and a client makes them.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-server">What's a Server?</heading>
         <p>
-            The server is a program on a computer that binds to a port on that computer's network
-            connection and listens for requests. Common server software includes nginx, Apache and
-            Caddy.
+            The server is a program on a computer that binds to a <term def="port">port</term> on
+            that computer's network connection and listens for requests. Common server software
+            includes nginx, Apache and Caddy.
         </p>
 
         <side-story title="Ten Thousand at Once">
@@ -46,14 +47,15 @@
         <p>
             Both the client and the server are software, running on physical (or virtual) computers
             that are connected to the Internet. The server has the added requirement of being easy
-            to find, either by IP address or, much more often, by a domain name. (How a name turns
-            into an address is the DNS lesson.)
+            to find, either by <term def="ip-address">IP address</term> or, much more often, by a
+            <term def="domain-name">domain name</term>. (How a name turns into an address is the
+            <term def="dns">DNS</term> lesson.)
         </p>
         <p>
             The computer the server software runs on is usually also called a server, which is nice
             and confusing. Sometimes people say "physical server" to tell the machine apart from the
-            software. The server is also sometimes called a "host," which is where "hosting" and
-            "web hosting" come from.
+            software. The server is also sometimes called a "<term def="host">host</term>," which is
+            where "hosting" and "web hosting" come from.
         </p>
         <p>
             The physical server may be a powerful computer in a data center, a rack unit in an
@@ -61,19 +63,21 @@
             nameless, an entire operations app ran on one, and the development server where I cut my
             teeth was my own desktop. So long as it's connected to, and can be reached from, the
             Internet, it can act as a server. These days it's very often a virtual machine or a
-            container in somebody else's data center, which is all "the cloud" means.
+            <term def="container">container</term> in somebody else's data center, which is all "the
+            cloud" means.
         </p>
 
         <side-story title="Do Not Power It Down">
-            The first web server was Tim Berners-Lee's NeXT computer at CERN, in 1990. It had a
-            handwritten label stuck to it: "This machine is a server. DO NOT POWER IT DOWN!!"
-            Turning it off would have turned off the World Wide Web.
+            The first <term def="web-server">web server</term> was Tim Berners-Lee's NeXT computer
+            at CERN, in 1990. It had a handwritten label stuck to it: "This machine is a server. DO
+            NOT POWER IT DOWN!!" Turning it off would have turned off the World Wide Web.
         </side-story>
 
         <heading h2 id="whats-a-client">What's a Client?</heading>
         <p>
-            A client is the program you use to connect to a server. That can be a web browser, an
-            email program, an FTP program, a terminal, an app on your phone, and many other kinds of
+            A client is the program you use to connect to a server. That can be a web
+            <term def="browser">browser</term>, an email program, an FTP program, a
+            <term def="terminal">terminal</term>, an app on your phone, and many other kinds of
             programs. When you browse the web or check your email, you're using a client.
         </p>
 
@@ -87,7 +91,7 @@
                 The client sends a request, and the server responds with the information requested,
                 or some kind of error.
             </li>
-            <li>The client displays the response.</li>
+            <li>The client displays the <term def="response">response</term>.</li>
         </ol>
 
         <heading h3 id="how-do-they-talk">How Do They Talk?</heading>
@@ -106,9 +110,10 @@
         <heading h3 id="whats-in-the-middle">What's in the Middle?</heading>
         <p>
             Your client rarely talks straight to the server that does the work. On most sites, your
-            browser talks to a CDN: a network of servers around the world that keeps copies of pages
-            close to you and passes everything else along to the real server. There may be a load
-            balancer or a reverse proxy in there too.
+            browser talks to a <term def="cdn">CDN</term>: a network of servers around the world
+            that keeps copies of pages close to you and passes everything else along to the real
+            server. There may be a <term def="load-balancer">load balancer</term> or a
+            <term def="reverse-proxy">reverse proxy</term> in there too.
         </p>
         <soaking>
             <p>This page came to you through one.</p>
@@ -198,8 +203,9 @@
             </li>
             <li>
                 <strong>Inside a container, localhost is the container.</strong> Not your computer.
-                A server in a container that listens only on localhost can't hear anything from
-                outside it, which is why <sect>Try It</sect> says <cde>0.0.0.0</cde>.
+                A server in a container that listens only on
+                <term def="localhost">localhost</term> can't hear anything from outside it, which is
+                why <sect>Try It</sect> says <cde>0.0.0.0</cde>.
             </li>
             <li>
                 <strong>"Connection refused" isn't "timed out."</strong> Refused means the machine
@@ -220,8 +226,8 @@
         </two-dollars>
 
         <p>
-            Everything you typed into the browser in <sect>Try It</sect> was a URL. Next: what each
-            piece of one means.
+            Everything you typed into the browser in <sect>Try It</sect> was a
+            <term def="url">URL</term>. Next: what each piece of one means.
         </p>
 
         <!-- Next -->

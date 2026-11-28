@@ -22,22 +22,25 @@
         <!-- Intro -->
         <p>
             <xref to="/php/never-trust-input">Never Trust Input</xref> ended with a rule for values
-            on their way out of your code: escape them for wherever they're going. SQL injection is
-            what happens when the place is a database query and nobody did. It's one of the oldest
-            attacks on the web and still one of the most common, and in PHP the fix is one habit
-            you've had since <xref to="/php/pdo">PDO and Prepared Statements</xref>.
+            on their way out of your code: <term def="escaping">escape</term> them for wherever
+            they're going. <term def="sql-injection">SQL injection</term> is what happens when the
+            place is a <term def="database">database</term> <term def="query">query</term> and
+            nobody did. It's one of the oldest attacks on the web and still one of the most common,
+            and in PHP the fix is one habit you've had since
+            <xref to="/php/pdo">PDO and Prepared Statements</xref>.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-sql-injection">What's SQL Injection?</heading>
         <p>
-            Your code builds a query by gluing input into a string of
+            Your code builds a query by gluing input into a <term def="string">string</term> of
             <xref to="/php/sql">SQL</xref>:
         </p>
         <!-- prettier-ignore -->
         <code-block>$sql = "SELECT `name` FROM `members` WHERE `email` = '$email'";</code-block>
         <p>
-            You meant <cde>$email</cde> to be a value. But the database can't see where your SQL
+            You meant <cde>$email</cde> to be a value. But the database can't see where your
+            <term def="sql">SQL</term>
             ends and the input begins; it gets one string and runs all of it. If the input contains
             a quote, it closes yours, and whatever comes after is SQL the visitor wrote. They've
             injected it.
@@ -71,14 +74,16 @@
             </li>
             <li>
                 They type something that closes your quote and adds a condition of their own:
-                <cde>' OR '1'='1</cde>. Now the <cde>WHERE</cde> is true for every row.
+                <cde>' OR '1'='1</cde>. Now the <cde>WHERE</cde> is true for every
+                <term def="row">row</term>.
             </li>
             <li>
                 Then a <cde>UNION</cde>, which tacks a second query of their choosing onto yours,
-                and the page shows its results as if they were yours: any table, any column.
+                and the page shows its results as if they were yours: any
+                <term def="table">table</term>, any <term def="column">column</term>.
             </li>
         </ol>
-        <p>And the defense, with a prepared statement:</p>
+        <p>And the defense, with a <term def="prepared-statement">prepared statement</term>:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 PHP sends the SQL with a <cde>?</cde> in it. The database reads it and plans it.
@@ -106,7 +111,8 @@
         <p>
             Then the two-line <cde>Dockerfile</cde> that adds MySQL support to PHP, and
             <cde>init.sql</cde>, which makes the table. The passwords are stored the right way, as
-            hashes, which <xref to="/php/passwords">Passwords</xref> explains:
+            <term def="hash">hashes</term>, which
+            <xref to="/php/passwords">Passwords</xref> explains:
         </p>
         <code-block example="sql-injection/Dockerfile" />
         <code-block example="sql-injection/init.sql" />
@@ -150,12 +156,13 @@
             </li>
             <li>
                 <cde>charset=utf8mb4</cde> in the connection string, so PHP and MySQL agree on how
-                the bytes are read. See
+                the <term def="byte">bytes</term> are read. See
                 <xref to="/php/character-sets-and-collation">Character Sets and Collation</xref>.
             </li>
             <li>
                 <cde>$pdo-&gt;query()</cde> only for SQL with no input in it at all. If you're about
-                to put a variable in the string, stop and use <cde>prepare()</cde>.
+                to put a <term def="variable">variable</term> in the string, stop and use
+                <cde>prepare()</cde>.
             </li>
         </list>
 
@@ -187,8 +194,9 @@
             </li>
             <li>
                 <strong>Error messages help the attacker.</strong> The naive page printed MySQL's
-                complaint, with your file path. Turn <cde>display_errors</cde> off in production, as
-                in <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref>.
+                complaint, with your file <term def="path">path</term>. Turn
+                <cde>display_errors</cde> off in <term def="production">production</term>, as in
+                <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref>.
             </li>
         </list>
 
@@ -268,8 +276,9 @@ curl --get --data-urlencode "email=' UNION SELECT CONCAT(email, ' ', password_ha
         </two-dollars>
 
         <p>
-            A prepared statement keeps input out of your SQL. Keeping it out of your HTML is the
-            same idea with a different escape. Next: XSS and escaping output.
+            A prepared statement keeps input out of your SQL. Keeping it out of your
+            <term def="html">HTML</term> is the same idea with a different escape. Next:
+            <term def="xss">XSS</term> and escaping output.
         </p>
 
         <!-- Next -->

@@ -22,9 +22,9 @@
         <!-- Intro -->
         <p>
             Separating Concerns split a page into reading, deciding and showing, joined by a few
-            lines of glue. MVC is that same split with names, and with the glue promoted to a part
-            of its own. Nearly every PHP framework is organized around it, so it's worth knowing
-            what each letter is for.
+            lines of glue. <term def="mvc">MVC</term> is that same split with names, and with the
+            glue promoted to a part of its own. Nearly every PHP framework is organized around it,
+            so it's worth knowing what each letter is for.
         </p>
 
         <!-- What is/are -->
@@ -32,21 +32,26 @@
         <p>
             The data and the rules about it: what a menu item is, which items are in a category, how
             to find one. Reading and deciding, from the last lesson, live here. The model knows
-            nothing about HTTP or HTML. You could use it from a command-line script unchanged.
+            nothing about <term def="http">HTTP</term> or <term def="html">HTML</term>. You could
+            use it from a <term def="command-line">command-line</term> script unchanged.
         </p>
 
         <heading h2 id="the-view">What's the View?</heading>
         <p>
-            What goes back to the client: an HTML template, or JSON. It's handed what to show, loops
-            over it, and escapes everything it prints. It doesn't fetch anything or decide anything.
+            What goes back to the <term def="client">client</term>: an HTML template, or
+            <term def="json">JSON</term>. It's handed what to show, loops over it, and
+            <term def="escaping">escapes</term> everything it prints. It doesn't fetch anything or
+            decide anything.
         </p>
 
         <heading h2 id="the-controller">What's the Controller?</heading>
         <p>
-            The part that handles a request. It reads the input, checks it, asks the model for
-            what's needed, picks a view, and returns the response with its status code. It should be
-            short. When a controller grows long, the extra code is usually a rule that belongs in
-            the model.
+            The part that handles a <term def="request">request</term>. It reads the input, checks
+            it, asks the model for what's needed, picks a view, and returns the
+            <term def="response">response</term> with its
+            <term def="status-code">status code</term>. It should be short. When a
+            <term def="controller">controller</term> grows long, the extra code is usually a rule
+            that belongs in the model.
         </p>
 
         <side-story title="Thing-Model-View-Editor">
@@ -76,9 +81,10 @@
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            A café menu, in three parts, with Composer's autoloader (from
+            A café menu, in three parts, with Composer's
+            <term def="autoloading">autoloader</term> (from
             <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref>) finding the
-            classes. In a folder, make <cde>composer.json</cde>:
+            <term def="class">classes</term>. In a folder, make <cde>composer.json</cde>:
         </p>
         <code-block example="mvc/composer.json" />
         <p>
@@ -101,7 +107,7 @@
         <code-block example="mvc/views/not-found.php" />
         <p>
             The controller, <cde>src/Controller/MenuController.php</cde>, with a small
-            <cde>Response</cde> to carry the status and the body:
+            <cde>Response</cde> to carry the status and the <term def="body">body</term>:
         </p>
         <code-block example="mvc/src/Controller/Response.php" />
         <code-block example="mvc/src/Controller/MenuController.php" />
@@ -147,12 +153,14 @@ curl -i 'http://localhost:8000/item.php?id=99'</code-block>
                 controller can be tested with a made-up menu.
             </li>
             <li>
-                Pass the controller <cde>$_GET</cde> as an argument instead of reading the
-                superglobal inside it. Then it works the same in a test.
+                Pass the controller <cde>$_GET</cde> as an
+                <term def="argument">argument</term> instead of reading the
+                <term def="superglobal">superglobal</term> inside it. Then it works the same in a
+                test.
             </li>
             <li>
                 <cde>ob_start()</cde> and <cde>ob_get_clean()</cde> turn a template's output into a
-                string the controller can return.
+                <term def="string">string</term> the controller can return.
             </li>
         </list>
 
@@ -160,18 +168,19 @@ curl -i 'http://localhost:8000/item.php?id=99'</code-block>
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>Fat controllers.</strong> Pricing rules, discount math and SQL in the
-                controller mean they can only run during a request. Move them to the model, and the
-                controller goes back to being glue.
+                <strong>Fat controllers.</strong> Pricing rules, discount math and
+                <term def="sql">SQL</term> in the controller mean they can only run during a
+                request. Move them to the model, and the controller goes back to being glue.
             </li>
             <li>
-                <strong>Views that fetch.</strong> A template that queries the database is a model
+                <strong>Views that fetch.</strong> A template that
+                <term def="query">queries</term> the <term def="database">database</term> is a model
                 hiding in a view. Give it what it needs instead.
             </li>
             <li>
                 <strong>"Model" means more than the database table.</strong> It's all the rules and
-                data of the app. Some of it maps to tables; some is plain classes with no storage at
-                all. The next few lessons split it further.
+                data of the app. Some of it maps to <term def="table">tables</term>; some is plain
+                classes with no storage at all. The next few lessons split it further.
             </li>
             <li>
                 <strong>Two entry points that are nearly the same file.</strong>
@@ -184,9 +193,10 @@ curl -i 'http://localhost:8000/item.php?id=99'</code-block>
         <!-- $2 tip -->
         <two-dollars title="Read a controller out loud">
             <p>
-                A good controller method reads like a sentence: "check the category, get the items
-                in it, show the list." If yours needs a paragraph, find the part that isn't about
-                the request and move it into the model, where it can be named and tested.
+                A good controller <term def="method">method</term> reads like a sentence: "check the
+                category, get the items in it, show the list." If yours needs a paragraph, find the
+                part that isn't about the request and move it into the model, where it can be named
+                and tested.
             </p>
         </two-dollars>
 

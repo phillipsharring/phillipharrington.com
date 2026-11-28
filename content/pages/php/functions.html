@@ -21,9 +21,9 @@
 
         <!-- Intro -->
         <p>
-            You've been calling PHP's functions since the first lesson: <cde>strlen()</cde>,
-            <cde>htmlspecialchars()</cde>, <cde>array_map()</cde>. Writing your own is how you stop
-            repeating yourself, and how you give a piece of work a name.
+            You've been calling PHP's <term def="function">functions</term> since the first lesson:
+            <cde>strlen()</cde>, <cde>htmlspecialchars()</cde>, <cde>array_map()</cde>. Writing your
+            own is how you stop repeating yourself, and how you give a piece of work a name.
             <xref to="/php/scope">Scope</xref> already showed the most important rule: a function
             sees only what you hand it. This lesson is the rest of the line that starts with
             <cde>function</cde>.
@@ -42,8 +42,8 @@
                 <cde>format_cents</cde> is the name. You call it with <cde>format_cents(1999)</cde>.
             </li>
             <li>
-                <cde>(int $cents)</cde> is the parameter list: what goes in, each with a type and a
-                name.
+                <cde>(int $cents)</cde> is the <term def="parameter">parameter</term> list: what
+                goes in, each with a <term def="type">type</term> and a name.
             </li>
             <li><cde>: string</cde> is the return type: what comes out.</li>
             <li><cde>return</cde> hands the value back and ends the function, right there.</li>
@@ -61,19 +61,19 @@
             </li>
             <li>
                 <strong>Any number:</strong> <cde>int ...$prices</cde> collects every remaining
-                argument into an array.
+                <term def="argument">argument</term> into an <term def="array">array</term>.
             </li>
             <li>
                 <strong>Copies:</strong> each parameter is a copy of what was passed. Changing it
-                inside doesn't change the caller's variable.
+                inside doesn't change the caller's <term def="variable">variable</term>.
             </li>
         </list>
 
         <heading h3 id="return-types">Return Types</heading>
         <list>
             <li>
-                <cde>?int</cde>: an int, or <cde>null</cde>. Useful for "here's the answer, or there
-                isn't one."
+                <cde>?int</cde>: an <term def="integer">int</term>, or <cde>null</cde>. Useful for
+                "here's the answer, or there isn't one."
             </li>
             <li>
                 <cde>void</cde>: returns nothing. It does something instead, like writing a log
@@ -114,7 +114,10 @@
                 match exactly, or it's a <cde>TypeError</cde>.
             </li>
             <li>It fills in defaults for anything left off.</li>
-            <li>It runs the body in a fresh scope, with the parameters as its variables.</li>
+            <li>
+                It runs the body in a fresh <term def="scope">scope</term>, with the parameters as
+                its variables.
+            </li>
             <li>
                 At <cde>return</cde>, it checks the value against the return type, and hands it
                 back. The call is replaced by that value, so
@@ -138,7 +141,8 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php functions.php</code-block>
         <p class="text-th-muted text-base">
-            The usual: PHP in a container, running one file from your folder.
+            The usual: PHP in a <term def="container">container</term>, running one file from your
+            folder.
         </p>
         <nti>
             <p>
@@ -151,9 +155,9 @@
             </p>
         </nti>
         <p>
-            The last line passes the string <cde>'1999'</cde> to <cde>format_cents()</cde>, and
-            strict_types stops it with a <cde>TypeError</cde> that names the function, the
-            parameter, and both lines involved.
+            The last line passes the <term def="string">string</term> <cde>'1999'</cde> to
+            <cde>format_cents()</cde>, and strict_types stops it with a <cde>TypeError</cde> that
+            names the function, the parameter, and both lines involved.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.

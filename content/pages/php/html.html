@@ -23,29 +23,31 @@
 
         <!-- Intro -->
         <p>
-            Most of what PHP sends is HTML. You've written bits of it in every
-            <sect>Try It</sect> since <xref to="/php/forms">Forms</xref>, and escaped what went into
-            it since <xref to="/php/xss">XSS and Escaping Output</xref>. This section steps back to
-            the technologies around PHP, starting with the one every page is made of: what HTML is,
-            what a whole page needs, and how to build one from PHP without letting input rewrite it.
+            Most of what PHP sends is <term def="html">HTML</term>. You've written bits of it in
+            every <sect>Try It</sect> since <xref to="/php/forms">Forms</xref>, and
+            <term def="escaping">escaped</term> what went into it since
+            <xref to="/php/xss">XSS and Escaping Output</xref>. This section steps back to the
+            technologies around PHP, starting with the one every page is made of: what HTML is, what
+            a whole page needs, and how to build one from PHP without letting input rewrite it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-html">What's HTML?</heading>
         <p>
             HyperText Markup Language: plain text, with tags that say what each part of it is. The
-            browser reads the tags and draws the page.
+            <term def="browser">browser</term> reads the tags and draws the page.
         </p>
 
         <heading h3 id="elements-and-attributes">Elements and Attributes</heading>
         <!-- prettier-ignore -->
         <code-block>&lt;a href="/shirts" class="big"&gt;Shirts&lt;/a&gt;</code-block>
         <p>
-            That's one element: an opening tag, <cde>&lt;a&gt;</cde>, the content,
-            <cde>Shirts</cde>, and a closing tag, <cde>&lt;/a&gt;</cde>. Elements go inside other
-            elements, like a list inside a section inside the body. The
-            <cde>name="value"</cde> pairs in the opening tag are attributes: <cde>href</cde> says
-            where the link goes, and <cde>class</cde> gives CSS something to grab. A few elements,
+            That's one <term def="element">element</term>: an opening tag, <cde>&lt;a&gt;</cde>, the
+            content, <cde>Shirts</cde>, and a closing tag, <cde>&lt;/a&gt;</cde>. Elements go inside
+            other elements, like a list inside a section inside the body. The
+            <cde>name="value"</cde> pairs in the opening tag are
+            <term def="attribute">attributes</term>: <cde>href</cde> says where the link goes, and
+            <cde>class</cde> gives <term def="css">CSS</term> something to grab. A few elements,
             like <cde>&lt;img&gt;</cde> and <cde>&lt;input&gt;</cde>, have no content and no closing
             tag.
         </p>
@@ -63,7 +65,8 @@
             </li>
             <li>
                 <cde>&lt;meta charset="utf-8"&gt;</cde>, early in the <cde>&lt;head&gt;</cde>, so
-                the browser reads the bytes as UTF-8. The
+                the browser reads the <term def="byte">bytes</term> as
+                <term def="utf-8">UTF-8</term>. The
                 <xref to="/php/text-and-utf-8">Text and UTF-8</xref> lesson is why that matters.
             </li>
             <li>
@@ -95,16 +98,17 @@
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                The browser gets the response, sees <cde>text/html</cde> from
-                <xref to="/php/content-types">Content Types</xref>, and starts reading at the top.
+                The browser gets the <term def="response">response</term>, sees
+                <cde>text/html</cde> from <xref to="/php/content-types">Content Types</xref>, and
+                starts reading at the top.
             </li>
             <li>
-                It turns the tags into a tree of elements, called the DOM: the html element, with
-                the head and body inside, and everything else inside those.
+                It turns the tags into a tree of elements, called the <term def="dom">DOM</term>:
+                the html element, with the head and body inside, and everything else inside those.
             </li>
             <li>
                 Along the way it finds the stylesheets, scripts and images the page names, and sends
-                a request for each one.
+                a <term def="request">request</term> for each one.
             </li>
             <li>It draws the tree, styled by the CSS.</li>
         </ol>
@@ -161,7 +165,8 @@
             </li>
             <li>
                 <cde>header('Content-Type: text/html; charset=utf-8')</cde> is already PHP's
-                default, so the <cde>meta charset</cde> and the header agree.
+                default, so the <cde>meta charset</cde> and the
+                <term def="header">header</term> agree.
             </li>
         </list>
 
@@ -176,7 +181,7 @@
             <li>
                 <strong>Escaping is for HTML, not for everything.</strong>
                 <cde>htmlspecialchars()</cde> makes a value safe in HTML text and in a quoted
-                attribute. It doesn't make a URL safe in an <cde>href</cde>:
+                attribute. It doesn't make a <term def="url">URL</term> safe in an <cde>href</cde>:
                 <cde>javascript:</cde> links are still links. Check URLs from outside before you use
                 them.
             </li>

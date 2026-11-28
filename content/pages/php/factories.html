@@ -21,24 +21,27 @@
 
         <!-- Intro -->
         <p>
-            Singletons ended with one place that builds the app and hands out what it built. That
-            place had it easy: there was one kind of mailer. Real apps pick: log the emails in
-            development, send them in production, drop them in tests. Picking, and building what was
-            picked, is a job, and a factory is an object that does it.
+            <term def="singleton">Singletons</term> ended with one place that builds the app and
+            hands out what it built. That place had it easy: there was one kind of mailer. Real apps
+            pick: log the emails in development, send them in
+            <term def="production">production</term>, drop them in tests. Picking, and building what
+            was picked, is a job, and a <term def="factory">factory</term> is an
+            <term def="object">object</term> that does it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-factory">What's a Factory?</heading>
         <p>
-            A class whose method returns a new object. The caller asks for "a
-            <cde>Mailer</cde>" and gets one, without knowing or caring which class it is. The
-            factory knows the classes, reads the settings, checks them, and builds the right one
-            with the right arguments.
+            A <term def="class">class</term> whose <term def="method">method</term> returns a new
+            object. The caller asks for "a <cde>Mailer</cde>" and gets one, without knowing or
+            caring which class it is. The factory knows the classes, reads the settings, checks
+            them, and builds the right one with the right <term def="argument">arguments</term>.
         </p>
         <p>
-            It works because of an interface (see <xref to="/php/interfaces">Interfaces</xref>).
-            <cde>LogMailer</cde>, <cde>SmtpMailer</cde> and <cde>NullMailer</cde> all implement
-            <cde>Mailer</cde>, so the code that sends email only ever needs to know that one name.
+            It works because of an <term def="interface">interface</term> (see
+            <xref to="/php/interfaces">Interfaces</xref>). <cde>LogMailer</cde>,
+            <cde>SmtpMailer</cde> and <cde>NullMailer</cde> all implement <cde>Mailer</cde>, so the
+            code that sends email only ever needs to know that one name.
         </p>
 
         <heading h3 id="the-kinds">The Kinds You'll Hear Of</heading>
@@ -53,7 +56,8 @@
             </li>
             <li>
                 <strong>Abstract Factory</strong>: a factory for a family of related objects, like a
-                mailer, a queue and a cache that all have to match one environment.
+                mailer, a <term def="queue">queue</term> and a <term def="cache">cache</term> that
+                all have to match one environment.
             </li>
         </list>
 
@@ -109,14 +113,16 @@
 docker run --rm -e MAILER=smpt -e SMTP_HOST=smtp.example.com -e SMTP_PORT=587 -v "$PWD":/app -w /app php:8.4-cli php before.php
 docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=abc -v "$PWD":/app -w /app php:8.4-cli php before.php</code-block>
         <p class="text-th-muted text-base">
-            Same <cde>-e</cde> as before, three to a line: each one sets an environment variable in
-            the container.
+            Same <cde>-e</cde> as before, three to a line: each one sets an
+            <term def="environment-variable">environment variable</term> in the
+            <term def="container">container</term>.
         </p>
         <p>
             The first sends. The second has a typo, <cde>smpt</cde>, so it falls through to the
             <cde>else</cde> and logs the email instead of sending it. In production, that's a
             welcome email nobody gets, and no error anywhere. The third turns <cde>abc</cde> into
-            port <cde>0</cde>. Now the factory, <cde>src/MailerFactory.php</cde>:
+            <term def="port">port</term> <cde>0</cde>. Now the factory,
+            <cde>src/MailerFactory.php</cde>:
         </p>
         <code-block example="factories/src/MailerFactory.php" />
         <p>And <cde>after.php</cde>, which asks it:</p>
@@ -146,14 +152,15 @@ docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=abc -v
                 fits right in the <cde>match</cde>.
             </li>
             <li>
-                <cde>getenv()</cde> with no argument returns every environment variable as an array,
-                which is what the factory gets here. See
+                <cde>getenv()</cde> with no argument returns every environment variable as an
+                <term def="array">array</term>, which is what the factory gets here. See
                 <xref to="/php/configuration-and-the-environment"
                     >Configuration and the Environment</xref>.
             </li>
             <li>
                 <cde>filter_var($value, FILTER_VALIDATE_INT, ['options' =&gt; [...]])</cde> turns a
-                setting into a real integer in range, or <cde>false</cde>.
+                setting into a real <term def="integer">integer</term> in range, or
+                <cde>false</cde>.
             </li>
             <li>
                 The factory itself is an ordinary object, made with <cde>new</cde> and passed its
@@ -199,7 +206,8 @@ docker run --rm -e MAILER=smtp -e SMTP_HOST=smtp.example.com -e SMTP_PORT=abc -v
         <p>
             The signup sends a welcome email. Soon it also adds the person to a newsletter, and
             writes an audit log, and notifies the team. There's a pattern for letting all of those
-            react without the signup knowing about any of them. Next: observers.
+            react without the signup knowing about any of them. Next:
+            <term def="observer">observers</term>.
         </p>
 
         <!-- Next -->

@@ -21,11 +21,12 @@
 
         <!-- Intro -->
         <p>
-            In Client/Server, the server had to be easy to find. Computers find each other by
-            number, the IP address, but people use names. DNS, the Domain Name System, is how a name
-            like <cde>example.com</cde> turns into a number a client can connect to. It happens
-            before every new connection, usually in a few milliseconds, and you only notice it when
-            it breaks.
+            In Client/Server, the <term def="server">server</term> had to be easy to find. Computers
+            find each other by number, the <term def="ip-address">IP address</term>, but people use
+            names. <term def="dns">DNS</term>, the Domain Name System, is how a name like
+            <cde>example.com</cde> turns into a number a <term def="client">client</term> can
+            connect to. It happens before every new connection, usually in a few milliseconds, and
+            you only notice it when it breaks.
         </p>
 
         <!-- What is/are -->
@@ -40,15 +41,16 @@
         <heading h2 id="whats-a-domain-name">What's a Domain Name?</heading>
         <p>
             The name people type instead of the number. It reads right to left, from general to
-            specific: in <cde>www.example.com</cde>, <cde>com</cde> is the top-level domain,
-            <cde>example</cde> is the name someone registered under it, and <cde>www</cde> is a
-            subdomain the owner made up. The owner can make as many of those as they like.
+            specific: in <cde>www.example.com</cde>, <cde>com</cde> is the top-level
+            <term def="domain-name">domain</term>, <cde>example</cde> is the name someone registered
+            under it, and <cde>www</cde> is a <term def="subdomain">subdomain</term> the owner made
+            up. The owner can make as many of those as they like.
         </p>
 
         <heading h2 id="records">What's a DNS Record?</heading>
         <p>
-            A domain's DNS is a short list of records, each one a fact about the name. The ones
-            you'll meet:
+            A domain's DNS is a short list of <term def="dns-record">records</term>, each one a fact
+            about the name. The ones you'll meet:
         </p>
         <list>
             <li><strong>A</strong>: this name is at this IPv4 address.</li>
@@ -62,8 +64,8 @@
             <li><strong>NS</strong>: these servers are in charge of this name's records.</li>
         </list>
         <p>
-            Every record also has a TTL, "time to live": how many seconds anyone who looks it up may
-            remember the answer before asking again.
+            Every record also has a <term def="ttl">TTL</term>, "time to live": how many seconds
+            anyone who looks it up may remember the answer before asking again.
         </p>
 
         <side-story title="One File for the Whole Internet">
@@ -76,7 +78,10 @@
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
-        <p>When your browser needs the address for a name, it goes something like this:</p>
+        <p>
+            When your <term def="browser">browser</term> needs the address for a name, it goes
+            something like this:
+        </p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>The browser checks whether it looked this name up recently.</li>
             <li>
@@ -101,7 +106,7 @@
         <p>
             That memory is why DNS is fast: almost every lookup is answered from step one, two or
             three. It's also why DNS changes are slow. Change a record, and the old answer lives on
-            in caches all over the world until their TTLs run out.
+            in <term def="cache">caches</term> all over the world until their TTLs run out.
         </p>
         <p>
             Notice the resolver is a server to you and a client to the root, the <cde>.com</cde>
@@ -133,7 +138,10 @@
         </p>
         <!-- prettier-ignore -->
         <code-block example="dns/dns.php" />
-        <p>Run it in a container, the same way as last time, giving it a name to look up:</p>
+        <p>
+            Run it in a <term def="container">container</term>, the same way as last time, giving it
+            a name to look up:
+        </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php example.com</code-block>
         <p>Only the new part:</p>
@@ -147,7 +155,7 @@
             The first line is one address: <cde>gethostbyname()</cde> asks the question the way a
             browser would and takes the first answer. Then <cde>dns_get_record()</cde> shows the
             actual A records, each with its TTL. There's more than one: example.com sits behind a
-            CDN, so the name points at more than one of the CDN's servers.
+            <term def="cdn">CDN</term>, so the name points at more than one of the CDN's servers.
         </p>
         <p>
             The MX record is where its email goes, and example.com's says "nowhere": priority 0, and
@@ -179,8 +187,10 @@
         <!-- In PHP -->
         <heading h2 id="in-php">In PHP</heading>
         <p>
-            Most of the time PHP does DNS for you without asking: connecting to a database by name,
-            or fetching a URL, starts with a lookup. When you need one yourself, three functions
+            Most of the time PHP does DNS for you without asking: connecting to a
+            <term def="database">database</term> by name, or fetching a <term def="url">URL</term>,
+            starts with a lookup. When you need one yourself, three
+            <term def="function">functions</term>
             cover it:
         </p>
         <list>
@@ -188,8 +198,8 @@
             <li><cde>dns_get_record()</cde>: the records themselves, any type.</li>
             <li>
                 <cde>checkdnsrr()</cde>: does a record of this type exist? The classic use is a
-                signup form: <cde>checkdnsrr($domain, 'MX')</cde> tells you whether an email
-                address's domain accepts mail at all, before you try to send to it.
+                signup <term def="form">form</term>: <cde>checkdnsrr($domain, 'MX')</cde> tells you
+                whether an email address's domain accepts mail at all, before you try to send to it.
             </li>
         </list>
 
@@ -231,7 +241,7 @@
 
         <p>
             Now the client has an address, and can open a connection. Next: the language they speak
-            once they're connected, HTTP.
+            once they're connected, <term def="http">HTTP</term>.
         </p>
 
         <!-- Next -->

@@ -21,9 +21,10 @@
 
         <!-- Intro -->
         <p>
-            The Cookies project kept a name in the browser, where the visitor could change it to
-            anything. A session keeps the data on the server instead, and gives the browser only a
-            long random id to bring back. The visitor can change the id, but all that gets them is
+            The Cookies project kept a name in the <term def="browser">browser</term>, where the
+            visitor could change it to anything. A <term def="session">session</term> keeps the data
+            on the <term def="server">server</term> instead, and gives the browser only a long
+            random id to bring back. The visitor can change the id, but all that gets them is
             someone else's nothing.
         </p>
         <p>
@@ -37,7 +38,8 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <xref to="/php/sessions">Sessions</xref>: a cookie with an id, a file on the server.
+                <xref to="/php/sessions">Sessions</xref>: a <term def="cookie">cookie</term> with an
+                id, a file on the server.
             </li>
             <li>
                 <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref>: strict
@@ -53,7 +55,7 @@
         <heading h2 id="build-it">Build It</heading>
 
         <heading h3 id="starting-a-session">Starting a Session</heading>
-        <p><cde>src/session.php</cde> has three small functions:</p>
+        <p><cde>src/session.php</cde> has three small <term def="function">functions</term>:</p>
         <code-block example="project-sessions/src/session.php" />
         <list>
             <li>
@@ -65,8 +67,8 @@
             </li>
             <li>
                 <strong><cde>flash()</cde></strong> keeps a message for the next page and then
-                forgets it. After a POST, you redirect; the message rides across the redirect in the
-                session, is shown once, and is gone.
+                forgets it. After a POST, you <term def="redirect">redirect</term>; the message
+                rides across the redirect in the session, is shown once, and is gone.
             </li>
             <li>
                 <strong><cde>end_session()</cde></strong> empties the data, deletes the cookie with
@@ -90,14 +92,17 @@
         </nti>
 
         <heading h3 id="run-it">Run It</heading>
-        <p>This time, give the container a name, so you can look inside it in a moment:</p>
+        <p>
+            This time, give the <term def="container">container</term> a name, so you can look
+            inside it in a moment:
+        </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it --name sessions -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
         <p>
             Open <cde>http://localhost:8000</cde> and add Cherry. "Added Cherry." appears once;
             reload, and it's gone, but Cherry is still on the list. Open a private window: an empty
             shortlist, because it's a different browser with a different id. Now look at what the
-            server keeps, from a second terminal:
+            server keeps, from a second <term def="terminal">terminal</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker exec sessions sh -c 'ls /tmp/sess_*; cat /tmp/sess_*'</code-block>
@@ -125,9 +130,9 @@
             <li>
                 <strong>A session is locked while a request uses it.</strong> With the default file
                 storage, PHP holds the session file locked from <cde>session_start()</cde> until the
-                script ends, so a second request from the same browser waits. One slow page can
-                stall every other tab. Call <cde>session_write_close()</cde> as soon as you're done
-                changing the session.
+                script ends, so a second <term def="request">request</term> from the same browser
+                waits. One slow page can stall every other tab. Call
+                <cde>session_write_close()</cde> as soon as you're done changing the session.
             </li>
             <li>
                 <strong>Sessions expire on their own schedule.</strong> PHP cleans up files that
@@ -137,9 +142,10 @@
                 it yourself.
             </li>
             <li>
-                <strong>Files only work on one server.</strong> Behind a load balancer, the next
-                request may go to a server that doesn't have the file. Several servers need shared
-                session storage: a database or Redis.
+                <strong>Files only work on one server.</strong> Behind a
+                <term def="load-balancer">load balancer</term>, the next request may go to a server
+                that doesn't have the file. Several servers need shared session storage: a
+                <term def="database">database</term> or Redis.
             </li>
             <li>
                 <strong>The session id is the key to everything in it.</strong> Anyone who has it is
@@ -151,11 +157,11 @@
         <!-- $2 tip -->
         <two-dollars title="Name your session cookie">
             <p>
-                Cookies are kept per host, not per port, so every app you run on
-                <cde>localhost</cde> shares one <cde>PHPSESSID</cde>, and they log each other out.
-                Give each app its own with <cde>session_name('shortlist_session')</cde> before
-                <cde>session_start()</cde>, and the confusion stops. It also stops announcing to the
-                world that your site runs PHP.
+                Cookies are kept per <term def="host">host</term>, not per
+                <term def="port">port</term>, so every app you run on <cde>localhost</cde> shares
+                one <cde>PHPSESSID</cde>, and they log each other out. Give each app its own with
+                <cde>session_name('shortlist_session')</cde> before <cde>session_start()</cde>, and
+                the confusion stops. It also stops announcing to the world that your site runs PHP.
             </p>
         </two-dollars>
 

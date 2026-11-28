@@ -22,10 +22,12 @@
         <!-- Intro -->
         <p>
             Client/Server drew two boxes and a line between them. Every <sect>Try It</sect> so far
-            has been exactly that: your browser, straight to PHP on your own computer. On the real
-            web, the line is a chain. A request passes through several servers before it reaches
-            your code, and each one can answer it, change it, or stop it. Each is a server to
-            whatever is in front of it, and a client to whatever is behind.
+            has been exactly that: your <term def="browser">browser</term>, straight to PHP on your
+            own computer. On the real web, the line is a chain. A
+            <term def="request">request</term> passes through several
+            <term def="server">servers</term> before it reaches your code, and each one can answer
+            it, change it, or stop it. Each is a server to whatever is in front of it, and a
+            <term def="client">client</term> to whatever is behind.
         </p>
 
         <!-- What is/are -->
@@ -34,10 +36,11 @@
         <heading h3 id="reverse-proxy">A Reverse Proxy</heading>
         <p>
             The smallest middle there is: one server in front of your app that takes every request,
-            passes it along, and passes the answer back. It's usually a web server, like nginx or
-            Apache, sitting in front of PHP. It handles the jobs your code shouldn't have to: HTTPS,
-            sending static files like images and stylesheets, and holding on to slow connections so
-            your app doesn't.
+            passes it along, and passes the answer back. It's usually a
+            <term def="web-server">web server</term>, like nginx or Apache, sitting in front of PHP.
+            It handles the jobs your code shouldn't have to: <term def="https">HTTPS</term>, sending
+            static files like images and stylesheets, and holding on to slow connections so your app
+            doesn't.
         </p>
 
         <heading h3 id="load-balancer">A Load Balancer</heading>
@@ -50,23 +53,24 @@
         <heading h3 id="cdn">A CDN</heading>
         <p>
             A content delivery network: servers all over the world, close to your visitors, that
-            keep copies of your files and pages. DNS points your name at the CDN, so a visitor in
-            Tokyo gets your stylesheet from a server in Tokyo, and your own server never hears about
-            it. Only what the CDN doesn't have, or isn't allowed to keep, goes all the way back.
+            keep copies of your files and pages. <term def="dns">DNS</term> points your name at the
+            <term def="cdn">CDN</term>, so a visitor in Tokyo gets your stylesheet from a server in
+            Tokyo, and your own server never hears about it. Only what the CDN doesn't have, or
+            isn't allowed to keep, goes all the way back.
         </p>
 
         <heading h3 id="firewall">A Firewall</heading>
         <p>
-            A web application firewall reads each request and blocks the ones that look like attacks
-            or floods before they reach you. Useful, and never a reason to skip checking input in
-            your own code: it catches the common attacks, not all of them.
+            A web application <term def="firewall">firewall</term> reads each request and blocks the
+            ones that look like attacks or floods before they reach you. Useful, and never a reason
+            to skip checking input in your own code: it catches the common attacks, not all of them.
         </p>
 
         <side-story title="The Slashdot Effect">
             In the early 2000s, a link from the tech news site Slashdot could send more visitors to
             a small site in an hour than it normally saw in a year, and the site would fall over.
-            People called it being "slashdotted." Caching, and later CDNs, are a big part of why a
-            sudden crowd mostly doesn't knock sites over anymore.
+            People called it being "slashdotted." <term def="cache">Caching</term>, and later CDNs,
+            are a big part of why a sudden crowd mostly doesn't knock sites over anymore.
         </side-story>
 
         <!-- How it works -->
@@ -80,8 +84,11 @@
             <li>
                 If not, a firewall checks it, and turns away anything that looks like an attack.
             </li>
-            <li>A load balancer picks one of the app servers.</li>
-            <li>That server's reverse proxy handles the HTTPS and the static files.</li>
+            <li>A <term def="load-balancer">load balancer</term> picks one of the app servers.</li>
+            <li>
+                That server's <term def="reverse-proxy">reverse proxy</term> handles the HTTPS and
+                the static files.
+            </li>
             <li>What's left reaches PHP.</li>
         </ol>
         <p>
@@ -92,11 +99,12 @@
             <li>
                 <strong>The address.</strong> PHP's <cde>REMOTE_ADDR</cde> is whoever connected to
                 PHP, which is the last server in the chain, not the visitor. The middle reports the
-                visitor's address in a header, <cde>X-Forwarded-For</cde>, instead.
+                visitor's address in a <term def="header">header</term>, <cde>X-Forwarded-For</cde>,
+                instead.
             </li>
             <li>
                 <strong>The protocol.</strong> The visitor used HTTPS, but the last hop to PHP may
-                be plain HTTP. That's the gotcha from the HTTP lesson.
+                be plain <term def="http">HTTP</term>. That's the gotcha from the HTTP lesson.
             </li>
             <li>
                 <strong>The answer.</strong> A cache can send a copy without asking you, and a layer
@@ -119,7 +127,8 @@
         </p>
         <code-block example="whats-in-the-middle/nginx.conf" />
         <p>
-            And <cde>compose.yml</cde>, which starts both, the proxy on port 8000 and PHP on 8001:
+            And <cde>compose.yml</cde>, which starts both, the proxy on
+            <term def="port">port</term> 8000 and PHP on 8001:
         </p>
         <code-block example="whats-in-the-middle/compose.yml" />
         <p>Start them together:</p>
@@ -135,7 +144,10 @@
                 <cde>Ctrl+C</cde>.</part
             >
         </breakdown>
-        <p>From a second terminal, ask PHP directly, then through the proxy:</p>
+        <p>
+            From a second <term def="terminal">terminal</term>, ask PHP directly, then through the
+            proxy:
+        </p>
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8001
 curl http://localhost:8000</code-block>
@@ -228,16 +240,16 @@ curl http://localhost:8000</code-block>
         <!-- $2 tip -->
         <two-dollars title="Ask which layer answered">
             <p>
-                Most layers leave a mark in the response headers: a <cde>Server</cde>, a
-                <cde>Via</cde>, a cache status, an <cde>Age</cde> (more than 0 means it came from a
-                cache). When a change doesn't show up, <cde>curl -I</cde> the page and read them.
-                You're often looking at a copy someone in the middle kept.
+                Most layers leave a mark in the <term def="response">response</term> headers: a
+                <cde>Server</cde>, a <cde>Via</cde>, a cache status, an <cde>Age</cde> (more than 0
+                means it came from a cache). When a change doesn't show up, <cde>curl -I</cde> the
+                page and read them. You're often looking at a copy someone in the middle kept.
             </p>
         </two-dollars>
 
         <p>
             At the far end of every chain is a server handing out files from a folder. Next, in Web
-            Server Basics: the document root.
+            Server Basics: the <term def="document-root">document root</term>.
         </p>
 
         <!-- Next -->

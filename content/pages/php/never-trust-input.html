@@ -28,18 +28,20 @@
         </p>
         <p>
             <strong>Never trust input.</strong> Anything your code didn't make itself, check before
-            you use it. Then, wherever it goes next, escape it for that place.
+            you use it. Then, wherever it goes next, <term def="escaping">escape</term> it for that
+            place.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-input">What's Input?</heading>
         <p>
             Anything that comes from outside your code. On the web, that's every part of every
-            request, and more:
+            <term def="request">request</term>, and more:
         </p>
         <list>
             <li>
-                <strong>The URL</strong>: the path and the query string, <cde>$_GET</cde>. See
+                <strong>The URL</strong>: the <term def="path">path</term> and the
+                <term def="query-string">query string</term>, <cde>$_GET</cde>. See
                 <xref to="/php/query-strings">Query Strings</xref>.
             </li>
             <li>
@@ -47,9 +49,9 @@
                 <xref to="/php/forms">Forms</xref>.
             </li>
             <li>
-                <strong>Cookies</strong>, <cde>$_COOKIE</cde>. You set them, but the browser sends
-                them back, and anyone can change them first. See
-                <xref to="/php/cookies">Cookies</xref>.
+                <strong>Cookies</strong>, <cde>$_COOKIE</cde>. You set them, but the
+                <term def="browser">browser</term> sends them back, and anyone can change them
+                first. See <xref to="/php/cookies">Cookies</xref>.
             </li>
             <li>
                 <strong>Headers</strong>, in <cde>$_SERVER['HTTP_...']</cde>: <cde>User-Agent</cde>,
@@ -61,12 +63,14 @@
                 browser claims for it. See <xref to="/php/file-uploads">File Uploads</xref>.
             </li>
             <li>
-                <strong>The request body</strong>, from <cde>php://input</cde>: the JSON an API
+                <strong>The request body</strong>, from <cde>php://input</cde>: the
+                <term def="json">JSON</term> an <term def="api">API</term>
                 client sends.
             </li>
             <li>
-                <strong>Everything you read later</strong>: rows in your database, files on disk,
-                answers from other people's APIs, emails, webhooks.
+                <strong>Everything you read later</strong>: <term def="row">rows</term> in your
+                <term def="database">database</term>, files on disk, answers from other people's
+                APIs, emails, <term def="webhook">webhooks</term>.
             </li>
         </list>
         <p>
@@ -77,19 +81,21 @@
         <heading h3 id="what-trust-means">What "Trust" Means</heading>
         <p>
             Trusting a value means letting it decide something without checking it first: a price, a
-            quantity, which file to open, which row to change, what HTML goes on the page, who is
-            logged in. The browser is a program the visitor controls, and so is curl. Any value it
-            sends can be anything at all: missing, empty, an array, a million characters long, not
-            even valid <xref to="/php/text-and-utf-8">UTF-8</xref>.
+            quantity, which file to open, which row to change, what
+            <term def="html">HTML</term> goes on the page, who is logged in. The browser is a
+            program the visitor controls, and so is curl. Any value it sends can be anything at all:
+            missing, empty, an <term def="array">array</term>, a million characters long, not even
+            valid <xref to="/php/text-and-utf-8">UTF-8</xref>.
         </p>
 
         <side-story title="The Line That Was Too Long">
             On November 2, 1988, a program written by Robert Tappan Morris, a graduate student,
             spread across the early internet and slowed thousands of machines to a crawl. One of the
             ways it got in was <cde>fingerd</cde>, a small service that answered questions about
-            users. It read each request into a fixed-size buffer with a C function,
-            <cde>gets()</cde>, that never checks length. The worm sent a line longer than the
-            buffer, and the extra bytes overwrote the program with the worm's own instructions. It
+            users. It read each request into a fixed-size buffer with a C
+            <term def="function">function</term>, <cde>gets()</cde>, that never checks length. The
+            worm sent a line longer than the buffer, and the extra
+            <term def="byte">bytes</term> overwrote the program with the worm's own instructions. It
             was input nobody had expected anyone to send.
         </side-story>
 
@@ -98,8 +104,9 @@
         <p>The rule has two halves: check it on the way in, escape it on the way out.</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                A value arrives. PHP hands it to you as a string, or an array of strings, or not at
-                all. Nothing from a request arrives as a number or a yes or no.
+                A value arrives. PHP hands it to you as a <term def="string">string</term>, or an
+                array of strings, or not at all. Nothing from a request arrives as a number or a yes
+                or no.
             </li>
             <li>
                 Check that it's there, and that it's a string. Add <cde>[]</cde> to a field's name,
@@ -121,16 +128,18 @@
             </li>
             <li>
                 When the value leaves your code, escape it for wherever it's going:
-                <cde>htmlspecialchars()</cde> into a page, a prepared statement into SQL,
-                <cde>escapeshellarg()</cde> into a shell command, <cde>rawurlencode()</cde> into a
-                URL.
+                <cde>htmlspecialchars()</cde> into a page, a
+                <term def="prepared-statement">prepared statement</term> into
+                <term def="sql">SQL</term>, <cde>escapeshellarg()</cde> into a shell command,
+                <cde>rawurlencode()</cde> into a <term def="url">URL</term>.
             </li>
         </ol>
         <p>
             Steps two to five keep out values that are wrong. Step six is for values that are
             perfectly valid and still dangerous in the wrong place: a name like
-            <cde>O'Brien</cde> is a fine name and a broken SQL query. You need both halves, every
-            time. The next two lessons, <xref to="/php/sql-injection">SQL Injection</xref> and
+            <cde>O'Brien</cde> is a fine name and a broken SQL <term def="query">query</term>. You
+            need both halves, every time. The next two lessons,
+            <xref to="/php/sql-injection">SQL Injection</xref> and
             <xref to="/php/xss">XSS and Escaping Output</xref>, are what happens when step six is
             missing.
         </p>
@@ -142,7 +151,7 @@
             <cde>show.php</cde>, which reports everything a request brought with it:
         </p>
         <code-block example="never-trust-input/show.php" />
-        <p>Start the server:</p>
+        <p>Start the <term def="server">server</term>:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p>
@@ -165,9 +174,10 @@
         </breakdown>
         <p>
             Every line comes back exactly as you wrote it. A browser you never ran, a page you never
-            came from, a cookie the server never set, an address that isn't yours, a form field the
-            page doesn't have, and an <cde>id</cde> that's an array instead of a number. PHP didn't
-            check any of it, and neither did anything else. That's your job.
+            came from, a <term def="cookie">cookie</term> the server never set, an address that
+            isn't yours, a <term def="form">form</term> field the page doesn't have, and an
+            <cde>id</cde> that's an array instead of a number. PHP didn't check any of it, and
+            neither did anything else. That's your job.
         </p>
         <p>One more, with a byte that isn't valid UTF-8:</p>
         <!-- prettier-ignore -->
@@ -176,7 +186,7 @@
             The name comes back as <cde>&#xFFFD;</cde>, the replacement character, because the
             script asks <cde>json_encode()</cde> to swap bad bytes for it. Without that flag,
             <cde>json_encode()</cde> refuses the whole thing and returns <cde>false</cde>. Text is
-            input too, encoding and all.
+            input too, <term def="encoding">encoding</term> and all.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -193,8 +203,9 @@
                 <cde
                     >filter_var($value, FILTER_VALIDATE_INT, ['options' =&gt; ['min_range' =&gt; 1,
                     'max_range' =&gt; 10]])</cde>
-                returns the number, or <cde>false</cde>. There are filters for floats, booleans,
-                email addresses, URLs and IP addresses too.
+                returns the number, or <cde>false</cde>. There are filters for
+                <term def="float">floats</term>, <term def="boolean">booleans</term>, email
+                addresses, URLs and <term def="ip-address">IP addresses</term> too.
             </li>
             <li>
                 <cde>in_array($value, $allowed, true)</cde>, with the <cde>true</cde>, for an allow
@@ -265,8 +276,9 @@
             <li>
                 <strong>The <cde>Host</cde> header is input.</strong> Build a password reset link
                 from <cde>$_SERVER['HTTP_HOST']</cde>, and someone can ask for a reset with their
-                own host name in the header, and your email sends the victim to their site. Put your
-                site's address in configuration, and build links from that.
+                own <term def="host">host</term> name in the <term def="header">header</term>, and
+                your email sends the victim to their site. Put your site's address in configuration,
+                and build links from that.
             </li>
         </list>
 
@@ -333,7 +345,7 @@ curl -d 'qty[]=1' http://localhost:8000/</code-block>
 
         <p>
             The most famous way input goes wrong is when it gets pasted straight into a database
-            query. Next: SQL injection.
+            query. Next: <term def="sql-injection">SQL injection</term>.
         </p>
 
         <!-- Next -->

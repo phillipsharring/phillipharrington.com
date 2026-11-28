@@ -23,23 +23,26 @@
 
         <!-- Intro -->
         <p>
-            The search box in fetch() and AJAX took three files: a PHP endpoint that answered in
-            JSON, and a script that turned the JSON back into HTML. htmx does the same job with no
-            script of your own. PHP sends the HTML, already built, and a few attributes on the page
-            say where to put it. It's optional: plenty of sites never need it. But it suits PHP,
-            which has been building HTML on the server all along.
+            The search box in fetch() and <term def="ajax">AJAX</term> took three files: a PHP
+            <term def="endpoint">endpoint</term> that answered in <term def="json">JSON</term>, and
+            a script that turned the JSON back into <term def="html">HTML</term>. htmx does the same
+            job with no script of your own. PHP sends the HTML, already built, and a few
+            <term def="attribute">attributes</term> on the page say where to put it. It's optional:
+            plenty of sites never need it. But it suits PHP, which has been building HTML on the
+            <term def="server">server</term> all along.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-htmx">What's htmx?</heading>
         <p>
-            A small JavaScript library, one file, that lets any HTML element make a request and put
-            the answer somewhere on the page. You don't write JavaScript; you add attributes:
+            A small <term def="javascript">JavaScript</term> library, one file, that lets any HTML
+            <term def="element">element</term> make a <term def="request">request</term> and put the
+            answer somewhere on the page. You don't write JavaScript; you add attributes:
         </p>
         <list>
             <li>
                 <cde>hx-get="/search"</cde>, or <cde>hx-post</cde>: the request to make, like a
-                link's <cde>href</cde> or a form's <cde>action</cde>.
+                link's <cde>href</cde> or a <term def="form">form</term>'s <cde>action</cde>.
             </li>
             <li>
                 <cde>hx-trigger="input changed delay:300ms"</cde>: when to make it. Here, 300
@@ -60,15 +63,15 @@
         <heading h3 id="fragments">Fragments</heading>
         <p>
             What the server sends back: not a whole page, just the piece that changes, like a few
-            <cde>&lt;li&gt;</cde> elements. htmx adds the header <cde>HX-Request: true</cde> to its
-            requests, so PHP can tell them apart from a normal visit and answer with the fragment
-            alone.
+            <cde>&lt;li&gt;</cde> elements. htmx adds the <term def="header">header</term>
+            <cde>HX-Request: true</cde> to its requests, so PHP can tell them apart from a normal
+            visit and answer with the fragment alone.
         </p>
 
         <side-story title="intercooler.js">
             htmx is by Carson Gross, and it isn't his first try at the idea. It came out in 2020 as
             the successor to intercooler.js, a library of his from years earlier that did the same
-            thing with jQuery underneath. htmx dropped the dependency.
+            thing with jQuery underneath. htmx dropped the <term def="dependency">dependency</term>.
         </side-story>
 
         <!-- How it works -->
@@ -86,7 +89,8 @@
         <p>
             The fragment is HTML going straight into the page, so everything from
             <xref to="/php/xss">XSS and Escaping Output</xref> applies, every time.
-            <strong><xref to="/php/never-trust-input">Never trust input</xref>:</strong> escape
+            <strong><xref to="/php/never-trust-input">Never trust input</xref>:</strong>
+            <term def="escaping">escape</term>
             every value in the fragment, exactly as you would in a whole page. And an
             <cde>hx-post</cde> that changes something is a POST that changes something, with the
             same <xref to="/php/csrf">CSRF</xref> protection as a form.
@@ -106,7 +110,8 @@
         <p>
             Open <cde>http://localhost:8000</cde> and type <cde>b</cde>. The list fills in without a
             reload. Watch the Network tab: each pause in typing is one request, and the answer is
-            just the list items. Ask the way htmx does, then the way a plain browser does:
+            just the list items. Ask the way htmx does, then the way a plain
+            <term def="browser">browser</term> does:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -H 'HX-Request: true' 'http://localhost:8000/?q=b'
@@ -130,16 +135,18 @@ curl 'http://localhost:8000/?q=b'</code-block>
                 the request.
             </li>
             <li>
-                A function that renders the fragment, like <cde>results()</cde>, called both for the
-                fragment and inside the full page, keeps the two from drifting apart.
+                A <term def="function">function</term> that renders the fragment, like
+                <cde>results()</cde>, called both for the fragment and inside the full page, keeps
+                the two from drifting apart.
             </li>
             <li>
-                <cde>header('Vary: HX-Request')</cde>, because one URL now has two answers, and a
-                cache must not mix them up.
+                <cde>header('Vary: HX-Request')</cde>, because one <term def="url">URL</term> now
+                has two answers, and a <term def="cache">cache</term> must not mix them up.
             </li>
             <li>
-                Response headers like <cde>HX-Redirect</cde> and <cde>HX-Trigger</cde> let PHP tell
-                htmx to go to another page or to fire an event.
+                <term def="response">Response</term> headers like <cde>HX-Redirect</cde> and
+                <cde>HX-Trigger</cde> let PHP tell htmx to go to another page or to fire an
+                <term def="event">event</term>.
             </li>
         </list>
 
@@ -163,8 +170,8 @@ curl 'http://localhost:8000/?q=b'</code-block>
             </li>
             <li>
                 <strong>Pin the version.</strong> Load an exact version, like
-                <cde>htmx.org@2.0.4</cde>, never "latest," and add the <cde>integrity</cde> hash so
-                the browser refuses a file that's been changed.
+                <cde>htmx.org@2.0.4</cde>, never "latest," and add the <cde>integrity</cde>
+                <term def="hash">hash</term> so the browser refuses a file that's been changed.
             </li>
         </list>
 
@@ -180,7 +187,7 @@ curl 'http://localhost:8000/?q=b'</code-block>
         <p>
             That's the web's technologies, from HTML back to HTML. What's left is how you write your
             own code, so that other people can read it, starting with the rules most PHP code
-            already follows. Next, in Style: Coding Standards.
+            already follows. Next, in Style: <term def="coding-standard">Coding Standards</term>.
         </p>
 
         <!-- Next -->

@@ -30,9 +30,10 @@
         <!-- What is/are -->
         <heading h2 id="whats-a-php-file">What's a PHP File?</heading>
         <p>
-            A text file the web server hands to PHP instead of sending it. PHP reads it from top to
-            bottom. Anything outside PHP's tags is copied out exactly as it is. Anything inside the
-            tags is code: PHP runs it, and only what the code prints goes out.
+            A text file the <term def="web-server">web server</term> hands to PHP instead of sending
+            it. PHP reads it from top to bottom. Anything outside PHP's tags is copied out exactly
+            as it is. Anything inside the tags is code: PHP runs it, and only what the code prints
+            goes out.
         </p>
 
         <heading h3 id="the-tags">The Tags</heading>
@@ -43,7 +44,8 @@
             </li>
             <li>
                 <cde>&lt;?= $name ?&gt;</cde> is short for <cde>&lt;?php echo $name; ?&gt;</cde>:
-                print one thing and leave again. It's the tag you'll use most inside HTML.
+                print one thing and leave again. It's the tag you'll use most inside
+                <term def="html">HTML</term>.
             </li>
             <li>
                 A file that's all PHP opens with <cde>&lt;?php</cde> on the first line and leaves
@@ -54,17 +56,20 @@
 
         <heading h3 id="whats-phpinfo">What's phpinfo()?</heading>
         <p>
-            A built-in function that prints a long page about the PHP running it: the version, every
-            setting and where it came from, every extension, the request's headers, and the server's
-            environment variables. It's the fastest way to answer "which PHP is this, and how is it
-            set up?" It's also, for the same reasons, a gift to anyone attacking you.
+            A built-in <term def="function">function</term> that prints a long page about the PHP
+            running it: the version, every setting and where it came from, every extension, the
+            <term def="request">request</term>'s <term def="header">headers</term>, and the
+            <term def="server">server</term>'s
+            <term def="environment-variable">environment variables</term>. It's the fastest way to
+            answer "which PHP is this, and how is it set up?" It's also, for the same reasons, a
+            gift to anyone attacking you.
         </p>
 
         <side-story title="Before Plain .php">
-            Old URLs were full of <cde>.php3</cde> and <cde>.phtml</cde>. Servers were set up to
-            hand files with those extensions to the PHP of the day, so the extension said which
-            version a page was written for. Plain <cde>.php</cde> won. You'll still find the old
-            ones in server settings that nobody ever cleaned up.
+            Old <term def="url">URLs</term> were full of <cde>.php3</cde> and <cde>.phtml</cde>.
+            Servers were set up to hand files with those extensions to the PHP of the day, so the
+            extension said which version a page was written for. Plain <cde>.php</cde> won. You'll
+            still find the old ones in server settings that nobody ever cleaned up.
         </side-story>
 
         <!-- How it works -->
@@ -76,8 +81,9 @@
                 described.
             </li>
             <li>
-                PHP reads the file. Text outside the tags goes into the response as it is. Code
-                inside the tags runs, and whatever it prints goes into the response at that spot.
+                PHP reads the file. Text outside the tags goes into the
+                <term def="response">response</term> as it is. Code inside the tags runs, and
+                whatever it prints goes into the response at that spot.
             </li>
             <li>
                 An <cde>if</cde> or a loop can wrap plain HTML, too, so whole chunks of the page are
@@ -135,13 +141,15 @@
             >
         </breakdown>
         <p>
-            There it is, in the Environment section. On a real server, that's your database password
-            and your API keys, on a page anyone can load.
+            There it is, in the Environment section. On a real server, that's your
+            <term def="database">database</term> password and your
+            <term def="api-key">API keys</term>, on a page anyone can load.
         </p>
         <p>
-            You don't need a web page for most of this. On the command line,
-            <cde>php -v</cde> prints the version, <cde>php -m</cde> lists the extensions, and
-            <cde>php -i</cde> prints everything <cde>phpinfo()</cde> does, as plain text:
+            You don't need a web page for most of this. On the
+            <term def="command-line">command line</term>, <cde>php -v</cde> prints the version,
+            <cde>php -m</cde> lists the extensions, and <cde>php -i</cde> prints everything
+            <cde>phpinfo()</cde> does, as plain text:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm php:8.4-cli php -v
@@ -172,7 +180,10 @@ docker run --rm php:8.4-cli php -m</code-block>
                 the command line: version, extensions, everything, and which settings files were
                 loaded.
             </li>
-            <li><cde>PHP_VERSION</cde> is the version, as a string, if your code needs to know.</li>
+            <li>
+                <cde>PHP_VERSION</cde> is the version, as a <term def="string">string</term>, if
+                your code needs to know.
+            </li>
         </list>
 
         <!-- Gotchas -->
@@ -180,15 +191,16 @@ docker run --rm php:8.4-cli php -m</code-block>
         <list>
             <li>
                 <strong>Never leave phpinfo() on a live server.</strong> It shows your environment
-                variables, which is where your secrets are, plus your versions, paths and settings:
-                a map for an attacker. Make <cde>info.php</cde>, read it, delete it. Scanners ask
-                for <cde>/info.php</cde> and <cde>/phpinfo.php</cde> all day.
+                variables, which is where your secrets are, plus your versions,
+                <term def="path">paths</term> and settings: a map for an attacker. Make
+                <cde>info.php</cde>, read it, delete it. Scanners ask for <cde>/info.php</cde> and
+                <cde>/phpinfo.php</cde> all day.
             </li>
             <li>
                 <strong>Anything outside the tags is output.</strong> A blank line or a space before
-                <cde>&lt;?php</cde>, or after a closing <cde>?&gt;</cde>, is sent to the browser.
-                Once anything is sent, PHP can't send headers anymore. Output, next, shows what that
-                breaks.
+                <cde>&lt;?php</cde>, or after a closing <cde>?&gt;</cde>, is sent to the
+                <term def="browser">browser</term>. Once anything is sent, PHP can't send headers
+                anymore. Output, next, shows what that breaks.
             </li>
             <li>
                 <strong>The short <cde>&lt;?</cde> tag isn't always on.</strong> It depends on a

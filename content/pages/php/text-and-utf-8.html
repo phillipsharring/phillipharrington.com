@@ -21,12 +21,13 @@
 
         <!-- Intro -->
         <p>
-            <xref to="/php/strings">Strings</xref> said a string is a row of bytes, and quietly
-            assumed one byte is one letter. That's true for plain English, and false for "café," for
-            "Zoë," for Chinese, for emoji, and for a good share of your visitors' names. This is the
-            whole story: what the bytes mean, how PHP counts them, and the four places on every trip
-            where text gets mangled. <xref to="/php/content-types">Content Types</xref> introduced
-            the <cde>charset</cde>; this is what it's for.
+            <xref to="/php/strings">Strings</xref> said a <term def="string">string</term> is a row
+            of <term def="byte">bytes</term>, and quietly assumed one byte is one letter. That's
+            true for plain English, and false for "café," for "Zoë," for Chinese, for emoji, and for
+            a good share of your visitors' names. This is the whole story: what the bytes mean, how
+            PHP counts them, and the four places on every trip where text gets mangled.
+            <xref to="/php/content-types">Content Types</xref> introduced the <cde>charset</cde>;
+            this is what it's for.
         </p>
 
         <!-- What is/are -->
@@ -47,25 +48,28 @@
         <p>
             One list for every writing system, with well over a hundred thousand characters, each
             with a number called its code point: <cde>U+0041</cde> is A, <cde>U+00E9</cde> is é,
-            <cde>U+1F44D</cde> is 👍. Unicode is the list. It doesn't say how to store the numbers
-            as bytes. That's the encoding's job.
+            <cde>U+1F44D</cde> is 👍. <term def="unicode">Unicode</term> is the list. It doesn't say
+            how to store the numbers as bytes. That's the <term def="encoding">encoding</term>'s
+            job.
         </p>
 
         <heading h3 id="utf-8">UTF-8</heading>
         <p>
             The encoding nearly the whole web uses. It stores each code point in one to four bytes.
-            The ASCII characters keep their old one-byte form, so plain English text is the same in
-            ASCII and UTF-8. Everything else takes more: é is two bytes, <cde>c3 a9</cde>, and an
-            emoji is four. Use UTF-8 for everything, everywhere, and say so at every boundary.
+            The <term def="ascii">ASCII</term> characters keep their old one-byte form, so plain
+            English text is the same in ASCII and <term def="utf-8">UTF-8</term>. Everything else
+            takes more: é is two bytes, <cde>c3 a9</cde>, and an emoji is four. Use UTF-8 for
+            everything, everywhere, and say so at every boundary.
         </p>
 
         <heading h3 id="bytes-and-characters">Bytes and Characters</heading>
         <p>
-            So "café" is four characters and five bytes. PHP's plain string functions,
-            <cde>strlen()</cde>, <cde>substr()</cde>, <cde>strtoupper()</cde>, work in bytes. The
-            <cde>mb_</cde> functions (for "multibyte") work in characters: <cde>mb_strlen()</cde>,
-            <cde>mb_substr()</cde>, <cde>mb_strtoupper()</cde>. When it's text a person typed or
-            will read, use the <cde>mb_</cde> ones.
+            So "café" is four characters and five bytes. PHP's plain string
+            <term def="function">functions</term>, <cde>strlen()</cde>, <cde>substr()</cde>,
+            <cde>strtoupper()</cde>, work in bytes. The <cde>mb_</cde> functions (for "multibyte")
+            work in characters: <cde>mb_strlen()</cde>, <cde>mb_substr()</cde>,
+            <cde>mb_strtoupper()</cde>. When it's text a person typed or will read, use the
+            <cde>mb_</cde> ones.
         </p>
 
         <side-story title="On a Placemat">
@@ -80,16 +84,17 @@
         <heading h2 id="how-it-works">How It Works</heading>
         <p>
             Text crosses a boundary every time it moves, and at each one, both sides have to agree
-            it's UTF-8. Follow one name, "Zoë," from a form to a page:
+            it's UTF-8. Follow one name, "Zoë," from a <term def="form">form</term> to a page:
         </p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 <strong>The page.</strong> Your form page says it's UTF-8, in the
-                <cde>Content-Type</cde> header and in <cde>&lt;meta charset="utf-8"&gt;</cde>.
+                <cde>Content-Type</cde> <term def="header">header</term> and in
+                <cde>&lt;meta charset="utf-8"&gt;</cde>.
             </li>
             <li>
-                <strong>The form.</strong> The browser sends what's typed in the page's encoding. A
-                UTF-8 page sends UTF-8: <cde>Zo%C3%AB</cde>.
+                <strong>The form.</strong> The <term def="browser">browser</term> sends what's typed
+                in the page's encoding. A UTF-8 page sends UTF-8: <cde>Zo%C3%AB</cde>.
             </li>
             <li>
                 <strong>PHP.</strong> <cde>$_POST['name']</cde> is the bytes as sent. PHP doesn't
@@ -102,10 +107,10 @@
                 <xref to="/php/character-sets-and-collation">Character Sets and Collation</xref>.
             </li>
             <li>
-                <strong>The page again, or an email.</strong> Out it goes, with the charset said
-                again. Email has its own rules: the body needs a <cde>charset</cde> in its
-                <cde>Content-Type</cde>, and a subject line with anything but ASCII has to be
-                encoded specially.
+                <strong>The page again, or an email.</strong> Out it goes, with the
+                <term def="character-set">charset</term> said again. Email has its own rules: the
+                body needs a <cde>charset</cde> in its <cde>Content-Type</cde>, and a subject line
+                with anything but ASCII has to be encoded specially.
             </li>
         </ol>
         <p>
@@ -133,8 +138,9 @@
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p>
             Open <cde>http://localhost:8000</cde> and type a name with an accent, or an emoji. It
-            counts characters and bytes separately. Then, from a second terminal, send "café" both
-            ways, first as UTF-8 and then as a single Latin-1 byte for é:
+            counts characters and bytes separately. Then, from a second
+            <term def="terminal">terminal</term>, send "café" both ways, first as UTF-8 and then as
+            a single Latin-1 byte for é:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/?name=caf%C3%A9'
@@ -142,7 +148,7 @@ curl 'http://localhost:8000/?name=caf%E9'</code-block>
         <p>
             The first says 4 characters, 5 bytes. The second is refused: <cde>E9</cde> alone isn't
             valid UTF-8, and <cde>mb_check_encoding()</cde> caught it before it got anywhere near
-            the page or a database.
+            the page or a <term def="database">database</term>.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -162,7 +168,7 @@ curl 'http://localhost:8000/?name=caf%E9'</code-block>
             </li>
             <li>
                 <cde>mb_convert_encoding($text, 'UTF-8', 'Windows-1252')</cde>: convert text you
-                know is in an older encoding, like an old CSV export.
+                know is in an older encoding, like an old <term def="csv">CSV</term> export.
             </li>
             <li>
                 <cde>htmlspecialchars()</cde> assumes UTF-8, and since PHP 8.1 it replaces broken
@@ -205,7 +211,8 @@ curl 'http://localhost:8000/?name=caf%E9'</code-block>
             </li>
             <li>
                 <strong>MySQL's <cde>utf8</cde> isn't UTF-8.</strong> It stops at three bytes, so
-                emoji can't be stored. Use <cde>utf8mb4</cde>, in the tables and the connection.
+                emoji can't be stored. Use <cde>utf8mb4</cde>, in the
+                <term def="table">tables</term> and the connection.
             </li>
             <li>
                 <strong>The invisible BOM.</strong> Some editors start a UTF-8 file with three

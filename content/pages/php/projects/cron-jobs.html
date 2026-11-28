@@ -24,12 +24,13 @@
             PHP on the Command Line built a script you run by hand. Plenty of scripts should run
             without anyone remembering to: clear out old data, send a daily summary, renew something
             before it expires. On Linux and macOS, the program that runs things on a schedule is
-            cron, and each scheduled command is a cron job.
+            <term def="cron">cron</term>, and each scheduled command is a cron job.
         </p>
         <p>
-            You'll write a cleanup job for the failed-login records a rate limit leaves behind, run
-            it by hand, then hand it to cron and watch it run on its own. The script is short. Most
-            of the project is the habits that keep a script safe to run unattended.
+            You'll write a cleanup job for the failed-login records a
+            <term def="rate-limiting">rate limit</term> leaves behind, run it by hand, then hand it
+            to cron and watch it run on its own. The script is short. Most of the project is the
+            habits that keep a script safe to run unattended.
         </p>
 
         <!-- What you'll use -->
@@ -66,22 +67,24 @@
 15 3 * * *  cd /var/www/app &amp;&amp; /usr/bin/php bin/prune.php &gt;&gt; var/prune.log 2&gt;&amp;1</code-block>
         <p>
             That's 3:15 every morning. A <cde>*</cde> means "every," so <cde>* * * * *</cde> is
-            every minute, and <cde>*/10</cde> in the first field is every ten minutes. On a server,
-            <cde>crontab -e</cde> opens your own list for editing, and <cde>crontab -l</cde> shows
-            it. The end of the line, <cde>&gt;&gt; var/prune.log 2&gt;&amp;1</cde>, adds both the
-            output and the errors to a log, so you can find out later what happened at 3:15.
+            every minute, and <cde>*/10</cde> in the first field is every ten minutes. On a
+            <term def="server">server</term>, <cde>crontab -e</cde> opens your own list for editing,
+            and <cde>crontab -l</cde> shows it. The end of the line,
+            <cde>&gt;&gt; var/prune.log 2&gt;&amp;1</cde>, adds both the output and the errors to a
+            log, so you can find out later what happened at 3:15.
         </p>
 
         <heading h3 id="step-2-something-to-clean-up">Step 2: Something to Clean Up</heading>
         <p>
-            A table of failed logins, 2,500 of them more than 30 days old and 5 recent ones. The
-            index on <cde>attempted_at</cde> is what lets the job find the old ones without reading
-            every row:
+            A <term def="table">table</term> of failed logins, 2,500 of them more than 30 days old
+            and 5 recent ones. The <term def="index">index</term> on <cde>attempted_at</cde> is what
+            lets the job find the old ones without reading every <term def="row">row</term>:
         </p>
         <code-block example="project-cron-jobs/init.sql" />
         <p>
-            The containers: MySQL, one called <cde>app</cde> for running the script by hand, and one
-            called <cde>cron</cde> that runs the cron daemon, standing in for a server's own:
+            The <term def="container">containers</term>: MySQL, one called <cde>app</cde> for
+            running the script by hand, and one called <cde>cron</cde> that runs the cron daemon,
+            standing in for a server's own:
         </p>
         <code-block example="project-cron-jobs/compose.yml" />
         <p>
@@ -184,7 +187,7 @@ tail -f var/prune.log</code-block>
             <li>
                 <strong>Cron isn't your terminal.</strong> No <cde>PATH</cde> beyond the basics, no
                 settings from your shell, and the working directory is the user's home. Use full
-                paths, <cde>cd</cde> first, and set what the script needs.
+                <term def="path">paths</term>, <cde>cd</cde> first, and set what the script needs.
             </li>
             <li>
                 <strong>Output with nowhere to go becomes mail.</strong> Cron tries to email any
@@ -220,7 +223,7 @@ tail -f var/prune.log</code-block>
 
         <p>
             Cron runs things on a clock. Some work shouldn't wait for the clock, and shouldn't make
-            a visitor wait for it either. Next: queues.
+            a visitor wait for it either. Next: <term def="queue">queues</term>.
         </p>
 
         <!-- Next -->

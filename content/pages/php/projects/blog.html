@@ -21,33 +21,41 @@
 
         <!-- Intro -->
         <p>
-            The CMS held pages that stay where you put them. A blog holds posts that arrive in
-            order. You'll build the reading side of one: a list, newest first, three to a page; a
-            page for each post; drafts and scheduled posts that nobody sees until their time; and an
-            Atom feed, so people can follow along in a feed reader without visiting at all.
+            The <term def="cms">CMS</term> held pages that stay where you put them. A blog holds
+            posts that arrive in order. You'll build the reading side of one: a list, newest first,
+            three to a page; a page for each post; drafts and scheduled posts that nobody sees until
+            their time; and an Atom feed, so people can follow along in a feed reader without
+            visiting at all.
         </p>
         <p>
-            Writing posts is the CMS's admin form with a date on it, so this project leaves it out
-            and puts the posts straight into the database.
+            Writing posts is the CMS's admin <term def="form">form</term> with a date on it, so this
+            project leaves it out and puts the posts straight into the
+            <term def="database">database</term>.
         </p>
 
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <xref to="/php/projects/cms">Content Management System</xref>: pages from a table,
-                plain text to paragraphs
+                <xref to="/php/projects/cms">Content Management System</xref>: pages from a
+                <term def="table">table</term>, plain text to paragraphs
             </li>
             <li>
                 <xref to="/php/selecting-data">Selecting Data</xref>: <cde>ORDER BY</cde>,
                 <cde>LIMIT</cde> and <cde>OFFSET</cde>
             </li>
-            <li><xref to="/php/indexes">Indexes</xref>: on the column every query sorts by</li>
+            <li>
+                <xref to="/php/indexes">Indexes</xref>: on the
+                <term def="column">column</term> every <term def="query">query</term> sorts by
+            </li>
             <li>
                 <xref to="/php/query-strings">Query Strings</xref>: <cde>?page=2</cde>, which is
                 input
             </li>
-            <li><xref to="/php/content-types">Content Types</xref>: the feed isn't HTML</li>
+            <li>
+                <xref to="/php/content-types">Content Types</xref>: the feed isn't
+                <term def="html">HTML</term>
+            </li>
         </list>
 
         <!-- Build it -->
@@ -75,10 +83,10 @@
         </p>
         <code-block example="project-blog/src/posts.php" />
         <p>
-            <cde>LIMIT</cde> and <cde>OFFSET</cde> are bound as integers with
-            <cde>bindValue(..., PDO::PARAM_INT)</cde>. Placeholders work there too; they just have
-            to be numbers. Times are stored in UTC and only turned into a local-looking date at the
-            last moment, on the page.
+            <cde>LIMIT</cde> and <cde>OFFSET</cde> are bound as
+            <term def="integer">integers</term> with <cde>bindValue(..., PDO::PARAM_INT)</cde>.
+            Placeholders work there too; they just have to be numbers. Times are stored in UTC and
+            only turned into a local-looking date at the last moment, on the page.
         </p>
 
         <heading h3 id="step-3-the-pages">Step 3: The Pages</heading>
@@ -94,8 +102,9 @@
                 <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong>
                 including the page number. <cde>?page=abc</cde>, <cde>?page=-3</cde> and
                 <cde>?page=1 OR 1=1</cde> all become page 1, through <cde>filter_var()</cde>, before
-                they get anywhere near SQL. A page past the end is a 404. So is a draft, the same
-                answer as a typo, so the blog doesn't confirm that an unpublished post exists.
+                they get anywhere near <term def="sql">SQL</term>. A page past the end is a 404. So
+                is a draft, the same answer as a typo, so the blog doesn't confirm that an
+                unpublished post exists.
             </p>
         </nti>
 
@@ -103,23 +112,26 @@
         <p>
             A feed is an XML file listing the latest posts, which feed readers check now and then.
             <cde>src/feed.php</cde> builds one in the Atom format with <cde>XMLWriter</cde>, which
-            escapes every value as it writes it:
+            <term def="escaping">escapes</term> every value as it writes it:
         </p>
         <code-block example="project-blog/src/feed.php" />
         <p>
-            Feed links must be whole URLs, with the scheme and host. They come from
-            <cde>SITE_URL</cde>, a setting, never from the request's <cde>Host</cde> header. The
-            <cde>Host</cde> header is input: anyone can send <cde>Host: evil.example</cde>, and a
-            feed built from it, cached and served to everyone, would point your readers at someone
-            else's site.
+            Feed links must be whole <term def="url">URLs</term>, with the
+            <term def="scheme">scheme</term> and <term def="host">host</term>. They come from
+            <cde>SITE_URL</cde>, a setting, never from the <term def="request">request's</term>
+            <cde>Host</cde> <term def="header">header</term>. The <cde>Host</cde> header is input:
+            anyone can send <cde>Host: evil.example</cde>, and a feed built from it,
+            <term def="cache">cached</term> and served to everyone, would point your readers at
+            someone else's site.
         </p>
 
         <heading h3 id="step-5-run-it">Step 5: Run It</heading>
         <!-- prettier-ignore -->
         <code-block>docker compose up</code-block>
         <p class="text-th-muted text-base">
-            A reminder: <cde>docker compose up</cde> starts every container the project's
-            <cde>compose.yml</cde> lists, together.
+            A reminder: <cde>docker compose up</cde> starts every
+            <term def="container">container</term> the project's <cde>compose.yml</cde> lists,
+            together.
         </p>
         <p>
             Open <cde>http://localhost:8000</cde>. Five posts are live, three on the first page, two
@@ -152,19 +164,19 @@ curl http://localhost:8000/feed</code-block>
         <list>
             <li>
                 <strong>Offsets get slow, and they shift.</strong> <cde>OFFSET 10000</cde> makes the
-                database find and skip ten thousand rows. And a new post pushes everything down one,
-                so a reader paging back sees one post twice. For long lists, page by "older than
-                this date" instead.
+                database find and skip ten thousand <term def="row">rows</term>. And a new post
+                pushes everything down one, so a reader paging back sees one post twice. For long
+                lists, page by "older than this date" instead.
             </li>
             <li>
                 <strong>Pick UTC and never change it.</strong> Store UTC, set the connection to UTC,
-                and convert for display. A server whose time zone changes, or a summer-time switch,
-                will otherwise publish posts an hour early or late.
+                and convert for display. A <term def="server">server</term> whose time zone changes,
+                or a summer-time switch, will otherwise publish posts an hour early or late.
             </li>
             <li>
                 <strong>Slugs are forever.</strong> Once a post's address is out in the world,
-                changing it breaks every link to it. If you must, keep the old slug and redirect it
-                with a 301.
+                changing it breaks every link to it. If you must, keep the old
+                <term def="slug">slug</term> and <term def="redirect">redirect</term> it with a 301.
             </li>
             <li>
                 <strong>A feed is content too.</strong> The same escaping rules apply, and the same

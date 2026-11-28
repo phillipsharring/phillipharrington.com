@@ -21,17 +21,20 @@
 
         <!-- Intro -->
         <p>
-            HTTP forgets you. Every request stands on its own, so as far as the server knows, your
-            second click comes from a stranger. Yet sites keep you logged in, remember what's in
-            your cart, and know you picked dark mode. That's cookies: a small piece of text the
-            server asks your browser to keep, and to hand back with every request after.
+            <term def="http">HTTP</term> forgets you. Every
+            <term def="request">request</term> stands on its own, so as far as the
+            <term def="server">server</term> knows, your second click comes from a stranger. Yet
+            sites keep you logged in, remember what's in your cart, and know you picked dark mode.
+            That's <term def="cookie">cookies</term>: a small piece of text the server asks your
+            <term def="browser">browser</term> to keep, and to hand back with every request after.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-cookie">What's a Cookie?</heading>
         <p>
             A name and a value, like <cde>theme=dark</cde>, kept by the browser for one site. The
-            server sets it with a response header:
+            server sets it with a <term def="response">response</term>
+            <term def="header">header</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>Set-Cookie: theme=dark; Max-Age=31536000; Path=/; Secure; HttpOnly; SameSite=Lax</code-block>
@@ -52,9 +55,15 @@
                 <strong>Max-Age</strong> or <strong>Expires</strong>: how long to keep it. Leave
                 both off, and it's a session cookie, gone when the browser closes.
             </li>
-            <li><strong>Path</strong> and <strong>Domain</strong>: which URLs it gets sent to.</li>
-            <li><strong>Secure</strong>: only send it over HTTPS.</li>
-            <li><strong>HttpOnly</strong>: JavaScript in the page can't read it.</li>
+            <li>
+                <strong>Path</strong> and <strong>Domain</strong>: which
+                <term def="url">URLs</term> it gets sent to.
+            </li>
+            <li><strong>Secure</strong>: only send it over <term def="https">HTTPS</term>.</li>
+            <li>
+                <strong>HttpOnly</strong>: <term def="javascript">JavaScript</term> in the page
+                can't read it.
+            </li>
             <li>
                 <strong>SameSite</strong>: whether other sites can make your browser send it.
                 <cde>Lax</cde> is the sensible default.
@@ -93,7 +102,8 @@
             <strong>you <xref to="/php/never-trust-input">never trust input</xref></strong>. Anyone can open their browser's developer tools and change a cookie to anything they
             like. So a cookie should never say "role=admin" or "price=1.00". The usual move is to
             put a long random ID in the cookie, and keep everything that matters on the server,
-            filed under that ID. That's a session, and it gets a lesson of its own.
+            filed under that ID. That's a <term def="session">session</term>, and it gets a lesson
+            of its own.
         </p>
 
         <!-- Try it -->
@@ -108,10 +118,11 @@
             browser is sending the cookie back, and the server adds one each time.
         </p>
         <p>
-            Now break it. Open your browser's developer tools, find the cookies for localhost (the
-            Application tab in Chrome, Storage in Firefox), and change <cde>visits</cde> to
-            <cde>41</cde>. Reload: "Visit number 42." You just told the server something false, and
-            it believed you. Or skip the browser entirely, and send any cookie you like:
+            Now break it. Open your browser's developer tools, find the cookies for
+            <term def="localhost">localhost</term> (the Application tab in Chrome, Storage in
+            Firefox), and change <cde>visits</cde> to <cde>41</cde>. Reload: "Visit number 42." You
+            just told the server something false, and it believed you. Or skip the browser entirely,
+            and send any cookie you like:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -b 'visits=41' http://localhost:8000</code-block>
@@ -136,8 +147,8 @@
         <list>
             <li>
                 <cde>setcookie($name, $value, $options)</cde> sends <cde>Set-Cookie</cde>. The
-                options array takes <cde>expires</cde>, <cde>path</cde>, <cde>domain</cde>,
-                <cde>secure</cde>, <cde>httponly</cde> and <cde>samesite</cde>.
+                options <term def="array">array</term> takes <cde>expires</cde>, <cde>path</cde>,
+                <cde>domain</cde>, <cde>secure</cde>, <cde>httponly</cde> and <cde>samesite</cde>.
             </li>
             <li>
                 <cde>$_COOKIE</cde> holds the cookies the browser sent with this request. Treat
@@ -164,7 +175,8 @@
             <li>
                 <strong>Cookies ride along on everything.</strong> Every image, script and
                 stylesheet request to the site carries them too. Keep them small: a browser keeps
-                about 4 KB per cookie, and every byte travels on every request.
+                about 4 KB per cookie, and every <term def="byte">byte</term> travels on every
+                request.
             </li>
             <li>
                 <strong>Never trust a cookie.</strong> It's input. It can be edited, replayed, or
@@ -190,7 +202,7 @@
 
         <p>
             A cookie rides along in a header. There's an even plainer way to send a little data with
-            a request, right in the URL. Next: query strings.
+            a request, right in the URL. Next: <term def="query-string">query strings</term>.
         </p>
 
         <!-- Next -->

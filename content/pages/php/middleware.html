@@ -21,19 +21,23 @@
 
         <!-- Intro -->
         <p>
-            REST's API checked the method and the content type at the top of every route, and a real
-            one would check a token there too. That's the same few jobs, done for every request,
-            before and after the code that's actually about notes. Middleware takes those jobs out
-            of the routes and lines them up in front, as layers.
+            <term def="rest">REST</term>'s <term def="api">API</term> checked the
+            <term def="http-method">method</term> and the
+            <term def="content-type">content type</term> at the top of every
+            <term def="route">route</term>, and a real one would check a token there too. That's the
+            same few jobs, done for every <term def="request">request</term>, before and after the
+            code that's actually about notes. <term def="middleware">Middleware</term> takes those
+            jobs out of the routes and lines them up in front, as layers.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-middleware">What's Middleware?</heading>
         <p>
-            A small class with one method. It gets the request and the next thing in line. It can do
-            something first, then pass the request on and get a response back, then do something to
-            the response, then return it. Or it can decide the request goes no further, and answer
-            by itself.
+            A small <term def="class">class</term> with one <term def="method">method</term>. It
+            gets the request and the next thing in line. It can do something first, then pass the
+            request on and get a <term def="response">response</term> back, then do something to the
+            response, then return it. Or it can decide the request goes no further, and answer by
+            itself.
         </p>
 
         <heading h2 id="whats-a-pipeline">What's a Pipeline?</heading>
@@ -63,7 +67,7 @@
             <li>If it passes, C calls the handler, which returns a response.</li>
             <li>
                 The response goes back to C, then B, then A, and each can change it on the way out:
-                add a header, log the status.
+                add a <term def="header">header</term>, log the status.
             </li>
         </ol>
         <p>
@@ -75,15 +79,15 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             A notes API with three layers. In a folder, make <cde>composer.json</cde> for the
-            autoloader:
+            <term def="autoloading">autoloader</term>:
         </p>
         <code-block example="middleware/composer.json" />
         <p>Two small value classes, <cde>src/Request.php</cde> and <cde>src/Response.php</cde>:</p>
         <code-block example="middleware/src/Request.php" />
         <code-block example="middleware/src/Response.php" />
         <p>
-            Two interfaces, <cde>src/Handler.php</cde> and <cde>src/Middleware.php</cde>. They're
-            the whole idea:
+            Two <term def="interface">interfaces</term>, <cde>src/Handler.php</cde> and
+            <cde>src/Middleware.php</cde>. They're the whole idea:
         </p>
         <code-block example="middleware/src/Handler.php" />
         <code-block example="middleware/src/Middleware.php" />
@@ -119,11 +123,12 @@ curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/boom</code-
         <p>
             The first stops at <cde>RequireToken</cde> with a <cde>401</cde>, and still has an
             <cde>X-Request-Id</cde>, because that layer is outside the token check. The second gets
-            through to the notes. The third throws an exception deep inside, and the client gets a
-            plain <cde>500</cde> while the server's terminal gets the details. But look: no
-            <cde>X-Request-Id</cde> on that one. The exception flew straight past
-            <cde>AddRequestId</cde> on its way out to <cde>CatchErrors</cde>. Swap the first two
-            layers in <cde>index.php</cde>, restart, and the <cde>500</cde> gets its id too.
+            through to the notes. The third throws an <term def="exception">exception</term> deep
+            inside, and the <term def="client">client</term> gets a plain <cde>500</cde> while the
+            <term def="server">server</term>'s <term def="terminal">terminal</term> gets the
+            details. But look: no <cde>X-Request-Id</cde> on that one. The exception flew straight
+            past <cde>AddRequestId</cde> on its way out to <cde>CatchErrors</cde>. Swap the first
+            two layers in <cde>index.php</cde>, restart, and the <cde>500</cde> gets its id too.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -140,12 +145,13 @@ curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/boom</code-
                 Middleware written to it works in any framework that supports it.
             </li>
             <li>
-                PSR-7 defines the request and response objects they pass around. They're immutable,
-                like the ones here: <cde>withHeader()</cde> returns a new response.
+                PSR-7 defines the request and response <term def="object">objects</term> they pass
+                around. They're immutable, like the ones here: <cde>withHeader()</cde> returns a new
+                response.
             </li>
             <li>
                 <cde>getallheaders()</cde> gives you the request's headers, in the built-in server
-                and behind most web servers. They're all input.
+                and behind most <term def="web-server">web servers</term>. They're all input.
                 <xref to="/php/never-trust-input">Never trust input</xref>.
             </li>
             <li>
@@ -168,9 +174,9 @@ curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/boom</code-
                 <cde>$next-&gt;handle()</cde>.
             </li>
             <li>
-                <strong>Not every route needs every layer.</strong> A health check for a load
-                balancer shouldn't need a token. Most routers let you attach middleware per route or
-                per group, instead of to the whole app.
+                <strong>Not every route needs every layer.</strong> A health check for a
+                <term def="load-balancer">load balancer</term> shouldn't need a token. Most routers
+                let you attach middleware per route or per group, instead of to the whole app.
             </li>
             <li>
                 <strong>Middleware is for every-request jobs.</strong> A rule about notes belongs in
@@ -181,9 +187,10 @@ curl -i -H 'Authorization: Bearer alice-token' http://localhost:8000/boom</code-
         <!-- $2 tip -->
         <two-dollars title="Put the request id in the log line too">
             <p>
-                When <cde>AddRequestId</cde> makes an id, have the error log use the same one. Then
-                a user who reports "it broke" can send you the <cde>X-Request-Id</cde> from the
-                response, and you can find their exact error in the log in one search.
+                When <cde>AddRequestId</cde> makes an id, have the
+                <term def="error-log">error log</term> use the same one. Then a user who reports "it
+                broke" can send you the <cde>X-Request-Id</cde> from the response, and you can find
+                their exact error in the log in one search.
             </p>
         </two-dollars>
 

@@ -21,16 +21,18 @@
 
         <!-- Intro -->
         <p>
-            Cron runs work on a clock. Some work is set off by a visitor instead: a signup that
-            needs a welcome email, an upload that needs resizing, an order that needs a receipt.
-            Doing it during the request makes the visitor wait, and if the mail server is slow or
-            down, the signup fails along with the email.
+            <term def="cron">Cron</term> runs work on a clock. Some work is set off by a visitor
+            instead: a signup that needs a welcome email, an upload that needs resizing, an order
+            that needs a receipt. Doing it during the <term def="request">request</term> makes the
+            visitor wait, and if the mail <term def="server">server</term> is slow or down, the
+            signup fails along with the email.
         </p>
         <p>
-            A queue splits that in two. The page writes down what needs doing and answers at once. A
-            separate program, a worker, takes jobs off the list and does them, retrying the ones
-            that fail. You'll build both, with the queue in a MySQL table, then switch off the mail
-            server and watch the jobs wait for it.
+            A <term def="queue">queue</term> splits that in two. The page writes down what needs
+            doing and answers at once. A separate program, a worker, takes jobs off the list and
+            does them, retrying the ones that fail. You'll build both, with the queue in a MySQL
+            <term def="table">table</term>, then switch off the mail server and watch the jobs wait
+            for it.
         </p>
 
         <!-- What you'll use -->
@@ -38,7 +40,7 @@
         <list>
             <li>
                 <xref to="/php/projects/php-on-the-command-line">PHP on the Command Line</xref>: the
-                worker is a command-line script
+                worker is a <term def="command-line">command-line</term> script
             </li>
             <li>
                 <xref to="/php/projects/sending-email">Sending Email</xref>: the job, and Mailpit to
@@ -49,8 +51,8 @@
             </li>
             <li>
                 <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref> and
-                <xref to="/php/dependency-injection">Dependency Injection</xref>: the classes, and
-                what they're given
+                <xref to="/php/dependency-injection">Dependency Injection</xref>: the
+                <term def="class">classes</term>, and what they're given
             </li>
             <li><xref to="/php/json">JSON</xref>: what each job carries</li>
         </list>
@@ -67,13 +69,14 @@
         <code-block example="project-queues/compose.yml" />
         <p>
             The <cde>Dockerfile</cde> is the usual two lines. Sending mail uses Symfony Mailer, a
-            real dependency, so this project has a <cde>composer.json</cde>:
+            real <term def="dependency">dependency</term>, so this project has a
+            <cde>composer.json</cde>:
         </p>
         <code-block example="project-queues/composer.json" />
         <p>
             The <cde>platform</cde> setting tells Composer which PHP the code will run on, so the
-            Composer container, which may run a newer PHP, doesn't pick versions that need it.
-            Install, and keep <cde>vendor/</cde> out of git:
+            Composer <term def="container">container</term>, which may run a newer PHP, doesn't pick
+            versions that need it. Install, and keep <cde>vendor/</cde> out of git:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
@@ -82,24 +85,25 @@
         <heading h3 id="step-2-the-jobs-table">Step 2: The Jobs Table</heading>
         <code-block example="project-queues/init.sql" />
         <p>
-            Each job has a type, which says what to do, and a JSON payload, which says to what.
-            <cde>status</cde> moves from <cde>queued</cde> to <cde>running</cde> to <cde>done</cde>,
-            or to <cde>failed</cde>. <cde>available_at</cde> is how a retry waits: a job isn't taken
-            before that time.
+            Each job has a type, which says what to do, and a <term def="json">JSON</term> payload,
+            which says to what. <cde>status</cde> moves from <cde>queued</cde> to
+            <cde>running</cde> to <cde>done</cde>, or to <cde>failed</cde>.
+            <cde>available_at</cde> is how a retry waits: a job isn't taken before that time.
         </p>
 
         <heading h3 id="step-3-the-queue">Step 3: The Queue</heading>
         <p>
             <cde>src/Database.php</cde> makes the connection, as before, now as a class. The queue
-            itself, <cde>src/Queue.php</cde>, has four methods:
+            itself, <cde>src/Queue.php</cde>, has four <term def="method">methods</term>:
         </p>
         <code-block example="project-queues/src/Database.php" />
         <code-block example="project-queues/src/Queue.php" />
         <p>
             <cde>reserve()</cde> is the one that matters. Two workers asking at the same moment must
-            never get the same job, or someone gets two welcome emails. Inside a transaction,
-            <cde>FOR UPDATE</cde> locks the row it finds, and <cde>SKIP LOCKED</cde> makes any other
-            worker pass over locked rows and take the next one instead of waiting. The row is marked
+            never get the same job, or someone gets two welcome emails. Inside a
+            <term def="transaction">transaction</term>, <cde>FOR UPDATE</cde> locks the
+            <term def="row">row</term> it finds, and <cde>SKIP LOCKED</cde> makes any other worker
+            pass over locked rows and take the next one instead of waiting. The row is marked
             <cde>running</cde>, the transaction ends, and the job is this worker's alone.
         </p>
         <p>
@@ -115,9 +119,9 @@
         </p>
         <code-block example="project-queues/src/WelcomeEmail.php" />
         <p>
-            <strong><xref to="/php/never-trust-input">Never trust input</xref></strong>, even when it comes back out of your own database. The address went in from a form; it
-            might have been written by a different version of your code, or by hand. Check it again
-            where it's used.
+            <strong><xref to="/php/never-trust-input">Never trust input</xref></strong>, even when it comes back out of your own <term def="database">database</term>. The
+            address went in from a <term def="form">form</term>; it might have been written by a
+            different version of your code, or by hand. Check it again where it's used.
         </p>
 
         <heading h3 id="step-5-the-worker">Step 5: The Worker</heading>
@@ -133,8 +137,8 @@
         <heading h3 id="step-6-the-signup-page">Step 6: The Signup Page</heading>
         <code-block example="project-queues/public/index.php" />
         <p>
-            It checks the address, pushes a job, and redirects. It never talks to the mail server.
-            However slow or broken mail gets, signing up stays fast.
+            It checks the address, pushes a job, and <term def="redirect">redirects</term>. It never
+            talks to the mail server. However slow or broken mail gets, signing up stays fast.
         </p>
 
         <heading h3 id="step-7-run-it">Step 7: Run It</heading>
@@ -143,7 +147,7 @@
         <p>
             Sign up at <cde>http://localhost:8000</cde>, then open <cde>http://localhost:8025</cde>:
             the welcome email is there, sent by the worker a moment after the page had already
-            answered. Now break the mail server, from a second terminal:
+            answered. Now break the mail server, from a second <term def="terminal">terminal</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose stop mailpit</code-block>
@@ -212,7 +216,8 @@
             </li>
             <li>
                 <strong>Failed jobs are a to-do list.</strong> Look at them. A pile of
-                <cde>failed</cde> rows that nobody reads is the queue's version of an error log
+                <cde>failed</cde> rows that nobody reads is the queue's version of an
+                <term def="error-log">error log</term>
                 nobody reads.
             </li>
         </list>

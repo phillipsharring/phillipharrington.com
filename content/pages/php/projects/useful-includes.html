@@ -29,8 +29,8 @@
         <p>
             This project pulls the shared parts into their own files and has every page include
             them: one bootstrap file that sets things up, a settings file, a couple of helper
-            functions, a header and a footer. All of them live outside <cde>public</cde>, where only
-            your code can reach them.
+            <term def="function">functions</term>, a header and a footer. All of them live outside
+            <cde>public</cde>, where only your code can reach them.
         </p>
 
         <!-- What you'll use -->
@@ -71,18 +71,18 @@
         <heading h3 id="the-settings">The Settings</heading>
         <p>
             <cde>src/config.php</cde> holds the facts about the site that more than one page needs.
-            It doesn't echo anything; it <cde>return</cde>s an array, so whoever includes it gets
-            the settings as a value:
+            It doesn't echo anything; it <cde>return</cde>s an <term def="array">array</term>, so
+            whoever includes it gets the settings as a value:
         </p>
         <code-block example="project-useful-includes/src/config.php" />
 
         <heading h3 id="the-helpers">The Helpers</heading>
         <p>
             <cde>src/functions.php</cde> holds two functions. <cde>e()</cde> is
-            <cde>htmlspecialchars()</cde> with a short name, because you'll escape output so often
-            that a long name turns into a reason to skip it. <cde>nav_link()</cde> builds a link and
-            marks the current page with <cde>aria-current</cde>, which screen readers announce and
-            which you can style:
+            <cde>htmlspecialchars()</cde> with a short name, because you'll
+            <term def="escaping">escape</term> output so often that a long name turns into a reason
+            to skip it. <cde>nav_link()</cde> builds a link and marks the current page with
+            <cde>aria-current</cde>, which screen readers announce and which you can style:
         </p>
         <code-block example="project-useful-includes/src/functions.php" />
 
@@ -97,8 +97,8 @@
         <heading h3 id="header-and-footer">The Header and Footer</heading>
         <p>
             <cde>templates/header.php</cde> is everything above a page's content. It expects two
-            variables to exist: <cde>$config</cde>, from the bootstrap, and <cde>$page</cde>, from
-            the page that includes it:
+            <term def="variable">variables</term> to exist: <cde>$config</cde>, from the bootstrap,
+            and <cde>$page</cde>, from the page that includes it:
         </p>
         <code-block example="project-useful-includes/templates/header.php" />
         <p>
@@ -116,16 +116,17 @@
         <p><cde>public/about.php</cde> is the same shape, with its own content:</p>
         <code-block example="project-useful-includes/public/about.php" />
         <p>
-            Every path starts from <cde>dirname(__DIR__)</cde>, the project folder, so it works no
-            matter where PHP was started from.
+            Every <term def="path">path</term> starts from <cde>dirname(__DIR__)</cde>, the project
+            folder, so it works no matter where PHP was started from.
         </p>
 
         <heading h3 id="the-viewer">The Viewer, Moved In</heading>
         <p>
             <cde>public/source.php</cde> is the View Source Link viewer, now using the bootstrap and
             the templates, with the shared files on its allow list so visitors can see how the
-            pieces fit. <strong>Never trust input</strong> still applies: the query string picks a
-            key, never a path, and <cde>config.php</cde> stays off the list.
+            pieces fit. <strong>Never trust input</strong> still applies: the
+            <term def="query-string">query string</term> picks a key, never a path, and
+            <cde>config.php</cde> stays off the list.
         </p>
         <code-block example="project-useful-includes/public/source.php" />
 
@@ -142,8 +143,8 @@
         <code-block>curl http://localhost:8000/src/config.php
 curl http://localhost:8000/templates/header.php</code-block>
         <p>
-            Neither one is there. They're outside <cde>public</cde>, so the server can't hand them
-            out, and you get the home page instead.
+            Neither one is there. They're outside <cde>public</cde>, so the
+            <term def="server">server</term> can't hand them out, and you get the home page instead.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -182,8 +183,9 @@ curl http://localhost:8000/templates/header.php</code-block>
         <two-dollars title="One file runs before everything">
             <p>
                 A bootstrap that every page requires is the place for anything you'd otherwise
-                forget on one page: the time zone, error settings, security headers, starting a
-                session. Put it there once, and the page you add next year gets it for free.
+                forget on one page: the time zone, error settings, security
+                <term def="header">headers</term>, starting a <term def="session">session</term>.
+                Put it there once, and the page you add next year gets it for free.
             </p>
         </two-dollars>
 

@@ -21,18 +21,19 @@
 
         <!-- Intro -->
         <p>
-            Defensive Programming checked its arguments at the top of the function and threw if they
-            were wrong. That shape works for more than errors. Any case that ends a function early,
-            "not logged in," "nothing to do," can be handled first and sent on its way, leaving the
-            real work at the bottom with nothing wrapped around it.
+            Defensive Programming checked its <term def="argument">arguments</term> at the top of
+            the <term def="function">function</term> and threw if they were wrong. That shape works
+            for more than errors. Any case that ends a function early, "not logged in," "nothing to
+            do," can be handled first and sent on its way, leaving the real work at the bottom with
+            nothing wrapped around it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-returning-early">What's Returning Early?</heading>
         <p>
             Writing a function as a list of checks, each with its own answer, followed by the main
-            path. Each check is a guard clause: if this, return that. Once you're past it, you never
-            think about it again.
+            path. Each check is a <term def="guard-clause">guard clause</term>: if this, return
+            that. Once you're past it, you never think about it again.
         </p>
 
         <heading h3 id="the-arrow">The Arrow</heading>
@@ -109,8 +110,9 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block
                 <cde>break</cde> to leave the loop.
             </li>
             <li>
-                <cde>exit</cde> in a script that has answered: after a redirect, a 404, a
-                <cde>422</cde> for bad input, as <cde>shop.php</cde> did in
+                <cde>exit</cde> in a script that has answered: after a
+                <term def="redirect">redirect</term>, a 404, a <cde>422</cde> for bad input, as
+                <cde>shop.php</cde> did in
                 <xref to="/php/defensive-programming">Defensive Programming</xref>.
             </li>
             <li>
@@ -124,14 +126,15 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block
         <list>
             <li>
                 <strong><cde>header('Location: ...')</cde> doesn't stop the script.</strong> It sets
-                a header, and PHP carries on running the rest of the page, including whatever the
-                redirect was meant to protect. Follow it with <cde>exit</cde>.
+                a <term def="header">header</term>, and PHP carries on running the rest of the page,
+                including whatever the redirect was meant to protect. Follow it with
+                <cde>exit</cde>.
             </li>
             <li>
                 <strong>A return in the middle can skip cleanup.</strong> If the function opened a
-                file or started a transaction, an early return can leave it open. Do the checks
-                before you open anything, or use <cde>try</cde>/<cde>finally</cde>. The next lesson
-                has another way.
+                file or started a <term def="transaction">transaction</term>, an early return can
+                leave it open. Do the checks before you open anything, or use
+                <cde>try</cde>/<cde>finally</cde>. The next lesson has another way.
             </li>
             <li>
                 <strong>Returns buried in the middle aren't guard clauses.</strong> Guards go at the
@@ -140,8 +143,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php run.php after</code-block
             </li>
             <li>
                 <strong>The order of the guards matters.</strong> Check that the user exists before
-                you check whether they're verified, or the second check reads a property of
-                <cde>null</cde>.
+                you check whether they're verified, or the second check reads a
+                <term def="property">property</term> of <cde>null</cde>.
             </li>
         </list>
 

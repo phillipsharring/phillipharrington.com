@@ -22,7 +22,8 @@
         <!-- Intro -->
         <p>
             <cde>phpinfo()</cde> tells you about the PHP you have. The manual tells you about PHP:
-            every function, every setting, and every change from one version to the next. It's at
+            every <term def="function">function</term>, every setting, and every change from one
+            version to the next. It's at
             <lnk to="https://www.php.net/manual/en/" blank>php.net</lnk>, it's free, and it's good.
             This course can't cover every function PHP has, and doesn't try. Learning to read the
             manual covers the rest.
@@ -32,8 +33,9 @@
         <heading h2 id="whats-the-manual">What's the Manual?</heading>
         <p>
             The official PHP documentation, written and kept up by the people who make PHP. The
-            parts you'll use most are the Language Reference (how PHP itself works: variables,
-            operators, functions, classes) and the Function Reference (every built-in function,
+            parts you'll use most are the Language Reference (how PHP itself works:
+            <term def="variable">variables</term>, <term def="operator">operators</term>, functions,
+            <term def="class">classes</term>) and the Function Reference (every built-in function,
             grouped by extension). There's also a Security section, worth reading once.
         </p>
 
@@ -42,7 +44,8 @@
         <list>
             <li>
                 <strong>The versions</strong>, at the top: "(PHP 4, PHP 5, PHP 7, PHP 8)" means it's
-                been around forever. "(PHP 8)" means it's newer, and older servers won't have it.
+                been around forever. "(PHP 8)" means it's newer, and older
+                <term def="server">servers</term> won't have it.
             </li>
             <li>
                 <strong>Description</strong>: the signature, one line that says what goes in and
@@ -91,17 +94,18 @@
         <code-block>strpos(string $haystack, string $needle, int $offset = 0): int|false</code-block>
         <list>
             <li>
-                <cde>strpos</cde> is the name. In the parentheses, the parameters, each with its
-                type: two strings, then an int.
+                <cde>strpos</cde> is the name. In the parentheses, the
+                <term def="parameter">parameters</term>, each with its <term def="type">type</term>:
+                two <term def="string">strings</term>, then an int.
             </li>
             <li>
                 <cde>$offset = 0</cde> has a default, so you can leave it off. Parameters without
                 one are required.
             </li>
             <li>
-                After the colon is what comes back: <cde>int|false</cde>, an integer or
-                <cde>false</cde>. The <cde>|</cde> means "or." Types get a lesson of their own soon,
-                in Variables, Types and strict_types.
+                After the colon is what comes back: <cde>int|false</cde>, an
+                <term def="integer">integer</term> or <cde>false</cde>. The <cde>|</cde> means "or."
+                Types get a lesson of their own soon, in Variables, Types and strict_types.
             </li>
         </list>
         <p>
@@ -112,7 +116,7 @@
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
-        <p>PHP can show you a signature too, with no browser:</p>
+        <p>PHP can show you a signature too, with no <term def="browser">browser</term>:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm php:8.4-cli php --rf strpos</code-block>
         <p>Only the new part:</p>

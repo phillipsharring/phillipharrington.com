@@ -23,18 +23,21 @@
 
         <!-- Intro -->
         <p>
-            Document Root ended with the server answering requests for files that were there and
-            files that weren't. It also wrote every one of them down. Servers keep two kinds of
-            diary: an access log, with a line for every request, and an error log, for when
-            something goes wrong. When a page breaks, they're the first place to look, and very
-            often the only place that knows what happened.
+            Document Root ended with the <term def="server">server</term> answering
+            <term def="request">requests</term> for files that were there and files that weren't. It
+            also wrote every one of them down. Servers keep two kinds of diary: an
+            <term def="access-log">access log</term>, with a line for every request, and an
+            <term def="error-log">error log</term>, for when something goes wrong. When a page
+            breaks, they're the first place to look, and very often the only place that knows what
+            happened.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-an-access-log">What's an Access Log?</heading>
         <p>
-            A text file with one line per request, written by the web server. Most servers use the
-            same layout, called the combined log format:
+            A text file with one line per request, written by the
+            <term def="web-server">web server</term>. Most servers use the same layout, called the
+            combined log format:
         </p>
         <!-- prettier-ignore -->
         <code-block>192.0.2.10 - - [27/Nov/2026:19:51:44 +0000] "GET /nope HTTP/1.1" 404 24 "-" "curl/8.7.1"</code-block>
@@ -42,21 +45,27 @@
             <li><strong>192.0.2.10</strong>: the address that connected.</li>
             <li>
                 <strong>- -</strong>: two old fields that are almost always empty: an identity
-                nobody sends, and the user name from HTTP authentication.
+                nobody sends, and the user name from <term def="http">HTTP</term>
+                <term def="authentication">authentication</term>.
             </li>
             <li><strong>[27/Nov/2026:19:51:44 +0000]</strong>: when, with the time zone.</li>
             <li>
                 <strong>"GET /nope HTTP/1.1"</strong>: the request line, exactly as it arrived:
-                method, path and query string, and protocol.
+                <term def="http-method">method</term>, <term def="path">path</term> and
+                <term def="query-string">query string</term>, and
+                <term def="protocol">protocol</term>.
             </li>
             <li>
-                <strong>404</strong>: the status code sent back. From
+                <strong>404</strong>: the <term def="status-code">status code</term> sent back. From
                 <xref to="/php/request-and-response">Request and Response</xref>.
             </li>
-            <li><strong>24</strong>: the size of the response body, in bytes.</li>
             <li>
-                <strong>"-"</strong>: the <cde>Referer</cde> header, the page that linked here, or
-                <cde>-</cde> for none.
+                <strong>24</strong>: the size of the <term def="response">response</term>
+                <term def="body">body</term>, in <term def="byte">bytes</term>.
+            </li>
+            <li>
+                <strong>"-"</strong>: the <cde>Referer</cde> <term def="header">header</term>, the
+                page that linked here, or <cde>-</cde> for none.
             </li>
             <li><strong>"curl/8.7.1"</strong>: the <cde>User-Agent</cde> header.</li>
         </list>
@@ -125,8 +134,8 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             nginx in front of PHP, as in What's in the Middle, with both writing their logs into a
-            <cde>logs</cde> folder, outside the web root. First the page,
-            <cde>public/index.php</cde>, with a bug in it on purpose:
+            <cde>logs</cde> folder, outside the <term def="web-root">web root</term>. First the
+            page, <cde>public/index.php</cde>, with a bug in it on purpose:
         </p>
         <code-block example="access-and-error-logs/public/index.php" />
         <p>Then <cde>nginx.conf</cde>, which names the two logs:</p>
@@ -144,7 +153,7 @@ docker compose up</code-block>
         <breakdown>
             <part code="mkdir logs">Make a folder called <cde>logs</cde>.</part>
         </breakdown>
-        <p>In a second terminal, follow the access log:</p>
+        <p>In a second <term def="terminal">terminal</term>, follow the access log:</p>
         <!-- prettier-ignore -->
         <code-block>tail -f logs/access.log</code-block>
         <p class="text-th-muted text-base">
@@ -179,7 +188,8 @@ curl http://localhost:8000/broken</code-block>
         </breakdown>
         <p>
             The log shows <cde>"Not a browser"</cde> as the user agent, because the log writes down
-            whatever the client said. Last, break the middle. Stop PHP and ask again:
+            whatever the <term def="client">client</term> said. Last, break the middle. Stop PHP and
+            ask again:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose stop php
@@ -227,15 +237,17 @@ curl http://localhost:8000/</code-block>
             <li>
                 <strong>Everything in a log line came from outside.</strong> The path, the query
                 string, the user agent and the referrer are whatever the client sent.
-                <strong>Never trust input,</strong> and a log is full of it: escape it before you
-                show a log in a page, and don't let it into anything that runs. The
+                <strong>Never trust input,</strong> and a log is full of it:
+                <term def="escaping">escape</term> it before you show a log in a page, and don't let
+                it into anything that runs. The
                 <xref to="/php/never-trust-input">Never Trust Input</xref> lesson, and the Log
                 Viewer project, come back to this.
             </li>
             <li>
-                <strong>Query strings are logged.</strong> Anything in a URL ends up in access logs,
-                yours and every server's in the middle. Never put a password or a key in one. That's
-                one more reason forms that send secrets use POST.
+                <strong>Query strings are logged.</strong> Anything in a
+                <term def="url">URL</term> ends up in access logs, yours and every server's in the
+                middle. Never put a password or a key in one. That's one more reason
+                <term def="form">forms</term> that send secrets use POST.
             </li>
             <li>
                 <strong>Logs grow until the disk is full.</strong> Servers rotate them: every day or
@@ -244,14 +256,16 @@ curl http://localhost:8000/</code-block>
                 with it.
             </li>
             <li>
-                <strong>The address may not be the visitor's.</strong> Behind a proxy or a CDN, the
-                access log records the last hop, the same problem as <cde>REMOTE_ADDR</cde> in
-                What's in the Middle. Servers can be told to log <cde>X-Forwarded-For</cde> instead.
+                <strong>The address may not be the visitor's.</strong> Behind a proxy or a
+                <term def="cdn">CDN</term>, the access log records the last hop, the same problem as
+                <cde>REMOTE_ADDR</cde> in What's in the Middle. Servers can be told to log
+                <cde>X-Forwarded-For</cde> instead.
             </li>
             <li>
                 <strong>Logs hold personal data.</strong> Addresses, and anything you write about
-                your users. In some places, privacy law counts an IP address as personal data. Keep
-                logs only as long as you need them, and never write a password to one.
+                your users. In some places, privacy law counts an
+                <term def="ip-address">IP address</term> as personal data. Keep logs only as long as
+                you need them, and never write a password to one.
             </li>
         </list>
 

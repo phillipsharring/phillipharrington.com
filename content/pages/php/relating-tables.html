@@ -21,18 +21,20 @@
 
         <!-- Intro -->
         <p>
-            The books in <xref to="/php/sql">SQL</xref> kept the author's name in every row, typed
-            out again for each book. A real catalog keeps authors in a table of their own, and each
-            book points at its author. The pointing is done with keys, and the database can hold you
-            to it: no book can point at an author who isn't there.
+            The books in <xref to="/php/sql">SQL</xref> kept the author's name in every
+            <term def="row">row</term>, typed out again for each book. A real catalog keeps authors
+            in a <term def="table">table</term> of their own, and each book points at its author.
+            The pointing is done with keys, and the <term def="database">database</term> can hold
+            you to it: no book can point at an author who isn't there.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-primary-key">What's a Primary Key?</heading>
         <p>
-            The column that tells one row from every other, like <cde>id</cde> in Creating Tables.
-            Every table gets one. It never repeats, it's never <cde>NULL</cde>, and once a row has
-            one, it shouldn't change, because other rows are using it to find this one.
+            The <term def="column">column</term> that tells one row from every other, like
+            <cde>id</cde> in Creating Tables. Every table gets one. It never repeats, it's never
+            <cde>NULL</cde>, and once a row has one, it shouldn't change, because other rows are
+            using it to find this one.
         </p>
 
         <heading h3 id="natural-and-surrogate-keys">Natural and Surrogate Keys</heading>
@@ -47,9 +49,10 @@
 
         <heading h2 id="whats-a-foreign-key">What's a Foreign Key?</heading>
         <p>
-            A column that holds another table's primary key. <cde>books.author_id</cde> holds an
-            <cde>authors.id</cde>. Declared as a foreign key, it's also a rule: the database won't
-            let it hold an id that doesn't exist.
+            A column that holds another table's <term def="primary-key">primary key</term>.
+            <cde>books.author_id</cde> holds an <cde>authors.id</cde>. Declared as a
+            <term def="foreign-key">foreign key</term>, it's also a rule: the database won't let it
+            hold an id that doesn't exist.
         </p>
         <!-- prettier-ignore -->
         <code-block>CONSTRAINT `books_author_id_fk` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`)</code-block>
@@ -74,8 +77,9 @@
             then followed a stored link to her first book, then from that book to the next. Charles
             Bachman designed one of the first of these databases, and called his 1973 Turing Award
             lecture "The Programmer as Navigator." Edgar Codd's relational model, in 1970, replaced
-            the pointers with values. A book holds its author's id, and any query can follow it, in
-            either direction. Codd got his own Turing Award in 1981.
+            the pointers with values. A book holds its author's id, and any
+            <term def="query">query</term> can follow it, in either direction. Codd got his own
+            Turing Award in 1981.
         </side-story>
 
         <!-- How it works -->
@@ -94,8 +98,8 @@
                 any, by default, the delete is refused.
             </li>
             <li>
-                To read across the link, a query joins the tables, matching each book's
-                <cde>author_id</cde> to an author's <cde>id</cde>.
+                To read across the link, a query <term def="join">joins</term> the tables, matching
+                each book's <cde>author_id</cde> to an author's <cde>id</cde>.
             </li>
         </ol>
         <p>
@@ -155,8 +159,9 @@ docker compose run --rm php php add-book.php 99 'Nobody' 2000</code-block>
         <p>
             The first is added. The second is a perfectly good number, so it passes the script's own
             checks, and the foreign key refuses it. <strong>Never trust input</strong>: an id from a
-            form or a URL is only a number someone sent you. The script checks that it's a number;
-            the database checks that it's real. <cde>docker compose down -v</cde> when you're done.
+            <term def="form">form</term> or a <term def="url">URL</term> is only a number someone
+            sent you. The script checks that it's a number; the database checks that it's real.
+            <cde>docker compose down -v</cde> when you're done.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -189,7 +194,7 @@ docker compose run --rm php php add-book.php 99 'Nobody' 2000</code-block>
                 <strong>Both sides of a key must be the same type.</strong> An
                 <cde>INT</cde> pointing at an <cde>INT UNSIGNED</cde> is refused when you create the
                 table: <cde>Referencing column and referenced column are incompatible</cde>. Copy
-                the type exactly.
+                the <term def="type">type</term> exactly.
             </li>
             <li>
                 <strong>Order matters, both ways.</strong> Create parents before children, and drop
@@ -222,7 +227,7 @@ docker compose run --rm php php add-book.php 99 'Nobody' 2000</code-block>
         <p>
             Moving the authors into their own table wasn't only tidier. It means each author's name
             is written down once, so it can't be spelled two ways. That idea has a name. Next:
-            normalization.
+            <term def="normalization">normalization</term>.
         </p>
 
         <!-- Next -->

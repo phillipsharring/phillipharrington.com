@@ -21,11 +21,12 @@
 
         <!-- Intro -->
         <p>
-            In <xref to="/php/sql">SQL</xref>, the <cde>books</cde> table was already there. Someone
-            had to decide what it holds: which columns, what type each one is, which ones can be
-            empty. That decision is a <cde>CREATE TABLE</cde> statement, and it's worth getting
-            right, because the database enforces it on every row, forever, whatever your code
-            forgets to check.
+            In <xref to="/php/sql">SQL</xref>, the <cde>books</cde>
+            <term def="table">table</term> was already there. Someone had to decide what it holds:
+            which <term def="column">columns</term>, what <term def="type">type</term> each one is,
+            which ones can be empty. That decision is a <cde>CREATE TABLE</cde> statement, and it's
+            worth getting right, because the <term def="database">database</term> enforces it on
+            every <term def="row">row</term>, forever, whatever your code forgets to check.
         </p>
 
         <!-- What is/are -->
@@ -91,10 +92,10 @@
         </list>
 
         <side-story title="Why Everything Is VARCHAR(255)">
-            Old schemas are full of <cde>VARCHAR(255)</cde>, whatever the column holds. Until MySQL
-            5.0.3, in 2005, 255 characters was as long as a <cde>VARCHAR</cde> could be, so it was
-            the safe choice. The limit is long gone. The habit isn't. Pick a length that fits the
-            thing: 200 for a title is plenty.
+            Old <term def="schema">schemas</term> are full of <cde>VARCHAR(255)</cde>, whatever the
+            column holds. Until MySQL 5.0.3, in 2005, 255 characters was as long as a
+            <cde>VARCHAR</cde> could be, so it was the safe choice. The limit is long gone. The
+            habit isn't. Pick a length that fits the thing: 200 for a title is plenty.
         </side-story>
 
         <!-- How it works -->
@@ -111,7 +112,7 @@
             </li>
             <li>
                 Changing the table later takes another statement, <cde>ALTER TABLE</cde>. That's
-                what Migrations, at the end of this section, are for.
+                what <term def="migration">Migrations</term>, at the end of this section, are for.
             </li>
         </ol>
         <p>
@@ -199,13 +200,14 @@ docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block
                 <xref to="/php/forms">Forms</xref>.
             </li>
             <li>
-                <cde>filter_var($value, FILTER_VALIDATE_INT)</cde> for anything bound for an integer
-                column, with <cde>min_range</cde> and <cde>max_range</cde> to match the column.
+                <cde>filter_var($value, FILTER_VALIDATE_INT)</cde> for anything bound for an
+                <term def="integer">integer</term> column, with <cde>min_range</cde> and
+                <cde>max_range</cde> to match the column.
             </li>
             <li>
                 <cde>mb_strlen()</cde>, not <cde>strlen()</cde>, to check text against a
                 <cde>VARCHAR</cde> length. The length counts characters, and
-                <cde>strlen()</cde> counts bytes.
+                <cde>strlen()</cde> counts <term def="byte">bytes</term>.
                 <xref to="/php/text-and-utf-8">Text and UTF-8</xref>
                 has the difference.
             </li>
@@ -224,7 +226,8 @@ docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block
                 takes only listed values, and it looks like the answer for <cde>format</cde>. It
                 isn't. Adding a value means altering the table. It sorts by the order of the list,
                 not alphabetically. And with strict mode off, a value that isn't on the list is
-                stored as an empty string. Use a <cde>VARCHAR</cde>, and keep the list in your code.
+                stored as an empty <term def="string">string</term>. Use a <cde>VARCHAR</cde>, and
+                keep the list in your code.
             </li>
             <li>
                 <strong>A decimal in an integer column is rounded, not refused.</strong> Give
@@ -245,9 +248,9 @@ docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block
             </li>
             <li>
                 <strong>Columns accept NULL unless you say they don't.</strong> Leave off
-                <cde>NOT NULL</cde>, and every query that touches the column has to handle "no
-                value." Make a column nullable only when "no value" means something, like a book
-                whose page count you don't know yet.
+                <cde>NOT NULL</cde>, and every <term def="query">query</term> that touches the
+                column has to handle "no value." Make a column nullable only when "no value" means
+                something, like a book whose page count you don't know yet.
             </li>
         </list>
 
@@ -262,7 +265,7 @@ docker compose run --rm php php add-book.php 'Jane Eyre' scroll 8.99</code-block
 
         <p>
             One table only gets you so far. Books have authors, and authors have more than one book.
-            Next: relating tables, with keys and foreign keys.
+            Next: relating tables, with keys and <term def="foreign-key">foreign keys</term>.
         </p>
 
         <!-- Next -->

@@ -21,21 +21,23 @@
 
         <!-- Intro -->
         <p>
-            In Client/Server you opened <cde>http://localhost:8000</cde>. That's a URL, a Uniform
-            Resource Locator: one line of text that tells a client which protocol to speak, which
-            server to talk to, where to knock, and what to ask for. Every link you've ever clicked
-            is one. Here's a full one, with every part filled in:
+            In Client/Server you opened <cde>http://localhost:8000</cde>. That's a
+            <term def="url">URL</term>, a Uniform Resource Locator: one line of text that tells a
+            <term def="client">client</term> which <term def="protocol">protocol</term> to speak,
+            which <term def="server">server</term> to talk to, where to knock, and what to ask for.
+            Every link you've ever clicked is one. Here's a full one, with every part filled in:
         </p>
         <!-- prettier-ignore -->
         <code-block>https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments</code-block>
 
         <side-story title="The Part Nobody Should Use">
-            There's one more part, almost never seen: a user name and password before the host, as
-            in <cde>https://user:pass@www.example.com/</cde>. It puts a password in plain sight, and
-            it's an old phishing trick: <cde>https://www.example.com@evil.example/</cde> looks like
-            example.com, but everything before the <cde>@</cde> is the "user name," and the browser
-            goes to evil.example. Browsers warn about it or strip it now. Know it when you see it,
-            and never build one.
+            There's one more part, almost never seen: a user name and password before the
+            <term def="host">host</term>, as in <cde>https://user:pass@www.example.com/</cde>. It
+            puts a password in plain sight, and it's an old phishing trick:
+            <cde>https://www.example.com@evil.example/</cde> looks like example.com, but everything
+            before the <cde>@</cde> is the "user name," and the <term def="browser">browser</term>
+            goes to evil.example. A cybersecurity expert I know puts it flatly: everybody clicks.
+            Browsers warn about it or strip it now. Know it when you see it, and never build one.
         </side-story>
 
         <!-- What is/are -->
@@ -45,45 +47,55 @@
         <p>
             Which protocol to use. <cde>https</cde> and <cde>http</cde> for the web, but there are
             others: <cde>mailto:</cde> opens your email program, <cde>file:</cde> opens a file on
-            your own computer.
+            your own computer. I always wondered why that one gets three slashes, as in
+            <cde>file:///Users/you/notes.txt</cde>. It's the usual two, then an empty host (it's
+            your own computer, so there's nothing to name), then the path, which starts with a slash
+            of its own.
         </p>
 
         <heading h3 id="host">Host: <cde>www.example.com</cde></heading>
         <p>
-            Which server. A name, which DNS turns into an address, or the address itself. The
-            <cde>www</cde> is a subdomain the owner chose, nothing more.
+            Which server. A name, which <term def="dns">DNS</term> turns into an address, or the
+            address itself. The <cde>www</cde> is a <term def="subdomain">subdomain</term> the owner
+            chose, nothing more.
         </p>
 
         <heading h3 id="port">Port: <cde>8080</cde></heading>
         <p>
-            Which door on that server. You almost never see one, because each scheme has a default:
-            80 for <cde>http</cde>, 443 for <cde>https</cde>. Leave it off, and the browser uses the
-            default. Your <sect>Try It</sect> server needed <cde>:8000</cde> because it wasn't on
-            either.
+            Which door on that server. You almost never see one, because each
+            <term def="scheme">scheme</term> has a default: 80 for <cde>http</cde>, 443 for
+            <cde>https</cde>. Leave it off, and the browser uses the default. Your
+            <sect>Try It</sect> server needed <cde>:8000</cde> because it wasn't on either.
         </p>
 
         <heading h3 id="path">Path: <cde>/blog/post</cde></heading>
         <p>
             Which thing on that server. It looks like folders and a file, and sometimes it is, but
-            each server decides what a path means. In a PHP app, every path usually goes to one
-            script that decides what to show.
+            each server decides what a <term def="path">path</term> means. In a PHP app, every path
+            usually goes to one script that decides what to show.
         </p>
         <soaking>
-            <p>On this site, <cde>/about</cde> is a file with no extension.</p>
+            <p>
+                On this site, most pages, like <cde>/about</cde>, are files with no extension. (The
+                server still labels them as HTML: that's
+                <xref to="/php/content-types">Content Types</xref>, a few lessons on.)
+            </p>
         </soaking>
 
         <heading h3 id="query">Query String: <cde>?sort=new&amp;page=2</cde></heading>
         <p>
             Extra instructions for the server, after a <cde>?</cde>: pairs of <cde>name=value</cde>,
             joined with <cde>&amp;</cde>. Here, "sort by newest, show page two." In PHP they arrive
-            in <cde>$_GET</cde>. Query strings get a lesson of their own.
+            in <cde>$_GET</cde>. <term def="query-string">Query strings</term> get a lesson of their
+            own.
         </p>
 
         <heading h3 id="fragment">Fragment: <cde>#comments</cde></heading>
         <p>
-            After a <cde>#</cde>, the name of a spot on the page. If the page has an element with
-            that id, the browser can scroll to it. And it never sends the fragment to the server:
-            it's the one part of a URL that stays in your browser.
+            After a <cde>#</cde>, the name of a spot on the page. If the page has an
+            <term def="element">element</term> with that id, the browser can scroll to it. And it
+            never sends the <term def="fragment">fragment</term> to the server: it's the one part of
+            a URL that stays in your browser.
         </p>
 
         <side-story title="Those Two Slashes">
@@ -98,15 +110,19 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>The scheme says which protocol to speak.</li>
             <li>The host gets looked up in DNS, to find the server's address.</li>
-            <li>It connects to that address on the port, or the scheme's default.</li>
+            <li>
+                It connects to that address on the <term def="port">port</term>, or the scheme's
+                default.
+            </li>
             <li>It asks the server for the path, with the query string attached.</li>
-            <li>When the page arrives, it scrolls to the fragment.</li>
+            <li>When the page arrives, it can scroll to the fragment.</li>
         </ol>
         <p>
             Some characters can't go in a URL as themselves: a space, or an <cde>&amp;</cde> that's
             part of a value rather than a separator. They're written as a <cde>%</cde> and two hex
-            digits instead. A space is <cde>%20</cde>. That's percent-encoding, and it's why some
-            links look like they were typed by a cat.
+            digits instead. A space is <cde>%20</cde>. That's
+            <term def="encoding">percent-encoding</term>, and it's why some links look like they
+            were typed by a cat.
         </p>
         <p>
             Links inside a page usually leave off the scheme, host and port, and start with just the
@@ -156,11 +172,12 @@
             <li><cde>parse_url()</cde> takes a URL apart.</li>
             <li>
                 <cde>$_SERVER['REQUEST_URI']</cde> is usually the path and query string of the
-                request you're answering, and <cde>$_GET</cde> is its query, already decoded.
+                <term def="request">request</term> you're answering, and <cde>$_GET</cde> is its
+                query, already decoded.
             </li>
             <li>
-                <cde>http_build_query()</cde> goes the other way: it turns an array into a query
-                string, percent-encoding as it goes.
+                <cde>http_build_query()</cde> goes the other way: it turns an
+                <term def="array">array</term> into a query string, percent-encoding as it goes.
             </li>
             <li><cde>rawurlencode()</cde> encodes one value to put in a path.</li>
         </list>
@@ -170,8 +187,9 @@
         <list>
             <li>
                 <strong>The server never sees the fragment.</strong> Anything after the
-                <cde>#</cde> stays with the page: the browser can scroll to it, and JavaScript in
-                the page can read it, but PHP never sees it.
+                <cde>#</cde> stays with the page: the browser can scroll to it, and
+                <term def="javascript">JavaScript</term> in the page can read it, but PHP never sees
+                it.
             </li>
             <li>
                 <strong>Build query strings, don't glue them.</strong> A value with an
@@ -187,8 +205,9 @@
 
         <side-story title="WWW Was Optional">
             The first website lived at <cde>info.cern.ch</cde>, no <cde>www</cde> in sight. The
-            <cde>www</cde> caught on as a convention, a way of saying "the web server is this
-            machine," and stuck around long after it stopped meaning anything.
+            <cde>www</cde> caught on as a convention, a way of saying "the
+            <term def="web-server">web server</term> is this machine," and stuck around long after
+            it stopped meaning anything.
         </side-story>
 
         <!-- $2 tip -->

@@ -23,9 +23,10 @@
         <p>
             <xref to="/php/updating-data">Updating Data</xref> ended with every price in the shop
             set to zero, and a <cde>ROLLBACK</cde> to put them back. <cde>DELETE</cde> has the same
-            missing-<cde>WHERE</cde> mistake, and a worse result: the rows are gone, along with
-            anything set up to go with them. This lesson is about deleting exactly what you mean to,
-            and about the times you shouldn't delete at all.
+            missing-<cde>WHERE</cde> mistake, and a worse result: the
+            <term def="row">rows</term> are gone, along with anything set up to go with them. This
+            lesson is about deleting exactly what you mean to, and about the times you shouldn't
+            delete at all.
         </p>
 
         <!-- What is/are -->
@@ -35,13 +36,15 @@
         <code-block>DELETE FROM `posts`
 WHERE `id` = 1;</code-block>
         <p>
-            Which table, and which rows. Like <cde>UPDATE</cde>, it does every row that matches the
-            <cde>WHERE</cde>, and every row in the table if there isn't one.
+            Which <term def="table">table</term>, and which rows. Like <cde>UPDATE</cde>, it does
+            every row that matches the <cde>WHERE</cde>, and every row in the table if there isn't
+            one.
         </p>
 
         <heading h3 id="what-happens-to-the-children">What Happens to the Children</heading>
         <p>
-            When a row has other rows pointing at it with a foreign key, as in
+            When a row has other rows pointing at it with a
+            <term def="foreign-key">foreign key</term>, as in
             <xref to="/php/relating-tables">Relating Tables</xref>, the key says what happens when
             it's deleted:
         </p>
@@ -56,7 +59,7 @@ WHERE `id` = 1;</code-block>
             </li>
             <li>
                 <strong>SET NULL</strong>: the rows pointing at it stay, with their foreign key set
-                to <cde>NULL</cde>. The column has to allow it.
+                to <cde>NULL</cde>. The <term def="column">column</term> has to allow it.
             </li>
         </list>
         <p>
@@ -69,13 +72,17 @@ WHERE `id` = 1;</code-block>
         <p>
             Not deleting the row at all, but marking it: a <cde>deleted_at</cde> column that's
             <cde>NULL</cde> until the moment it's "deleted." Nothing pointing at it breaks, and you
-            can undo it. The price is that every query has to leave the marked rows out, forever.
+            can undo it. The price is that every <term def="query">query</term> has to leave the
+            marked rows out, forever.
         </p>
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
-            <li>The database finds the rows that match the <cde>WHERE</cde>.</li>
+            <li>
+                The <term def="database">database</term> finds the rows that match the
+                <cde>WHERE</cde>.
+            </li>
             <li>
                 For each one, it checks the foreign keys pointing at it. If any is
                 <cde>RESTRICT</cde> and has rows, the whole delete is refused.
@@ -129,7 +136,7 @@ docker compose run --rm php php delete-post.php 1</code-block>
 WHERE `id` = 1;</code-block>
         <p>
             Refused: Alice still has a post, and that key is <cde>RESTRICT</cde>. Good. Then the
-            mistake, safely, inside a transaction:
+            mistake, safely, inside a <term def="transaction">transaction</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>START TRANSACTION;
@@ -145,8 +152,9 @@ SELECT COUNT(*)
 FROM `comments`;</code-block>
         <p>
             Zero, then one again. Without the <cde>START TRANSACTION</cde>, there would be nothing
-            to roll back to. Type <cde>exit</cde>. Last, the soft delete.
-            <cde>close-account.php</cde> marks a user as gone, and lists who's left:
+            to roll back to. Type <cde>exit</cde>. Last, the
+            <term def="soft-delete">soft delete</term>. <cde>close-account.php</cde> marks a user as
+            gone, and lists who's left:
         </p>
         <code-block example="deleting-data/close-account.php" />
         <!-- prettier-ignore -->
@@ -178,15 +186,17 @@ VALUES ('bo@example.com', 'Bo');</code-block>
                 The id to delete is input. <strong>Never trust input</strong>: check that it's a
                 whole number, then check that the row belongs to whoever is asking, in the same
                 <cde>WHERE</cde>: <cde>WHERE `id` = ? AND `user_id` = ?</cde>. Otherwise anyone can
-                delete anyone's post by changing a number in a URL.
+                delete anyone's post by changing a number in a <term def="url">URL</term>.
             </li>
             <li>
-                Deletes change things, so they come from a <cde>POST</cde> form, never a link.
-                <xref to="/php/csrf">CSRF</xref>, in Security, is why.
+                Deletes change things, so they come from a <cde>POST</cde>
+                <term def="form">form</term>, never a link. <xref to="/php/csrf">CSRF</xref>, in
+                Security, is why.
             </li>
             <li>
                 With soft deletes, add <cde>WHERE `deleted_at` IS NULL</cde> to every query. A view
-                or a single function that every query goes through makes it harder to forget.
+                or a single <term def="function">function</term> that every query goes through makes
+                it harder to forget.
             </li>
         </list>
 
@@ -229,7 +239,7 @@ VALUES ('bo@example.com', 'Bo');</code-block>
                 database, type <cde>START TRANSACTION;</cde>. Run the statement, read the row count,
                 and <cde>SELECT</cde> to check. Then <cde>COMMIT;</cde> if it's right, or
                 <cde>ROLLBACK;</cde> if it isn't. It costs two lines, and it's the only undo button
-                SQL has.
+                <term def="sql">SQL</term> has.
             </p>
         </two-dollars>
 

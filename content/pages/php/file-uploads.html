@@ -24,21 +24,22 @@
             <p>
                 <xref to="/php/secrets-out-of-code">Secrets Out of Code</xref> was about files you
                 should never let out. Uploads are the other direction: files a stranger puts on your
-                server. A profile photo, a PDF, a spreadsheet. Leonardo wrote it in his notebooks,
-                backward, so nobody would steal it:
-                <strong><xref to="/php/never-trust-input">never trust input</xref></strong>, and an upload is input all the way through: the bytes, the file's name, and the
-                type the browser says it is. Get it wrong in the worst way, and the stranger can run
-                any command on your server.
+                <term def="server">server</term>. A profile photo, a PDF, a spreadsheet. Leonardo
+                wrote it in his notebooks, backward, so nobody would steal it:
+                <strong><xref to="/php/never-trust-input">never trust input</xref></strong>, and an upload is input all the way through: the <term def="byte">bytes</term>,
+                the file's name, and the type the <term def="browser">browser</term> says it is. Get
+                it wrong in the worst way, and the stranger can run any command on your server.
             </p>
         </nti>
 
         <!-- What is/are -->
         <heading h2 id="whats-an-upload">What's an Upload?</heading>
         <p>
-            A form field of <cde>type="file"</cde>, in a form with <cde>method="post"</cde> and
-            <cde>enctype="multipart/form-data"</cde>. The browser sends the file's bytes in the
-            request body, with two labels that it, or whoever sent the request, chose: a file name
-            and a content type. See <xref to="/php/forms">Forms</xref> and
+            A <term def="form">form</term> field of <cde>type="file"</cde>, in a form with
+            <cde>method="post"</cde> and <cde>enctype="multipart/form-data"</cde>. The browser sends
+            the file's bytes in the <term def="request">request</term> <term def="body">body</term>,
+            with two labels that it, or whoever sent the request, chose: a file name and a
+            <term def="content-type">content type</term>. See <xref to="/php/forms">Forms</xref> and
             <xref to="/php/content-types">Content Types</xref>.
         </p>
 
@@ -59,10 +60,11 @@
         <heading h3 id="whats-a-web-shell">What's a Web Shell?</heading>
         <p>
             A small script that runs whatever command it's sent, and sends back the result. A few
-            lines of PHP. If someone can get one onto your server, somewhere the web server will run
-            it, they can do anything your app can do: read its files and secrets, reach its
-            database, and use the machine for whatever they like. The <sect>Try It</sect> below uses
-            a stand-in that only proves it ran, rather than a real shell; the point is the same.
+            lines of PHP. If someone can get one onto your server, somewhere the
+            <term def="web-server">web server</term> will run it, they can do anything your app can
+            do: read its files and secrets, reach its <term def="database">database</term>, and use
+            the machine for whatever they like. The <sect>Try It</sect> below uses a stand-in that
+            only proves it ran, rather than a real shell; the point is the same.
         </p>
 
         <!-- How it works -->
@@ -82,8 +84,9 @@
                 came with.
             </li>
             <li>
-                Move it to a folder outside the web root, where the web server can't hand it out or
-                run it. See <xref to="/php/document-root">Document Root</xref>.
+                Move it to a folder outside the <term def="web-root">web root</term>, where the web
+                server can't hand it out or run it. See
+                <xref to="/php/document-root">Document Root</xref>.
             </li>
             <li>
                 To show it, a PHP script reads it and sends it back, with a content type you chose
@@ -194,9 +197,9 @@
         </p>
         <code-block example="file-uploads/public/naive.php" />
         <p>
-            Now the attacker's upload, <cde>proof.php</cde>. A real attacker would send a web shell;
-            this stand-in only reports that it ran, as whom, and what it can see. Put it in an
-            <cde>attack</cde> folder:
+            Now the attacker's upload, <cde>proof.php</cde>. A real attacker would send a
+            <term def="web-shell">web shell</term>; this stand-in only reports that it ran, as whom,
+            and what it can see. Put it in an <cde>attack</cde> folder:
         </p>
         <code-block example="file-uploads/attack/proof.php" />
         <p>Upload it:</p>
@@ -225,9 +228,9 @@ Running as: root
 It can read your project: README.md, attack, public, storage</code-block>
         <p>
             The web server saw a <cde>.php</cde> file in its web root and ran it, as it would any
-            other, as root (the container runs as root), with your whole project in reach,
-            <cde>storage</cde> and all. Swap those three lines for a real web shell, and anything
-            your app can read, or do, an attacker can too.
+            other, as root (the <term def="container">container</term> runs as root), with your
+            whole project in reach, <cde>storage</cde> and all. Swap those three lines for a real
+            web shell, and anything your app can read, or do, an attacker can too.
         </p>
 
         <heading h3 id="fix-it">Fix It</heading>

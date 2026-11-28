@@ -21,15 +21,16 @@
 
         <!-- Intro -->
         <p>
-            The Signup Form stored a hash that's slow to crack from a stolen table. But nobody needs
-            the table if your sign-in page will check guesses for them, as many as they like, as
-            fast as it can. And a sign-in that checks the password perfectly can still hand the
-            account to someone else, if it lets them choose the session id beforehand.
+            The Signup Form stored a <term def="hash">hash</term> that's slow to crack from a stolen
+            <term def="table">table</term>. But nobody needs the table if your sign-in page will
+            check guesses for them, as many as they like, as fast as it can. And a sign-in that
+            checks the password perfectly can still hand the account to someone else, if it lets
+            them choose the <term def="session">session</term> id beforehand.
         </p>
         <p>
             You'll build a sign-in on MySQL the naive way, break into it twice, with a guessing
-            script and with session fixation, then fix both. The Protected Page project had a
-            sign-in with one member in a file; this is the real one.
+            script and with <term def="session-fixation">session fixation</term>, then fix both. The
+            Protected Page project had a sign-in with one member in a file; this is the real one.
         </p>
 
         <!-- What you'll use -->
@@ -96,7 +97,8 @@
         <heading h3 id="guess-until-it-works">Guess Until It Works</heading>
         <p>
             <cde>guess.php</cde> is a guessing script: a list of passwords, tried one after another
-            against a sign-in page, stopping when one gets a redirect instead of the form:
+            against a sign-in page, stopping when one gets a
+            <term def="redirect">redirect</term> instead of the <term def="form">form</term>:
         </p>
         <code-block example="project-login-form/guess.php" />
         <!-- prettier-ignore -->
@@ -118,16 +120,17 @@ Got in.</code-block>
         <heading h3 id="session-fixation">Choose the Session Id</heading>
         <p>
             The second attack doesn't guess anything. The attacker picks a session id, gets the
-            victim's browser to use it, and waits for them to sign in. Getting the id into the
-            browser is the hard part, and there are ways: a sign-in on a shared computer that the
-            attacker used first, a cookie set by a page on a sibling subdomain, or a site that
-            accepts session ids in links. Here, curl plays the victim:
+            victim's <term def="browser">browser</term> to use it, and waits for them to sign in.
+            Getting the id into the browser is the hard part, and there are ways: a sign-in on a
+            shared computer that the attacker used first, a <term def="cookie">cookie</term> set by
+            a page on a sibling <term def="subdomain">subdomain</term>, or a site that accepts
+            session ids in links. Here, curl plays the victim:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -b 'PHPSESSID=attacker-chosen-1' --data-urlencode 'password=correct horse battery staple' -d 'email=alice@example.com' http://localhost:8000/naive-login.php</code-block>
         <p class="text-th-muted text-base">
-            Same as before: <cde>-b</cde> sends a cookie with the request, here one the attacker
-            made up.
+            Same as before: <cde>-b</cde> sends a cookie with the
+            <term def="request">request</term>, here one the attacker made up.
         </p>
         <p>
             The naive page starts its session with PHP's defaults, so it accepted
@@ -147,16 +150,17 @@ Got in.</code-block>
         <heading h3 id="count-failures">Count the Failures</heading>
         <p>
             <cde>src/LoginLimiter.php</cde> counts failed sign-ins in the last fifteen minutes, by
-            address and by IP:
+            address and by <term def="ip-address">IP</term>:
         </p>
         <code-block example="project-login-form/src/LoginLimiter.php" />
         <p>
             Two limits, because there are two kinds of attack. Ten failures for one address stops
             someone guessing at one account. Fifty from one IP, across any addresses, stops someone
-            trying one common password against every account they can think of. The database is
-            given to the class, not looked up inside it, so a test can hand it any connection it
-            likes. The times come from MySQL's own clock, <cde>NOW()</cde>, for both the writing and
-            the counting, so the two can't disagree.
+            trying one common password against every account they can think of. The
+            <term def="database">database</term> is given to the <term def="class">class</term>, not
+            looked up inside it, so a test can hand it any connection it likes. The times come from
+            MySQL's own clock, <cde>NOW()</cde>, for both the writing and the counting, so the two
+            can't disagree.
         </p>
 
         <heading h3 id="the-fixed-sign-in">The Fixed Sign-In</heading>
@@ -170,7 +174,8 @@ Got in.</code-block>
                 different.
             </li>
             <li>
-                <strong>Strict mode.</strong> <cde>start_session()</cde> refuses an id the server
+                <strong>Strict mode.</strong> <cde>start_session()</cde> refuses an id the
+                <term def="server">server</term>
                 didn't make, and sends a fresh one instead.
             </li>
             <li>
@@ -222,13 +227,15 @@ curl -b 'PHPSESSID=attacker-chosen-2' http://localhost:8000/account.php</code-bl
             <li>
                 <strong>The IP is whatever your server sees.</strong> Behind a proxy, it's the
                 proxy, and fifty failures locks out the whole world. Here, even Docker shows it: the
-                guessing script runs inside the container and arrives from <cde>127.0.0.1</cde>,
-                while your browser arrives from Docker's own network, so they're counted apart. See
+                guessing script runs inside the <term def="container">container</term> and arrives
+                from <cde>127.0.0.1</cde>, while your browser arrives from Docker's own network, so
+                they're counted apart. See
                 <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
             <li>
-                <strong>The failures table grows.</strong> Delete rows older than the window on a
-                schedule, as in the <xref to="/php/projects/cron-jobs">Cron Jobs</xref> project.
+                <strong>The failures table grows.</strong> Delete <term def="row">rows</term> older
+                than the window on a schedule, as in the
+                <xref to="/php/projects/cron-jobs">Cron Jobs</xref> project.
             </li>
             <li>
                 <strong>Regenerate at every change of privilege.</strong> Signing in, signing out,

@@ -23,21 +23,23 @@
 
         <!-- Intro -->
         <p>
-            A response is headers, a blank line, then the body, in that order, from
-            <xref to="/php/request-and-response">Request and Response</xref>. Once the first byte of
-            the body goes out, the headers have gone with it, and there's no calling them back. So
-            <cde>session_start()</cde>, <cde>setcookie()</cde> and <cde>header()</cde> all have to
-            run before you print anything. Output buffering is how PHP lets you print first and
-            decide later.
+            A <term def="response">response</term> is <term def="header">headers</term>, a blank
+            line, then the <term def="body">body</term>, in that order, from
+            <xref to="/php/request-and-response">Request and Response</xref>. Once the first
+            <term def="byte">byte</term> of the body goes out, the headers have gone with it, and
+            there's no calling them back. So <cde>session_start()</cde>, <cde>setcookie()</cde> and
+            <cde>header()</cde> all have to run before you print anything. Output buffering is how
+            PHP lets you print first and decide later.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-output-buffering">What's Output Buffering?</heading>
         <p>
             A buffer is a holding area. With one turned on, <cde>echo</cde> and everything outside
-            <cde>&lt;?php ?&gt;</cde> tags go into the buffer instead of out to the browser. Nothing
-            has been sent yet, so the headers can still change. When you're ready, you send the
-            buffer, throw it away, or take what's in it as a string.
+            <cde>&lt;?php ?&gt;</cde> tags go into the buffer instead of out to the
+            <term def="browser">browser</term>. Nothing has been sent yet, so the headers can still
+            change. When you're ready, you send the buffer, throw it away, or take what's in it as a
+            <term def="string">string</term>.
         </p>
         <p>
             Buffers stack. Start one inside another, and the inner one fills first; end it, and what
@@ -64,8 +66,8 @@
                 <cde>Cannot modify header information - headers already sent</cde>.
             </li>
             <li>
-                When the script ends, anything still in a buffer is sent, then the web server passes
-                it all to the browser.
+                When the script ends, anything still in a buffer is sent, then the
+                <term def="web-server">web server</term> passes it all to the browser.
             </li>
         </ol>
         <p>
@@ -87,7 +89,10 @@
         <p>Serve the folder:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
-        <p>And from a second terminal, ask for both, with <cde>-i</cde> to see the headers:</p>
+        <p>
+            And from a second <term def="terminal">terminal</term>, ask for both, with
+            <cde>-i</cde> to see the headers:
+        </p>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/too-late.php
 curl -i http://localhost:8000/buffered.php</code-block>
@@ -98,7 +103,7 @@ curl -i http://localhost:8000/buffered.php</code-block>
         </p>
         <p>
             The everyday use is different: capturing a template as a string. Make
-            <cde>templates/greeting.php</cde>, outside the web root:
+            <cde>templates/greeting.php</cde>, outside the <term def="web-root">web root</term>:
         </p>
         <code-block example="output-buffering/templates/greeting.php" />
         <p>And <cde>public/index.php</cde>, which runs it into a buffer and keeps the result:</p>
@@ -107,9 +112,10 @@ curl -i http://localhost:8000/buffered.php</code-block>
         <code-block>curl -i 'http://localhost:8000/?name=Ada'</code-block>
         <p>
             The page, with a <cde>Content-Length</cde> header: the code knew the page's size before
-            it sent any of it. Send a name with HTML in it, <cde>?name=&lt;b&gt;Ada&lt;/b&gt;</cde>,
-            and it comes back as harmless text. The name is from the query string, and
-            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the template escapes it.
+            it sent any of it. Send a name with <term def="html">HTML</term> in it,
+            <cde>?name=&lt;b&gt;Ada&lt;/b&gt;</cde>, and it comes back as harmless text. The name is
+            from the <term def="query-string">query string</term>, and
+            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the template <term def="escaping">escapes</term> it.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -144,15 +150,15 @@ curl -i http://localhost:8000/buffered.php</code-block>
             <li>
                 <strong>A setting can hide the bug.</strong> With <cde>output_buffering</cde> at
                 4096, a page that prints a little before a <cde>header()</cde> works fine. Move it
-                to a server with it off, or print more than 4 KB first, and it breaks. Don't lean on
-                the setting: set headers first.
+                to a <term def="server">server</term> with it off, or print more than 4 KB first,
+                and it breaks. Don't lean on the setting: set headers first.
             </li>
             <li>
                 <strong>Invisible output counts.</strong> A blank line after a closing
                 <cde>?&gt;</cde> in an included file is output. So is a byte order mark, three
-                invisible bytes some editors put at the start of a UTF-8 file. Either one sends the
-                headers. Save files as UTF-8 without a BOM;
-                <xref to="/php/text-and-utf-8">Text and UTF-8</xref> has more.
+                invisible bytes some editors put at the start of a
+                <term def="utf-8">UTF-8</term> file. Either one sends the headers. Save files as
+                UTF-8 without a BOM; <xref to="/php/text-and-utf-8">Text and UTF-8</xref> has more.
             </li>
             <li>
                 <strong>A buffer is memory.</strong> Everything in it sits in RAM until it's sent.
@@ -170,13 +176,14 @@ curl -i http://localhost:8000/buffered.php</code-block>
             <p>
                 In a file that's only PHP, don't end it with <cde>?&gt;</cde>. PHP doesn't need it,
                 and without it, a stray blank line at the bottom of the file stays PHP's problem
-                instead of becoming output. The PSR-12 coding standard requires leaving it off.
+                instead of becoming output. The PSR-12
+                <term def="coding-standard">coding standard</term> requires leaving it off.
             </p>
         </two-dollars>
 
         <p>
             A page you can capture in a string is a page you can keep, and hand out again without
-            making it twice. Next: caching.
+            making it twice. Next: <term def="cache">caching</term>.
         </p>
 
         <!-- Next -->

@@ -21,11 +21,13 @@
 
         <!-- Intro -->
         <p>
-            <xref to="/php/inserting-data">Inserting Data</xref> put rows in. Almost every page of a
-            web app takes rows out: a list, a profile, an order with its items. <cde>SELECT</cde> is
-            the statement you'll write most, and it can do a lot more than fetch a table. Done well,
-            one query brings back exactly what a page needs. Done badly, a page asks the database a
-            hundred small questions, and nobody notices until the site is slow.
+            <xref to="/php/inserting-data">Inserting Data</xref> put <term def="row">rows</term> in.
+            Almost every page of a web app takes rows out: a list, a profile, an order with its
+            items. <cde>SELECT</cde> is the statement you'll write most, and it can do a lot more
+            than fetch a <term def="table">table</term>. Done well, one
+            <term def="query">query</term> brings back exactly what a page needs. Done badly, a page
+            asks the <term def="database">database</term> a hundred small questions, and nobody
+            notices until the site is slow.
         </p>
 
         <!-- What is/are -->
@@ -39,7 +41,10 @@ WHERE `books`.`rating` &gt;= 4
 ORDER BY `books`.`title`
 LIMIT 10;</code-block>
         <list>
-            <li><strong>SELECT</strong>: which columns. Name them, rather than <cde>*</cde>.</li>
+            <li>
+                <strong>SELECT</strong>: which <term def="column">columns</term>. Name them, rather
+                than <cde>*</cde>.
+            </li>
             <li>
                 <strong>FROM</strong> and <strong>JOIN</strong>: which tables, and how they line up.
             </li>
@@ -54,15 +59,15 @@ LIMIT 10;</code-block>
             an author, and authors that have books. A <cde>LEFT JOIN</cde> keeps every row from the
             left table, matched or not, and fills the right side with <cde>NULL</cde> where there's
             no match: every author, including the ones with no books yet. Always say which one you
-            mean. A bare <cde>JOIN</cde> is an inner join, but nobody reading it can tell you meant
-            that.
+            mean. A bare <cde>JOIN</cde> is an <term def="join">inner join</term>, but nobody
+            reading it can tell you meant that.
         </p>
 
         <heading h3 id="null">NULL</heading>
         <p>
             <cde>NULL</cde> means "no value": unknown, missing, not rated yet. It isn't zero, and it
-            isn't an empty string. And it isn't equal to anything, itself included:
-            <cde>NULL = NULL</cde> isn't true, it's <cde>NULL</cde>. To find it, ask
+            isn't an empty <term def="string">string</term>. And it isn't equal to anything, itself
+            included: <cde>NULL = NULL</cde> isn't true, it's <cde>NULL</cde>. To find it, ask
             <cde>IS NULL</cde> or <cde>IS NOT NULL</cde>.
         </p>
 
@@ -70,8 +75,8 @@ LIMIT 10;</code-block>
             Edgar Codd, who invented the relational model, thought one <cde>NULL</cde> wasn't
             enough. In 1990 he proposed two: one for "there's a value, but we don't know it," like
             an unrated book, and one for "there's no value to know," like the middle name of someone
-            who doesn't have one. SQL never adopted the idea. It has one <cde>NULL</cde>, and you
-            decide what it means, column by column.
+            who doesn't have one. <term def="sql">SQL</term> never adopted the idea. It has one
+            <cde>NULL</cde>, and you decide what it means, column by column.
         </side-story>
 
         <!-- How it works -->
@@ -100,8 +105,8 @@ LIMIT 10;</code-block>
             authors, then, in the loop, one query for each author's books. For 4 authors that's 5
             queries. For 200, it's 201. Each one is fast, and each one is a round trip to the
             database, so the page gets slower with every author, and no single query ever looks
-            slow. That's the N+1 query: one, plus one for each of N rows. The fix is to ask once,
-            with a join, and sort the rows out in PHP.
+            slow. That's the <term def="n-plus-one">N+1 query</term>: one, plus one for each of N
+            rows. The fix is to ask once, with a join, and sort the rows out in PHP.
         </p>
 
         <!-- Try it -->
@@ -189,8 +194,9 @@ docker compose run --rm php php list.php 2</code-block>
         <list>
             <li>
                 <cde>fetch()</cde> gets the next row, or <cde>false</cde> when there are none;
-                <cde>fetchAll()</cde> gets every row as an array; <cde>fetchColumn()</cde> gets one
-                value; <cde>fetchAll(PDO::FETCH_COLUMN)</cde> gets one column as a list.
+                <cde>fetchAll()</cde> gets every row as an <term def="array">array</term>;
+                <cde>fetchColumn()</cde> gets one value; <cde>fetchAll(PDO::FETCH_COLUMN)</cde> gets
+                one column as a list.
             </li>
             <li>
                 A <cde>NULL</cde> from the database is a <cde>null</cde> in PHP. Check for it with

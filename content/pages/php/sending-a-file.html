@@ -23,19 +23,21 @@
 
         <!-- Intro -->
         <p>
-            A web server can hand out any file in the document root by itself. The files that need
-            PHP are the ones it shouldn't hand out to just anyone: a report for logged-in users, an
-            invoice that belongs to one customer, an export built on request. PHP checks who's
-            asking, then sends the file. <xref to="/php/content-types">Content Types</xref> showed
-            the headers that turn a response into a download. This lesson sends a real file with
-            them, including one too big to fit in memory.
+            A <term def="web-server">web server</term> can hand out any file in the
+            <term def="document-root">document root</term> by itself. The files that need PHP are
+            the ones it shouldn't hand out to just anyone: a report for logged-in users, an invoice
+            that belongs to one customer, an export built on request. PHP checks who's asking, then
+            sends the file. <xref to="/php/content-types">Content Types</xref> showed the
+            <term def="header">headers</term> that turn a <term def="response">response</term> into
+            a download. This lesson sends a real file with them, including one too big to fit in
+            memory.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-download">What's a Download?</heading>
         <p>
-            An ordinary response, labeled so the browser saves it instead of showing it. Two headers
-            do the labeling:
+            An ordinary response, labeled so the <term def="browser">browser</term> saves it instead
+            of showing it. Two headers do the labeling:
         </p>
         <list>
             <li>
@@ -57,17 +59,18 @@
         <p>
             The name in <cde>Content-Disposition</cde> doesn't have to match the file on disk.
             Usually it shouldn't: on disk the file can be <cde>4f1c9a.csv</cde>, and the visitor
-            gets <cde>sales-report.csv</cde>. A name with characters outside ASCII goes in a second
-            form, <cde>filename*</cde>, written as UTF-8 and percent-encoded, with a plain
-            <cde>filename</cde> beside it for old browsers.
+            gets <cde>sales-report.csv</cde>. A name with characters outside
+            <term def="ascii">ASCII</term> goes in a second form, <cde>filename*</cde>, written as
+            <term def="utf-8">UTF-8</term> and <term def="encoding">percent-encoded</term>, with a
+            plain <cde>filename</cde> beside it for old browsers.
         </p>
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                A request asks for a file, by some name or id in the query string, like
-                <cde>?file=report</cde>.
+                A <term def="request">request</term> asks for a file, by some name or id in the
+                <term def="query-string">query string</term>, like <cde>?file=report</cde>.
             </li>
             <li>
                 PHP decides whether to send it: whether the file is one it offers, and whether this
@@ -82,24 +85,26 @@
         <nti>
             <p>
                 Step two is where downloads go wrong. The name in the query string is input, and
-                <strong><xref to="/php/never-trust-input">never trust input</xref></strong>. Build a path from it, and someone will ask for <cde>../.env</cde>, and get it,
-                because, as the prophecy foretold, the code forgot to never trust input. Look it up
-                in a list of the files you offer instead, and anything not on the list is a 404.
+                <strong><xref to="/php/never-trust-input">never trust input</xref></strong>. Build a <term def="path">path</term> from it, and someone will ask for
+                <cde>../.env</cde>, and get it, because, as the prophecy foretold, the code forgot
+                to never trust input. Look it up in a list of the files you offer instead, and
+                anything not on the list is a 404.
             </p>
         </nti>
         <p>
-            Step four is where they get slow. Reading the whole file into a string first means
-            holding all of it in memory, for every download running at once. Sending it a piece at a
-            time means each download needs only a few kilobytes.
+            Step four is where they get slow. Reading the whole file into a
+            <term def="string">string</term> first means holding all of it in memory, for every
+            download running at once. Sending it a piece at a time means each download needs only a
+            few kilobytes.
         </p>
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            A folder with a <cde>files</cde> folder (the files to send, outside the web root) and a
-            <cde>public</cde> folder (the web root). In <cde>files</cde>, put any small CSV as
-            <cde>report.csv</cde> and <cde>menu.csv</cde>. Then a script to make a big one,
-            <cde>make-big-file.php</cde>:
+            A folder with a <cde>files</cde> folder (the files to send, outside the
+            <term def="web-root">web root</term>) and a <cde>public</cde> folder (the web root). In
+            <cde>files</cde>, put any small <term def="csv">CSV</term> as <cde>report.csv</cde> and
+            <cde>menu.csv</cde>. Then a script to make a big one, <cde>make-big-file.php</cde>:
         </p>
         <code-block example="sending-a-file/make-big-file.php" />
         <!-- prettier-ignore -->
@@ -123,14 +128,14 @@
         <p>
             Open <cde>http://localhost:8000/download.php?file=report</cde> in a browser: it saves
             <cde>sales-report.csv</cde>, though the file on disk is <cde>report.csv</cde>. Then,
-            from a second terminal, look at the menu's headers:
+            from a second <term def="terminal">terminal</term>, look at the menu's headers:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -I 'http://localhost:8000/download.php?file=menu'</code-block>
         <p>
             <cde>filename="caf_-menu.csv"</cde> for old browsers, and
             <cde>filename*=UTF-8''caf%C3%A9-menu.csv</cde> for everything else: the é, as its two
-            UTF-8 bytes. Now the big one, both ways:
+            UTF-8 <term def="byte">bytes</term>. Now the big one, both ways:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -o everyone.csv 'http://localhost:8000/download.php?file=big'
@@ -172,8 +177,9 @@ curl 'http://localhost:8000/all-at-once.php' | tail -c 300</code-block>
             <li><cde>filesize($path)</cde> for the <cde>Content-Length</cde> header.</li>
             <li><cde>rawurlencode()</cde> builds the percent-encoded <cde>filename*</cde>.</li>
             <li>
-                For a file you build as you go, like an export from the database, open
-                <cde>php://output</cde> with <cde>fopen()</cde> and write it a row at a time with
+                For a file you build as you go, like an export from the
+                <term def="database">database</term>, open <cde>php://output</cde> with
+                <cde>fopen()</cde> and write it a <term def="row">row</term> at a time with
                 <cde>fputcsv()</cde>. The Exporting Data project does this.
             </li>
             <li>
@@ -217,21 +223,22 @@ curl 'http://localhost:8000/all-at-once.php' | tail -c 300</code-block>
         </list>
 
         <side-story title="Resume Where You Left Off">
-            HTTP/1.1, published in 1997, added range requests: a client can ask for "bytes from here
-            to there" of a file instead of all of it. In the dial-up years, that's what let a
-            download that died at 90% pick up at 90% instead of starting over. Web servers answer
-            range requests for the files they serve themselves. A PHP script that calls
-            <cde>readfile()</cde> doesn't, unless you write that part yourself.
+            HTTP/1.1, published in 1997, added range requests: a
+            <term def="client">client</term> can ask for "bytes from here to there" of a file
+            instead of all of it. In the dial-up years, that's what let a download that died at 90%
+            pick up at 90% instead of starting over. Web servers answer range requests for the files
+            they serve themselves. A PHP script that calls <cde>readfile()</cde> doesn't, unless you
+            write that part yourself.
         </side-story>
 
         <!-- $2 tip -->
         <two-dollars title="Let nginx carry it">
             <p>
                 Behind nginx, PHP can check the visitor, then answer with one header,
-                <cde>X-Accel-Redirect: /protected/report.csv</cde>, and no body. nginx sends the
-                file itself, from a location marked <cde>internal</cde> that visitors can't ask for
-                directly, with range requests and all. Apache has the same idea as
-                <cde>X-Sendfile</cde>, through a module.
+                <cde>X-Accel-Redirect: /protected/report.csv</cde>, and no
+                <term def="body">body</term>. nginx sends the file itself, from a location marked
+                <cde>internal</cde> that visitors can't ask for directly, with range requests and
+                all. Apache has the same idea as <cde>X-Sendfile</cde>, through a module.
             </p>
         </two-dollars>
 

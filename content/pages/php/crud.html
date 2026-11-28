@@ -21,22 +21,23 @@
 
         <!-- Intro -->
         <p>
-            Single Point of Entry gave every page a row in a table of routes. Look at the routes of
-            almost any app, and most of them come in sets of four, one set for each kind of thing it
-            keeps: notes, users, orders, posts. Make one, show it, change it, delete it. That set
-            has a name.
+            Single Point of Entry gave every page a row in a table of
+            <term def="route">routes</term>. Look at the routes of almost any app, and most of them
+            come in sets of four, one set for each kind of thing it keeps: notes, users, orders,
+            posts. Make one, show it, change it, delete it. That set has a name.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-crud">What's CRUD?</heading>
         <p>
-            Create, Read, Update, Delete. Each one has a SQL statement, from the
-            <xref to="/php/sql">SQL</xref> lessons, and a usual way to ask for it over HTTP:
+            Create, Read, Update, Delete. Each one has a <term def="sql">SQL</term> statement, from
+            the <xref to="/php/sql">SQL</xref> lessons, and a usual way to ask for it over
+            <term def="http">HTTP</term>:
         </p>
         <list>
             <li>
-                <strong>Create</strong>: <cde>INSERT</cde>. A form that <cde>POST</cde>s to
-                <cde>/notes</cde>.
+                <strong>Create</strong>: <cde>INSERT</cde>. A <term def="form">form</term> that
+                <cde>POST</cde>s to <cde>/notes</cde>.
             </li>
             <li>
                 <strong>Read</strong>: <cde>SELECT</cde>. <cde>GET /</cde> for the list,
@@ -52,17 +53,19 @@
             </li>
         </list>
         <p>
-            HTML forms can only send <cde>GET</cde> and <cde>POST</cde>, so a page in a browser uses
-            <cde>POST</cde> for all three changes and tells them apart by URL. An API can use
-            <cde>PUT</cde>, <cde>PATCH</cde> and <cde>DELETE</cde> too; that's
-            <xref to="/php/rest">REST</xref>, two lessons from now.
+            <term def="html">HTML</term> forms can only send <cde>GET</cde> and <cde>POST</cde>, so
+            a page in a <term def="browser">browser</term> uses <cde>POST</cde> for all three
+            changes and tells them apart by <term def="url">URL</term>. An
+            <term def="api">API</term> can use <cde>PUT</cde>, <cde>PATCH</cde> and
+            <cde>DELETE</cde> too; that's <xref to="/php/rest">REST</xref>, two lessons from now.
         </p>
 
         <side-story title="SEQUEL">
-            The relational database comes from Edgar F. Codd's 1970 paper, "A Relational Model of
-            Data for Large Shared Data Banks," written at IBM. Donald Chamberlin and Raymond Boyce,
-            also at IBM, designed a language for it called SEQUEL. The name was already a trademark,
-            so it became SQL, which is why people still say it both ways.
+            The relational <term def="database">database</term> comes from Edgar F. Codd's 1970
+            paper, "A Relational Model of Data for Large Shared Data Banks," written at IBM. Donald
+            Chamberlin and Raymond Boyce, also at IBM, designed a language for it called SEQUEL. The
+            name was already a trademark, so it became SQL, which is why people still say it both
+            ways.
         </side-story>
 
         <tk
@@ -79,8 +82,9 @@
             </li>
             <li>
                 <strong>Create, Update and Delete</strong> are <cde>POST</cde>s. Each checks its
-                input, runs one prepared statement, and answers with a <cde>303</cde> redirect back
-                to a <cde>GET</cde> page: Post/Redirect/Get, from
+                input, runs one <term def="prepared-statement">prepared statement</term>, and
+                answers with a <cde>303</cde> <term def="redirect">redirect</term> back to a
+                <cde>GET</cde> page: Post/Redirect/Get, from
                 <xref to="/php/request-and-response">Request and Response</xref>.
             </li>
             <li>
@@ -102,13 +106,13 @@
         <code-block example="crud/compose.yml" />
         <p>The two-line <cde>Dockerfile</cde> that adds MySQL support to PHP:</p>
         <code-block example="crud/Dockerfile" />
-        <p><cde>init.sql</cde>, the table and two notes to start with:</p>
+        <p><cde>init.sql</cde>, the <term def="table">table</term> and two notes to start with:</p>
         <code-block example="crud/init.sql" />
         <p><cde>src/db.php</cde>, the connection:</p>
         <code-block example="crud/src/db.php" />
         <p>
-            <cde>src/notes.php</cde>, one function per letter, plus the check every note has to
-            pass:
+            <cde>src/notes.php</cde>, one <term def="function">function</term> per letter, plus the
+            check every note has to pass:
         </p>
         <code-block example="crud/src/notes.php" />
         <p><cde>src/views.php</cde>, the two pages:</p>
@@ -128,7 +132,7 @@
         <p>
             Open <cde>http://localhost:8000</cde>. Add a note, edit it, delete one. Every change
             lands you back on the list, so reloading never sends it twice. Then from a second
-            terminal, try what a form would never send:
+            <term def="terminal">terminal</term>, try what a form would never send:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i -d 'body=' http://localhost:8000/notes
@@ -136,8 +140,9 @@ curl -i -d 'body=Hello' http://localhost:8000/notes/99
 curl -i -X DELETE http://localhost:8000/notes/1</code-block>
         <p>
             An empty note is a <cde>422</cde>, with the reason. Updating a note that isn't there is
-            a <cde>404</cde>. A method the app doesn't take is a <cde>405</cde>. The browser's
-            <cde>required</cde> and <cde>maxlength</cde> never ran, and the server caught it anyway:
+            a <cde>404</cde>. A <term def="http-method">method</term> the app doesn't take is a
+            <cde>405</cde>. The browser's <cde>required</cde> and <cde>maxlength</cde> never ran,
+            and the <term def="server">server</term> caught it anyway:
             <xref to="/php/never-trust-input">never trust input</xref>.
             <cde>docker compose down -v</cde> stops it and throws the data away.
         </p>
@@ -153,7 +158,8 @@ curl -i -X DELETE http://localhost:8000/notes/1</code-block>
                 from outside. Always. See <xref to="/php/sql-injection">SQL Injection</xref>.
             </li>
             <li>
-                <cde>$db-&gt;lastInsertId()</cde> after an <cde>INSERT</cde>, for the new row's id.
+                <cde>$db-&gt;lastInsertId()</cde> after an <cde>INSERT</cde>, for the new
+                <term def="row">row</term>'s id.
             </li>
             <li>
                 <cde>$statement-&gt;rowCount()</cde> after an <cde>UPDATE</cde> or
@@ -190,9 +196,10 @@ curl -i -X DELETE http://localhost:8000/notes/1</code-block>
                 whoever is asking, and answer <cde>404</cde> when it doesn't.
             </li>
             <li>
-                <strong>Delete is forever.</strong> Many apps "soft delete" instead: a
-                <cde>deleted_at</cde> column, set rather than removed, and every Read that leaves
-                those rows out. It's kinder to people who click the wrong button.
+                <strong>Delete is forever.</strong> Many apps "<term def="soft-delete"
+                    >soft delete</term>" instead: a <cde>deleted_at</cde> <term def="column">column</term>, set rather
+                than removed, and every Read that leaves those rows out. It's kinder to people who
+                click the wrong button.
             </li>
         </list>
 
@@ -208,7 +215,8 @@ curl -i -X DELETE http://localhost:8000/notes/1</code-block>
 
         <p>
             <cde>src/notes.php</cde> mixes two jobs: talking to the <cde>notes</cde> table, and
-            passing around rows as plain arrays. Splitting those apart gives you three small classes
+            passing around rows as plain <term def="array">arrays</term>. Splitting those apart
+            gives you three small <term def="class">classes</term>
             with clear names. Next: model, table, mapper.
         </p>
 

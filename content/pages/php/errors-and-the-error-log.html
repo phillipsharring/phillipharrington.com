@@ -21,8 +21,9 @@
 
         <!-- Intro -->
         <p>
-            Every lesson so far has had a line that went wrong on purpose: a header sent too late, a
-            <cde>TypeError</cde>, a missing variable. Each time, PHP said something. What it says
+            Every lesson so far has had a line that went wrong on purpose: a
+            <term def="header">header</term> sent too late, a <cde>TypeError</cde>, a missing
+            <term def="variable">variable</term>. Each time, PHP said something. What it says
             depends on how bad the problem is, and where it says it depends on a few settings. On
             your computer, you want every message in your face. On a live site, you want every
             message in a log and none of them on the page.
@@ -42,8 +43,9 @@
             </li>
             <li>
                 <strong>Warning:</strong> something is wrong, and PHP carries on anyway. Reading a
-                variable or array key that doesn't exist is a warning, and you get <cde>null</cde>.
-                Carrying on is often worse than stopping: the page runs with a hole in it.
+                variable or <term def="array">array</term> key that doesn't exist is a warning, and
+                you get <cde>null</cde>. Carrying on is often worse than stopping: the page runs
+                with a hole in it.
             </li>
             <li>
                 <strong>Fatal error:</strong> PHP stops the script, right there. A parse error, a
@@ -53,17 +55,17 @@
 
         <heading h3 id="exceptions">Exceptions</heading>
         <p>
-            An exception is an error your code can catch and handle. Code throws one with
-            <cde>throw new RuntimeException('...')</cde>, and PHP throws its own for many problems:
-            a <cde>TypeError</cde>, a <cde>ValueError</cde>, dividing by zero. If nothing catches
-            it, it becomes a fatal error: "Uncaught RuntimeException." Catching them is
-            <xref to="/php/exceptions">Exceptions and Try/Catch</xref>.
+            An <term def="exception">exception</term> is an error your code can catch and handle.
+            Code throws one with <cde>throw new RuntimeException('...')</cde>, and PHP throws its
+            own for many problems: a <cde>TypeError</cde>, a <cde>ValueError</cde>, dividing by
+            zero. If nothing catches it, it becomes a fatal error: "Uncaught RuntimeException."
+            Catching them is <xref to="/php/exceptions">Exceptions and Try/Catch</xref>.
         </p>
 
         <heading h3 id="the-error-log">The Error Log</heading>
         <p>
             A file, or a stream, where PHP writes one line per error: when, what, which file, which
-            line. It's the same idea as the server logs in
+            line. It's the same idea as the <term def="server">server</term> logs in
             <xref to="/php/access-and-error-logs">Access and Error Logs</xref>, and often the same
             place.
         </p>
@@ -88,28 +90,35 @@
                 <cde>display_errors</cde>: print the message into the output, so it shows up on the
                 page. On while you're building. <strong>Off in production, always.</strong>
             </li>
-            <li><cde>log_errors</cde>: write the message to the error log. On, everywhere.</li>
             <li>
-                <cde>error_log</cde>: where the log is. Set it to a file path, or leave it empty and
-                PHP hands the message to whatever is running it: the terminal for the command line
-                and the built-in server, the web server's own error log under Apache, PHP-FPM's log
+                <cde>log_errors</cde>: write the message to the
+                <term def="error-log">error log</term>. On, everywhere.
+            </li>
+            <li>
+                <cde>error_log</cde>: where the log is. Set it to a file
+                <term def="path">path</term>, or leave it empty and PHP hands the message to
+                whatever is running it: the <term def="terminal">terminal</term> for the
+                <term def="command-line">command line</term> and the built-in server, the
+                <term def="web-server">web server</term>'s own error log under Apache, PHP-FPM's log
                 under FPM.
             </li>
         </ol>
         <p>
-            Why off in production: an error message is written for you, and it's full of things
-            nobody else should see. File paths, the line of code that failed, sometimes the SQL
-            query, sometimes a value from your settings. On a live page, it's a free map of your app
-            for whoever is attacking it.
+            Why off in <term def="production">production</term>: an error message is written for
+            you, and it's full of things nobody else should see. File paths, the line of code that
+            failed, sometimes the <term def="sql">SQL</term> <term def="query">query</term>,
+            sometimes a value from your settings. On a live page, it's a free map of your app for
+            whoever is attacking it.
         </p>
 
         <heading h3 id="in-docker">Where the Log Is in Docker</heading>
         <p>
-            A container's habit is to write logs to its own output, not to files, and PHP's images
-            follow it: with no <cde>error_log</cde> set, messages go to the terminal you started the
-            container in, or to <cde>docker logs</cde> and the container's name if it's running in
-            the background. The official PHP-FPM images point FPM's log there too. When you're
-            hunting for "the PHP log" in a container, start with <cde>docker logs</cde>.
+            A <term def="container">container</term>'s habit is to write logs to its own output, not
+            to files, and PHP's images follow it: with no <cde>error_log</cde> set, messages go to
+            the terminal you started the container in, or to <cde>docker logs</cde> and the
+            container's name if it's running in the background. The official PHP-FPM images point
+            FPM's log there too. When you're hunting for "the PHP log" in a container, start with
+            <cde>docker logs</cde>.
         </p>
 
         <!-- Try it -->
@@ -222,11 +231,13 @@ curl -i 'http://localhost:8000/?problem=exception'</code-block>
         <!-- $2 tip -->
         <two-dollars title="Dump to the log">
             <p>
-                When you can't print to the page, like in the middle of a redirect or an API
-                response, dump to the log instead: <cde>error_log(print_r($thing, true));</cde>. The
-                <cde>true</cde> makes <cde>print_r()</cde> return the text instead of printing it.
-                Watch it arrive with <cde>docker logs -f</cde> in another terminal, and take the
-                line out when you're done.
+                When you can't print to the page, like in the middle of a
+                <term def="redirect">redirect</term> or an <term def="api">API</term>
+                <term def="response">response</term>, dump to the log instead:
+                <cde>error_log(print_r($thing, true));</cde>. The <cde>true</cde> makes
+                <cde>print_r()</cde> return the text instead of printing it. Watch it arrive with
+                <cde>docker logs -f</cde> in another terminal, and take the line out when you're
+                done.
             </p>
         </two-dollars>
 

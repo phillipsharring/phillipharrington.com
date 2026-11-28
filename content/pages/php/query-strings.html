@@ -22,9 +22,9 @@
         <!-- Intro -->
         <p>
             Anatomy of a URL named the part after the <cde>?</cde>. It's the simplest way there is
-            to send a little data along with a request: a search, a sort order, a page number, a
-            filter. It's also the most public. It sits right there in the address bar, where anyone
-            can read it, copy it, bookmark it, or change it.
+            to send a little data along with a <term def="request">request</term>: a search, a sort
+            order, a page number, a filter. It's also the most public. It sits right there in the
+            address bar, where anyone can read it, copy it, bookmark it, or change it.
         </p>
 
         <!-- What is/are -->
@@ -35,12 +35,14 @@
         <list>
             <li>Pairs of <cde>name=value</cde>, joined with <cde>&amp;</cde>.</li>
             <li>
-                Encoded, so they survive the trip: a space is <cde>+</cde> or <cde>%20</cde>, an
-                <cde>&amp;</cde> inside a value is <cde>%26</cde>.
+                <term def="encoding">Encoded</term>, so they survive the trip: a space is
+                <cde>+</cde> or <cde>%20</cde>, an <cde>&amp;</cde> inside a value is
+                <cde>%26</cde>.
             </li>
             <li>
                 Repeatable. PHP's convention: a name ending in <cde>[]</cde>, like <cde>tag[]</cde>,
-                collects every value into an array. <cde>filter[color]=red</cde>
+                collects every value into an <term def="array">array</term>.
+                <cde>filter[color]=red</cde>
                 makes an array with keys.
             </li>
         </list>
@@ -56,10 +58,12 @@
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                Something builds the URL: a link, a search form, JavaScript, or a person typing.
+                Something builds the <term def="url">URL</term>: a link, a search
+                <term def="form">form</term>, <term def="javascript">JavaScript</term>, or a person
+                typing.
             </li>
             <li>
-                The browser sends it as part of the request line:
+                The <term def="browser">browser</term> sends it as part of the request line:
                 <cde>GET /search?q=red+shoes</cde>.
             </li>
             <li>
@@ -68,10 +72,10 @@
             </li>
         </ol>
         <p>
-            Use a query string for things that describe what to show: what to search for, how to
-            sort, which page. Those are safe to repeat, worth bookmarking, and worth sharing. Don't
-            use one for anything that changes data (that's a POST, from Request and Response), or
-            for anything secret.
+            Use a <term def="query-string">query string</term> for things that describe what to
+            show: what to search for, how to sort, which page. Those are safe to repeat, worth
+            bookmarking, and worth sharing. Don't use one for anything that changes data (that's a
+            POST, from Request and Response), or for anything secret.
         </p>
         <nti>
             <p>
@@ -79,7 +83,8 @@
                 <strong><xref to="/php/never-trust-input">never trust input</xref>.</strong>
                 Whatever you expect in <cde>$_GET</cde>, someone can send anything else instead. A
                 missing value, an empty one, a word where you wanted a number, a negative page, an
-                array where you wanted a string. Your code decides what to accept.
+                array where you wanted a <term def="string">string</term>. Your code decides what to
+                accept.
             </p>
         </nti>
 
@@ -91,7 +96,8 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p class="text-th-muted text-base">
-            The usual server: PHP's built-in one, in a container, on port 8000.
+            The usual <term def="server">server</term>: PHP's built-in one, in a
+            <term def="container">container</term>, on <term def="port">port</term> 8000.
         </p>
         <p>Open this, and see what PHP made of it:</p>
         <!-- prettier-ignore -->
@@ -107,8 +113,9 @@
             <cde>page</cde> as a word. The code at the top shrugged both off: an empty search, page
             1. Try <cde>page=-5</cde> too. And try a search for
             <cde>&lt;script&gt;alert(1)&lt;/script&gt;</cde>: it comes back as plain text, because
-            the page says it's <cde>text/plain</cde>. On an HTML page you'd have to escape it
-            yourself. That's the XSS lesson, in Security.
+            the page says it's <cde>text/plain</cde>. On an <term def="html">HTML</term> page you'd
+            have to <term def="escaping">escape</term> it yourself. That's the
+            <term def="xss">XSS</term> lesson, in Security.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -141,7 +148,8 @@
             <li>
                 <strong>A string can arrive as an array.</strong> Add <cde>[]</cde> to any name, and
                 PHP makes it an array. Code that passes <cde>$_GET['q']</cde> straight to a string
-                function then crashes. Check the type before you use it.
+                <term def="function">function</term> then crashes. Check the
+                <term def="type">type</term> before you use it.
             </li>
             <li>
                 <strong>Query strings are public.</strong> They're written to server logs, saved in
@@ -154,7 +162,7 @@
             </li>
             <li>
                 <strong>They have a length limit.</strong> Around 2,000 characters is safe
-                everywhere. Big data goes in a POST body instead.
+                everywhere. Big data goes in a POST <term def="body">body</term> instead.
             </li>
         </list>
 

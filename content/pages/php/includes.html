@@ -23,8 +23,8 @@
         <p>
             A site with ten pages has one header and one footer, not ten copies of each. Put them in
             their own files, and have each page pull them in. That's an include. It's also how your
-            functions, your settings, and eventually your whole app get split into files you can
-            find things in.
+            <term def="function">functions</term>, your settings, and eventually your whole app get
+            split into files you can find things in.
         </p>
 
         <!-- What is/are -->
@@ -49,8 +49,8 @@
 
         <heading h3 id="paths">Paths</heading>
         <p>
-            Build every include path from <cde>__DIR__</cde>, the folder the current file is in, as
-            <xref to="/php/document-root">Document Root</xref> did:
+            Build every include <term def="path">path</term> from <cde>__DIR__</cde>, the folder the
+            current file is in, as <xref to="/php/document-root">Document Root</xref> did:
             <cde>require __DIR__ . '/functions.php';</cde>. A bare <cde>'functions.php'</cde> is
             looked up through a setting called <cde>include_path</cde> and the current directory,
             which can be anything depending on how PHP was started.
@@ -61,15 +61,16 @@
             An included file can end with <cde>return</cde>, and the include gives you that value.
             So a settings file can be just <cde>return ['site_name' =&gt; 'Example Shop'];</cde>,
             and <cde>$config = require __DIR__ . '/config.php';</cde> hands it to you, with no
-            global variable involved.
+            global <term def="variable">variable</term> involved.
         </p>
 
         <side-story title="Server Side Includes">
-            Before PHP, early web servers like NCSA HTTPd had Server Side Includes: a comment in an
-            HTML page, like <cde>&lt;!--#include virtual="/footer.html" --&gt;</cde>, which the
-            server replaced with the other file before sending the page. Shared headers and footers
-            were one of the first things anyone wanted from a web server, and it's one of the first
-            things PHP made easy.
+            Before PHP, early <term def="web-server">web servers</term> like NCSA HTTPd had Server
+            Side Includes: a comment in an <term def="html">HTML</term> page, like
+            <cde>&lt;!--#include virtual="/footer.html" --&gt;</cde>, which the
+            <term def="server">server</term> replaced with the other file before sending the page.
+            Shared headers and footers were one of the first things anyone wanted from a web server,
+            and it's one of the first things PHP made easy.
         </side-story>
 
         <!-- How it works -->
@@ -77,12 +78,13 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>PHP reaches the <cde>require</cde> line and works out the path.</li>
             <li>
-                It reads that file from disk. Not through a URL: the file can be, and should be,
-                outside the document root.
+                It reads that file from disk. Not through a <term def="url">URL</term>: the file can
+                be, and should be, outside the <term def="document-root">document root</term>.
             </li>
             <li>
-                It runs the file in the same scope as the line that included it. The included file
-                sees the same variables, and any it sets are there afterward.
+                It runs the file in the same <term def="scope">scope</term> as the line that
+                included it. The included file sees the same variables, and any it sets are there
+                afterward.
             </li>
             <li>
                 The included file's output goes into the page at that spot, like everything else.
@@ -102,8 +104,8 @@
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            A small site, from pieces. Only one file goes in <cde>public/</cde>, the web root. In a
-            folder, make <cde>public/index.php</cde>:
+            A small site, from pieces. Only one file goes in <cde>public/</cde>, the
+            <term def="web-root">web root</term>. In a folder, make <cde>public/index.php</cde>:
         </p>
         <code-block example="includes/public/index.php" />
         <p>Next to <cde>public/</cde>, the settings, <cde>config.php</cde>:</p>
@@ -174,9 +176,10 @@
         <list>
             <li>
                 <strong>Never build an include path from input.</strong>
-                <cde>require "pages/$page.php"</cde> with <cde>$page</cde> straight from the query
-                string lets a visitor climb out with <cde>../</cde> and run files you never meant to
-                be pages. Check against an allow list, as the example does.
+                <cde>require "pages/$page.php"</cde> with <cde>$page</cde> straight from the
+                <term def="query-string">query string</term> lets a visitor climb out with
+                <cde>../</cde> and run files you never meant to be pages. Check against an allow
+                list, as the example does.
                 <xref to="/php/projects/log-viewer">The Log Viewer project</xref> attacks this kind
                 of path on purpose.
             </li>
@@ -193,8 +196,9 @@
             </li>
             <li>
                 <strong>"Cannot redeclare."</strong> Including a file of functions twice, from two
-                different places, is fatal. <cde>require_once</cde> it, or later, let an autoloader
-                handle it: <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref>.
+                different places, is fatal. <cde>require_once</cde> it, or later, let an
+                <term def="autoloading">autoloader</term> handle it:
+                <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref>.
             </li>
         </list>
 

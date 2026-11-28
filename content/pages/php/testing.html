@@ -23,18 +23,19 @@
 
         <!-- Intro -->
         <p>
-            The harness in the last lesson had five checks in an array. It works, and it'll keep
-            working until there are fifty, and you want to know which one failed and what came back
-            instead, and run only the ones about links. That's what a testing framework is for. The
-            hard part, getting the code into pieces small enough to test, you've already done. This
-            is the easy part.
+            The harness in the last lesson had five checks in an <term def="array">array</term>. It
+            works, and it'll keep working until there are fifty, and you want to know which one
+            failed and what came back instead, and run only the ones about links. That's what a
+            testing framework is for. The hard part, getting the code into pieces small enough to
+            test, you've already done. This is the easy part.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-test">What's a Test?</heading>
         <p>
-            A small method that runs a piece of your code and checks one thing about the result.
-            Each test has the same three parts, often in this order, with a blank line between:
+            A small <term def="method">method</term> that runs a piece of your code and checks one
+            thing about the result. Each test has the same three parts, often in this order, with a
+            blank line between:
         </p>
         <list>
             <li><strong>Arrange</strong>: make what the code needs.</li>
@@ -45,23 +46,23 @@
             </li>
         </list>
         <p>
-            A test that checks one small piece on its own, with nothing else running, is a unit
-            test. That's most of what you'll write.
+            A test that checks one small piece on its own, with nothing else running, is a
+            <term def="unit-test">unit test</term>. That's most of what you'll write.
         </p>
 
         <heading h3 id="phpunit">PHPUnit</heading>
         <p>
-            The standard testing framework for PHP, installed with Composer. Tests are classes that
-            extend <cde>TestCase</cde>, in a <cde>tests</cde> folder; each method whose name starts
-            with <cde>test</cde> is one test. Pest is a popular alternative, built on top of
-            PHPUnit, with a shorter way of writing the same tests. Learn PHPUnit first, and Pest
-            reads easily.
+            The standard testing framework for PHP, installed with Composer. Tests are
+            <term def="class">classes</term> that extend <cde>TestCase</cde>, in a
+            <cde>tests</cde> folder; each method whose name starts with <cde>test</cde> is one test.
+            Pest is a popular alternative, built on top of PHPUnit, with a shorter way of writing
+            the same tests. Learn PHPUnit first, and Pest reads easily.
         </p>
 
         <heading h3 id="fakes">Fakes</heading>
         <p>
-            A stand-in for a dependency, so a test doesn't need the real thing. The
-            <cde>MemoryMailer</cde> from
+            A stand-in for a <term def="dependency">dependency</term>, so a test doesn't need the
+            real thing. The <cde>MemoryMailer</cde> from
             <xref to="/php/dependency-injection">Dependency Injection</xref> is one: it keeps emails
             in a list, and the test reads the list. This is where injection pays for itself. A class
             that makes its own mailer can't be handed a fake.
@@ -85,8 +86,8 @@
             </li>
             <li>It loads every test class in the folder.</li>
             <li>
-                For each test method, it makes a fresh object of the class and calls the method, so
-                no test can leave anything behind for the next one.
+                For each test method, it makes a fresh <term def="object">object</term> of the class
+                and calls the method, so no test can leave anything behind for the next one.
             </li>
             <li>
                 An assertion that fails stops that test and records what was expected and what came
@@ -110,9 +111,10 @@
         <code-block example="testing/composer.json" />
         <p>
             PHPUnit is in <cde>require-dev</cde>: it's for development, and
-            <cde>composer install --no-dev</cde> leaves it off the server.
-            <cde>autoload.files</cde> loads <cde>verification.php</cde>, which has functions, not a
-            class. Then <cde>phpunit.xml</cde>, which tells PHPUnit where things are:
+            <cde>composer install --no-dev</cde> leaves it off the <term def="server">server</term>.
+            <cde>autoload.files</cde> loads <cde>verification.php</cde>, which has
+            <term def="function">functions</term>, not a class. Then <cde>phpunit.xml</cde>, which
+            tells PHPUnit where things are:
         </p>
         <code-block example="testing/phpunit.xml" />
         <p>Install:</p>
@@ -197,9 +199,9 @@ Tests: 13, Assertions: 15, Failures: 1.</code-block>
         <list>
             <li>
                 <strong>A test that has never failed might not test anything.</strong> An assertion
-                on the wrong variable, or a test method PHPUnit never ran because of a typo in its
-                name, passes forever. Break the code once and watch the test catch it, as in the Try
-                It.
+                on the wrong <term def="variable">variable</term>, or a test method PHPUnit never
+                ran because of a typo in its name, passes forever. Break the code once and watch the
+                test catch it, as in the Try It.
             </li>
             <li>
                 <strong
@@ -209,8 +211,9 @@ Tests: 13, Assertions: 15, Failures: 1.</code-block>
             </li>
             <li>
                 <strong>Statics and globals leak between tests.</strong> PHPUnit makes a fresh test
-                object every time, but a static property set in one test is still set in the next,
-                as <xref to="/php/constants-and-statics">Constants and Statics</xref> warned.
+                object every time, but a static <term def="property">property</term> set in one test
+                is still set in the next, as
+                <xref to="/php/constants-and-statics">Constants and Statics</xref> warned.
             </li>
             <li>
                 <strong>Test what it does, not how.</strong> A test that checks which private method
@@ -220,7 +223,7 @@ Tests: 13, Assertions: 15, Failures: 1.</code-block>
             <li>
                 <strong>Passing tests aren't proof.</strong> They prove the cases you thought of.
                 The bugs are usually in the ones you didn't, which is why the input tests try links
-                that are edited, empty and the wrong type.
+                that are edited, empty and the wrong <term def="type">type</term>.
             </li>
         </list>
 

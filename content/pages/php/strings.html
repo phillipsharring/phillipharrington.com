@@ -21,20 +21,21 @@
 
         <!-- Intro -->
         <p>
-            A web app is mostly text going in and out: names, emails, comments, URLs, the HTML
-            itself. In PHP, text is a string, and PHP has more functions for strings than for
-            anything else. You need about a dozen of them most days. This lesson is those, and the
-            ways of writing a string down.
+            A web app is mostly text going in and out: names, emails, comments,
+            <term def="url">URLs</term>, the <term def="html">HTML</term> itself. In PHP, text is a
+            <term def="string">string</term>, and PHP has more
+            <term def="function">functions</term> for strings than for anything else. You need about
+            a dozen of them most days. This lesson is those, and the ways of writing a string down.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-string">What's a String?</heading>
         <p>
-            A row of bytes, usually text. PHP doesn't care what the bytes are, so a string can hold
-            a name, a whole HTML page, or the contents of an image. For text, those bytes are nearly
-            always UTF-8, where one letter can take more than one byte.
-            <xref to="/php/text-and-utf-8">Text and UTF-8</xref>, next, is about that. This lesson
-            sticks to plain English, where a byte and a letter are the same.
+            A row of <term def="byte">bytes</term>, usually text. PHP doesn't care what the bytes
+            are, so a string can hold a name, a whole HTML page, or the contents of an image. For
+            text, those bytes are nearly always <term def="utf-8">UTF-8</term>, where one letter can
+            take more than one byte. <xref to="/php/text-and-utf-8">Text and UTF-8</xref>, next, is
+            about that. This lesson sticks to plain English, where a byte and a letter are the same.
         </p>
 
         <heading h3 id="quotes">Single and Double Quotes</heading>
@@ -47,8 +48,9 @@
             <li>
                 <strong>Double quotes</strong> fill things in: <cde>"Hello, $name\n"</cde> puts the
                 value of <cde>$name</cde> in, and <cde>\n</cde> becomes a new line. Wrap the
-                variable in braces, <cde>"{$count} items"</cde>, when it's next to other letters or
-                it's an array item, like <cde>"{$order['id']}"</cde>.
+                <term def="variable">variable</term> in braces, <cde>"{$count} items"</cde>, when
+                it's next to other letters or it's an <term def="array">array</term> item, like
+                <cde>"{$order['id']}"</cde>.
             </li>
         </list>
         <p>
@@ -75,7 +77,11 @@
         <heading h2 id="how-it-works">How It Works</heading>
         <p>Nearly every string from outside goes through the same few steps:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
-            <li>It arrives as input: a form field, a query string, a header, a line in a file.</li>
+            <li>
+                It arrives as input: a <term def="form">form</term> field, a
+                <term def="query-string">query string</term>, a <term def="header">header</term>, a
+                line in a file.
+            </li>
             <li>
                 You check it's a string at all, then clean it: <cde>trim()</cde> takes the spaces
                 off both ends, because people paste them in.
@@ -87,8 +93,10 @@
             </li>
             <li>You work with it: change case, replace, split, join.</li>
             <li>
-                You send it out, escaped for wherever it's going: <cde>htmlspecialchars()</cde> for
-                HTML, a prepared statement for SQL.
+                You send it out, <term def="escaping">escaped</term> for wherever it's going:
+                <cde>htmlspecialchars()</cde> for HTML, a
+                <term def="prepared-statement">prepared statement</term> for
+                <term def="sql">SQL</term>.
             </li>
         </ol>
         <nti>
@@ -179,10 +187,11 @@
         <!-- $2 tip -->
         <two-dollars title="Number the blanks">
             <p>
-                <cde>sprintf()</cde> can say which argument goes where: <cde>%1$s</cde> is the
-                first, <cde>%2$s</cde> the second, and you can use one twice or out of order.
-                <cde>sprintf('%2$s, %1$s', 'Ada', 'Lovelace')</cde> is "Lovelace, Ada." It's what
-                makes one pattern work in languages that put words in a different order.
+                <cde>sprintf()</cde> can say which <term def="argument">argument</term> goes where:
+                <cde>%1$s</cde> is the first, <cde>%2$s</cde> the second, and you can use one twice
+                or out of order. <cde>sprintf('%2$s, %1$s', 'Ada', 'Lovelace')</cde> is "Lovelace,
+                Ada." It's what makes one pattern work in languages that put words in a different
+                order.
             </p>
         </two-dollars>
 

@@ -22,14 +22,16 @@
         <!-- Intro -->
         <p>
             Every project so far has kept its data in files. From here on, most of it goes in a
-            database. This one is a small library catalog: a table of books, a search box, and a
-            choice of how to sort the results. It's the most ordinary database page there is.
+            <term def="database">database</term>. This one is a small library catalog: a
+            <term def="table">table</term> of books, a search box, and a choice of how to sort the
+            results. It's the most ordinary database page there is.
         </p>
         <p>
-            It's also where SQL injection lives. Build the search by pasting what someone typed into
-            the SQL, and they're no longer searching your database; they're writing queries for it.
-            You'll do exactly that, use it to read a table the page never meant to show, then fix it
-            for good.
+            It's also where <term def="sql-injection">SQL injection</term> lives. Build the search
+            by pasting what someone typed into the <term def="sql">SQL</term>, and they're no longer
+            searching your database; they're writing <term def="query">queries</term> for it. You'll
+            do exactly that, use it to read a table the page never meant to show, then fix it for
+            good.
         </p>
 
         <!-- What you'll use -->
@@ -57,13 +59,14 @@
 
         <heading h3 id="the-database">The Database</heading>
         <p>
-            A new project folder. MySQL runs in one container and PHP in another, so first the PHP
-            image, a <cde>Dockerfile</cde> that adds PDO's MySQL driver:
+            A new project folder. MySQL runs in one <term def="container">container</term> and PHP
+            in another, so first the PHP image, a <cde>Dockerfile</cde> that adds PDO's MySQL
+            driver:
         </p>
         <code-block example="project-something-database-y/Dockerfile" />
         <p>
             Then <cde>compose.yml</cde>, which starts MySQL, waits until it's healthy, and then
-            starts PHP's server on port 8000:
+            starts PHP's <term def="server">server</term> on <term def="port">port</term> 8000:
         </p>
         <code-block example="project-something-database-y/compose.yml" />
         <p>
@@ -72,26 +75,29 @@
         </p>
         <code-block example="project-something-database-y/init.sql" />
         <p>
-            <cde>SET NAMES utf8mb4</cde> makes sure "Misérables" arrives as UTF-8, and
-            <cde>utf8mb4_0900_ai_ci</cde> is a collation that compares text without caring about
-            accents or case, so a search for "mise" finds it.
+            <cde>SET NAMES utf8mb4</cde> makes sure "Misérables" arrives as
+            <term def="utf-8">UTF-8</term>, and <cde>utf8mb4_0900_ai_ci</cde> is a
+            <term def="collation">collation</term> that compares text without caring about accents
+            or case, so a search for "mise" finds it.
         </p>
 
         <heading h3 id="the-connection">The Connection</heading>
         <p><cde>src/db.php</cde>:</p>
         <code-block example="project-something-database-y/src/db.php" />
         <p>
-            Errors become exceptions, the connection speaks <cde>utf8mb4</cde>, and
-            <cde>ATTR_EMULATE_PREPARES</cde> is off, so prepared statements really are sent to MySQL
-            in two parts, the query and then the values.
+            Errors become <term def="exception">exceptions</term>, the connection speaks
+            <cde>utf8mb4</cde>, and <cde>ATTR_EMULATE_PREPARES</cde> is off, so
+            <term def="prepared-statement">prepared statements</term> really are sent to MySQL in
+            two parts, the query and then the values.
         </p>
 
         <heading h3 id="the-naive-search">The Naive Search</heading>
         <p>Build the naive search as <cde>public/naive.php</cde>:</p>
         <code-block example="project-something-database-y/public/naive.php" />
         <p>
-            The search and the sort go straight into the SQL string. The output is escaped, so this
-            is about the database and nothing else. Start it all:
+            The search and the sort go straight into the SQL <term def="string">string</term>. The
+            output is <term def="escaping">escaped</term>, so this is about the database and nothing
+            else. Start it all:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose up --build</code-block>
@@ -106,7 +112,7 @@
 
         <!-- Break it -->
         <heading h2 id="break-it">Break It</heading>
-        <p>Search for a single quote. In a second terminal:</p>
+        <p>Search for a single quote. In a second <term def="terminal">terminal</term>:</p>
         <!-- prettier-ignore -->
         <code-block>curl "http://localhost:8000/naive.php?q=%27"</code-block>
         <!-- prettier-ignore -->
@@ -114,8 +120,9 @@
         <p>
             Your quote ended the string in the SQL early, and MySQL choked on what was left. That
             error is the attacker's first clue: what you type becomes SQL. So type SQL. This search
-            ends the string, adds a second <cde>SELECT</cde> with three columns to match the first,
-            and turns the rest of the original query into a comment with <cde>--</cde>:
+            ends the string, adds a second <cde>SELECT</cde> with three
+            <term def="column">columns</term> to match the first, and turns the rest of the original
+            query into a comment with <cde>--</cde>:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -G --data-urlencode "q=' UNION SELECT email, password_hash, 0 FROM users -- " http://localhost:8000/naive.php</code-block>
@@ -134,12 +141,13 @@
         <code-block>&lt;tr&gt;&lt;td&gt;admin@example.com&lt;/td&gt;&lt;td&gt;$2y$12$V7YmYyHThlzBFxJ50/IaK.NxdbvumRLq0B6SP9OoE1Zzm8.NxxwmS&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;
 &lt;tr&gt;&lt;td&gt;librarian@example.com&lt;/td&gt;&lt;td&gt;$2y$12$pXjePItb5XPrLW28lDK/tuRc/2Xpp/fA7bfvOj.qZhL05PItyzNSG&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;</code-block>
         <p>
-            Every user's address and password hash, in a table labeled "Title, Author, Year." The
-            page never asked for the users table; the visitor did. With a little more typing, the
-            same hole reads any table this database user can see. The sort is a second hole of the
-            same kind: <cde>?sort=</cde> goes into <cde>ORDER BY</cde> untouched. (This setup
-            refuses a second statement after a <cde>;</cde>, so a <cde>DROP TABLE</cde> fails here.
-            A <cde>UNION</cde> doesn't need one.)
+            Every user's address and password <term def="hash">hash</term>, in a table labeled
+            "Title, Author, Year." The page never asked for the users table; the visitor did. With a
+            little more typing, the same hole reads any table this database user can see. The sort
+            is a second hole of the same kind: <cde>?sort=</cde> goes into
+            <cde>ORDER BY</cde> untouched. (This setup refuses a second statement after a
+            <cde>;</cde>, so a <cde>DROP TABLE</cde> fails here. A <cde>UNION</cde> doesn't need
+            one.)
         </p>
         <p>
             <strong>Never trust input.</strong> The fix is not to look for quotes, or the word
@@ -166,13 +174,13 @@
             </li>
             <li>
                 <strong>Sorting from an allow list.</strong> Placeholders hold values, never column
-                names or SQL keywords, so <cde>ORDER BY :sort</cde> can't work. The request picks a
-                key in <cde>$sorts</cde>, and the SQL comes from your array. Anything else gets
-                <cde>title</cde>.
+                names or SQL keywords, so <cde>ORDER BY :sort</cde> can't work. The
+                <term def="request">request</term> picks a key in <cde>$sorts</cde>, and the SQL
+                comes from your <term def="array">array</term>. Anything else gets <cde>title</cde>.
             </li>
             <li>
                 <strong>Errors stay private.</strong> If the query fails, the details go to the
-                error log and the visitor gets one polite sentence.
+                <term def="error-log">error log</term> and the visitor gets one polite sentence.
             </li>
         </list>
         <p>Send it the same attack:</p>
@@ -189,8 +197,9 @@
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>Escaping is not the fix.</strong> Functions that add backslashes before
-                quotes depend on the connection's character set, and there have been ways around
+                <strong>Escaping is not the fix.</strong> <term def="function">Functions</term> that
+                add backslashes before quotes depend on the connection's
+                <term def="character-set">character set</term>, and there have been ways around
                 them. Prepared statements don't escape anything; the value never becomes part of the
                 SQL text. Use them for every value, every time, even ones you think are safe.
             </li>
@@ -222,8 +231,8 @@
         <!-- $2 tip -->
         <two-dollars title="Search your code for a dollar sign in SQL">
             <p>
-                Grep your project for query strings with a variable in them:
-                <cde>grep -rnE 'SELECT.*\$|WHERE.*\$' src public</cde>. Every hit is either a
+                Grep your project for query strings with a <term def="variable">variable</term> in
+                them: <cde>grep -rnE 'SELECT.*\$|WHERE.*\$' src public</cde>. Every hit is either a
                 placeholder you forgot, or a column name that needs an allow list. It's a crude
                 check, and it finds real holes in about a minute.
             </p>
@@ -231,7 +240,7 @@
 
         <p>
             The users table you just leaked had password hashes in it, which is how it should be.
-            Next, the form that puts them there: a signup form.
+            Next, the <term def="form">form</term> that puts them there: a signup form.
         </p>
 
         <!-- Next -->

@@ -21,19 +21,22 @@
 
         <!-- Intro -->
         <p>
-            MVC ended with two entry points, <cde>index.php</cde> and <cde>item.php</cde>, that
-            repeated the same setup line for line. Two is annoying. Twenty is a security problem,
-            because the setup is where the login check lives, and one of the twenty will forget it.
-            The fix is to have one entry point, and send every request through it.
+            <term def="mvc">MVC</term> ended with two entry points, <cde>index.php</cde> and
+            <cde>item.php</cde>, that repeated the same setup line for line. Two is annoying. Twenty
+            is a security problem, because the setup is where the login check lives, and one of the
+            twenty will forget it. The fix is to have one entry point, and send every
+            <term def="request">request</term> through it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-single-point-of-entry">What's a Single Point of Entry?</heading>
         <p>
             One PHP file, usually <cde>public/index.php</cde>, that every request goes to, whatever
-            its URL. It's also called a front controller. It does the setup once, looks the path up
-            in a list of routes, checks whether this visitor may see it, and only then runs the code
-            for that page. The pages themselves move out of the web root, where no URL can reach
+            its <term def="url">URL</term>. It's also called a
+            <term def="front-controller">front controller</term>. It does the setup once, looks the
+            <term def="path">path</term> up in a list of <term def="route">routes</term>, checks
+            whether this visitor may see it, and only then runs the code for that page. The pages
+            themselves move out of the <term def="web-root">web root</term>, where no URL can reach
             them directly.
         </p>
 
@@ -56,18 +59,22 @@
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                The web server is told: if the URL is a real file in <cde>public/</cde>, like a
-                stylesheet, send it; otherwise, run <cde>index.php</cde>.
+                The <term def="web-server">web server</term> is told: if the URL is a real file in
+                <cde>public/</cde>, like a stylesheet, send it; otherwise, run <cde>index.php</cde>.
             </li>
             <li>
-                <cde>index.php</cde> does the setup every page needs: settings, autoloader, user.
+                <cde>index.php</cde> does the setup every page needs: settings,
+                <term def="autoloading">autoloader</term>, user.
             </li>
             <li>It looks up the path in the routes. No route, <cde>404</cde>.</li>
             <li>
                 It checks the route's rules against the visitor: logged in, the right role. One
                 check, for every page, written once.
             </li>
-            <li>It runs the page's code, often a controller method, and sends the result.</li>
+            <li>
+                It runs the page's code, often a <term def="controller">controller</term>
+                <term def="method">method</term>, and sends the result.
+            </li>
         </ol>
 
         <!-- Try it -->
@@ -110,8 +117,8 @@ curl http://localhost:8000/admin.php</code-block>
         <code-block example="single-point-of-entry/after/public/style.css" />
         <code-block example="single-point-of-entry/after/public/index.php" />
         <p>
-            Start PHP's server with <cde>index.php</cde> named at the end, which makes it the router
-            script for every request:
+            Start PHP's <term def="server">server</term> with <cde>index.php</cde> named at the end,
+            which makes it the router script for every request:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t after/public after/public/index.php</code-block>
@@ -148,11 +155,12 @@ curl -i -H 'Authorization: Bearer root-token' http://localhost:8000/admin</code-
             </li>
             <li>
                 <cde>parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)</cde> gets the path without
-                the query string, ready to look up.
+                the <term def="query-string">query string</term>, ready to look up.
             </li>
             <li>
                 Real routers, like <cde>nikic/fast-route</cde> through Composer, add placeholders
-                (<cde>/notes/{id}</cde>) and methods. The idea is the same table.
+                (<cde>/notes/{id}</cde>) and <term def="http-method">methods</term>. The idea is the
+                same table.
             </li>
         </list>
 
@@ -198,7 +206,7 @@ curl -i -H 'Authorization: Bearer root-token' http://localhost:8000/admin</code-
 
         <p>
             Most of the routes in most apps do the same four things to different kinds of data: make
-            one, show it, change it and delete it. Next: CRUD.
+            one, show it, change it and delete it. Next: <term def="crud">CRUD</term>.
         </p>
 
         <!-- Next -->

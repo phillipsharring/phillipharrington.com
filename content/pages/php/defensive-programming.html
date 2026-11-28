@@ -22,9 +22,10 @@
         <!-- Intro -->
         <p>
             A file that only declares things can be used from anywhere, which means it will be
-            called by code you didn't write, with values you didn't expect. Defensive programming is
-            writing each function so that when it's handed something wrong, it says so right away,
-            instead of quietly working out a wrong answer for someone else to find.
+            called by code you didn't write, with values you didn't expect.
+            <term def="defensive-programming">Defensive programming</term> is writing each
+            <term def="function">function</term> so that when it's handed something wrong, it says
+            so right away, instead of quietly working out a wrong answer for someone else to find.
         </p>
 
         <!-- What is/are -->
@@ -40,19 +41,21 @@
         <p>
             A function that gets nonsense has two choices: carry on, or stop. Carrying on looks
             friendlier, and it's how a negative price ends up on an invoice three steps later, far
-            from the line that caused it. Stopping, with an exception that says what was wrong and
-            what the value was, puts the error next to its cause.
+            from the line that caused it. Stopping, with an
+            <term def="exception">exception</term> that says what was wrong and what the value was,
+            puts the error next to its cause.
         </p>
 
         <heading h3 id="validating-vs-defending">Validating vs. Defending</heading>
         <nti>
             <p>
                 Two jobs that look alike. <strong>Validating</strong> happens at the edge, where
-                input arrives: a form, a URL, an API call. Bad input there is normal, and it gets a
-                polite answer for a person. <strong>Defending</strong> happens inside: a function
-                checking its own arguments. Bad values there mean a bug, and they get an exception
-                for a programmer. You need both. As Sun Tzu wrote in chapter fourteen of
-                <em>The Art of War</em>,
+                input arrives: a <term def="form">form</term>, a <term def="url">URL</term>, an
+                <term def="api">API</term> call. Bad input there is normal, and it gets a polite
+                answer for a person. <strong>Defending</strong> happens inside: a function checking
+                its own <term def="argument">arguments</term>. Bad values there mean a bug, and they
+                get an exception for a programmer. You need both. As Sun Tzu wrote in chapter
+                fourteen of <em>The Art of War</em>,
                 <xref to="/php/never-trust-input">never trust input</xref> at the edge, and don't
                 let a mistake inside pass in silence.
             </p>
@@ -71,8 +74,10 @@
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                Let the types do what they can. With <cde>declare(strict_types=1)</cde>, an
-                <cde>int</cde> parameter refuses a string, even <cde>'25'</cde>.
+                Let the <term def="type">types</term> do what they can. With
+                <cde>declare(strict_types=1)</cde>, an <cde>int</cde>
+                <term def="parameter">parameter</term> refuses a <term def="string">string</term>,
+                even <cde>'25'</cde>.
             </li>
             <li>
                 Check what types can't say, first thing: ranges, empty strings, states that make no
@@ -83,8 +88,9 @@
                 return <cde>false</cde>, <cde>null</cde> or <cde>0</cde> and hope someone checks.
             </li>
             <li>
-                At the edge, validate input before it reaches those functions, and answer the person
-                politely. The function's check is for the mistake you didn't think of.
+                At the edge, <term def="validation">validate</term> input before it reaches those
+                functions, and answer the person politely. The function's check is for the mistake
+                you didn't think of.
             </li>
         </ol>
 
@@ -134,17 +140,18 @@ curl -i 'http://localhost:8000/shop.php?code=FREE'</code-block>
             </li>
             <li>
                 <cde>InvalidArgumentException</cde> for an argument that's the right type and the
-                wrong value; <cde>DomainException</cde> or your own exception class for a state that
-                shouldn't happen. See <xref to="/php/exceptions">Exceptions and Try/Catch</xref>.
+                wrong value; <cde>DomainException</cde> or your own exception
+                <term def="class">class</term> for a state that shouldn't happen. See
+                <xref to="/php/exceptions">Exceptions and Try/Catch</xref>.
             </li>
             <li>
                 <cde>match</cde> with no <cde>default</cde> throws <cde>UnhandledMatchError</cde>
                 for a case you didn't list, instead of falling through.
             </li>
             <li>
-                <cde>assert()</cde> checks things in development. In production it's normally
-                switched off (<cde>zend.assertions = -1</cde>), so never use it for anything that
-                has to happen.
+                <cde>assert()</cde> checks things in development. In
+                <term def="production">production</term> it's normally switched off (<cde
+                    >zend.assertions = -1</cde>), so never use it for anything that has to happen.
             </li>
         </list>
 
@@ -154,7 +161,7 @@ curl -i 'http://localhost:8000/shop.php?code=FREE'</code-block>
             <li>
                 <strong>Exceptions aren't for users.</strong> A visitor who types a bad code should
                 see "That code isn't one of ours," not a stack trace. Validate at the edge, and let
-                exceptions inside reach your error log, not the page.
+                exceptions inside reach your <term def="error-log">error log</term>, not the page.
             </li>
             <li>
                 <strong>Returning <cde>false</cde> on failure is a trap.</strong> Somebody will
@@ -170,15 +177,17 @@ curl -i 'http://localhost:8000/shop.php?code=FREE'</code-block>
             <li>
                 <strong>The checks are input handling too.</strong> <cde>shop.php</cde> checks that
                 <cde>code</cde> is a string before trimming it: ask for <cde>?code[]=HALF</cde>, and
-                PHP hands you an array. Never trust input to be the type you expect.
+                PHP hands you an <term def="array">array</term>. Never trust input to be the type
+                you expect.
             </li>
         </list>
 
         <side-story title="Ariane 5">
             In 1996, the first Ariane 5 rocket broke up less than a minute after launch. Its
             guidance software had been reused from Ariane 4, and one conversion, from a 64-bit
-            floating-point number to a 16-bit integer, wasn't protected, because on Ariane 4 the
-            value could never get that big. Ariane 5 was faster. The number overflowed, the guidance
+            <term def="float">floating-point</term> number to a 16-bit
+            <term def="integer">integer</term>, wasn't protected, because on Ariane 4 the value
+            could never get that big. Ariane 5 was faster. The number overflowed, the guidance
             system shut down, and the backup, running the same code, had already done the same.
         </side-story>
 
@@ -199,7 +208,7 @@ curl -i 'http://localhost:8000/shop.php?code=FREE'</code-block>
 
         <p>
             Checks like these are easy to copy into every place that needs them, and every copy is
-            one more place to forget when the rule changes. Next: DRY.
+            one more place to forget when the rule changes. Next: <term def="dry">DRY</term>.
         </p>
 
         <!-- Next -->

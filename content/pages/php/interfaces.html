@@ -23,29 +23,32 @@
 
         <!-- Intro -->
         <p>
-            An abstract class shares code. Sometimes there's no code to share, only an agreement.
-            The code that sends a reminder doesn't care whether it goes by email, by text, or onto
-            the screen while you're testing. It cares that whatever it's handed can send. An
-            interface is that agreement, written down where PHP can check it.
+            An <term def="abstract-class">abstract class</term> shares code. Sometimes there's no
+            code to share, only an agreement. The code that sends a reminder doesn't care whether it
+            goes by email, by text, or onto the screen while you're testing. It cares that whatever
+            it's handed can send. An <term def="interface">interface</term> is that agreement,
+            written down where PHP can check it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-an-interface">What's an Interface?</heading>
         <p>
-            A named list of public methods, with their signatures and no bodies. A class that says
+            A named list of public <term def="method">methods</term>, with their signatures and no
+            bodies. A <term def="class">class</term> that says
             <cde>implements Notifier</cde> promises to have every method on the list, and PHP holds
             it to that.
         </p>
         <p>
-            Then a function can ask for a <cde>Notifier</cde> instead of a particular class. Any
-            object whose class implements it will do, including classes written years later.
+            Then a <term def="function">function</term> can ask for a <cde>Notifier</cde> instead of
+            a particular class. Any <term def="object">object</term> whose class implements it will
+            do, including classes written years later.
         </p>
 
         <heading h3 id="interface-or-abstract-class">Interface or Abstract Class?</heading>
         <list>
             <li>
-                <strong>An interface</strong> has no code and no properties. A class can implement
-                as many as it likes.
+                <strong>An interface</strong> has no code and no
+                <term def="property">properties</term>. A class can implement as many as it likes.
             </li>
             <li><strong>An abstract class</strong> can have both. A class can extend only one.</li>
         </list>
@@ -127,7 +130,10 @@
                 <cde>JsonSerializable</cde> for <cde>json_encode()</cde>, <cde>Stringable</cde> for
                 anything with a <cde>__toString()</cde>.
             </li>
-            <li>Interfaces can hold constants, too: <cde>Notifier::MAX_LENGTH</cde>.</li>
+            <li>
+                Interfaces can hold <term def="constant">constants</term>, too:
+                <cde>Notifier::MAX_LENGTH</cde>.
+            </li>
         </list>
 
         <!-- Gotchas -->
@@ -162,14 +168,16 @@
             <p>
                 Write the interface for the code that uses it, not the class that implements it.
                 <cde>remindAll()</cde> needs <cde>send()</cde>, so <cde>Notifier</cde> has
-                <cde>send()</cde>, and nothing about SMTP servers or retries. The smaller it is, the
-                easier it is to write a second one, a fake one for tests included.
+                <cde>send()</cde>, and nothing about <term def="smtp">SMTP</term>
+                <term def="server">servers</term> or retries. The smaller it is, the easier it is to
+                write a second one, a fake one for tests included.
             </p>
         </two-dollars>
 
         <p>
             Every example so far has started with a row of <cde>require</cde> lines, one for each
-            class. PHP can find the files by itself. Next: autoloading with Composer and PSR-4.
+            class. PHP can find the files by itself. Next:
+            <term def="autoloading">autoloading</term> with Composer and PSR-4.
         </p>
 
         <!-- Next -->

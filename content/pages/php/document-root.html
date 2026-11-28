@@ -23,19 +23,21 @@
 
         <!-- Intro -->
         <p>
-            At the end of every chain in What's in the Middle is a server with a folder. Ask for
-            <cde>/images/logo.png</cde>, and it goes looking for a file called
-            <cde>logo.png</cde> in an <cde>images</cde> folder inside that folder. That folder is
-            the document root, also called the web root, and the most important thing about it is
-            what you leave out of it.
+            At the end of every chain in What's in the Middle is a
+            <term def="server">server</term> with a folder. Ask for <cde>/images/logo.png</cde>, and
+            it goes looking for a file called <cde>logo.png</cde> in an <cde>images</cde> folder
+            inside that folder. That folder is the <term def="document-root">document root</term>,
+            also called the <term def="web-root">web root</term>, and the most important thing about
+            it is what you leave out of it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-document-root">What's a Document Root?</heading>
         <p>
-            The one folder a web server hands out. Everything inside it can be reached by a URL.
-            Nothing outside it can. The server's settings name it: <cde>root</cde> in nginx,
-            <cde>DocumentRoot</cde> in Apache, and <cde>-t</cde> for PHP's built-in server.
+            The one folder a <term def="web-server">web server</term> hands out. Everything inside
+            it can be reached by a <term def="url">URL</term>. Nothing outside it can. The server's
+            settings name it: <cde>root</cde> in nginx, <cde>DocumentRoot</cde> in Apache, and
+            <cde>-t</cde> for PHP's built-in server.
         </p>
 
         <heading h3 id="project-root-and-web-root">Project Root and Web Root</heading>
@@ -71,15 +73,19 @@
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
-            <li>The request asks for a path, like <cde>/style.css</cde>.</li>
+            <li>
+                The <term def="request">request</term> asks for a <term def="path">path</term>, like
+                <cde>/style.css</cde>.
+            </li>
             <li>
                 The server joins it to the web root: <cde>public/style.css</cde>. It refuses any
                 path that tries to climb out with <cde>..</cde>.
             </li>
             <li>
-                If the file exists, the server sends it, with a content type picked from its
-                extension. A <cde>.php</cde> file is different: the server runs it and sends what it
-                printed. How that works is two lessons from now.
+                If the file exists, the server sends it, with a
+                <term def="content-type">content type</term> picked from its extension. A
+                <cde>.php</cde> file is different: the server runs it and sends what it printed. How
+                that works is two lessons from now.
             </li>
             <li>
                 If the path is a folder, it looks for an index file, <cde>index.php</cde> or
@@ -138,7 +144,10 @@ curl --path-as-is http://localhost:8000/../.env</code-block>
         <p>Then ask again:</p>
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8000/.env</code-block>
-        <p>There's your API key, for anyone who asks. That's the whole lesson in one command.</p>
+        <p>
+            There's your <term def="api-key">API key</term>, for anyone who asks. That's the whole
+            lesson in one command.
+        </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>

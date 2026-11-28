@@ -23,13 +23,16 @@
         <p>
             Alice can sign in. Now she wants a profile: a display name and a few lines about
             herself, that she can change whenever she likes. The page checks that she's signed in,
-            takes the form, and saves it. Everything you've learned says that's enough.
+            takes the <term def="form">form</term>, and saves it. Everything you've learned says
+            that's enough.
         </p>
         <p>
-            It isn't, because her browser will send her cookie with any form aimed at your site,
-            including a form on someone else's page. That's cross-site request forgery, CSRF. You'll
-            build the profile page naive, change Alice's profile from a second site she merely
-            visits, then fix it with a token that only your own pages know.
+            It isn't, because her <term def="browser">browser</term> will send her
+            <term def="cookie">cookie</term> with any form aimed at your site, including a form on
+            someone else's page. That's cross-site request forgery, <term def="csrf">CSRF</term>.
+            You'll build the profile page naive, change Alice's profile from a second site she
+            merely visits, then fix it with a <term def="csrf-token">token</term> that only your own
+            pages know.
         </p>
 
         <!-- What you'll use -->
@@ -57,7 +60,8 @@
         <p>
             A new project folder with everything from the Login Form: the <cde>Dockerfile</cde>,
             <cde>src/db.php</cde>, <cde>src/LoginLimiter.php</cde> and <cde>public/login.php</cde>,
-            which now sends people to <cde>/profile.php</cde>. <cde>init.sql</cde> adds two columns
+            which now sends people to <cde>/profile.php</cde>. <cde>init.sql</cde> adds two
+            <term def="column">columns</term>
             to the users:
         </p>
         <code-block example="project-profile-page/init.sql" />
@@ -67,8 +71,9 @@
         </p>
         <code-block example="project-profile-page/src/session.php" />
         <p>
-            And <cde>compose.yml</cde> runs one more thing: a second web server on port 8001,
-            serving a folder called <cde>attacker</cde>. That's someone else's site.
+            And <cde>compose.yml</cde> runs one more thing: a second
+            <term def="web-server">web server</term> on <term def="port">port</term> 8001, serving a
+            folder called <cde>attacker</cde>. That's someone else's site.
         </p>
         <code-block example="project-profile-page/compose.yml" />
 
@@ -76,8 +81,9 @@
         <p>Build the naive profile as <cde>public/naive-profile.php</cde>:</p>
         <code-block example="project-profile-page/public/naive-profile.php" />
         <p>
-            Signed in or sent away, a prepared <cde>UPDATE</cde> limited to the member's own row,
-            and every value escaped on the way out. Start it all:
+            Signed in or sent away, a prepared <cde>UPDATE</cde> limited to the member's own
+            <term def="row">row</term>, and every value <term def="escaping">escaped</term> on the
+            way out. Start it all:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose up --build</code-block>
@@ -114,14 +120,14 @@ Buy cheap watches at https://spam.example</code-block>
         <p>
             Here it's a profile. The same trick works on any form that changes something: an email
             address, a shipping address, a "delete my account" button, a transfer. The attacker
-            never sees the response; they don't need to.
+            never sees the <term def="response">response</term>; they don't need to.
         </p>
         <p>
             Why didn't <cde>SameSite=Lax</cde> stop it? Because <cde>localhost:8001</cde> and
             <cde>localhost:8000</cde> are the same site. Ports don't count, and on the real web,
-            neither do subdomains: <cde>blog.example.com</cde> and <cde>example.com</cde> are one
-            site, so a hole in one is a launch pad for the other. SameSite is a good second defense.
-            It isn't the first.
+            neither do <term def="subdomain">subdomains</term>: <cde>blog.example.com</cde> and
+            <cde>example.com</cde> are one site, so a hole in one is a launch pad for the other.
+            SameSite is a good second defense. It isn't the first.
         </p>
 
         <!-- Fix it -->
@@ -133,9 +139,9 @@ Buy cheap watches at https://spam.example</code-block>
         <code-block example="project-profile-page/src/csrf.php" />
         <list>
             <li>
-                <strong>One token per session,</strong> 32 random bytes from
+                <strong>One token per session,</strong> 32 random <term def="byte">bytes</term> from
                 <cde>random_bytes()</cde>, written as 64 hex characters, made the first time a form
-                asks for it and kept in the session.
+                asks for it and kept in the <term def="session">session</term>.
             </li>
             <li>
                 <strong><cde>csrf_field()</cde> puts it in a form,</strong> as a hidden field. Your
@@ -144,7 +150,8 @@ Buy cheap watches at https://spam.example</code-block>
             </li>
             <li>
                 <strong><cde>csrf_check()</cde> compares it</strong> with <cde>hash_equals()</cde>,
-                and stops with a <cde>403</cde> if it's missing, wrong, or not a string at all.
+                and stops with a <cde>403</cde> if it's missing, wrong, or not a
+                <term def="string">string</term> at all.
             </li>
         </list>
         <p>Then the fixed page, <cde>public/profile.php</cde>:</p>
@@ -152,9 +159,10 @@ Buy cheap watches at https://spam.example</code-block>
         <p>
             The token check is the first thing a POST does, before anything is read or changed. Then
             <strong>never trust input</strong>, as always: the name and bio are checked for type,
-            encoding and length, and escaped when they're shown. Point the attacker's form at the
-            fixed page, by changing <cde>naive-profile.php</cde> to <cde>profile.php</cde> in its
-            <cde>action</cde>, and visit <cde>http://localhost:8001</cde> again:
+            <term def="encoding">encoding</term> and length, and escaped when they're shown. Point
+            the attacker's form at the fixed page, by changing <cde>naive-profile.php</cde> to
+            <cde>profile.php</cde> in its <cde>action</cde>, and visit
+            <cde>http://localhost:8001</cde> again:
         </p>
         <!-- prettier-ignore -->
         <code-block>That form had expired. Go back, reload the page, and try again.</code-block>
@@ -186,7 +194,8 @@ Buy cheap watches at https://spam.example</code-block>
                 <strong>The browser tells you where a request came from, too.</strong> Modern
                 browsers send <cde>Sec-Fetch-Site</cde> and <cde>Origin</cde> with form posts, and
                 refusing posts that say <cde>cross-site</cde> is a good extra check. They're
-                headers, which makes them input, so they back the token up and never replace it.
+                <term def="header">headers</term>, which makes them input, so they back the token up
+                and never replace it.
             </li>
         </list>
 

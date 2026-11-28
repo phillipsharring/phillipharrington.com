@@ -23,11 +23,13 @@
 
         <!-- Intro -->
         <p>
-            You've already written one. <cde>__construct</cde> is a method you never call: PHP calls
-            it for you, when you say <cde>new</cde>. PHP has a set of these, all starting with two
-            underscores, each one a hook into something the language does. Some are plain useful.
-            Others let an object pretend to have properties and methods it doesn't have, and that's
-            where the arguments start.
+            You've already written one. <cde>__construct</cde> is a
+            <term def="method">method</term> you never call: PHP calls it for you, when you say
+            <cde>new</cde>. PHP has a set of these, all starting with two underscores, each one a
+            hook into something the language does. Some are plain useful. Others let an
+            <term def="object">object</term> pretend to have
+            <term def="property">properties</term> and methods it doesn't have, and that's where the
+            arguments start.
         </p>
 
         <!-- What is/are -->
@@ -42,8 +44,8 @@
                 <strong><cde>__destruct()</cde></strong> when it's freed.
             </li>
             <li>
-                <strong><cde>__toString()</cde></strong> when the object is used as a string, in
-                <cde>echo</cde> or <cde>"{$money}"</cde>.
+                <strong><cde>__toString()</cde></strong> when the object is used as a
+                <term def="string">string</term>, in <cde>echo</cde> or <cde>"{$money}"</cde>.
             </li>
             <li>
                 <strong><cde>__get()</cde></strong>, <strong><cde>__set()</cde></strong>, <strong><cde>__isset()</cde></strong> and <strong><cde>__unset()</cde></strong>
@@ -56,7 +58,7 @@
             </li>
             <li>
                 <strong><cde>__invoke()</cde></strong> when the object itself is called like a
-                function: <cde>$greet('Ada')</cde>.
+                <term def="function">function</term>: <cde>$greet('Ada')</cde>.
             </li>
             <li>
                 <strong><cde>__clone()</cde></strong> on the copy, right after <cde>clone</cde>.
@@ -93,7 +95,10 @@
         <p>Take <cde>$row-&gt;email</cde>, on an object that has no <cde>email</cde> property:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>PHP looks for a property called <cde>email</cde> that this code may read.</li>
-            <li>There isn't one, so it looks for a <cde>__get()</cde> method on the class.</li>
+            <li>
+                There isn't one, so it looks for a <cde>__get()</cde> method on the
+                <term def="class">class</term>.
+            </li>
             <li>
                 If there is one, PHP calls <cde>__get('email')</cde>, and whatever it returns is the
                 value.
@@ -122,7 +127,7 @@
             </li>
             <li>
                 <strong>The row</strong> has an email, though <cde>Row</cde> declares no such
-                property: <cde>__get()</cde> found it in the array.
+                property: <cde>__get()</cde> found it in the <term def="array">array</term>.
             </li>
             <li>
                 <strong>The row's typo</strong>, <cde>$row-&gt;emial</cde>, prints nothing at all,
@@ -208,16 +213,17 @@
         <!-- $2 tip -->
         <two-dollars title="Hide secrets from var_dump()">
             <p>
-                Give any class that holds a password, a key or a token a <cde>__debugInfo()</cde>
-                that leaves it out, like the example's API client. Then the
-                <cde>var_dump($client)</cde> you add while debugging, and forget to take out,
-                doesn't print your key onto a page.
+                Give any class that holds a password, a key or a token a
+                <cde>__debugInfo()</cde> that leaves it out, like the example's
+                <term def="api">API</term> client. Then the <cde>var_dump($client)</cde> you add
+                while debugging, and forget to take out, doesn't print your key onto a page.
             </p>
         </two-dollars>
 
         <p>
             The API client in the example was given its key when it was made, instead of going to
-            find it. That idea, on a bigger scale, is the next lesson: dependency injection.
+            find it. That idea, on a bigger scale, is the next lesson:
+            <term def="dependency-injection">dependency injection</term>.
         </p>
 
         <!-- Next -->

@@ -23,24 +23,25 @@
         <p>
             Every lesson so far has been about handling dangerous things carefully. This one is
             about not handling them at all. If your site takes card payments, the safest card number
-            is one that never reaches your server. Not checked carefully, not encrypted, not deleted
-            quickly: never there. A payment company's page takes the card, and your code only ever
-            hears whether it worked.
+            is one that never reaches your <term def="server">server</term>. Not checked carefully,
+            not <term def="encryption">encrypted</term>, not deleted quickly: never there. A payment
+            company's page takes the card, and your code only ever hears whether it worked.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-pci-dss">What's PCI DSS?</heading>
         <p>
-            The Payment Card Industry Data Security Standard: the rules for anyone who stores,
-            processes or transmits card numbers. It's set by the PCI Security Standards Council,
-            which the big card brands (Visa, Mastercard, American Express, Discover and JCB) formed
-            in 2006. Your bank or payment company makes following it a condition of taking cards.
+            The <term def="pci-dss">Payment Card Industry Data Security Standard</term>: the rules
+            for anyone who stores, processes or transmits card numbers. It's set by the PCI Security
+            Standards Council, which the big card brands (Visa, Mastercard, American Express,
+            Discover and JCB) formed in 2006. Your bank or payment company makes following it a
+            condition of taking cards.
         </p>
         <p>
             The full standard is twelve broad requirements broken into hundreds of detailed ones:
-            networks, firewalls, encryption, access control, logging, scanning, testing, policies
-            and paperwork, and an assessment every year. It applies to every system that touches a
-            card number, and every system connected to those.
+            networks, <term def="firewall">firewalls</term>, encryption, access control, logging,
+            scanning, testing, policies and paperwork, and an assessment every year. It applies to
+            every system that touches a card number, and every system connected to those.
         </p>
 
         <heading h3 id="saqs">How Much of It Is Yours</heading>
@@ -56,8 +57,8 @@
             </li>
             <li>
                 <strong>SAQ A-EP</strong>: the card goes straight to the provider, but your own page
-                builds the form or loads the scripts that collect it, so your server's security
-                affects it. Much longer.
+                builds the <term def="form">form</term> or loads the scripts that collect it, so
+                your server's security affects it. Much longer.
             </li>
             <li>
                 <strong>SAQ D</strong>: card numbers pass through your server. Nearly the whole
@@ -83,11 +84,15 @@
                 own code, and where to send the visitor afterward.
             </li>
             <li>Stripe answers with the session's address, on <cde>checkout.stripe.com</cde>.</li>
-            <li>Your server redirects the visitor there, with a <cde>303</cde>.</li>
+            <li>
+                Your server <term def="redirect">redirects</term> the visitor there, with a
+                <cde>303</cde>.
+            </li>
             <li>The visitor types their card on Stripe's page. Stripe charges it.</li>
             <li>
                 Stripe sends the visitor back to your success page, and separately tells your server
-                with a webhook: a signed request saying the payment was completed.
+                with a <term def="webhook">webhook</term>: a signed
+                <term def="request">request</term> saying the payment was completed.
             </li>
             <li>
                 Your server checks, with Stripe, that the payment really happened, and only then
@@ -96,8 +101,9 @@
         </ol>
         <p>
             The card number went from the visitor's keyboard to Stripe. It was never in your
-            request, your code, your logs, your database or your backups. That puts you in SAQ A,
-            and puts the rest of the standard on Stripe, which is what you're paying them for.
+            request, your code, your logs, your <term def="database">database</term> or your
+            backups. That puts you in SAQ A, and puts the rest of the standard on Stripe, which is
+            what you're paying them for.
         </p>
 
         <side-story title="130 Million Cards">
@@ -112,8 +118,9 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             A mug shop that takes payment through Stripe Checkout. You don't need a Stripe account
-            for this: Stripe publishes stripe-mock, a pretend version of its API that runs in a
-            container. In a folder, make <cde>compose.yml</cde>:
+            for this: Stripe publishes stripe-mock, a pretend version of its
+            <term def="api">API</term> that runs in a <term def="container">container</term>. In a
+            folder, make <cde>compose.yml</cde>:
         </p>
         <code-block example="dont-touch-cards/compose.yml" />
         <p>
@@ -132,7 +139,7 @@
         </breakdown>
         <p>
             The pages go in <cde>public</cde>. First, <cde>public/stripe.php</cde>, which sets up
-            the client from the environment, the way
+            the <term def="client">client</term> from the environment, the way
             <xref to="/php/secrets-out-of-code">Secrets Out of Code</xref> says:
         </p>
         <code-block example="dont-touch-cards/public/stripe.php" />
@@ -148,7 +155,10 @@
         <p>Start the shop and stripe-mock:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose up</code-block>
-        <p>From another terminal, press the button the way the browser would:</p>
+        <p>
+            From another <term def="terminal">terminal</term>, press the button the way the
+            <term def="browser">browser</term> would:
+        </p>
         <!-- prettier-ignore -->
         <code-block>curl -i -X POST http://localhost:8000/checkout.php</code-block>
         <p>New here:</p>
@@ -181,7 +191,7 @@
             <li>
                 <cde>$stripe-&gt;checkout-&gt;sessions-&gt;create([...])</cde> with the mode, line
                 items, <cde>success_url</cde> and <cde>cancel_url</cde>. Amounts are whole cents, an
-                <cde>int</cde>, never a float.
+                <cde>int</cde>, never a <term def="float">float</term>.
             </li>
             <li>
                 <cde>header('Location: ' . $session-&gt;url, true, 303)</cde> to send the visitor.
@@ -224,9 +234,10 @@
             </li>
             <li>
                 <strong>Card fields on your page are still on your page.</strong> Building your own
-                form that sends cards straight to the provider with JavaScript keeps them off your
-                server, but your page now controls the form, which is SAQ A-EP. A redirect or the
-                provider's own embedded frame keeps you in SAQ A.
+                form that sends cards straight to the provider with
+                <term def="javascript">JavaScript</term> keeps them off your server, but your page
+                now controls the form, which is SAQ A-EP. A redirect or the provider's own embedded
+                frame keeps you in SAQ A.
             </li>
             <li>
                 <strong>SAQ A is short, not nothing.</strong> You still fill it in, and your site
@@ -310,8 +321,9 @@ docker compose logs shop | grep -c 4242</code-block>
         </two-dollars>
 
         <p>
-            Cards stay off your server. What your server does send, every response, can carry
-            instructions that make the browser itself part of your defense. Next: security headers.
+            Cards stay off your server. What your server does send, every
+            <term def="response">response</term>, can carry instructions that make the browser
+            itself part of your defense. Next: security <term def="header">headers</term>.
         </p>
 
         <!-- Next -->

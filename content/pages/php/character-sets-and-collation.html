@@ -22,10 +22,11 @@
         <!-- Intro -->
         <p>
             At the end of <xref to="/php/indexes">Indexes</xref>, an email address in capitals found
-            the same customer as one in lowercase. The database decided those were equal, and it
-            could have decided otherwise. Text in a database comes with two settings: how its
-            characters are stored as bytes, and how they're compared. Get the first wrong and names
-            come back mangled. Get the second wrong and "Cafe" and "café" are the same username.
+            the same customer as one in lowercase. The <term def="database">database</term> decided
+            those were equal, and it could have decided otherwise. Text in a database comes with two
+            settings: how its characters are stored as <term def="byte">bytes</term>, and how
+            they're compared. Get the first wrong and names come back mangled. Get the second wrong
+            and "Cafe" and "café" are the same username.
         </p>
 
         <!-- What is/are -->
@@ -33,19 +34,21 @@
         <p>
             The rule for turning characters into bytes and back.
             <xref to="/php/text-and-utf-8">Text and UTF-8</xref> has the full story; the short
-            version is that UTF-8 can store every character there is, using one to four bytes each,
-            and it's the only one you should use. In MySQL, that's called <cde>utf8mb4</cde>.
+            version is that <term def="utf-8">UTF-8</term> can store every character there is, using
+            one to four bytes each, and it's the only one you should use. In MySQL, that's called
+            <cde>utf8mb4</cde>.
         </p>
 
         <heading h3 id="mysqls-utf8-isnt">MySQL's utf8 Isn't</heading>
         <p>
-            MySQL also has a character set called <cde>utf8</cde>, and it isn't UTF-8. It stores at
-            most three bytes per character, which covers most of the world's writing, and not emoji,
-            some rarer Chinese characters, or anything else that takes four. Its real name is
-            <cde>utf8mb3</cde>, and <cde>utf8</cde> is an old alias for it. Try to store an emoji in
-            it, and in strict mode it's refused; with strict mode off, the emoji is quietly stored
-            as a question mark. <cde>utf8mb4</cde>, "up to four bytes," is the real thing. MySQL 8
-            uses it by default, but older tables, and older tutorials, still say <cde>utf8</cde>.
+            MySQL also has a <term def="character-set">character set</term> called <cde>utf8</cde>,
+            and it isn't UTF-8. It stores at most three bytes per character, which covers most of
+            the world's writing, and not emoji, some rarer Chinese characters, or anything else that
+            takes four. Its real name is <cde>utf8mb3</cde>, and <cde>utf8</cde> is an old alias for
+            it. Try to store an emoji in it, and in strict mode it's refused; with strict mode off,
+            the emoji is quietly stored as a question mark. <cde>utf8mb4</cde>, "up to four bytes,"
+            is the real thing. MySQL 8 uses it by default, but older
+            <term def="table">tables</term>, and older tutorials, still say <cde>utf8</cde>.
         </p>
 
         <heading h2 id="whats-a-collation">What's a Collation?</heading>
@@ -56,9 +59,9 @@
         </p>
         <list>
             <li>
-                <strong>utf8mb4_0900_ai_ci</strong>, MySQL 8's default: Unicode's rules (version
-                9.0.0), accent insensitive, case insensitive. <cde>cafe</cde>, <cde>Cafe</cde> and
-                <cde>café</cde> are all equal.
+                <strong>utf8mb4_0900_ai_ci</strong>, MySQL 8's default:
+                <term def="unicode">Unicode</term>'s rules (version 9.0.0), accent insensitive, case
+                insensitive. <cde>cafe</cde>, <cde>Cafe</cde> and <cde>café</cde> are all equal.
             </li>
             <li>
                 <strong>utf8mb4_0900_as_cs</strong>: accent sensitive, case sensitive. All three are
@@ -72,8 +75,8 @@
         </list>
         <p>
             The default is right for most text people search for, like names and email addresses:
-            "alice@example.com" should find "Alice@Example.com". Pick a different one, column by
-            column, when equal has to mean identical.
+            "alice@example.com" should find "Alice@Example.com". Pick a different one,
+            <term def="column">column</term> by column, when equal has to mean identical.
         </p>
 
         <side-story title="When Three Bytes Was Everything">
@@ -106,8 +109,8 @@
         <p>
             The conversions are only right if each side tells the truth. If PHP sends UTF-8 but says
             it's latin1, MySQL "converts" bytes that were already right, and stores something else.
-            Every comparison, <cde>WHERE</cde>, <cde>ORDER BY</cde>, <cde>UNIQUE</cde> or join, uses
-            the column's collation.
+            Every comparison, <cde>WHERE</cde>, <cde>ORDER BY</cde>, <cde>UNIQUE</cde> or
+            <term def="join">join</term>, uses the column's <term def="collation">collation</term>.
         </p>
 
         <!-- Try it -->
@@ -191,8 +194,9 @@ VALUES ('café');</code-block>
             </li>
             <li>
                 <cde>mb_check_encoding($text, 'UTF-8')</cde> before saving text that came from
-                outside. <strong>Never trust input</strong>, including its bytes: a form, a file or
-                an API can send something that isn't UTF-8 at all.
+                outside. <strong>Never trust input</strong>, including its bytes: a
+                <term def="form">form</term>, a file or an <term def="api">API</term> can send
+                something that isn't UTF-8 at all.
             </li>
             <li>
                 <cde>mb_strlen()</cde> to check a length against a <cde>VARCHAR</cde>, which counts
@@ -200,8 +204,9 @@ VALUES ('café');</code-block>
                 <cde>CHAR_LENGTH('café')</cde> is 4.
             </li>
             <li>
-                <cde>&lt;meta charset="utf-8"&gt;</cde> on every page, so the browser sends forms
-                back in UTF-8 too. The database is only one of the boundaries.
+                <cde>&lt;meta charset="utf-8"&gt;</cde> on every page, so the
+                <term def="browser">browser</term> sends forms back in UTF-8 too. The database is
+                only one of the boundaries.
             </li>
         </list>
 
@@ -246,8 +251,8 @@ VALUES ('café');</code-block>
         </two-dollars>
 
         <p>
-            Text, numbers, keys and indexes: the tables are ready for real data, from real people.
-            Next: inserting data.
+            Text, numbers, keys and <term def="index">indexes</term>: the tables are ready for real
+            data, from real people. Next: inserting data.
         </p>
 
         <!-- Next -->

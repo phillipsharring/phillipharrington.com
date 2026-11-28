@@ -21,15 +21,16 @@
 
         <!-- Intro -->
         <p>
-            Your browser's View Source shows the HTML a page sent, never the PHP that made it. The
-            Home Page project ended on that: visitors only see what PHP printed. This project adds a
-            link at the bottom of a page that shows its PHP source, highlighted, for anyone curious
-            how it's made.
+            Your <term def="browser">browser</term>'s View Source shows the
+            <term def="html">HTML</term> a page sent, never the PHP that made it. The Home Page
+            project ended on that: visitors only see what PHP printed. This project adds a link at
+            the bottom of a page that shows its PHP source, highlighted, for anyone curious how it's
+            made.
         </p>
         <p>
             It's a small feature with a big trap in it. A page that shows "the file named in the
-            URL" can be asked for any file at all, so most of the work is making sure it shows yours
-            and nothing else.
+            <term def="url">URL</term>" can be asked for any file at all, so most of the work is
+            making sure it shows yours and nothing else.
         </p>
 
         <!-- What you'll use -->
@@ -40,8 +41,8 @@
                 <cde>?file=</cde>.
             </li>
             <li>
-                <xref to="/php/never-trust-input">Never Trust Input</xref>: the query string is the
-                visitor's, not yours.
+                <xref to="/php/never-trust-input">Never Trust Input</xref>: the
+                <term def="query-string">query string</term> is the visitor's, not yours.
             </li>
             <li><xref to="/php/arrays">Arrays</xref>: an allow list, as keys and values.</li>
             <li>
@@ -65,17 +66,19 @@
         <code-block example="project-view-source-link/public/source.php" />
         <p>
             <cde>highlight_file()</cde> reads a PHP file and prints it as colored HTML, with every
-            <cde>&lt;</cde> and <cde>&amp;</cde> escaped, so the code is shown and not run. The
-            interesting part is above it.
+            <cde>&lt;</cde> and <cde>&amp;</cde> <term def="escaping">escaped</term>, so the code is
+            shown and not run. The interesting part is above it.
         </p>
         <nti>
             <p>
                 The URL doesn't name a file. It names a key in <cde>$allowed</cde>, and the real
-                path comes from the array. This may have come up once or twice in the lessons:
-                <strong>never trust input.</strong> The value of <cde>?file=</cde> is whatever the
-                visitor typed, so it never gets anywhere near a path. If it isn't a key in the list,
-                the answer is a 404, and that's the end of it. The <cde>is_string()</cde> check is
-                there because <cde>?file[]=index.php</cde> makes it an array, not a string.
+                <term def="path">path</term> comes from the <term def="array">array</term>. This may
+                have come up once or twice in the lessons: <strong>never trust input.</strong> The
+                value of <cde>?file=</cde> is whatever the visitor typed, so it never gets anywhere
+                near a path. If it isn't a key in the list, the answer is a 404, and that's the end
+                of it. The <cde>is_string()</cde> check is there because
+                <cde>?file[]=index.php</cde> makes it an array, not a
+                <term def="string">string</term>.
             </p>
         </nti>
 
@@ -104,16 +107,16 @@ curl 'http://localhost:8000/source.php?file=/etc/passwd'</code-block>
             <li>
                 <strong>Never build the path from the URL.</strong> The obvious version,
                 <cde>highlight_file(__DIR__ . '/' . $_GET['file'])</cde>, shows your page, and also
-                <cde>../.env</cde>, <cde>/etc/passwd</cde>, and every other file the server can
-                read. That's path traversal, and the
+                <cde>../.env</cde>, <cde>/etc/passwd</cde>, and every other file the
+                <term def="server">server</term> can read. That's path traversal, and the
                 <xref to="/php/projects/log-viewer">Log Viewer</xref> project breaks it on purpose.
                 Checking for <cde>..</cde> is a deny list, and deny lists miss things. The allow
                 list can't.
             </li>
             <li>
-                <strong>Showing the source shows everything in it.</strong> A password or API key in
-                a file on the list is now on the page. Keep secrets in settings outside
-                <cde>public</cde>, as in
+                <strong>Showing the source shows everything in it.</strong> A password or
+                <term def="api-key">API key</term> in a file on the list is now on the page. Keep
+                secrets in settings outside <cde>public</cde>, as in
                 <xref to="/php/configuration-and-the-environment"
                     >Configuration and the Environment</xref>, and never put a settings file on the list.
             </li>
@@ -128,9 +131,10 @@ curl 'http://localhost:8000/source.php?file=/etc/passwd'</code-block>
         <two-dollars title="Highlighted code from the command line">
             <p>
                 <cde>php -s index.php</cde> prints the same highlighted HTML that
-                <cde>highlight_file()</cde> does, straight to the terminal. Redirect it to a file
-                and you have colored code to paste into an email or a document, no plugin needed.
-                Just don't leave that file in your web root.
+                <cde>highlight_file()</cde> does, straight to the
+                <term def="terminal">terminal</term>. Redirect it to a file and you have colored
+                code to paste into an email or a document, no plugin needed. Just don't leave that
+                file in your <term def="web-root">web root</term>.
             </p>
         </two-dollars>
 

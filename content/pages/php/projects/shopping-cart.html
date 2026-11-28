@@ -22,14 +22,15 @@
         <!-- Intro -->
         <p>
             The store front shows what's for sale. A cart remembers what someone wants while they
-            keep looking: add a mug, change it to two, take out the shirt. It lives in the session,
-            from one page to the next, until they check out or wander off.
+            keep looking: add a mug, change it to two, take out the shirt. It lives in the
+            <term def="session">session</term>, from one page to the next, until they check out or
+            wander off.
         </p>
         <p>
             The one rule that matters: the cart holds product ids and quantities, and nothing else.
             Not names, and above all not prices. Every time the cart is shown, the prices come from
-            the database. A cart that trusts a price someone sent is a shop that sells at whatever
-            price the customer likes.
+            the <term def="database">database</term>. A cart that trusts a price someone sent is a
+            shop that sells at whatever price the customer likes.
         </p>
 
         <!-- What you'll use -->
@@ -40,7 +41,10 @@
                 prices in cents
             </li>
             <li><xref to="/php/sessions">Sessions</xref>: where the cart lives between pages</li>
-            <li><xref to="/php/csrf">CSRF</xref>: a token on every form that changes the cart</li>
+            <li>
+                <xref to="/php/csrf">CSRF</xref>: a token on every <term def="form">form</term> that
+                changes the cart
+            </li>
             <li>
                 <xref to="/php/classes-and-objects">Classes and Objects</xref> and
                 <xref to="/php/autoloading">Autoloading with Composer and PSR-4</xref>
@@ -53,18 +57,20 @@
 
         <heading h3 id="step-1-the-setup">Step 1: The Setup</heading>
         <p>
-            The containers, <cde>Dockerfile</cde> and <cde>init.sql</cde> are the ones from
+            The <term def="container">containers</term>, <cde>Dockerfile</cde> and
+            <cde>init.sql</cde> are the ones from
             <xref to="/php/projects/store-front">Store Front</xref>, with the database called
-            <cde>shop</cde>. This time there's a <cde>composer.json</cde>, for the autoloader and
-            for PHPUnit, which is only needed while developing, so it goes in
-            <cde>require-dev</cde>:
+            <cde>shop</cde>. This time there's a <cde>composer.json</cde>, for the
+            <term def="autoloading">autoloader</term> and for PHPUnit, which is only needed while
+            developing, so it goes in <cde>require-dev</cde>:
         </p>
         <code-block example="project-shopping-cart/composer.json" />
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
         <p>
-            <cde>src/Database.php</cde> is the connection class from
-            <xref to="/php/projects/queues">Queues</xref>, in the <cde>Shop</cde> namespace.
+            <cde>src/Database.php</cde> is the connection <term def="class">class</term> from
+            <xref to="/php/projects/queues">Queues</xref>, in the <cde>Shop</cde>
+            <term def="namespace">namespace</term>.
         </p>
 
         <heading h3 id="step-2-the-cart">Step 2: The Cart</heading>
@@ -75,9 +81,10 @@
         <code-block example="project-shopping-cart/src/Cart.php" />
         <p>
             The constructor rebuilds a cart from whatever was saved in the session, and drops
-            anything that isn't an integer id and an integer quantity. The session is stored on your
-            server, but what went into it came from requests. Treat it as input that has been
-            through one check already, not as proof.
+            anything that isn't an <term def="integer">integer</term> id and an integer quantity.
+            The session is stored on your <term def="server">server</term>, but what went into it
+            came from <term def="request">requests</term>. Treat it as input that has been through
+            one check already, not as proof.
         </p>
 
         <heading h3 id="step-3-test-it">Step 3: Test It</heading>
@@ -107,15 +114,16 @@
 
         <heading h3 id="step-5-the-pages">Step 5: The Pages</heading>
         <p>
-            <cde>src/helpers.php</cde> holds money formatting, escaping, the session and the CSRF
-            token:
+            <cde>src/helpers.php</cde> holds money formatting, <term def="escaping">escaping</term>,
+            the session and the <term def="csrf-token">CSRF token</term>:
         </p>
         <code-block example="project-shopping-cart/src/helpers.php" />
         <p>The shop, with an Add to Cart form on each product:</p>
         <code-block example="project-shopping-cart/public/index.php" />
         <p>
-            And the cart. A POST changes it and redirects; a GET shows it, priced fresh. It's about
-            one person, so it's marked <cde>private, no-store</cde> for every cache in the middle.
+            And the cart. A POST changes it and <term def="redirect">redirects</term>; a GET shows
+            it, priced fresh. It's about one person, so it's marked <cde>private, no-store</cde> for
+            every <term def="cache">cache</term> in the middle.
         </p>
         <code-block example="project-shopping-cart/public/cart.php" />
 
@@ -167,7 +175,8 @@ curl -b jar http://localhost:8000/cart.php</code-block>
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>A price in a hidden field is a suggestion.</strong> Any value the browser
+                <strong>A price in a hidden field is a suggestion.</strong> Any value the
+                <term def="browser">browser</term>
                 sends can be changed. Prices, discounts, totals and shipping are all computed on the
                 server, from your own data, every time.
             </li>
@@ -184,7 +193,7 @@ curl -b jar http://localhost:8000/cart.php</code-block>
             <li>
                 <strong>Sessions expire.</strong> A cart in the session vanishes when the session
                 does. Logged-in customers expect a cart to follow them between devices; that means a
-                carts table, keyed to the user.
+                carts <term def="table">table</term>, keyed to the user.
             </li>
             <li>
                 <strong>Every cart-changing form needs the token.</strong> Without it, another site

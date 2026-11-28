@@ -23,8 +23,8 @@
         <p>
             Good Variable Names left a <cde>7</cde> in the middle of its tidy code. You can guess it
             means a week, from the line around it. But you had to guess, and the next number won't
-            be that easy. A number like that, with no name, is a magic number: it works, and nobody
-            can say why.
+            be that easy. A number like that, with no name, is a
+            <term def="magic-number">magic number</term>: it works, and nobody can say why.
         </p>
 
         <!-- What is/are -->
@@ -36,9 +36,9 @@
             changes.
         </p>
         <p>
-            The fix is a name: a constant for a fixed value, an enum for a set of choices. Then
-            <cde>$status === 3</cde> becomes <cde>$status === OrderStatus::Shipped</cde>, and the
-            line explains itself.
+            The fix is a name: a <term def="constant">constant</term> for a fixed value, an
+            <term def="enum">enum</term> for a set of choices. Then <cde>$status === 3</cde> becomes
+            <cde>$status === OrderStatus::Shipped</cde>, and the line explains itself.
         </p>
 
         <heading h3 id="what-isnt-magic">What Isn't Magic</heading>
@@ -46,16 +46,17 @@
             Numbers whose meaning is the number itself. <cde>0</cde> and <cde>1</cde> as starting
             points, <cde>/ 100</cde> to turn cents into dollars, <cde>2</cde> in "split in half." If
             a reader would never ask "why that number?", it doesn't need a name. The same goes for
-            strings: <cde>'admin'</cde> scattered through the code is a magic string, and gets the
-            same fix.
+            <term def="string">strings</term>: <cde>'admin'</cde> scattered through the code is a
+            magic string, and gets the same fix.
         </p>
 
         <side-story title="0xCAFEBABE">
-            Files have magic numbers too, on purpose. Every Java class file starts with the bytes
-            <cde>CA FE BA BE</cde>. A PNG starts with <cde>89 50 4E 47</cde> (the last three are
-            "PNG" in ASCII), a PDF with <cde>%PDF-</cde>, a GIF with <cde>GIF87a</cde> or
-            <cde>GIF89a</cde>. The Unix <cde>file</cde> command, and PHP's <cde>finfo</cde>, read
-            those first bytes to tell what a file really is, whatever its name says.
+            Files have magic numbers too, on purpose. Every Java class file starts with the
+            <term def="byte">bytes</term> <cde>CA FE BA BE</cde>. A PNG starts with
+            <cde>89 50 4E 47</cde> (the last three are "PNG" in <term def="ascii">ASCII</term>), a
+            PDF with <cde>%PDF-</cde>, a GIF with <cde>GIF87a</cde> or <cde>GIF89a</cde>. The Unix
+            <cde>file</cde> command, and PHP's <cde>finfo</cde>, read those first bytes to tell what
+            a file really is, whatever its name says.
         </side-story>
 
         <!-- How it works -->
@@ -99,9 +100,9 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
             The first three orders come out the same. Order 104 doesn't. Its status is
             <cde>9</cde>, which isn't anything, and <cde>before.php</cde> calls it "paid" anyway,
             because "not 3" was all it checked. <cde>after.php</cde> asks the enum, gets
-            <cde>null</cde> back from <cde>tryFrom()</cde>, and says so. Rows from the database are
-            input like any other: <xref to="/php/never-trust-input">never trust input</xref>, even
-            your own.
+            <cde>null</cde> back from <cde>tryFrom()</cde>, and says so.
+            <term def="row">Rows</term> from the <term def="database">database</term> are input like
+            any other: <xref to="/php/never-trust-input">never trust input</xref>, even your own.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -112,8 +113,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
         <list>
             <li>
                 <cde>const NAME = value;</cde> declares a constant at the top level of a file or in
-                a class. <cde>define('NAME', value)</cde> does the same at run time, for the rare
-                constant whose name or value isn't known until then.
+                a <term def="class">class</term>. <cde>define('NAME', value)</cde> does the same at
+                run time, for the rare constant whose name or value isn't known until then.
             </li>
             <li>
                 Backed enums (PHP 8.1) for a fixed set of choices.
@@ -122,13 +123,15 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after.php</code-block>
                 decide yourself.
             </li>
             <li>
-                Store the enum's value in an ordinary column, an <cde>INT</cde> or a
-                <cde>VARCHAR</cde>, and let the PHP enum hold the list of what's allowed. Not a
-                MySQL <cde>ENUM</cde> column: changing its list means altering the table.
+                Store the enum's value in an ordinary <term def="column">column</term>, an
+                <cde>INT</cde> or a <cde>VARCHAR</cde>, and let the PHP enum hold the list of what's
+                allowed. Not a MySQL <cde>ENUM</cde> column: changing its list means altering the
+                <term def="table">table</term>.
             </li>
             <li>
-                PHP's own functions do this already: <cde>JSON_THROW_ON_ERROR</cde>,
-                <cde>E_ALL</cde>, <cde>PHP_INT_MAX</cde>. Nobody writes the numbers they stand for.
+                PHP's own <term def="function">functions</term> do this already:
+                <cde>JSON_THROW_ON_ERROR</cde>, <cde>E_ALL</cde>, <cde>PHP_INT_MAX</cde>. Nobody
+                writes the numbers they stand for.
             </li>
             <li>
                 Underscores in numbers (PHP 7.4) make long ones readable:

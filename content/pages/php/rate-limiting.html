@@ -22,9 +22,10 @@
         <!-- Intro -->
         <p>
             <xref to="/php/sessions-and-cookie-flags">Sessions and Cookie Flags</xref> protected the
-            login once someone has it. But a login form, out of the box, answers every guess as
-            happily as the first, as fast as anyone can send them. Every password is guessable given
-            enough tries. A rate limit decides how many tries "enough" is.
+            login once someone has it. But a login <term def="form">form</term>, out of the box,
+            answers every guess as happily as the first, as fast as anyone can send them. Every
+            password is guessable given enough tries. A
+            <term def="rate-limiting">rate limit</term> decides how many tries "enough" is.
         </p>
 
         <!-- What is/are -->
@@ -32,7 +33,8 @@
         <p>
             A cap on how often something can happen in a stretch of time: ten failed logins per
             account in fifteen minutes, five password reset emails per address per hour, a hundred
-            API requests per key per minute. Under the cap, everything works. Over it, the server
+            <term def="api">API</term> <term def="request">requests</term> per key per minute. Under
+            the cap, everything works. Over it, the <term def="server">server</term>
             stops doing the work and says so.
         </p>
 
@@ -54,8 +56,9 @@
 
         <heading h3 id="whats-a-429">What's a 429?</heading>
         <p>
-            <cde>429 Too Many Requests</cde>, the status code for "slow down." It can come with a
-            <cde>Retry-After</cde> header saying how many seconds to wait. See
+            <cde>429 Too Many Requests</cde>, the <term def="status-code">status code</term> for
+            "slow down." It can come with a <cde>Retry-After</cde>
+            <term def="header">header</term> saying how many seconds to wait. See
             <xref to="/php/request-and-response">Request and Response</xref> for the rest of the
             codes.
         </p>
@@ -63,7 +66,10 @@
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
-            <li>A login arrives, with an email address, a password, and an IP address.</li>
+            <li>
+                A login arrives, with an email address, a password, and an
+                <term def="ip-address">IP address</term>.
+            </li>
             <li>
                 Before checking the password, count the failures for that email, and for that
                 address, in the last fifteen minutes.
@@ -93,15 +99,16 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             A login with one member, Alice, whose password is bad on purpose. Failures get counted
-            in the database, so this is a Compose project. In a folder, make
-            <cde>compose.yml</cde>:
+            in the <term def="database">database</term>, so this is a Compose project. In a folder,
+            make <cde>compose.yml</cde>:
         </p>
         <code-block example="rate-limiting/compose.yml" />
         <p>
             The two-line <cde>Dockerfile</cde> and <cde>db.php</cde> are the same as in
             <xref to="/php/sql-injection">SQL Injection</xref>. Then <cde>init.sql</cde>, with Alice
-            and a table for failed logins, indexed by email and by address, then time, because those
-            are the two questions it answers:
+            and a <term def="table">table</term> for failed logins,
+            <term def="index">indexed</term> by email and by address, then time, because those are
+            the two questions it answers:
         </p>
         <code-block example="rate-limiting/Dockerfile" />
         <code-block example="rate-limiting/db.php" />
@@ -126,7 +133,7 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
             <li>
                 <cde
                     >SELECT COUNT(*) ... WHERE `email` = ? AND `failed_at` &gt; NOW() - INTERVAL 15
-                    MINUTE</cde>, with an index that starts with the column you count by.
+                    MINUTE</cde>, with an index that starts with the <term def="column">column</term> you count by.
             </li>
             <li>
                 <cde>http_response_code(429)</cde> and <cde>header('Retry-After: 900')</cde> when
@@ -134,8 +141,8 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
             </li>
             <li>
                 <cde>$_SERVER['REMOTE_ADDR']</cde> for the address, when PHP faces visitors
-                directly. Behind a proxy or CDN, take the entry your own layer added to
-                <cde>X-Forwarded-For</cde>, as in
+                directly. Behind a proxy or <term def="cdn">CDN</term>, take the entry your own
+                layer added to <cde>X-Forwarded-For</cde>, as in
                 <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
             <li><cde>VARCHAR(45)</cde> holds any IPv4 or IPv6 address as text.</li>
@@ -167,14 +174,15 @@ curl --data-urlencode 'email=alice@example.com' --data-urlencode 'password=tigge
             <li>
                 <strong>Parallel requests can slip past.</strong> Twenty guesses sent at the same
                 instant can all count zero failures before any of them records one. For a login, a
-                few extra guesses rarely matter. For something like redeeming a code, lock the row
-                or count in a <xref to="/php/transactions">transaction</xref>.
+                few extra guesses rarely matter. For something like redeeming a code, lock the
+                <term def="row">row</term> or count in a
+                <xref to="/php/transactions">transaction</xref>.
             </li>
             <li>
                 <strong>The same answer, the same time.</strong> "Wrong email or password" for both
                 cases, as here. But looking up a missing email is faster than checking a bcrypt
-                hash, and the difference can be measured. Careful logins verify against a dummy hash
-                when the email doesn't exist.
+                <term def="hash">hash</term>, and the difference can be measured. Careful logins
+                verify against a dummy hash when the email doesn't exist.
             </li>
             <li>
                 <strong>Logins aren't the only thing.</strong> Anything that sends an email or a

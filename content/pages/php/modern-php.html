@@ -24,9 +24,9 @@
         <!-- Intro -->
         <p>
             A lot of what people say about PHP is about PHP 5, which stopped getting fixes years
-            ago. PHP 7 and 8 added types, and then a run of features that make code shorter and
-            harder to get wrong. This isn't every one of them. It's the six you'll use every week,
-            and that you'll see in any PHP code written lately.
+            ago. PHP 7 and 8 added <term def="type">types</term>, and then a run of features that
+            make code shorter and harder to get wrong. This isn't every one of them. It's the six
+            you'll use every week, and that you'll see in any PHP code written lately.
         </p>
 
         <!-- What is/are -->
@@ -35,8 +35,9 @@
         <heading h3 id="enums">Enums</heading>
         <p>
             A type with a fixed list of values. An order's status is pending, paid or shipped, and
-            nothing else. Before enums, that was a string, and <cde>'shiped'</cde> was a string too.
-            A backed enum gives each case a value to store:
+            nothing else. Before <term def="enum">enums</term>, that was a
+            <term def="string">string</term>, and <cde>'shiped'</cde> was a string too. A backed
+            enum gives each case a value to store:
         </p>
         <!-- prettier-ignore -->
         <code-block>enum Status: string
@@ -47,22 +48,24 @@
         <p>
             <cde>Status::Paid-&gt;value</cde> is <cde>'paid'</cde>, and
             <cde>Status::tryFrom('paid')</cde> turns it back. Store the value in a
-            <cde>VARCHAR</cde> column, and let the enum be the list of what's allowed. Enums can
-            have methods and constants, like a class.
+            <cde>VARCHAR</cde> <term def="column">column</term>, and let the enum be the list of
+            what's allowed. Enums can have <term def="method">methods</term> and
+            <term def="constant">constants</term>, like a <term def="class">class</term>.
         </p>
 
         <heading h3 id="readonly">Readonly</heading>
         <p>
-            A <cde>readonly</cde> property can be set once, from inside the class, and never again.
-            A <cde>readonly class</cde> makes every property readonly. For a value that shouldn't
-            change after it's made, like an order that's been placed, it saves writing the checks.
+            A <cde>readonly</cde> <term def="property">property</term> can be set once, from inside
+            the class, and never again. A <cde>readonly class</cde> makes every property readonly.
+            For a value that shouldn't change after it's made, like an order that's been placed, it
+            saves writing the checks.
         </p>
 
         <heading h3 id="constructor-promotion">Constructor Promotion</heading>
         <p>
             Put <cde>public</cde>, <cde>private</cde> or <cde>readonly</cde> in front of a
-            constructor parameter, and it's a property too, set from the argument. The
-            declare-assign-assign dance from
+            constructor <term def="parameter">parameter</term>, and it's a property too, set from
+            the <term def="argument">argument</term>. The declare-assign-assign dance from
             <xref to="/php/classes-and-objects">Classes and Objects</xref> becomes one line per
             property.
         </p>
@@ -89,10 +92,11 @@
 
         <side-story title="There Is No PHP 6">
             PHP went from 5.6 straight to 7.0, in 2015. PHP 6 was a real project: an effort, started
-            in the mid-2000s, to build Unicode into the language from the bottom up. It turned out
-            to be slow and very hard, and it was abandoned around 2010. Books had already been
-            published about it, so the next version skipped the number to avoid any confusion. Which
-            is why UTF-8 in PHP is still the <cde>mb_</cde> functions, from
+            in the mid-2000s, to build <term def="unicode">Unicode</term> into the language from the
+            bottom up. It turned out to be slow and very hard, and it was abandoned around 2010.
+            Books had already been published about it, so the next version skipped the number to
+            avoid any confusion. Which is why <term def="utf-8">UTF-8</term> in PHP is still the
+            <cde>mb_</cde> <term def="function">functions</term>, from
             <xref to="/php/text-and-utf-8">Text and UTF-8</xref>.
         </side-story>
 
@@ -107,8 +111,9 @@
         </ol>
         <p>
             Enums and readonly properties came in PHP 8.1, readonly classes in 8.2; match, named
-            arguments, constructor promotion and the nullsafe operator in 8.0. The course uses 8.4,
-            so all of them work. A server on an older version would refuse the newer ones with a
+            arguments, constructor promotion and the nullsafe
+            <term def="operator">operator</term> in 8.0. The course uses 8.4, so all of them work. A
+            <term def="server">server</term> on an older version would refuse the newer ones with a
             parse error, which is why <cde>composer.json</cde> says which PHP the code needs, like
             the <cde>"php": "&gt;=8.4"</cde> in <xref to="/php/autoloading">Autoloading</xref>.
         </p>
@@ -131,8 +136,9 @@
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php order.php lost</code-block>
         <nti>
             <p>
-                <cde>Unknown status.</cde> The status came from the command line, and as Euclid
-                wrote in the margin of the <em>Elements</em>,
+                <cde>Unknown status.</cde> The status came from the
+                <term def="command-line">command line</term>, and as Euclid wrote in the margin of
+                the <em>Elements</em>,
                 <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: <cde>tryFrom()</cde> is the allow list, built in. Anything that isn't a case
                 comes back <cde>null</cde>.
             </p>
@@ -151,7 +157,8 @@
             </li>
             <li><cde>Status::cases()</cde> lists every case, for a select box or a check.</li>
             <li>
-                <cde>$status === Status::Paid</cde> compares enums; each case is a single object.
+                <cde>$status === Status::Paid</cde> compares enums; each case is a single
+                <term def="object">object</term>.
             </li>
             <li>
                 <cde
@@ -198,7 +205,8 @@
                 <strong>An enum isn't a database column type.</strong> Store
                 <cde>-&gt;value</cde> as a string, and turn it back with <cde>from()</cde>. Don't
                 reach for MySQL's own <cde>ENUM</cde> column: changing its list means changing the
-                table, while a <cde>VARCHAR</cde> and a PHP enum change with a deploy.
+                <term def="table">table</term>, while a <cde>VARCHAR</cde> and a PHP enum change
+                with a deploy.
             </li>
         </list>
 
@@ -208,9 +216,9 @@
                 Put <cde>#[\SensitiveParameter]</cde> in front of any parameter that holds a
                 password, a key or a token:
                 <cde>function login(string $email, #[\SensitiveParameter] string $password)</cde>.
-                If an exception passes through that function, its stack trace shows
-                <cde>Object(SensitiveParameterValue)</cde> where the password would have been, so it
-                never lands in your logs. PHP 8.2 and up.
+                If an <term def="exception">exception</term> passes through that function, its stack
+                trace shows <cde>Object(SensitiveParameterValue)</cde> where the password would have
+                been, so it never lands in your logs. PHP 8.2 and up.
             </p>
         </two-dollars>
 

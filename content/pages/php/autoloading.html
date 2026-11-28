@@ -24,25 +24,27 @@
         <!-- Intro -->
         <p>
             The last few lessons each started with a stack of <cde>require</cde> lines, one per
-            class, in the right order. With five classes that's tidy enough. With five hundred, it's
-            a job, and a missed line is a crash. Autoloading hands the job to PHP: when it meets a
-            class it hasn't seen, it asks you where the file is. A naming rule answers, and Composer
+            <term def="class">class</term>, in the right order. With five classes that's tidy
+            enough. With five hundred, it's a job, and a missed line is a crash.
+            <term def="autoloading">Autoloading</term> hands the job to PHP: when it meets a class
+            it hasn't seen, it asks you where the file is. A naming rule answers, and Composer
             writes the code.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-autoloading">What's Autoloading?</heading>
         <p>
-            A function you give PHP. The first time code uses a class PHP doesn't know yet, PHP
-            calls that function with the class's name. The function works out which file holds the
-            class and loads it. If it doesn't, PHP stops with <cde>Class "..." not found</cde>.
+            A <term def="function">function</term> you give PHP. The first time code uses a class
+            PHP doesn't know yet, PHP calls that function with the class's name. The function works
+            out which file holds the class and loads it. If it doesn't, PHP stops with
+            <cde>Class "..." not found</cde>.
         </p>
 
         <heading h3 id="namespaces">Namespaces</heading>
         <p>
-            A namespace is a family name for classes, so yours don't collide with everyone else's.
-            <cde>namespace App\Text;</cde> at the top of a file makes the class in it
-            <cde>App\Text\Shout</cde>. Other files can write the full name, or say
+            A <term def="namespace">namespace</term> is a family name for classes, so yours don't
+            collide with everyone else's. <cde>namespace App\Text;</cde> at the top of a file makes
+            the class in it <cde>App\Text\Shout</cde>. Other files can write the full name, or say
             <cde>use App\Text\Shout;</cde> once at the top and then just <cde>Shout</cde>.
         </p>
 
@@ -59,10 +61,10 @@ App\Text\Shout     src/Text/Shout.php</code-block>
 
         <heading h3 id="composer">Composer</heading>
         <p>
-            PHP's package manager, from <xref to="/php/tools#composer">Tools</xref>. It installs
-            other people's code into a <cde>vendor</cde> folder, and writes one autoloader,
-            <cde>vendor/autoload.php</cde>, for their classes and yours. Your project's settings go
-            in <cde>composer.json</cde>.
+            PHP's <term def="package-manager">package manager</term>, from
+            <xref to="/php/tools#composer">Tools</xref>. It installs other people's code into a
+            <cde>vendor</cde> folder, and writes one autoloader, <cde>vendor/autoload.php</cde>, for
+            their classes and yours. Your project's settings go in <cde>composer.json</cde>.
         </p>
 
         <side-story title="A Group for Getting Along">
@@ -121,8 +123,9 @@ App\Text\Shout     src/Text/Shout.php</code-block>
         </p>
         <code-block example="autoloading/composer.json" />
         <p>
-            The <cde>autoload</cde> part is the PSR-4 rule: <cde>App\</cde> is <cde>src/</cde>
-            (with the backslash doubled, because it's JSON). Install, in Composer's own container:
+            The <cde>autoload</cde> part is the PSR-4 rule: <cde>App\</cde> is <cde>src/</cde> (with
+            the backslash doubled, because it's <term def="json">JSON</term>). Install, in
+            Composer's own <term def="container">container</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
@@ -140,9 +143,9 @@ App\Text\Shout     src/Text/Shout.php</code-block>
         <p>
             <cde>HELLO, ADA!</cde> and <cde>HELLO, ZOË!</cde>, with the ë intact, because
             <cde>Shout</cde> uses <cde>mb_strtoupper()</cde>; plain <cde>strtoupper()</cde> only
-            knows ASCII letters, and <xref to="/php/text-and-utf-8">Text and UTF-8</xref> is why.
-            Add a class to <cde>src</cde> and it just works, with no new
-            <cde>require</cde> anywhere.
+            knows <term def="ascii">ASCII</term> letters, and
+            <xref to="/php/text-and-utf-8">Text and UTF-8</xref> is why. Add a class to
+            <cde>src</cde> and it just works, with no new <cde>require</cde> anywhere.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -157,8 +160,8 @@ App\Text\Shout     src/Text/Shout.php</code-block>
                 short name.
             </li>
             <li>
-                <cde>Shout::class</cde> is the full name as a string, <cde>'App\Text\Shout'</cde>,
-                checked by your editor instead of typed by hand.
+                <cde>Shout::class</cde> is the full name as a <term def="string">string</term>,
+                <cde>'App\Text\Shout'</cde>, checked by your editor instead of typed by hand.
             </li>
             <li>
                 <cde>require __DIR__ . '/vendor/autoload.php';</cde> once, at the top of every entry
@@ -184,8 +187,8 @@ App\Text\Shout     src/Text/Shout.php</code-block>
             <li>
                 <strong>Case counts, on the server.</strong> A Mac or Windows disk usually ignores
                 case, so <cde>src/greeter.php</cde> loads <cde>App\Greeter</cde> fine on your
-                laptop. The Linux server cares, and can't find it. Name files exactly like their
-                classes.
+                laptop. The Linux <term def="server">server</term> cares, and can't find it. Name
+                files exactly like their classes.
             </li>
             <li>
                 <strong>Inside a namespace, PHP's own classes need a backslash.</strong> In
@@ -198,7 +201,8 @@ App\Text\Shout     src/Text/Shout.php</code-block>
                 <strong><cde>vendor</cde> stays out of git.</strong> Commit
                 <cde>composer.json</cde> and <cde>composer.lock</cde>, put <cde>vendor/</cde> in
                 <cde>.gitignore</cde>, and run <cde>composer install</cde> wherever the code goes.
-                The lock file is what makes that install get the same versions you tested.
+                The <term def="lock-file">lock file</term> is what makes that install get the same
+                versions you tested.
             </li>
             <li>
                 <strong>Packages are other people's code, running as yours.</strong> Anything you
@@ -220,7 +224,8 @@ App\Text\Shout     src/Text/Shout.php</code-block>
 
         <p>
             When the autoloader can't find a class, PHP throws an <cde>Error</cde>, and so far
-            that's always ended the program. It doesn't have to. Next: exceptions and try/catch.
+            that's always ended the program. It doesn't have to. Next:
+            <term def="exception">exceptions</term> and try/catch.
         </p>
 
         <!-- Next -->

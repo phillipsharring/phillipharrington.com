@@ -21,23 +21,29 @@
 
         <!-- Intro -->
         <p>
-            Ever clicked a link expecting a page, and your browser downloaded a file instead? Or
-            opened a page and got a screen full of raw code? Both come down to one response header,
-            <cde>Content-Type</cde>. A response body is just bytes. The browser doesn't look at the
-            bytes, or at the end of the URL, to decide what they are. It believes the header.
+            Ever clicked a link expecting a page, and your
+            <term def="browser">browser</term> downloaded a file instead? Or opened a page and got a
+            screen full of raw code? Both come down to one <term def="response">response</term>
+            <term def="header">header</term>, <cde>Content-Type</cde>. A response
+            <term def="body">body</term> is just <term def="byte">bytes</term>. The browser doesn't
+            look at the bytes, or at the end of the <term def="url">URL</term>, to decide what they
+            are. It believes the header.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-content-type">What's a Content Type?</heading>
         <p>
-            A label in the form <cde>type/subtype</cde>, also called a media type or MIME type. The
-            ones you'll see most:
+            A label in the form <cde>type/subtype</cde>, also called a media type or
+            <term def="mime-type">MIME type</term>. The ones you'll see most:
         </p>
         <list>
             <li><cde>text/html</cde>: a web page. Render it.</li>
             <li><cde>text/plain</cde>: plain text. Show it, tags and all.</li>
             <li><cde>text/css</cde> and <cde>text/javascript</cde>: a stylesheet, a script.</li>
-            <li><cde>application/json</cde>: data, usually for JavaScript to read.</li>
+            <li>
+                <cde>application/json</cde>: data, usually for
+                <term def="javascript">JavaScript</term> to read.
+            </li>
             <li><cde>image/png</cde>, <cde>image/jpeg</cde>, <cde>image/webp</cde>: pictures.</li>
             <li><cde>application/pdf</cde>: a PDF.</li>
             <li>
@@ -46,9 +52,11 @@
             </li>
         </list>
         <p>
-            Requests have content types too, when they carry a body. A form posts
-            <cde>application/x-www-form-urlencoded</cde>, the <cde>name=value</cde> pairs from the
-            last lesson, or <cde>multipart/form-data</cde> when it includes a file.
+            <term def="request">Requests</term> have
+            <term def="content-type">content types</term> too, when they carry a body. A
+            <term def="form">form</term> posts <cde>application/x-www-form-urlencoded</cde>, the
+            <cde>name=value</cde> pairs from the last lesson, or <cde>multipart/form-data</cde> when
+            it includes a file.
         </p>
 
         <side-story title="Borrowed From Email">
@@ -61,25 +69,29 @@
         <heading h2 id="whats-a-charset">What's a Character Set?</heading>
         <p>
             Text types usually carry one more piece:
-            <cde>text/html; charset=utf-8</cde>. The charset says how the bytes become letters.
-            UTF-8 covers every language and every emoji, and it's the only one you should use. Get
-            it wrong, and "café" turns into "cafÃ©."
+            <cde>text/html; charset=utf-8</cde>. The <term def="character-set">charset</term> says
+            how the bytes become letters. <term def="utf-8">UTF-8</term> covers every language and
+            every emoji, and it's the only one you should use. Get it wrong, and "café" turns into
+            "cafÃ©."
         </p>
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <p>When a response arrives, the browser reads <cde>Content-Type</cde> and decides:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
-            <li>Something it can show, like HTML, an image or a PDF? It shows it.</li>
+            <li>
+                Something it can show, like <term def="html">HTML</term>, an image or a PDF? It
+                shows it.
+            </li>
             <li>Plain text? It shows the text as text.</li>
             <li>Something it can't show, or "no idea"? It downloads it.</li>
         </ol>
         <p>
-            So the download mystery is the server, labeling something the browser can't display, or
-            not labeling it at all. The file's extension doesn't enter into it. This site's own
-            pages have no extension, <cde>/about</cde> and not <cde>/about.html</cde>, so its deploy
-            has to tell the server, page by page, "this one is <cde>text/html</cde>." Without that
-            label, the server would send them as unknown bytes.
+            So the download mystery is the <term def="server">server</term>, labeling something the
+            browser can't display, or not labeling it at all. The file's extension doesn't enter
+            into it. This site's own pages have no extension, <cde>/about</cde> and not
+            <cde>/about.html</cde>, so its deploy has to tell the server, page by page, "this one is
+            <cde>text/html</cde>." Without that label, the server would send them as unknown bytes.
         </p>
         <p>
             A second header can overrule the browser's choice.
@@ -105,16 +117,18 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p class="text-th-muted text-base">
-            Same as before: <cde>-p 8000:8000</cde> connects port 8000 on your computer to the
-            container's, and <cde>php -S</cde> is PHP's web server.
+            Same as before: <cde>-p 8000:8000</cde> connects <term def="port">port</term> 8000 on
+            your computer to the <term def="container">container</term>'s, and <cde>php -S</cde> is
+            PHP's <term def="web-server">web server</term>.
         </p>
         <p>Then open each of these in your browser:</p>
         <list>
             <li><cde>http://localhost:8000/</cde>: a heading and a paragraph.</li>
             <li><cde>http://localhost:8000/?as=text</cde>: the same bytes, tags showing.</li>
             <li>
-                <cde>http://localhost:8000/?as=json</cde>: labeled as data, and it isn't JSON.
-                Firefox tries to show it as data and reports an error; Chrome just shows the text.
+                <cde>http://localhost:8000/?as=json</cde>: labeled as data, and it isn't
+                <term def="json">JSON</term>. Firefox tries to show it as data and reports an error;
+                Chrome just shows the text.
             </li>
             <li><cde>http://localhost:8000/?as=bytes</cde>: a download.</li>
             <li>
@@ -156,7 +170,7 @@
             </li>
             <li>
                 <cde>header('Content-Type: application/json');</cde> before
-                <cde>echo json_encode($data);</cde> is how an API answers.
+                <cde>echo json_encode($data);</cde> is how an <term def="api">API</term> answers.
             </li>
             <li>
                 <cde>header('Content-Disposition: attachment; filename="report.csv"');</cde> makes a
@@ -173,8 +187,9 @@
         <list>
             <li>
                 <strong>JSON labeled as HTML.</strong> Forget the header in an API, and every JSON
-                response goes out as <cde>text/html</cde>. Some clients won't mind. Some will refuse
-                it, and some will treat it as a page.
+                response goes out as <cde>text/html</cde>. Some
+                <term def="client">clients</term> won't mind. Some will refuse it, and some will
+                treat it as a page.
             </li>
             <li>
                 <strong
@@ -204,7 +219,8 @@
 
         <p>
             <cde>Content-Type</cde> tells the browser what it got. Another header,
-            <cde>Set-Cookie</cde>, asks it to remember something. Next: cookies.
+            <cde>Set-Cookie</cde>, asks it to remember something. Next:
+            <term def="cookie">cookies</term>.
         </p>
 
         <!-- Next -->

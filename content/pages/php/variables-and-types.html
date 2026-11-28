@@ -21,11 +21,11 @@
 
         <!-- Intro -->
         <p>
-            Output printed names, prices and lists, and every one of them was held in a variable
-            first. A variable is simple. The interesting part is the value inside it, because every
-            value has a type, and PHP will quietly change a value's type when it thinks you meant it
-            to. Sometimes that helps. Sometimes it hides a bug. One line at the top of a file
-            decides which.
+            Output printed names, prices and lists, and every one of them was held in a
+            <term def="variable">variable</term> first. A variable is simple. The interesting part
+            is the value inside it, because every value has a <term def="type">type</term>, and PHP
+            will quietly change a value's type when it thinks you meant it to. Sometimes that helps.
+            Sometimes it hides a bug. One line at the top of a file decides which.
         </p>
 
         <!-- What is/are -->
@@ -53,21 +53,23 @@ $count = 3;</code-block>
             them one at a time.
         </p>
         <p>
-            In PHP the type belongs to the value, not the variable. Put a string in
-            <cde>$count</cde> after a number, and <cde>$count</cde> holds a string now.
+            In PHP the type belongs to the value, not the variable. Put a
+            <term def="string">string</term> in <cde>$count</cde> after a number, and
+            <cde>$count</cde> holds a string now.
         </p>
 
         <heading h3 id="type-juggling">Type Juggling</heading>
         <p>
             When an operation needs a certain type, PHP converts the value to fit.
             <cde>+</cde> needs numbers, so <cde>'5' + 5</cde> is <cde>10</cde>. <cde>.</cde> joins
-            strings, so <cde>'5' . 5</cde> is <cde>"55"</cde>. The manual calls this type juggling.
+            strings, so <cde>'5' . 5</cde> is <cde>"55"</cde>. The manual calls this
+            <term def="type-juggling">type juggling</term>.
         </p>
 
         <heading h3 id="type-declarations">Type Declarations</heading>
         <p>
-            A function can say what types it takes and gives back. This one takes an
-            <cde>int</cde> and returns an <cde>int</cde>:
+            A <term def="function">function</term> can say what types it takes and gives back. This
+            one takes an <cde>int</cde> and returns an <cde>int</cde>:
         </p>
         <!-- prettier-ignore -->
         <code-block>function double(int $number): int</code-block>
@@ -82,10 +84,11 @@ $count = 3;</code-block>
         <!-- prettier-ignore -->
         <code-block>declare(strict_types=1);</code-block>
         <p>
-            Now an <cde>int</cde> parameter takes an int, and anything else is a
-            <cde>TypeError</cde> that stops the script. (One small exception: an int is still
-            accepted where a float is expected.) It's per file, and it covers the calls made from
-            that file. From here on, every example in the course starts with it.
+            Now an <cde>int</cde> <term def="parameter">parameter</term> takes an int, and anything
+            else is a <cde>TypeError</cde> that stops the script. (One small exception: an int is
+            still accepted where a <term def="float">float</term> is expected.) It's per file, and
+            it covers the calls made from that file. From here on, every example in the course
+            starts with it.
         </p>
 
         <side-story title="Why the Dollar Sign">
@@ -113,7 +116,9 @@ $count = 3;</code-block>
         </ol>
         <nti>
             <p>
-                That matters most for input. Every form field, query string, cookie and header
+                That matters most for input. Every <term def="form">form</term> field,
+                <term def="query-string">query string</term>, <term def="cookie">cookie</term> and
+                <term def="header">header</term>
                 arrives as a string, even when it looks like a number. Arithmetic and casts would
                 quietly turn
                 <cde>'21abc'</cde> into <cde>21</cde>. With strict_types, a string can't wander into
@@ -150,8 +155,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php strict.php</code-block>
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php input.php 21
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php input.php 21abc</code-block>
         <p class="text-th-muted text-base">
-            As in DNS: whatever follows the file name reaches the script as an argument, here
-            <cde>21</cde> and then <cde>21abc</cde>.
+            As in DNS: whatever follows the file name reaches the script as an
+            <term def="argument">argument</term>, here <cde>21</cde> and then <cde>21abc</cde>.
         </p>
         <p>
             The cast, <cde>(int)</cde>, turns <cde>21abc</cde> into <cde>21</cde> without a word.
@@ -176,8 +181,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php input.php 21abc</code-blo
             </li>
             <li>
                 <cde>filter_var($input, FILTER_VALIDATE_INT)</cde>: the whole string is a whole
-                number, or you get <cde>false</cde>. There are flavors for floats, emails, URLs and
-                more.
+                number, or you get <cde>false</cde>. There are flavors for floats, emails,
+                <term def="url">URLs</term> and more.
             </li>
             <li>
                 <cde>(int)</cde>, <cde>(float)</cde>, <cde>(string)</cde>, <cde>(bool)</cde>: casts.
@@ -200,12 +205,12 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php input.php 21abc</code-blo
             <li>
                 <strong>Casting isn't checking.</strong> <cde>(int) '21abc'</cde> is <cde>21</cde>,
                 and <cde>(int) 'abc'</cde> is <cde>0</cde>. A cast on input turns garbage into a
-                plausible number. Validate first.
+                plausible number. <term def="validation">Validate</term> first.
             </li>
             <li>
                 <strong>Input is always a string, or an array.</strong> Even <cde>?id=7</cde> gives
-                you <cde>'7'</cde>, and <cde>?id[]=7</cde> gives you an array. Check the type before
-                you use it.
+                you <cde>'7'</cde>, and <cde>?id[]=7</cde> gives you an
+                <term def="array">array</term>. Check the type before you use it.
             </li>
         </list>
 

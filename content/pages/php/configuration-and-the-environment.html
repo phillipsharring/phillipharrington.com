@@ -26,10 +26,11 @@
         <!-- Intro -->
         <p>
             PHP-FPM runs on settings: how many workers, whether to show errors, whether to say which
-            version it is. Your app has settings too: the database password, an API key, whether
-            it's on your computer or the live server. The same code runs in both places, with
-            different settings, and some of those settings are secrets. None of them belong in the
-            code.
+            version it is. Your app has settings too: the
+            <term def="database">database</term> password, an <term def="api-key">API key</term>,
+            whether it's on your computer or the live <term def="server">server</term>. The same
+            code runs in both places, with different settings, and some of those settings are
+            secrets. None of them belong in the code.
         </p>
 
         <!-- What is/are -->
@@ -58,18 +59,21 @@
         <heading h3 id="environment-variables">Environment Variables</heading>
         <p>
             Named values every program gets from whatever started it: <cde>APP_ENV=production</cde>,
-            <cde>DB_HOST=db</cde>. Your terminal has dozens. Docker, the server's setup, or a
-            hosting panel can set them for PHP, and PHP reads them with <cde>getenv()</cde>. They're
-            the usual way to hand a program its settings, because they're nowhere in the code.
+            <cde>DB_HOST=db</cde>. Your <term def="terminal">terminal</term> has dozens. Docker, the
+            server's setup, or a hosting panel can set them for PHP, and PHP reads them with
+            <cde>getenv()</cde>. They're the usual way to hand a program its settings, because
+            they're nowhere in the code.
         </p>
 
         <heading h3 id="development-and-production">Development and Production</heading>
         <p>
             The other meaning is the place the code is running. Development is your computer.
-            Production is the live site, with real visitors. Many teams have staging in between, a
-            copy of production for trying things first. Apps usually learn which one they're in from
-            an environment variable, often called <cde>APP_ENV</cde>, and behave accordingly: show
-            errors in development, never in production.
+            <term def="production">Production</term> is the live site, with real visitors. Many
+            teams have staging in between, a copy of production for trying things first. Apps
+            usually learn which one they're in from an
+            <term def="environment-variable">environment variable</term>, often called
+            <cde>APP_ENV</cde>, and behave accordingly: show errors in development, never in
+            production.
         </p>
 
         <side-story title="The Admin Nobody Meant to Ship">
@@ -100,8 +104,8 @@
             Docker images, the answer is none: they come with two samples,
             <cde>php.ini-development</cde> and <cde>php.ini-production</cde>, and you copy the one
             you want into place. For one run, <cde>php -d name=value</cde> sets a setting on the
-            command line, as Access and Error Logs did. In code, <cde>ini_set()</cde> changes some
-            of them while the script runs.
+            <term def="command-line">command line</term>, as Access and Error Logs did. In code,
+            <cde>ini_set()</cde> changes some of them while the script runs.
         </p>
 
         <!-- How it works -->
@@ -111,7 +115,9 @@
                 Something puts the values in the environment: Docker from a <cde>.env</cde> file,
                 the server's setup, or a secrets manager.
             </li>
-            <li>The web server or PHP-FPM starts, and inherits them.</li>
+            <li>
+                The <term def="web-server">web server</term> or PHP-FPM starts, and inherits them.
+            </li>
             <li>Your code reads each one with <cde>getenv()</cde>.</li>
             <li>
                 At the start, it checks the ones it can't live without, and stops with a clear error

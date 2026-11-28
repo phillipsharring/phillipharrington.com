@@ -21,22 +21,26 @@
 
         <!-- Intro -->
         <p>
-            Every reader of the blog and its comments makes the database do the same work again.
-            Most of the time, the answer hasn't changed since the last person asked. A cache keeps a
-            copy of the answer, and hands out the copy until it's too old to trust.
+            Every reader of the blog and its comments makes the
+            <term def="database">database</term> do the same work again. Most of the time, the
+            answer hasn't changed since the last person asked. A
+            <term def="cache">cache</term> keeps a copy of the answer, and hands out the copy until
+            it's too old to trust.
         </p>
         <p>
             You'll take a report that takes a full second to make, and cache it in two places: in
-            files on your server, so the work happens once a minute instead of once a request; and
-            in the browser, so a visitor who already has the latest copy is told so in a few bytes.
+            files on your <term def="server">server</term>, so the work happens once a minute
+            instead of once a <term def="request">request</term>; and in the
+            <term def="browser">browser</term>, so a visitor who already has the latest copy is told
+            so in a few <term def="byte">bytes</term>.
         </p>
 
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <xref to="/php/request-and-response">Request and Response</xref>: headers both ways,
-                and the 304 status
+                <xref to="/php/request-and-response">Request and Response</xref>:
+                <term def="header">headers</term> both ways, and the 304 status
             </li>
             <li>
                 <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: the caches you
@@ -56,18 +60,19 @@
 
         <heading h3 id="step-1-something-slow">Step 1: Something Slow</heading>
         <p>
-            In a project folder, <cde>src/report.php</cde> stands in for a big query or a call to
-            another site. It always takes a second, and it stamps the time it was made, so you can
-            see a copy when you get one:
+            In a project folder, <cde>src/report.php</cde> stands in for a big
+            <term def="query">query</term> or a call to another site. It always takes a second, and
+            it stamps the time it was made, so you can see a copy when you get one:
         </p>
         <code-block example="project-caching/src/report.php" />
 
         <heading h3 id="step-2-the-cache">Step 2: The Cache</heading>
         <p>
-            <cde>src/FileCache.php</cde> is one class with one main method:
-            <cde>remember()</cde> takes a key, how long to keep the value, and a function that makes
-            it. If a fresh copy is on disk, it returns that. If not, it calls the function, saves
-            the result, and returns it.
+            <cde>src/FileCache.php</cde> is one <term def="class">class</term> with one main
+            <term def="method">method</term>: <cde>remember()</cde> takes a key, how long to keep
+            the value, and a <term def="function">function</term> that makes it. If a fresh copy is
+            on disk, it returns that. If not, it calls the function, saves the result, and returns
+            it.
         </p>
         <code-block example="project-caching/src/FileCache.php" />
         <list>
@@ -77,8 +82,8 @@
             </li>
             <li>
                 <strong>The value is JSON,</strong> plain data. Never <cde>unserialize()</cde> a
-                cache file: if anyone can ever write one, they can make it build objects in your
-                code.
+                cache file: if anyone can ever write one, they can make it build
+                <term def="object">objects</term> in your code.
             </li>
             <li>
                 <strong>The write is atomic.</strong> It writes a temporary file, then renames it
@@ -87,8 +92,8 @@
             </li>
         </list>
         <p>
-            Make an empty <cde>cache</cde> folder next to <cde>src</cde>, outside the web root, and
-            keep its contents out of git:
+            Make an empty <cde>cache</cde> folder next to <cde>src</cde>, outside the
+            <term def="web-root">web root</term>, and keep its contents out of git:
         </p>
         <code-block example="project-caching/.gitignore" />
 
@@ -97,19 +102,20 @@
         <code-block example="project-caching/public/report.php" />
         <p>
             Layer one is the file cache, with an <cde>X-Cache</cde> header saying whether this one
-            was a hit. Layer two is HTTP. <cde>Cache-Control: public, max-age=60</cde> tells the
-            browser, and any cache in the middle, that this answer is the same for everyone and good
-            for a minute. The <cde>ETag</cde> is a fingerprint of the body. When the minute is up,
-            the browser asks again with <cde>If-None-Match</cde> and the fingerprint it has, and if
-            nothing changed, the answer is <cde>304 Not Modified</cde>, with no body at all.
+            was a hit. Layer two is <term def="http">HTTP</term>.
+            <cde>Cache-Control: public, max-age=60</cde> tells the browser, and any cache in the
+            middle, that this answer is the same for everyone and good for a minute. The
+            <cde>ETag</cde> is a fingerprint of the <term def="body">body</term>. When the minute is
+            up, the browser asks again with <cde>If-None-Match</cde> and the fingerprint it has, and
+            if nothing changed, the answer is <cde>304 Not Modified</cde>, with no body at all.
         </p>
         <nti>
             <p>
                 The town crier rang his bell and shouted it in the square every morning:
                 <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong> and
                 that includes what goes into a cache key. The region must be one of four. If any
-                string were allowed, anyone could ask for a million made-up regions, and you'd make
-                a million slow reports and keep a million files.
+                <term def="string">string</term> were allowed, anyone could ask for a million
+                made-up regions, and you'd make a million slow reports and keep a million files.
             </p>
         </nti>
 
@@ -117,10 +123,11 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
         <p class="text-th-muted text-base">
-            The usual server: <cde>-p 8000:8000</cde> connects port 8000 on your computer to the
-            container's, where <cde>php -S</cde> is listening.
+            The usual server: <cde>-p 8000:8000</cde> connects <term def="port">port</term> 8000 on
+            your computer to the <term def="container">container's</term>, where
+            <cde>php -S</cde> is listening.
         </p>
-        <p>From a second terminal, ask twice, and time it:</p>
+        <p>From a second <term def="terminal">terminal</term>, ask twice, and time it:</p>
         <!-- prettier-ignore -->
         <code-block>curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'
 curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'</code-block>
@@ -148,10 +155,11 @@ curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'</c
         </p>
 
         <side-story title="The Two Hard Things">
-            "There are only two hard things in Computer Science: cache invalidation and naming
-            things." The line is usually credited to Phil Karlton, a programmer at Netscape in the
-            1990s. Knowing when a copy is no longer true is the whole difficulty of caching; making
-            the copy is the easy part.
+            "There are only two hard things in Computer Science:
+            <term def="cache-invalidation">cache invalidation</term> and naming things." The line is
+            usually credited to Phil Karlton, a programmer at Netscape in the 1990s. Knowing when a
+            copy is no longer true is the whole difficulty of caching; making the copy is the easy
+            part.
         </side-story>
 
         <tk
@@ -201,8 +209,9 @@ curl -i -w '%{time_total}s\n' 'http://localhost:8000/report.php?region=north'</c
         </two-dollars>
 
         <p>
-            <cde>clear-cache.php</cde> ran in a terminal, not a browser. Next: PHP on the command
-            line, and writing scripts that are meant to run there.
+            <cde>clear-cache.php</cde> ran in a terminal, not a browser. Next: PHP on the
+            <term def="command-line">command line</term>, and writing scripts that are meant to run
+            there.
         </p>
 
         <!-- Next -->

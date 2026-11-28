@@ -22,14 +22,14 @@
         <!-- Intro -->
         <p>
             The lessons are done. From here on, you build things. The first one is the page most
-            sites start with: a home page. It's mostly HTML, with just enough PHP to do what plain
-            HTML can't: greet the visitor by the time of day, build a list from data, and keep the
-            year in the footer right without you ever touching it.
+            sites start with: a home page. It's mostly <term def="html">HTML</term>, with just
+            enough PHP to do what plain HTML can't: greet the visitor by the time of day, build a
+            list from data, and keep the year in the footer right without you ever touching it.
         </p>
         <p>
             Every project after this one adds to the same habits, so they start here: the code lives
             in a project folder, only <cde>public</cde> is served, and anything PHP prints into the
-            page gets escaped.
+            page gets <term def="escaping">escaped</term>.
         </p>
 
         <!-- What you'll use -->
@@ -58,9 +58,10 @@
 
         <heading h3 id="the-folders">The Folders</heading>
         <p>
-            Make a project folder, and in it a folder called <cde>public</cde>. That's the web root.
-            Everything in this project is small enough to live in <cde>public</cde>, but start the
-            habit now: later projects keep their code and settings outside it.
+            Make a project folder, and in it a folder called <cde>public</cde>. That's the
+            <term def="web-root">web root</term>. Everything in this project is small enough to live
+            in <cde>public</cde>, but start the habit now: later projects keep their code and
+            settings outside it.
         </p>
 
         <heading h3 id="the-page">The Page</heading>
@@ -70,8 +71,9 @@
         <list>
             <li>
                 <strong>The data comes first.</strong> The name, the about line and the links sit at
-                the top, in variables and an array. The HTML below only arranges them. Change a
-                link, and you change one line, not a tag in the middle of the markup.
+                the top, in <term def="variable">variables</term> and an
+                <term def="array">array</term>. The HTML below only arranges them. Change a link,
+                and you change one line, not a tag in the middle of the markup.
             </li>
             <li>
                 <strong>The greeting.</strong> <cde>date('G')</cde> is the hour, 0 to 23, and
@@ -79,21 +81,22 @@
             </li>
             <li>
                 <strong>The footer.</strong> <cde>date('Y')</cde> is this year, worked out on every
-                request, so the copyright line is right on January 1st with nobody awake.
-                <cde>filemtime(__FILE__)</cde> is when this file last changed, which makes an honest
-                "Updated" date.
+                <term def="request">request</term>, so the copyright line is right on January 1st
+                with nobody awake. <cde>filemtime(__FILE__)</cde> is when this file last changed,
+                which makes an honest "Updated" date.
             </li>
             <li>
                 <strong>Everything printed is escaped.</strong> The name and links are yours today,
-                but data has a way of coming from somewhere else later: a settings file, a database,
-                a form. <cde>htmlspecialchars()</cde> costs nothing and makes that safe when it
-                happens.
+                but data has a way of coming from somewhere else later: a settings file, a
+                <term def="database">database</term>, a <term def="form">form</term>.
+                <cde>htmlspecialchars()</cde> costs nothing and makes that safe when it happens.
             </li>
         </list>
 
         <heading h3 id="a-stylesheet">A Stylesheet</heading>
         <p>
-            Also in <cde>public</cde>, <cde>style.css</cde>, so the page is readable. The server
+            Also in <cde>public</cde>, <cde>style.css</cde>, so the page is readable. The
+            <term def="server">server</term>
             sends it as a plain file, because it isn't PHP:
         </p>
         <code-block example="project-home-page/public/style.css" />
@@ -102,7 +105,10 @@
         <p>From the project folder, serve <cde>public</cde>:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
-        <p>Open <cde>http://localhost:8000</cde>. Then look at what the browser actually got:</p>
+        <p>
+            Open <cde>http://localhost:8000</cde>. Then look at what the
+            <term def="browser">browser</term> actually got:
+        </p>
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8000</code-block>
         <p>
@@ -118,10 +124,11 @@
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>The server's clock may not be yours.</strong> Containers and most servers
-                run on UTC, so "Good morning" can arrive at 9 p.m. Set the time zone on purpose,
-                with <cde>date_default_timezone_set()</cde> or <cde>date.timezone</cde> in the
-                settings, and say which one on the page if it matters.
+                <strong>The server's clock may not be yours.</strong>
+                <term def="container">Containers</term> and most servers run on UTC, so "Good
+                morning" can arrive at 9 p.m. Set the time zone on purpose, with
+                <cde>date_default_timezone_set()</cde> or <cde>date.timezone</cde> in the settings,
+                and say which one on the page if it matters.
             </li>
             <li>
                 <strong>A page that ends in <cde>.php</cde> isn't always run.</strong> Open the file
@@ -131,8 +138,9 @@
             </li>
             <li>
                 <strong>Forgetting <cde>charset</cde>.</strong> Without
-                <cde>&lt;meta charset="utf-8"&gt;</cde>, a browser may guess the wrong encoding and
-                show accented letters as junk. <xref to="/php/text-and-utf-8">Text and UTF-8</xref>
+                <cde>&lt;meta charset="utf-8"&gt;</cde>, a browser may guess the wrong
+                <term def="encoding">encoding</term> and show accented letters as junk.
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>
                 has the whole story.
             </li>
         </list>

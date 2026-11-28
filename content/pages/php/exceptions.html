@@ -23,10 +23,11 @@
 
         <!-- Intro -->
         <p>
-            Some failures can't be handled where they happen. A function that splits a bill can tell
-            that "zero people" is nonsense, but it has no idea whether it's running in a web page, a
-            command, or a test, so it can't decide what to show anyone. It needs a way to stop and
-            hand the problem to whoever called it. That's an exception.
+            Some failures can't be handled where they happen. A
+            <term def="function">function</term> that splits a bill can tell that "zero people" is
+            nonsense, but it has no idea whether it's running in a web page, a command, or a test,
+            so it can't decide what to show anyone. It needs a way to stop and hand the problem to
+            whoever called it. That's an <term def="exception">exception</term>.
             <xref to="/php/errors-and-the-error-log">Errors and the Error Log</xref> introduced
             them; this lesson is what to do with one.
         </p>
@@ -34,9 +35,9 @@
         <!-- What is/are -->
         <heading h2 id="whats-an-exception">What's an Exception?</heading>
         <p>
-            An object that describes what went wrong: a message, the file and line it came from, and
-            the stack trace, the list of function calls that led there. You make one with
-            <cde>new</cde>, like any object, and <cde>throw</cde> it.
+            An <term def="object">object</term> that describes what went wrong: a message, the file
+            and line it came from, and the stack trace, the list of function calls that led there.
+            You make one with <cde>new</cde>, like any object, and <cde>throw</cde> it.
         </p>
 
         <heading h3 id="try-and-catch">Try and Catch</heading>
@@ -51,14 +52,14 @@
         <list>
             <li>
                 <strong>Exception</strong>: things that can go wrong in a working program. A file
-                that isn't there, bad input, a database that's down. Its children include
-                <cde>RuntimeException</cde>, <cde>InvalidArgumentException</cde> and
-                <cde>JsonException</cde>.
+                that isn't there, bad input, a <term def="database">database</term> that's down. Its
+                children include <cde>RuntimeException</cde>,
+                <cde>InvalidArgumentException</cde> and <cde>JsonException</cde>.
             </li>
             <li>
                 <strong>Error</strong>: mistakes in the code itself, thrown by PHP. Calling a
-                function that doesn't exist, a class that isn't found, a <cde>TypeError</cde> from
-                <xref to="/php/variables-and-types">strict types</xref>,
+                function that doesn't exist, a <term def="class">class</term> that isn't found, a
+                <cde>TypeError</cde> from <xref to="/php/variables-and-types">strict types</xref>,
                 <cde>DivisionByZeroError</cde>.
             </li>
         </list>
@@ -97,7 +98,7 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             A bill splitter, with both kinds of failure. First the handler at the top,
-            <cde>handler.php</cde>, outside the web root:
+            <cde>handler.php</cde>, outside the <term def="web-root">web root</term>:
         </p>
         <code-block example="exceptions/handler.php" />
         <p>Then the page, <cde>public/index.php</cde>:</p>
@@ -106,7 +107,10 @@
         <code-block example="exceptions/public/oops.php" />
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
-        <p>From a second terminal, a good request, then two bad ones:</p>
+        <p>
+            From a second <term def="terminal">terminal</term>, a good
+            <term def="request">request</term>, then two bad ones:
+        </p>
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/?cents=1000&amp;people=3'
 curl -i 'http://localhost:8000/?cents=1000&amp;people=0'
@@ -115,15 +119,16 @@ curl -i 'http://localhost:8000/?cents=lots&amp;people=3'</code-block>
             <cde>334, 333, 333</cde>: ten dollars, three ways, adding up to the cent. Then two 400s,
             each saying what was wrong. <cde>wholeNumber()</cde> threw a <cde>BadRequest</cde>, and
             the <cde>catch</cde> around the call turned it into an answer. That's the input check,
-            and <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the query string is whatever anyone typed, and <cde>filter_var()</cde> takes only a
-            whole number in range. Now the unplanned one:
+            and <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the <term def="query-string">query string</term> is whatever anyone typed, and
+            <cde>filter_var()</cde> takes only a whole number in range. Now the unplanned one:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/oops.php</code-block>
         <p>
             A 500 and <cde>Something went wrong. It's been logged.</cde> Nothing in the page says
-            what. Look at the terminal running the server: the whole exception is there, message,
-            file, line and stack trace, where you can read it and the visitor can't.
+            what. Look at the terminal running the <term def="server">server</term>: the whole
+            exception is there, message, file, line and stack trace, where you can read it and the
+            visitor can't.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -170,7 +175,7 @@ curl -i 'http://localhost:8000/?cents=lots&amp;people=3'</code-block>
             </li>
             <li>
                 <strong>The details are for you, not the visitor.</strong> A stack trace shows file
-                paths, function names, sometimes the values passed in. With
+                <term def="path">paths</term>, function names, sometimes the values passed in. With
                 <cde>display_errors</cde> on and no handler, PHP prints all of it on the page. Log
                 it, and show a plain message.
             </li>
@@ -181,8 +186,8 @@ curl -i 'http://localhost:8000/?cents=lots&amp;people=3'</code-block>
             </li>
             <li>
                 <strong>Exceptions aren't for the normal path.</strong> "No results" is an answer,
-                not a failure. Return an empty array. Throw when the function truly can't do its
-                job.
+                not a failure. Return an empty <term def="array">array</term>. Throw when the
+                function truly can't do its job.
             </li>
         </list>
 
@@ -190,23 +195,26 @@ curl -i 'http://localhost:8000/?cents=lots&amp;people=3'</code-block>
             Exceptions aren't the only way. Go, released by Google in 2009, has none for ordinary
             failures: a function that can fail returns its result and an error side by side, and the
             caller checks the error right there. Rust does something similar with a
-            <cde>Result</cde> type. Both choices were on purpose: a failure you can see in the code
-            is harder to forget about than one that might fly past from somewhere below.
+            <cde>Result</cde> <term def="type">type</term>. Both choices were on purpose: a failure
+            you can see in the code is harder to forget about than one that might fly past from
+            somewhere below.
         </side-story>
 
         <!-- $2 tip -->
         <two-dollars title="Keep the cause">
             <p>
                 When you catch one exception and throw your own, pass the first one along as the
-                third argument: <cde>throw new ReportFailed('Sales report failed.', 0, $e);</cde>.
-                The new message says what your code was trying to do, and <cde>(string) $e</cde> in
-                the log still shows the original, underneath it.
+                third <term def="argument">argument</term>:
+                <cde>throw new ReportFailed('Sales report failed.', 0, $e);</cde>. The new message
+                says what your code was trying to do, and <cde>(string) $e</cde> in the log still
+                shows the original, underneath it.
             </p>
         </two-dollars>
 
         <p>
             The bill splitter's limits, 1 to 50 people, are written into the code as bare numbers.
-            They'd be better with names. Next: constants, static variables and functions.
+            They'd be better with names. Next: <term def="constant">constants</term>, static
+            <term def="variable">variables</term> and functions.
         </p>
 
         <!-- Next -->

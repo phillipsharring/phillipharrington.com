@@ -21,15 +21,20 @@
 
         <!-- Intro -->
         <p>
-            Some things an app should have only one of: one database connection, one mailer, one set
-            of settings. The middleware app made one of each in <cde>index.php</cde> and handed them
-            out. The singleton is the other way to do it, and you'll find it in a lot of PHP code.
-            It's worth knowing exactly how it works, and exactly why I don't use it.
+            Some things an app should have only one of: one
+            <term def="database">database</term> connection, one mailer, one set of settings. The
+            <term def="middleware">middleware</term> app made one of each in
+            <cde>index.php</cde> and handed them out. The <term def="singleton">singleton</term> is
+            the other way to do it, and you'll find it in a lot of PHP code. It's worth knowing
+            exactly how it works, and exactly why I don't use it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-singleton">What's a Singleton?</heading>
-        <p>A class that makes sure there's only ever one of itself. Three parts:</p>
+        <p>
+            A <term def="class">class</term> that makes sure there's only ever one of itself. Three
+            parts:
+        </p>
         <list>
             <li>
                 <strong>A private constructor</strong>, so <cde>new Mailer()</cde> fails anywhere
@@ -50,8 +55,9 @@
         <list>
             <li>
                 <strong>Hidden dependencies.</strong> A class that calls
-                <cde>Mailer::getInstance()</cde> inside a method needs a mailer, and nothing about
-                its constructor says so. You find out by reading every line.
+                <cde>Mailer::getInstance()</cde> inside a <term def="method">method</term> needs a
+                mailer, and nothing about its constructor says so. You find out by reading every
+                line.
             </li>
             <li>
                 <strong>State that outlives you.</strong> The instance lives as long as the process.
@@ -64,8 +70,9 @@
             </li>
         </list>
         <p>
-            It's a global variable with a class around it. That's why I inject dependencies instead,
-            and keep statics out of my classes.
+            It's a global <term def="variable">variable</term> with a class around it. That's why I
+            inject <term def="dependency">dependencies</term> instead, and keep statics out of my
+            classes.
         </p>
 
         <side-story title="One of the Twenty-Three">
@@ -80,13 +87,17 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>Code calls <cde>Mailer::getInstance()</cde>.</li>
             <li>
-                The static property is empty, so the method makes a <cde>Mailer</cde> with the
-                private constructor, stores it, and returns it.
+                The static <term def="property">property</term> is empty, so the method makes a
+                <cde>Mailer</cde> with the private constructor, stores it, and returns it.
             </li>
-            <li>Every later call finds it stored and returns the same object.</li>
             <li>
-                It stays until the PHP process ends: the end of the request on a web server, or the
-                end of the script on the command line.
+                Every later call finds it stored and returns the same
+                <term def="object">object</term>.
+            </li>
+            <li>
+                It stays until the PHP process ends: the end of the
+                <term def="request">request</term> on a <term def="web-server">web server</term>, or
+                the end of the script on the <term def="command-line">command line</term>.
             </li>
         </ol>
         <p>
@@ -117,7 +128,7 @@
             The first passes. The second fails, though it's the same test: the mailer still has
             Alice's email in it, so it counts two. Run them in the other order and Alice's fails
             instead. Now the other way. In an <cde>after</cde> folder, <cde>Mailer.php</cde> is an
-            interface:
+            <term def="interface">interface</term>:
         </p>
         <code-block example="singletons/after/Mailer.php" />
         <p><cde>RecordingMailer.php</cde> is a plain class:</p>
@@ -134,7 +145,8 @@
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/tests.php
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block>
         <p class="text-th-muted text-base">
-            The familiar run line: <cde>--rm</cde> cleans up the container after, and the path after
+            The familiar run line: <cde>--rm</cde> cleans up the
+            <term def="container">container</term> after, and the <term def="path">path</term> after
             <cde>php</cde> is relative to your folder, here inside <cde>after</cde>.
         </p>
         <p>
@@ -164,8 +176,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block
             </li>
             <li>
                 The alternative is <xref to="/php/dependency-injection">Dependency Injection</xref>:
-                constructor parameters, and one place that builds everything. A container can do the
-                building for you once the app is big.
+                constructor <term def="parameter">parameters</term>, and one place that builds
+                everything. A container can do the building for you once the app is big.
             </li>
         </list>
 
@@ -208,8 +220,9 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block
 
         <p>
             <cde>app.php</cde> decided which mailer the app gets. When that decision depends on
-            settings, a recording mailer in tests, a real one in production, it's worth giving the
-            deciding its own object. Next: factories.
+            settings, a recording mailer in tests, a real one in
+            <term def="production">production</term>, it's worth giving the deciding its own object.
+            Next: <term def="factory">factories</term>.
         </p>
 
         <!-- Next -->

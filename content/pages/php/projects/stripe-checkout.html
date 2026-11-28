@@ -24,10 +24,10 @@
         <!-- Intro -->
         <p>
             Checkout left an order awaiting payment, and a promise: the card number goes to the
-            payment provider, never to you. Here's how that works. Your server tells Stripe what the
-            order costs. Stripe gives back the address of a payment page on its own servers. The
-            customer types their card there. Afterward, Stripe tells your server, in a signed
-            message, that the money arrived.
+            payment provider, never to you. Here's how that works. Your
+            <term def="server">server</term> tells Stripe what the order costs. Stripe gives back
+            the address of a payment page on its own servers. The customer types their card there.
+            Afterward, Stripe tells your server, in a signed message, that the money arrived.
         </p>
         <p>
             Everything here runs in Stripe's test mode, with test keys and Stripe's published test
@@ -61,9 +61,10 @@
 
         <heading h3 id="step-1-test-keys">Step 1: Test Keys</heading>
         <p>
-            Make a Stripe account, if you don't have one, and find the test-mode API keys in the
-            Dashboard. The secret key starts with <cde>sk_test_</cde>. It never goes in code or in
-            git. Copy <cde>.env.example</cde> to <cde>.env</cde>, which <cde>.gitignore</cde>
+            Make a Stripe account, if you don't have one, and find the test-mode
+            <term def="api-key">API keys</term> in the Dashboard. The secret key starts with
+            <cde>sk_test_</cde>. It never goes in code or in git. Copy <cde>.env.example</cde> to
+            <cde>.env</cde>, which <cde>.gitignore</cde>
             keeps out of the repository, and put it there:
         </p>
         <code-block example="project-stripe-checkout/.env.example" />
@@ -79,17 +80,19 @@
         <heading h3 id="step-2-the-containers">Step 2: The Containers</heading>
         <p>
             The app gets the keys from <cde>.env</cde>, through Compose. A third service, behind a
-            profile, runs the Stripe CLI, which receives test-mode webhooks from Stripe and forwards
-            them to your app, so Stripe can reach a server on your own computer:
+            profile, runs the Stripe CLI, which receives test-mode
+            <term def="webhook">webhooks</term> from Stripe and forwards them to your app, so Stripe
+            can reach a server on your own computer:
         </p>
         <code-block example="project-stripe-checkout/compose.yml" />
         <p>
-            The orders table gets two columns, <cde>stripe_session_id</cde> and <cde>paid_at</cde>:
+            The orders <term def="table">table</term> gets two <term def="column">columns</term>,
+            <cde>stripe_session_id</cde> and <cde>paid_at</cde>:
         </p>
         <code-block example="project-stripe-checkout/init.sql" />
         <p>
-            And <cde>src/helpers.php</cde> gets one more function, which only hands over the key if
-            it's a test key:
+            And <cde>src/helpers.php</cde> gets one more <term def="function">function</term>, which
+            only hands over the key if it's a test key:
         </p>
         <code-block example="project-stripe-checkout/src/helpers.php" />
 
@@ -107,13 +110,15 @@
         </p>
         <p>
             <cde>public/pay.php</cde> is what the order page's Pay button posts to. It checks the
-            key, the token, and that this browser placed this order, makes the session, saves its
-            id, and redirects the customer to Stripe:
+            key, the token, and that this <term def="browser">browser</term> placed this order,
+            makes the session, saves its id, and <term def="redirect">redirects</term> the customer
+            to Stripe:
         </p>
         <code-block example="project-stripe-checkout/public/pay.php" />
         <p>
             And <cde>public/order.php</cde> gets the button. When the customer comes back with
-            <cde>paid</cde> in the URL, it says thanks, and that it's still confirming:
+            <cde>paid</cde> in the <term def="url">URL</term>, it says thanks, and that it's still
+            confirming:
         </p>
         <code-block example="project-stripe-checkout/public/order.php" />
 
@@ -127,8 +132,9 @@
         </p>
         <p>
             Anyone can POST to your webhook too, so Stripe signs every one. The
-            <cde>Stripe-Signature</cde> header holds a timestamp and an HMAC of the timestamp and
-            the body, made with your webhook secret. <cde>src/StripeSignature.php</cde> checks it:
+            <cde>Stripe-Signature</cde> <term def="header">header</term> holds a timestamp and an
+            HMAC of the timestamp and the <term def="body">body</term>, made with your webhook
+            secret. <cde>src/StripeSignature.php</cde> checks it:
         </p>
         <code-block example="project-stripe-checkout/src/StripeSignature.php" />
         <p>
@@ -156,7 +162,7 @@ docker compose --profile stripe up</code-block>
         <p>
             The Stripe CLI prints a webhook signing secret, <cde>whsec_...</cde>. Put it in
             <cde>.env</cde> as <cde>STRIPE_WEBHOOK_SECRET</cde>, and restart the app so it reads it,
-            from a second terminal:
+            from a second <term def="terminal">terminal</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose up -d app</code-block>
@@ -171,13 +177,14 @@ docker compose --profile stripe up</code-block>
         <list>
             <li><cde>4000 0000 0000 0002</cde> is declined. The order stays unpaid.</li>
             <li>
-                <cde>4000 0025 0000 3155</cde> asks for extra authentication, the step some banks
-                add, which Stripe's page handles for you.
+                <cde>4000 0025 0000 3155</cde> asks for extra
+                <term def="authentication">authentication</term>, the step some banks add, which
+                Stripe's page handles for you.
             </li>
         </list>
         <p>
-            Then look for the card number on your side: in the database, in the logs, anywhere. It
-            isn't there. It never came.
+            Then look for the card number on your side: in the <term def="database">database</term>,
+            in the logs, anywhere. It isn't there. It never came.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -187,18 +194,21 @@ docker compose --profile stripe up</code-block>
             Card numbers end in a check digit, worked out with a formula patented by Hans Peter
             Luhn, an IBM engineer, in 1960. Double every second digit from the right, add up the
             digits, and the total of a valid number ends in 0. It catches most typos, which is why a
-            payment form can say "that number's wrong" before asking anyone. Stripe's test numbers,
-            <cde>4242 4242 4242 4242</cde> included, pass the check, so they look valid to any form,
-            and in test mode Stripe treats each one as a card with a known outcome.
+            payment <term def="form">form</term> can say "that number's wrong" before asking anyone.
+            Stripe's test numbers, <cde>4242 4242 4242 4242</cde> included, pass the check, so they
+            look valid to any form, and in test mode Stripe treats each one as a card with a known
+            outcome.
         </side-story>
 
         <!-- Gotchas -->
         <heading h2 id="gotchas">Gotchas</heading>
         <list>
             <li>
-                <strong>Read the raw body.</strong> The signature covers the exact bytes Stripe
-                sent. Decode and re-encode the JSON before checking, and the bytes change and the
-                check fails. <cde>php://input</cde>, untouched, first.
+                <strong>Read the raw body.</strong> The signature covers the exact
+                <term def="byte">bytes</term> Stripe sent. Decode and
+                <term def="encoding">re-encode</term> the <term def="json">JSON</term> before
+                checking, and the bytes change and the check fails. <cde>php://input</cde>,
+                untouched, first.
             </li>
             <li>
                 <strong>Test and live are separate worlds.</strong> Different keys, different
@@ -232,15 +242,15 @@ docker compose --profile stripe up</code-block>
         <two-dollars title="Make the live key impossible by accident">
             <p>
                 Have your code check the key's prefix, the way <cde>stripeTestKey()</cde> does, in
-                every environment that isn't production. A development machine that refuses
-                <cde>sk_live_</cde> can't charge a real card because someone pasted the wrong key
-                into the wrong <cde>.env</cde>.
+                every environment that isn't <term def="production">production</term>. A development
+                machine that refuses <cde>sk_live_</cde> can't charge a real card because someone
+                pasted the wrong key into the wrong <cde>.env</cde>.
             </p>
         </two-dollars>
 
         <p>
             Paid orders pile up, and someone will want them in a spreadsheet. Next: exporting data,
-            as a CSV download, and the attack hiding in a spreadsheet cell.
+            as a <term def="csv">CSV</term> download, and the attack hiding in a spreadsheet cell.
         </p>
 
         <!-- Next -->

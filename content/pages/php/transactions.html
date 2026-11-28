@@ -22,16 +22,17 @@
         <!-- Intro -->
         <p>
             <xref to="/php/deleting-data">Deleting Data</xref> used one as an undo button. That's
-            the smaller half of what a transaction is for. The bigger half: most real changes take
-            more than one statement. Moving money takes two updates, placing an order takes an
-            insert and a stock change. If the first one runs and the second one doesn't, because of
-            an error, a crash or a bug, the data is left half-changed. A transaction makes the
-            statements one change: all of them happen, or none do.
+            the smaller half of what a <term def="transaction">transaction</term> is for. The bigger
+            half: most real changes take more than one statement. Moving money takes two updates,
+            placing an order takes an insert and a stock change. If the first one runs and the
+            second one doesn't, because of an error, a crash or a bug, the data is left
+            half-changed. A transaction makes the statements one change: all of them happen, or none
+            do.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-transaction">What's a Transaction?</heading>
-        <p>A group of statements the database treats as one:</p>
+        <p>A group of statements the <term def="database">database</term> treats as one:</p>
         <!-- prettier-ignore -->
         <code-block>START TRANSACTION;
 
@@ -60,24 +61,24 @@ COMMIT;</code-block>
             <li><strong>Atomic</strong>: all of it happens, or none of it. No half-transfers.</li>
             <li>
                 <strong>Consistent</strong>: it takes the data from one valid state to another, with
-                every rule (types, keys, constraints) still holding.
+                every rule (<term def="type">types</term>, keys, constraints) still holding.
             </li>
             <li>
                 <strong>Isolated</strong>: other connections don't see its changes until it commits.
             </li>
             <li>
                 <strong>Durable</strong>: once it's committed, it stays committed, even if the
-                server loses power a moment later.
+                <term def="server">server</term> loses power a moment later.
             </li>
         </list>
 
         <side-story title="Jim Gray">
             Much of how databases do transactions comes from Jim Gray, who worked out how to make
             them reliable and fast, at IBM, Tandem and later Microsoft, and won the Turing Award for
-            it in 1998. The name ACID came from two German researchers, Theo Härder and Andreas
-            Reuter, in 1983, building on his work. Gray went sailing alone off San Francisco in 2007
-            and was never found. Thousands of volunteers searched satellite photos online for any
-            sign of his boat.
+            it in 1998. The name <term def="acid">ACID</term> came from two German researchers, Theo
+            Härder and Andreas Reuter, in 1983, building on his work. Gray went sailing alone off
+            San Francisco in 2007 and was never found. Thousands of volunteers searched satellite
+            photos online for any sign of his boat.
         </side-story>
 
         <!-- How it works -->
@@ -85,9 +86,9 @@ COMMIT;</code-block>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>Your connection starts a transaction.</li>
             <li>
-                Each statement in it changes rows as usual, but the changes are visible only to your
-                connection. The rows you changed are locked: another connection that tries to change
-                them waits.
+                Each statement in it changes <term def="row">rows</term> as usual, but the changes
+                are visible only to your connection. The rows you changed are locked: another
+                connection that tries to change them waits.
             </li>
             <li>
                 On <cde>COMMIT</cde>, the database writes all the changes to its log in one go, and
@@ -226,16 +227,16 @@ docker compose run --rm php php transfer.php 2 1 999999</code-block>
         <two-dollars title="Commit, then tell people">
             <p>
                 Do only database work between <cde>beginTransaction()</cde> and <cde>commit()</cde>.
-                Send the confirmation email, call the other API and write the log after the commit
-                has succeeded. The transaction stays short, and nobody ever gets an email about an
-                order that was rolled back.
+                Send the confirmation email, call the other <term def="api">API</term> and write the
+                log after the commit has succeeded. The transaction stays short, and nobody ever
+                gets an email about an order that was rolled back.
             </p>
         </two-dollars>
 
         <p>
-            Every table in this section was made by an <cde>init.sql</cde> that ran once, on an
-            empty database. Real databases are never empty, and their tables still have to change.
-            Next: migrations.
+            Every <term def="table">table</term> in this section was made by an
+            <cde>init.sql</cde> that ran once, on an empty database. Real databases are never empty,
+            and their tables still have to change. Next: <term def="migration">migrations</term>.
         </p>
 
         <!-- Next -->

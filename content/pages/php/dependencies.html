@@ -32,9 +32,10 @@
         <heading h2 id="whats-a-dependency">What's a Dependency?</heading>
         <p>
             Code your project uses that someone else wrote and maintains: a library you installed
-            with <xref to="/php/autoloading">Composer</xref>, or with npm for JavaScript. The ones
-            you asked for are direct dependencies. The ones they brought with them are transitive,
-            and there are usually more of those.
+            with <xref to="/php/autoloading">Composer</xref>, or with npm for
+            <term def="javascript">JavaScript</term>. The ones you asked for are direct
+            <term def="dependency">dependencies</term>. The ones they brought with them are
+            transitive, and there are usually more of those.
         </p>
 
         <heading h3 id="whats-a-lock-file">What's a Lock File?</heading>
@@ -43,8 +44,9 @@
             <cde>"guzzlehttp/guzzle": "^7.4"</cde> means any 7.x from 7.4 up.
             <cde>composer.lock</cde> records exactly which version of every package was installed,
             transitive ones included. Commit both. <cde>composer install</cde> installs what the
-            lock file says, so every machine gets the same code. <cde>composer update</cde> picks
-            new versions within your rules and rewrites the lock file.
+            <term def="lock-file">lock file</term> says, so every machine gets the same code.
+            <cde>composer update</cde> picks new versions within your rules and rewrites the lock
+            file.
         </p>
         <p>
             That's the catch. A lock file keeps you on the versions you had the day you made it,
@@ -74,7 +76,8 @@
             <li>You require a package. Composer picks a version and writes it in the lock file.</li>
             <li>Months pass. The lock file keeps installing that same version, everywhere.</li>
             <li>
-                Someone finds a hole in it. The maintainers fix it in a new version, and an advisory
+                Someone finds a hole in it. The maintainers fix it in a new version, and an
+                <term def="security-advisory">advisory</term>
                 is published.
             </li>
             <li>
@@ -98,9 +101,10 @@
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            A project that depends on Guzzle, a popular HTTP client, and was set up a while ago.
-            You'll make one on purpose, by asking for the version from October 2021. In an empty
-            folder, make <cde>version.php</cde>, which reports what's installed:
+            A project that depends on Guzzle, a popular <term def="http">HTTP</term>
+            <term def="client">client</term>, and was set up a while ago. You'll make one on
+            purpose, by asking for the version from October 2021. In an empty folder, make
+            <cde>version.php</cde>, which reports what's installed:
         </p>
         <code-block example="dependencies/version.php" />
         <p>Now ask Composer for Guzzle 7.4.0:</p>
@@ -174,8 +178,9 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
                 package, and whatever it needs updated along with it.
             </li>
             <li>
-                <cde>composer install --no-dev</cde> in production, from the committed lock file.
-                Never <cde>composer update</cde> on a server.
+                <cde>composer install --no-dev</cde> in <term def="production">production</term>,
+                from the committed lock file. Never <cde>composer update</cde> on a
+                <term def="server">server</term>.
             </li>
             <li>For JavaScript, <cde>npm audit</cde> does the same against npm's advisories.</li>
         </list>
@@ -207,10 +212,11 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
             </li>
             <li>
                 <nti>
-                    <strong>Data from a library is still input.</strong> A response parsed by
-                    Guzzle, a value decoded by a JSON library, a header from an API: it came from
-                    outside your code. The Oracle at Delphi had it on the wall, right next to "know
-                    thyself":
+                    <strong>Data from a library is still input.</strong> A
+                    <term def="response">response</term> parsed by Guzzle, a value decoded by a
+                    <term def="json">JSON</term> library, a <term def="header">header</term> from an
+                    <term def="api">API</term>: it came from outside your code. The Oracle at Delphi
+                    had it on the wall, right next to "know thyself":
                     <strong><xref to="/php/never-trust-input">never trust input</xref></strong>, whoever's code carried it in.
                 </nti>
             </li>
@@ -242,11 +248,12 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
 ...</code-block>
         <p>
             Fourteen when this was written; more will have been found by the time you run it. That
-            one from 2022 means Guzzle 7.4.0 could send cookies set by one site to another. Others
-            leak <cde>Authorization</cde> headers when a request is redirected. No attack on your
-            code needed: your site would do it for the attacker, on its own, through a library you
-            installed once and forgot. Each advisory has a link with the details, which attackers
-            read too.
+            one from 2022 means Guzzle 7.4.0 could send <term def="cookie">cookies</term> set by one
+            site to another. Others leak <cde>Authorization</cde> headers when a
+            <term def="request">request</term> is <term def="redirect">redirected</term>. No attack
+            on your code needed: your site would do it for the attacker, on its own, through a
+            library you installed once and forgot. Each advisory has a link with the details, which
+            attackers read too.
         </p>
         <p>
             You had to switch off a guard to get here. A real project gets here without one: a lock
@@ -283,10 +290,11 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
 
         <side-story title="Eleven Lines">
             In March 2016, a developer removed all of his packages from npm after a dispute over a
-            package name. One was left-pad, eleven lines that added spaces to the start of a string.
-            Thousands of projects depended on it, most without knowing, through other packages, and
-            their builds broke all at once. npm restored it within hours, and changed its rules so
-            that a package others depend on can't simply be withdrawn.
+            package name. One was left-pad, eleven lines that added spaces to the start of a
+            <term def="string">string</term>. Thousands of projects depended on it, most without
+            knowing, through other packages, and their builds broke all at once. npm restored it
+            within hours, and changed its rules so that a package others depend on can't simply be
+            withdrawn.
         </side-story>
 
         <!-- $2 tip -->
@@ -302,7 +310,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
 
         <p>
             That's the end of Security. Next, the technologies the web itself is built from,
-            starting with the one every page is made of: HTML.
+            starting with the one every page is made of: <term def="html">HTML</term>.
         </p>
 
         <!-- Next -->

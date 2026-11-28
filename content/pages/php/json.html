@@ -23,10 +23,14 @@
 
         <!-- Intro -->
         <p>
-            The search endpoint in fetch() and AJAX answered in JSON, and so does nearly every API
-            you'll ever call or build. It's a way to write data as text, so one program can send it
-            to another: PHP to JavaScript, your server to someone else's, a file to your code. PHP's
-            side is two functions. The work is in the flags, and in not believing what arrives.
+            The search <term def="endpoint">endpoint</term> in fetch() and
+            <term def="ajax">AJAX</term> answered in <term def="json">JSON</term>, and so does
+            nearly every <term def="api">API</term> you'll ever call or build. It's a way to write
+            data as text, so one program can send it to another: PHP to
+            <term def="javascript">JavaScript</term>, your <term def="server">server</term> to
+            someone else's, a file to your code. PHP's side is two
+            <term def="function">functions</term>. The work is in the flags, and in not believing
+            what arrives.
         </p>
 
         <!-- What is/are -->
@@ -45,8 +49,8 @@
 }</code-block>
         <list>
             <li>
-                <strong>Objects</strong>, in braces: names and values. Names are always strings in
-                double quotes.
+                <strong>Objects</strong>, in braces: names and values. Names are always
+                <term def="string">strings</term> in double quotes.
             </li>
             <li><strong>Arrays</strong>, in square brackets: lists.</li>
             <li>
@@ -55,18 +59,19 @@
             </li>
             <li>No comments, and no comma after the last item.</li>
             <li>
-                Text in JSON sent between systems is UTF-8, by the standard. From
-                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: PHP will refuse to encode
-                anything else.
+                Text in JSON sent between systems is <term def="utf-8">UTF-8</term>, by the
+                standard. From <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: PHP will refuse
+                to encode anything else.
             </li>
         </list>
 
         <heading h3 id="php-and-json">PHP and JSON</heading>
         <p>
-            JSON's types map onto PHP's almost one to one: an object or an array becomes a PHP
-            array, a string a string, a number an int or a float, and so on. The catch is that PHP
-            uses one kind of array for both lists and key-value pairs. A list, with keys 0, 1, 2 in
-            order, becomes a JSON array. Anything with other keys becomes an object.
+            JSON's <term def="type">types</term> map onto PHP's almost one to one: an object or an
+            <term def="array">array</term> becomes a PHP array, a string a string, a number an int
+            or a <term def="float">float</term>, and so on. The catch is that PHP uses one kind of
+            array for both lists and key-value pairs. A list, with keys 0, 1, 2 in order, becomes a
+            JSON array. Anything with other keys becomes an object.
         </p>
 
         <side-story title="Discovered, Not Invented">
@@ -82,11 +87,13 @@
         <p>An API that takes JSON gets it like this:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                The client sends a POST with <cde>Content-Type: application/json</cde> and the JSON
-                as the body.
+                The <term def="client">client</term> sends a POST with
+                <cde>Content-Type: application/json</cde> and the JSON as the
+                <term def="body">body</term>.
             </li>
             <li>
-                PHP doesn't decode it. <cde>$_POST</cde> only understands form encoding, so it stays
+                PHP doesn't decode it. <cde>$_POST</cde> only understands
+                <term def="form">form</term> <term def="encoding">encoding</term>, so it stays
                 empty. The body waits, as it came, in <cde>php://input</cde>.
             </li>
             <li>Your code reads it and calls <cde>json_decode()</cde>.</li>
@@ -106,7 +113,10 @@
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
-        <p>First, both directions on the command line. In a folder, make <cde>types.php</cde>:</p>
+        <p>
+            First, both directions on the <term def="command-line">command line</term>. In a folder,
+            make <cde>types.php</cde>:
+        </p>
         <code-block example="json/types.php" />
         <p>Run it:</p>
         <!-- prettier-ignore -->
@@ -114,8 +124,8 @@
         <p>
             Note the line with <cde>[] {}</cde>: an empty PHP array can't say whether it was a list
             or not, so it comes out as a list. The bad JSON and the text that isn't UTF-8 both
-            become exceptions, and the last line shows <cde>caf&#92;u00e9</cde> next to
-            <cde>café</cde>: the same text, written two ways.
+            become <term def="exception">exceptions</term>, and the last line shows
+            <cde>caf&#92;u00e9</cde> next to <cde>café</cde>: the same text, written two ways.
         </p>
         <p>
             Now an endpoint that takes an order as JSON. Make a <cde>public</cde> folder, and in it,
@@ -125,14 +135,17 @@
         <p>Start the server:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
-        <p>And from a second terminal, send it a good order, then two bad ones:</p>
+        <p>
+            And from a second <term def="terminal">terminal</term>, send it a good order, then two
+            bad ones:
+        </p>
         <!-- prettier-ignore -->
         <code-block>curl -i -H 'Content-Type: application/json' -d '{"size":"large","qty":2}' http://localhost:8000/order.php
 curl -i -H 'Content-Type: application/json' -d '{"size":"large","qty":"2"}' http://localhost:8000/order.php
 curl -i -H 'Content-Type: application/json' -d 'size=large' http://localhost:8000/order.php</code-block>
         <p class="text-th-muted text-base">
-            Nothing new: <cde>-H</cde> adds a header, here the one that says "this is JSON," and
-            <cde>-d</cde> sends the body.
+            Nothing new: <cde>-H</cde> adds a <term def="header">header</term>, here the one that
+            says "this is JSON," and <cde>-d</cde> sends the body.
         </p>
         <p>
             The first is a 201, with the order. The second is valid JSON with the quantity as a
@@ -155,7 +168,10 @@ curl -i -H 'Content-Type: application/json' -d 'size=large' http://localhost:800
                 <cde>true</cde> means arrays instead of objects, 512 is how deeply nested it may be,
                 and the flag makes bad JSON a <cde>JsonException</cde>.
             </li>
-            <li><cde>file_get_contents('php://input')</cde> reads a request body as it arrived.</li>
+            <li>
+                <cde>file_get_contents('php://input')</cde> reads a
+                <term def="request">request</term> body as it arrived.
+            </li>
             <li>
                 <cde>JSON_PRETTY_PRINT</cde> for people to read,
                 <cde>JSON_UNESCAPED_UNICODE</cde> and <cde>JSON_UNESCAPED_SLASHES</cde> to leave
@@ -224,7 +240,8 @@ curl -i -H 'Content-Type: application/json' -d 'size=large' http://localhost:800
 
         <p>
             All of this has been between a page and its own server. When the page belongs to a
-            different site, the browser gets involved. Next: CORS.
+            different site, the <term def="browser">browser</term> gets involved. Next:
+            <term def="cors">CORS</term>.
         </p>
 
         <!-- Next -->

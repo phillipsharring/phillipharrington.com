@@ -22,9 +22,10 @@
         <!-- Intro -->
         <p>
             <xref to="/php/variables-and-types">Variables, Types and strict_types</xref> said every
-            value has a type, and <xref to="/php/operators">Operators</xref> showed what happens
-            when PHP juggles them. This lesson goes through the types themselves. Most are what
-            you'd expect. One of them, the float, is quietly wrong about money, and it's the one
+            value has a <term def="type">type</term>, and
+            <xref to="/php/operators">Operators</xref> showed what happens when PHP juggles them.
+            This lesson goes through the types themselves. Most are what you'd expect. One of them,
+            the <term def="float">float</term>, is quietly wrong about money, and it's the one
             people reach for first.
         </p>
 
@@ -35,8 +36,8 @@
         <p>
             A whole number: <cde>42</cde>, <cde>-7</cde>, <cde>0</cde>. On a 64-bit machine, which
             is nearly all of them, it goes up to <cde>PHP_INT_MAX</cde>, a little over nine
-            quintillion. Go past it, and PHP hands you a float instead. Ints are exact: adding and
-            subtracting them never drifts.
+            quintillion. Go past it, and PHP hands you a float instead.
+            <term def="integer">Ints</term> are exact: adding and subtracting them never drifts.
         </p>
 
         <heading h3 id="float">float</heading>
@@ -50,15 +51,17 @@
 
         <heading h3 id="bool">bool</heading>
         <p>
-            <cde>true</cde> or <cde>false</cde>. Any value can be read as a bool, in an
-            <cde>if</cde>, and these count as false: <cde>false</cde>, <cde>0</cde>, <cde>0.0</cde>,
-            <cde>''</cde>, <cde>'0'</cde>, an empty array, and <cde>null</cde>. Everything else is
-            true, including the string <cde>'false'</cde>.
+            <cde>true</cde> or <cde>false</cde>. Any value can be read as a
+            <term def="boolean">bool</term>, in an <cde>if</cde>, and these count as false:
+            <cde>false</cde>, <cde>0</cde>, <cde>0.0</cde>, <cde>''</cde>, <cde>'0'</cde>, an empty
+            <term def="array">array</term>, and <cde>null</cde>. Everything else is true, including
+            the <term def="string">string</term> <cde>'false'</cde>.
         </p>
 
         <heading h3 id="string">string</heading>
         <p>
-            Text, or more exactly, a row of bytes. <xref to="/php/strings">Strings</xref> and
+            Text, or more exactly, a row of <term def="byte">bytes</term>.
+            <xref to="/php/strings">Strings</xref> and
             <xref to="/php/text-and-utf-8">Text and UTF-8</xref> are both about it, because the
             difference between bytes and letters matters as soon as someone types "café."
         </p>
@@ -71,14 +74,16 @@
 
         <heading h3 id="null">null</heading>
         <p>
-            No value. It's what a variable holds before it's set, what a missing database field
-            comes back as, and what <cde>??</cde> looks for. In a type declaration,
-            <cde>?string</cde> means "a string, or null."
+            No value. It's what a <term def="variable">variable</term> holds before it's set, what a
+            missing <term def="database">database</term> field comes back as, and what
+            <cde>??</cde> looks for. In a type declaration, <cde>?string</cde> means "a string, or
+            <term def="null">null</term>."
         </p>
 
         <heading h3 id="object">object</heading>
         <p>
-            A value that carries its own functions, called methods. PHP comes with many, like
+            A value that carries its own <term def="function">functions</term>, called
+            <term def="method">methods</term>. PHP comes with many, like
             <cde>DateTimeImmutable</cde> for dates:
             <cde>(new DateTimeImmutable('2026-11-27'))-&gt;format('l')</cde> is "Friday." You'll
             make your own in <xref to="/php/classes-and-objects">Classes and Objects</xref>.

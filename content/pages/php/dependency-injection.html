@@ -27,24 +27,25 @@
             <xref to="/php/constants-and-statics">Constants, Static Variables and Functions</xref>,
             a greeting that reached out for the clock could only ever tell you the time right now,
             and the same greeting, handed the hour, could tell you any time you liked. That's the
-            whole idea, and it has a long name: dependency injection. Give an object what it needs,
-            instead of letting it go and get it.
+            whole idea, and it has a long name:
+            <term def="dependency-injection">dependency injection</term>. Give an
+            <term def="object">object</term> what it needs, instead of letting it go and get it.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-dependency">What's a Dependency?</heading>
         <p>
-            Anything a class needs from outside itself to do its job. A class that sends a welcome
-            email depends on something that sends email. A class that saves orders depends on a
-            database connection.
+            Anything a <term def="class">class</term> needs from outside itself to do its job. A
+            class that sends a welcome email depends on something that sends email. A class that
+            saves orders depends on a <term def="database">database</term> connection.
         </p>
 
         <heading h2 id="whats-injection">What's Injection?</heading>
         <p>
-            Handing the dependency in, rather than having the class make it or look it up. The usual
-            way is the constructor: the class lists what it needs as parameters, and whoever makes
-            the object passes them in. That's constructor injection, and it's the only kind this
-            course uses.
+            Handing the <term def="dependency">dependency</term> in, rather than having the class
+            make it or look it up. The usual way is the constructor: the class lists what it needs
+            as <term def="parameter">parameters</term>, and whoever makes the object passes them in.
+            That's constructor injection, and it's the only kind this course uses.
         </p>
         <p>
             Here's the version without it. The class makes its own mailer, so it can only ever use
@@ -60,8 +61,8 @@
     }
 }</code-block>
         <p>
-            To try this class out, you need a mail server. To change the server, you edit this
-            class, and every other class that made one the same way. A static
+            To try this class out, you need a mail <term def="server">server</term>. To change the
+            server, you edit this class, and every other class that made one the same way. A static
             <cde>Mail::send()</cde> has the same problem, as Constants and Statics showed.
         </p>
 
@@ -69,8 +70,8 @@
         <p>
             Ask for an <xref to="/php/interfaces">interface</xref>, not a class:
             <cde>Mailer $mailer</cde>, not <cde>SmtpMailer $mailer</cde>. Then the class works with
-            any mailer: the real one in production, one that prints to the screen while you build,
-            one that just keeps a list in a test.
+            any mailer: the real one in <term def="production">production</term>, one that prints to
+            the screen while you build, one that just keeps a list in a test.
         </p>
 
         <heading h2 id="whats-a-container">What's a Container?</heading>
@@ -79,18 +80,22 @@
             hundred, each needing others, it's a chore. A container does it for you. Ask it for a
             <cde>Welcome</cde>, and it reads the constructor, sees a <cde>Mailer</cde>, makes one,
             and passes it in, all the way down. That reading is called autowiring. You only tell it
-            what it can't work out, like which class to use for an interface.
+            what it can't work out, like which class to use for an
+            <term def="interface">interface</term>.
         </p>
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
-        <p>With a container, a request goes like this:</p>
+        <p>With a container, a <term def="request">request</term> goes like this:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 At the very start, in one place, you build the container and tell it your
                 definitions: "a <cde>Mailer</cde> is a <cde>ScreenMailer</cde>."
             </li>
-            <li>You ask it for the one object you need first, like a page's controller.</li>
+            <li>
+                You ask it for the one object you need first, like a page's
+                <term def="controller">controller</term>.
+            </li>
             <li>
                 It reads that class's constructor, and for each parameter, gets one of those: from
                 your definitions, or by reading that class's constructor in turn.
@@ -109,14 +114,15 @@
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            In a new folder, with autoloading set up as in
+            In a new folder, with <term def="autoloading">autoloading</term> set up as in
             <xref to="/php/autoloading">Autoloading</xref>. This time there's a real package to
             install: PHP-DI, a container. First <cde>composer.json</cde>:
         </p>
         <code-block example="dependency-injection/composer.json" />
         <p>
             The <cde>config.platform</cde> part tells Composer to pick package versions for PHP 8.4,
-            the version the code runs on, whatever version Composer's own container has. Install:
+            the version the code runs on, whatever version Composer's own
+            <term def="container">container</term> has. Install:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer install</code-block>
@@ -127,8 +133,8 @@
         <p>And the class that needs one, <cde>src/Welcome.php</cde>:</p>
         <code-block example="dependency-injection/src/Welcome.php" />
         <p>
-            The address and name came from a signup form, so they're input, and
-            <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the address has to be an address, and line breaks are taken out of the name before it
+            The address and name came from a signup <term def="form">form</term>, so they're input,
+            and <strong><xref to="/php/never-trust-input">never trust input</xref></strong>: the address has to be an address, and line breaks are taken out of the name before it
             goes near an email. Now wire it by hand, in <cde>by-hand.php</cde>:
         </p>
         <code-block example="dependency-injection/by-hand.php" />
@@ -160,12 +166,13 @@
                 line per dependency.
             </li>
             <li>
-                Type the parameter as an interface. Make the property <cde>private</cde>, and
-                <cde>readonly</cde> if you like.
+                Type the parameter as an interface. Make the <term def="property">property</term>
+                <cde>private</cde>, and <cde>readonly</cde> if you like.
             </li>
             <li>
                 What the class needs to exist goes in the constructor. What changes on every call,
-                like the email address, goes in the method's arguments.
+                like the email address, goes in the <term def="method">method</term>'s
+                <term def="argument">arguments</term>.
             </li>
             <li>
                 <cde>new DI\ContainerBuilder()</cde>, <cde>addDefinitions()</cde>,
@@ -198,8 +205,9 @@
                 interface needs one line saying which class.
             </li>
             <li>
-                <strong>Settings aren't classes.</strong> A mail server's host name or a database
-                password can't be autowired. Define them in the container from your
+                <strong>Settings aren't classes.</strong> A mail server's
+                <term def="host">host</term> name or a database password can't be autowired. Define
+                them in the container from your
                 <xref to="/php/configuration-and-the-environment">configuration</xref>, and keep the
                 secrets out of the code.
             </li>
@@ -225,8 +233,8 @@
 
         <p>
             Because <cde>Welcome</cde> takes its mailer, you can try it without a mail server, and
-            without the rest of the site. That's the trick behind the next lesson: two-dollar test
-            harnesses.
+            without the rest of the site. That's the trick behind the next lesson: two-dollar
+            <term def="test-harness">test harnesses</term>.
         </p>
 
         <!-- Next -->

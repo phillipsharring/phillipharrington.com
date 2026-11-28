@@ -21,11 +21,11 @@
 
         <!-- Intro -->
         <p>
-            A variable doesn't exist everywhere. Set one at the top of a file, and a function
-            further down can't see it. Set one inside a function, and it's gone when the function
-            returns. Where a variable can be seen is its scope, and PHP's rules for it are short.
-            They're also a feature: a function that can only see what you hand it is a function you
-            can understand.
+            A <term def="variable">variable</term> doesn't exist everywhere. Set one at the top of a
+            file, and a <term def="function">function</term> further down can't see it. Set one
+            inside a function, and it's gone when the function returns. Where a variable can be seen
+            is its <term def="scope">scope</term>, and PHP's rules for it are short. They're also a
+            feature: a function that can only see what you hand it is a function you can understand.
         </p>
 
         <!-- What is/are -->
@@ -41,9 +41,9 @@
 
         <heading h3 id="function-scope">A Function's Scope</heading>
         <p>
-            Each function starts empty. It sees its own parameters and whatever it makes, and
-            nothing from outside. When it returns, its variables are thrown away. The next call
-            starts empty again.
+            Each function starts empty. It sees its own <term def="parameter">parameters</term> and
+            whatever it makes, and nothing from outside. When it returns, its variables are thrown
+            away. The next call starts empty again.
         </p>
 
         <heading h3 id="superglobals">The Superglobals</heading>
@@ -51,22 +51,23 @@
             A handful of variables PHP fills in for you are visible everywhere, inside functions
             too: <cde>$_GET</cde>, <cde>$_POST</cde>, <cde>$_COOKIE</cde>, <cde>$_SERVER</cde>,
             <cde>$_FILES</cde>, <cde>$_ENV</cde>, <cde>$_SESSION</cde>, and <cde>$GLOBALS</cde>.
-            Most of them are input, straight from the request.
+            Most of them are input, straight from the <term def="request">request</term>.
         </p>
 
         <heading h3 id="closures">Closures</heading>
         <p>
-            A function without a name, kept in a variable, is a closure. It can borrow variables
-            from the scope where it was made, but only ones you name with <cde>use</cde>:
-            <cde>function ($name) use ($greeting) { ... }</cde>. An arrow function,
+            A function without a name, kept in a variable, is a <term def="closure">closure</term>.
+            It can borrow variables from the scope where it was made, but only ones you name with
+            <cde>use</cde>: <cde>function ($name) use ($greeting) { ... }</cde>. An arrow function,
             <cde>fn($name) =&gt; $greeting . $name</cde>, borrows whatever it uses automatically.
             Both take a copy of the value at the moment they're made.
         </p>
 
         <side-story title="register_globals">
-            Early PHP had a setting called <cde>register_globals</cde>, which turned every query
-            string and form field into a global variable. Visit <cde>?admin=1</cde>, and the script
-            started with <cde>$admin</cde> set to <cde>'1'</cde>. Code that checked
+            Early PHP had a setting called <cde>register_globals</cde>, which turned every
+            <term def="query-string">query string</term> and <term def="form">form</term> field into
+            a global variable. Visit <cde>?admin=1</cde>, and the script started with
+            <cde>$admin</cde> set to <cde>'1'</cde>. Code that checked
             <cde>if ($admin)</cde> without ever setting it to false let anyone in. It was turned off
             by default in PHP 4.2, in 2002, and removed entirely in PHP 5.4.
         </side-story>
@@ -76,12 +77,12 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>Your file starts running in the global scope.</li>
             <li>
-                A function is called. PHP gives it a fresh, empty scope, and puts the arguments in
-                it as its parameters.
+                A function is called. PHP gives it a fresh, empty scope, and puts the
+                <term def="argument">arguments</term> in it as its parameters.
             </li>
             <li>
-                The function works with those and the superglobals. It can't reach the caller's
-                variables, and the caller can't reach its.
+                The function works with those and the <term def="superglobal">superglobals</term>.
+                It can't reach the caller's variables, and the caller can't reach its.
             </li>
             <li>It returns a value, and its scope is thrown away.</li>
             <li>The caller carries on, with its own variables untouched.</li>

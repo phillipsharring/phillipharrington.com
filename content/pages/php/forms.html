@@ -21,10 +21,12 @@
 
         <!-- Intro -->
         <p>
-            Query strings send data you type into the address bar. Forms send data people type into
-            a page: a search box, a signup, a comment, a checkout. A form is plain HTML. The browser
-            already knows how to show it, check it, and send it, with no JavaScript at all. Your job
-            is the other end: reading what arrives, and deciding whether to believe it.
+            <term def="query-string">Query strings</term> send data you type into the address bar.
+            <term def="form">Forms</term> send data people type into a page: a search box, a signup,
+            a comment, a checkout. A form is plain <term def="html">HTML</term>. The
+            <term def="browser">browser</term> already knows how to show it, check it, and send it,
+            with no <term def="javascript">JavaScript</term> at all. Your job is the other end:
+            reading what arrives, and deciding whether to believe it.
         </p>
 
         <!-- What is/are -->
@@ -41,7 +43,8 @@
             </li>
             <li>
                 <strong>method</strong>: <cde>get</cde> puts the fields in a query string;
-                <cde>post</cde> puts them in the request body. The default is <cde>get</cde>.
+                <cde>post</cde> puts them in the <term def="request">request</term>
+                <term def="body">body</term>. The default is <cde>get</cde>.
             </li>
             <li>
                 <strong>name</strong>, on each field: the name it's sent under. A field without a
@@ -98,15 +101,15 @@
         </ol>
         <p>
             Use <cde>get</cde> for forms that look something up, like a search, so the result has a
-            URL you can share. Use <cde>post</cde> for forms that change something: signups,
-            comments, orders.
+            <term def="url">URL</term> you can share. Use <cde>post</cde> for forms that change
+            something: signups, comments, orders.
         </p>
         <p>
             Then the part that matters most.
             <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> Step two
             only happens in a browser that behaves. Anyone can delete <cde>required</cde> in their
             developer tools, or skip the page entirely and send whatever they like with curl. Every
-            check that matters happens again on the server, every time.
+            check that matters happens again on the <term def="server">server</term>, every time.
         </p>
 
         <!-- Try it -->
@@ -145,7 +148,8 @@
         <p>
             Look at the HTML that comes back: <cde>&amp;lt;b&amp;gt;hi&amp;lt;/b&amp;gt;</cde>.
             <cde>htmlspecialchars()</cde> turned the tags into harmless text, in the message and in
-            the box. Every time you put input back into a page, escape it like that. The XSS lesson,
+            the box. Every time you put input back into a page,
+            <term def="escaping">escape</term> it like that. The <term def="xss">XSS</term> lesson,
             in Security, is why.
         </p>
         <p class="text-th-muted text-base">
@@ -157,7 +161,8 @@
         <list>
             <li>
                 <cde>$_POST</cde> holds the fields of a <cde>post</cde> form, decoded. Every value
-                is input: check its type, trim it, and test it against what you'll accept.
+                is input: check its <term def="type">type</term>, trim it, and test it against what
+                you'll accept.
             </li>
             <li>
                 <cde>$_SERVER['REQUEST_METHOD'] === 'POST'</cde> tells "showing the form" apart from
@@ -188,8 +193,8 @@
             <li>
                 <strong>Reloading resubmits a POST.</strong> Submit the shirt order, then reload,
                 and the browser asks whether to send it again. Real forms answer a successful POST
-                with a redirect: Post/Redirect/Get, from Request and Response. The example skips it
-                to stay short.
+                with a <term def="redirect">redirect</term>: Post/Redirect/Get, from Request and
+                Response. The example skips it to stay short.
             </li>
             <li>
                 <strong>Disabled and read-only fields can both be changed.</strong> A
@@ -204,8 +209,9 @@
             <p>
                 <cde>type="email"</cde> gives phones a keyboard with an @ on it.
                 <cde>type="tel"</cde> brings up a number pad, and
-                <cde>inputmode="numeric"</cde> does the same for PINs and quantities. One attribute,
-                and every phone user types less and gets it wrong less.
+                <cde>inputmode="numeric"</cde> does the same for PINs and quantities. One
+                <term def="attribute">attribute</term>, and every phone user types less and gets it
+                wrong less.
             </p>
         </two-dollars>
 

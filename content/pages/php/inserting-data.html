@@ -21,11 +21,14 @@
 
         <!-- Intro -->
         <p>
-            The tables are built, with the right types, keys, indexes and character sets. Now they
-            need rows. Most rows in a web app start as something a person typed into a form, which
-            makes <cde>INSERT</cde> the place where outside data comes to stay. It's the simplest of
-            the four statements, and it has three questions attached: what id did the new row get,
-            how do you add many at once, and what happens when it's already there.
+            The <term def="table">tables</term> are built, with the right
+            <term def="type">types</term>, keys, <term def="index">indexes</term> and
+            <term def="character-set">character sets</term>. Now they need
+            <term def="row">rows</term>. Most rows in a web app start as something a person typed
+            into a <term def="form">form</term>, which makes <cde>INSERT</cde> the place where
+            outside data comes to stay. It's the simplest of the four statements, and it has three
+            questions attached: what id did the new row get, how do you add many at once, and what
+            happens when it's already there.
         </p>
 
         <!-- What is/are -->
@@ -35,10 +38,10 @@
         <code-block>INSERT INTO `subscribers` (`email`, `name`)
 VALUES ('alice@example.com', 'Alice');</code-block>
         <p>
-            Name the columns, then give the values in the same order. Columns you leave out get
-            their default: the next <cde>AUTO_INCREMENT</cde> number, the current time, or
-            <cde>NULL</cde>. Always name the columns. An insert without them depends on the table's
-            column order, and breaks the day someone adds one.
+            Name the <term def="column">columns</term>, then give the values in the same order.
+            Columns you leave out get their default: the next <cde>AUTO_INCREMENT</cde> number, the
+            current time, or <cde>NULL</cde>. Always name the columns. An insert without them
+            depends on the table's column order, and breaks the day someone adds one.
         </p>
 
         <heading h3 id="many-rows">Many Rows</heading>
@@ -53,8 +56,8 @@ VALUES
         <p>
             An insert that turns into an update when the row is already there: "add this subscriber,
             or if that email has already signed up, update their name." MySQL spells it
-            <cde>ON DUPLICATE KEY UPDATE</cde>. A duplicate means any primary key or unique index
-            that would be broken.
+            <cde>ON DUPLICATE KEY UPDATE</cde>. A duplicate means any
+            <term def="primary-key">primary key</term> or unique index that would be broken.
         </p>
         <!-- prettier-ignore -->
         <code-block>INSERT INTO `subscribers` (`email`, `name`)
@@ -86,12 +89,12 @@ ON DUPLICATE KEY UPDATE `name` = `new`.`name`;</code-block>
                 the id.
             </li>
             <li>
-                It checks the row against every rule: types, <cde>NOT NULL</cde>, foreign keys,
-                unique indexes.
+                It checks the row against every rule: types, <cde>NOT NULL</cde>,
+                <term def="foreign-key">foreign keys</term>, unique indexes.
             </li>
             <li>
-                If a unique index is already taken, a plain insert fails, and an upsert updates the
-                row that has it instead.
+                If a unique index is already taken, a plain insert fails, and an
+                <term def="upsert">upsert</term> updates the row that has it instead.
             </li>
             <li>
                 It answers with the number of rows affected, and the id it made, which PHP can ask
@@ -113,14 +116,15 @@ ON DUPLICATE KEY UPDATE `name` = `new`.`name`;</code-block>
         <code-block example="inserting-data/init.sql" />
         <p>Then <cde>subscribe.php</cde>, an upsert that reports what it did:</p>
         <code-block example="inserting-data/subscribe.php" />
-        <p>Start the database, and subscribe two people:</p>
+        <p>Start the <term def="database">database</term>, and subscribe two people:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose up -d --wait db
 docker compose run --rm php php subscribe.php alice@example.com Alice
 docker compose run --rm php php subscribe.php bo@example.com Bo</code-block>
         <p class="text-th-muted text-base">
-            Same as before: <cde>docker compose run --rm php</cde> starts a fresh PHP container that
-            can reach the database, and everything after it is the command.
+            Same as before: <cde>docker compose run --rm php</cde> starts a fresh PHP
+            <term def="container">container</term> that can reach the database, and everything after
+            it is the command.
         </p>
         <p>
             Subscribers #1 and #2. Now Alice signs up again, with her full name, and then once more,
@@ -166,12 +170,13 @@ FROM `subscribers`;</code-block>
                 <cde>$pdo-&gt;prepare('INSERT ... VALUES (?, ?)')</cde>, then
                 <cde>execute([$email, $name])</cde>. Every value from outside goes in as a
                 placeholder. <xref to="/php/never-trust-input">Never trust input</xref>, and never
-                glue it into the SQL; <xref to="/php/sql-injection">SQL Injection</xref> shows why.
+                glue it into the <term def="sql">SQL</term>;
+                <xref to="/php/sql-injection">SQL Injection</xref> shows why.
             </li>
             <li>
-                <cde>$pdo-&gt;lastInsertId()</cde> returns the new id, as a string. Call it right
-                after the insert: another statement on the same connection, even an
-                <cde>UPDATE</cde>, can reset it to 0.
+                <cde>$pdo-&gt;lastInsertId()</cde> returns the new id, as a
+                <term def="string">string</term>. Call it right after the insert: another statement
+                on the same connection, even an <cde>UPDATE</cde>, can reset it to 0.
             </li>
             <li>
                 <cde>$statement-&gt;rowCount()</cde> after an upsert: 1 if it inserted, 2 if it
@@ -188,13 +193,14 @@ FROM `subscribers`;</code-block>
         <list>
             <li>
                 <strong>Don't count on ids being in a row.</strong> Failed inserts, upserts and
-                rolled-back transactions all use up ids. Never use the id to count rows, and never
-                assume the next id is the last one plus one.
+                rolled-back <term def="transaction">transactions</term> all use up ids. Never use
+                the id to count rows, and never assume the next id is the last one plus one.
             </li>
             <li>
                 <strong>Don't show your ids to the world if you can help it.</strong> An order
                 number of 1042 tells a competitor how many orders you've had, and invites someone to
-                try 1041. Check every id that comes back in a URL; it's input.
+                try 1041. Check every id that comes back in a <term def="url">URL</term>; it's
+                input.
             </li>
             <li>
                 <strong>INSERT IGNORE ignores more than duplicates.</strong> It turns errors into

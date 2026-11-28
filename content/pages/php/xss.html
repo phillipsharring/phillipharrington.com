@@ -21,27 +21,30 @@
 
         <!-- Intro -->
         <p>
-            <xref to="/php/sql-injection">SQL Injection</xref> was input pasted into a query, where
-            the database ran it. XSS is input pasted into a page, where the visitor's browser runs
-            it. The attacker's code runs on your site, as your site, for whoever is looking at the
-            page. It can read what they see, act as them, and send it all somewhere else.
+            <xref to="/php/sql-injection">SQL Injection</xref> was input pasted into a
+            <term def="query">query</term>, where the <term def="database">database</term> ran it.
+            <term def="xss">XSS</term> is input pasted into a page, where the visitor's
+            <term def="browser">browser</term> runs it. The attacker's code runs on your site, as
+            your site, for whoever is looking at the page. It can read what they see, act as them,
+            and send it all somewhere else.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-xss">What's XSS?</heading>
         <p>
             Cross-site scripting. Your page prints something that came from input, and that input
-            contains HTML. The browser can't tell your HTML from theirs; it gets one page and draws
-            all of it. If theirs has a <cde>&lt;script&gt;</cde> in it, the script runs, with
-            everything your own scripts can do.
+            contains <term def="html">HTML</term>. The browser can't tell your HTML from theirs; it
+            gets one page and draws all of it. If theirs has a <cde>&lt;script&gt;</cde> in it, the
+            script runs, with everything your own scripts can do.
         </p>
 
         <heading h3 id="stored-and-reflected">Stored and Reflected</heading>
         <list>
             <li>
-                <strong>Reflected</strong>: the input comes in the request and goes straight back
-                out, like a search page that says "You searched for ...". The attacker sends the
-                victim a link with the script in it.
+                <strong>Reflected</strong>: the input comes in the
+                <term def="request">request</term> and goes straight back out, like a search page
+                that says "You searched for ...". The attacker sends the victim a link with the
+                script in it.
             </li>
             <li>
                 <strong>Stored</strong>: the input is saved, a comment or a profile name, and shown
@@ -56,29 +59,33 @@
             <cde>&lt;</cde> starts a tag; <cde>&amp;lt;</cde> is a less-than sign that the browser
             shows and never runs. <cde>htmlspecialchars()</cde> does this for the five characters
             that matter: <cde>&lt;</cde>, <cde>&gt;</cde>, <cde>&amp;</cde>, <cde>"</cde> and
-            <cde>'</cde>. Each place output goes has its own escape: HTML here, prepared statements
-            for SQL, <cde>json_encode()</cde> for JavaScript, <cde>rawurlencode()</cde> for a piece
-            of a URL.
+            <cde>'</cde>. Each place output goes has its own <term def="escaping">escape</term>:
+            HTML here, <term def="prepared-statement">prepared statements</term> for
+            <term def="sql">SQL</term>, <cde>json_encode()</cde> for
+            <term def="javascript">JavaScript</term>, <cde>rawurlencode()</cde> for a piece of a
+            <term def="url">URL</term>.
         </p>
 
         <side-story title="Why Not CSS?">
             Microsoft's security engineers gave the attack its name around 2000, for a script
             arriving from one site and running in the context of another. The obvious abbreviation
-            was already taken by Cascading Style Sheets, so it became XSS.
+            was already taken by <term def="css">Cascading Style Sheets</term>, so it became XSS.
         </side-story>
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                The attacker gets their HTML into something your page prints: a query string, a form
+                The attacker gets their HTML into something your page prints: a
+                <term def="query-string">query string</term>, a <term def="form">form</term>
                 field, a comment saved last week.
             </li>
             <li>Your page prints it as-is. The browser parses it as part of your page.</li>
             <li>
-                Their script runs on your site's origin. It can read the page, read any cookie
-                without <cde>HttpOnly</cde>, fill in and submit forms, and send what it finds to a
-                server of theirs.
+                Their script runs on your site's <term def="origin">origin</term>. It can read the
+                page, read any <term def="cookie">cookie</term> without <cde>HttpOnly</cde>, fill in
+                and submit forms, and send what it finds to a <term def="server">server</term> of
+                theirs.
             </li>
         </ol>
         <p>
@@ -92,8 +99,8 @@
             </li>
             <li>
                 <strong>Inside an attribute</strong>, like <cde>value="..."</cde>: a
-                <cde>"</cde> closes your attribute, and the next one, like <cde>onfocus</cde>, is
-                theirs.
+                <cde>"</cde> closes your <term def="attribute">attribute</term>, and the next one,
+                like <cde>onfocus</cde>, is theirs.
             </li>
             <li>
                 <strong>As a URL</strong>, like <cde>href="..."</cde>: <cde>javascript:</cde> at the
@@ -137,12 +144,13 @@
                 <cde>htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')</cde>.
                 <cde>ENT_QUOTES</cde> escapes both kinds of quote, for attributes, and
                 <cde>ENT_SUBSTITUTE</cde> replaces invalid
-                <xref to="/php/text-and-utf-8">UTF-8</xref> instead of returning an empty string.
-                Since PHP 8.1 those are the defaults; saying them costs nothing.
+                <xref to="/php/text-and-utf-8">UTF-8</xref> instead of returning an empty
+                <term def="string">string</term>. Since PHP 8.1 those are the defaults; saying them
+                costs nothing.
             </li>
             <li>
-                Wrap it in a short function, like <cde>e()</cde>, so escaping is the easy thing to
-                type.
+                Wrap it in a short <term def="function">function</term>, like <cde>e()</cde>, so
+                escaping is the easy thing to type.
             </li>
             <li>
                 Always quote attributes: <cde>value="&lt;?= e($name) ?&gt;"</cde>. An unquoted
@@ -168,7 +176,7 @@
                 <strong>Escape on the way out, not on the way in.</strong> Store what people typed,
                 as they typed it, and escape it when you print it. Escaped text in the database gets
                 escaped twice on the page (<cde>&amp;amp;lt;</cde>), and is wrong in an email or a
-                CSV.
+                <term def="csv">CSV</term>.
             </li>
             <li>
                 <strong>The database is input.</strong> A name that was safe to store is not safe to
@@ -262,7 +270,8 @@
 
         <p>
             XSS gets the attacker's code onto your page. The next attack doesn't need that. It makes
-            the visitor's own browser send a request they never meant to. Next: CSRF.
+            the visitor's own browser send a request they never meant to. Next:
+            <term def="csrf">CSRF</term>.
         </p>
 
         <!-- Next -->

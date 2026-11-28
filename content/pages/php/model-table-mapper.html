@@ -21,34 +21,39 @@
 
         <!-- Intro -->
         <p>
-            CRUD's <cde>src/notes.php</cde> ran the SQL and handed back rows as plain arrays. That's
-            fine for one page. Once a note travels through an app, you want it to be a real object
-            with rules, and you want the SQL in one place. MVC called all of that "the model." This
-            lesson splits it into three parts, each with one job.
+            <term def="crud">CRUD</term>'s <cde>src/notes.php</cde> ran the
+            <term def="sql">SQL</term> and handed back <term def="row">rows</term> as plain
+            <term def="array">arrays</term>. That's fine for one page. Once a note travels through
+            an app, you want it to be a real <term def="object">object</term> with rules, and you
+            want the SQL in one place. <term def="mvc">MVC</term> called all of that "the model."
+            This lesson splits it into three parts, each with one job.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="the-model">What's the Model?</heading>
         <p>
-            A class for one thing: a <cde>Note</cde>, with typed properties and the rules that make
-            it valid. A note is 1 to 500 characters, so its constructor refuses anything else. It
-            has never heard of a database. You can make one, change one and test one with no
+            A <term def="class">class</term> for one thing: a <cde>Note</cde>, with typed
+            <term def="property">properties</term> and the rules that make it valid. A note is 1 to
+            500 characters, so its constructor refuses anything else. It has never heard of a
+            <term def="database">database</term>. You can make one, change one and test one with no
             database anywhere.
         </p>
 
         <heading h2 id="the-table">What's the Table?</heading>
         <p>
-            A class for one database table: <cde>NotesTable</cde>, holding the connection and the
-            SQL. Insert, find, list, update, delete. It speaks in rows, plain arrays with the
-            table's column names, and knows nothing about <cde>Note</cde>.
+            A class for one database <term def="table">table</term>: <cde>NotesTable</cde>, holding
+            the connection and the SQL. Insert, find, list, update, delete. It speaks in rows, plain
+            arrays with the table's <term def="column">column</term> names, and knows nothing about
+            <cde>Note</cde>.
         </p>
 
         <heading h2 id="the-mapper">What's the Mapper?</heading>
         <p>
             The translator between them: <cde>NoteMapper</cde> turns a row into a <cde>Note</cde>,
-            and a <cde>Note</cde> into a row. That's where <cde>created_at</cde> the string becomes
-            <cde>createdAt</cde> the <cde>DateTimeImmutable</cde>, and where column names meet
-            property names. No SQL, and no rules of its own.
+            and a <cde>Note</cde> into a row. That's where <cde>created_at</cde> the
+            <term def="string">string</term> becomes <cde>createdAt</cde> the
+            <cde>DateTimeImmutable</cde>, and where column names meet property names. No SQL, and no
+            rules of its own.
         </p>
 
         <side-story title="Patterns With Names">
@@ -65,7 +70,10 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>Your code makes a <cde>Note</cde>. If it breaks a rule, it never exists.</li>
             <li>The mapper turns it into a row.</li>
-            <li>The table inserts the row, with a prepared statement.</li>
+            <li>
+                The table inserts the row, with a
+                <term def="prepared-statement">prepared statement</term>.
+            </li>
         </ol>
         <p>And reading one is the same, backwards:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
@@ -82,7 +90,7 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             The notes from CRUD, as three classes. In a folder, make <cde>compose.yml</cde>, with
-            MySQL and a PHP container to run a script:
+            MySQL and a PHP <term def="container">container</term> to run a script:
         </p>
         <code-block example="model-table-mapper/compose.yml" />
         <p>
@@ -92,7 +100,7 @@
         <code-block example="model-table-mapper/Dockerfile" />
         <code-block example="model-table-mapper/config/db.php" />
         <code-block example="model-table-mapper/init.sql" />
-        <p><cde>composer.json</cde>, for the autoloader:</p>
+        <p><cde>composer.json</cde>, for the <term def="autoloading">autoloader</term>:</p>
         <code-block example="model-table-mapper/composer.json" />
         <p>Now the three. The model, <cde>src/Note.php</cde>:</p>
         <code-block example="model-table-mapper/src/Note.php" />
@@ -148,8 +156,9 @@ docker compose down -v</code-block>
                 <cde>DATETIME</cde> column, and <cde>-&gt;format('Y-m-d H:i:s')</cde> to write one.
             </li>
             <li>
-                <cde>$mapper-&gt;toModel(...)</cde>, with the three dots, makes a function you can
-                pass to <cde>array_map()</cde> to map a whole list of rows at once.
+                <cde>$mapper-&gt;toModel(...)</cde>, with the three dots, makes a
+                <term def="function">function</term> you can pass to <cde>array_map()</cde> to map a
+                whole list of rows at once.
             </li>
         </list>
 
@@ -174,8 +183,8 @@ docker compose down -v</code-block>
             </li>
             <li>
                 <strong>You'll also hear "repository."</strong> Usually it's a class that hides a
-                table and a mapper behind methods like <cde>find(int $id): ?Note</cde>. Same parts,
-                one front.
+                table and a mapper behind <term def="method">methods</term> like
+                <cde>find(int $id): ?Note</cde>. Same parts, one front.
             </li>
         </list>
 
@@ -183,14 +192,17 @@ docker compose down -v</code-block>
         <two-dollars title="Test the model with no database">
             <p>
                 Because <cde>Note</cde> has never heard of MySQL, its tests need nothing: make one
-                with a blank body, expect the exception. That's a test that runs in a millisecond.
-                Put as many rules as you can in the model, and most of your tests get that fast.
+                with a blank body, expect the <term def="exception">exception</term>. That's a test
+                that runs in a millisecond. Put as many rules as you can in the model, and most of
+                your tests get that fast.
             </p>
         </two-dollars>
 
         <p>
-            The CRUD page answered browsers with HTML. When the client is a program instead, the
-            same four operations get a stricter set of conventions. Next: REST.
+            The CRUD page answered <term def="browser">browsers</term> with
+            <term def="html">HTML</term>. When the <term def="client">client</term> is a program
+            instead, the same four operations get a stricter set of conventions. Next:
+            <term def="rest">REST</term>.
         </p>
 
         <!-- Next -->

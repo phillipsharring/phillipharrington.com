@@ -21,10 +21,11 @@
 
         <!-- Intro -->
         <p>
-            The REST API answered programs. This is the program on the other end: PHP code that
-            calls someone else's API, for a payment, a map, a list of tasks, with a token that
-            proves it's allowed to. You'll build a small client that does it carefully, and a
-            pretend API to call, so it all runs on your machine.
+            The <term def="rest">REST</term> <term def="api">API</term> answered programs. This is
+            the program on the other end: PHP code that calls someone else's API, for a payment, a
+            map, a list of tasks, with a token that proves it's allowed to. You'll build a small
+            <term def="client">client</term> that does it carefully, and a pretend API to call, so
+            it all runs on your machine.
         </p>
         <p>
             The token is the whole story. It's a password, often for something that costs money or
@@ -45,8 +46,8 @@
                     >Configuration and the Environment</xref>: <cde>.env</cde> and <cde>getenv()</cde>
             </li>
             <li>
-                <xref to="/php/projects/rest-api">REST API</xref>: bearer tokens and status codes,
-                from the other side
+                <xref to="/php/projects/rest-api">REST API</xref>: bearer tokens and
+                <term def="status-code">status codes</term>, from the other side
             </li>
             <li>
                 <xref to="/php/exceptions">Exceptions and Try/Catch</xref>: failures the caller can
@@ -76,9 +77,10 @@
             <cde>php -r 'echo bin2hex(random_bytes(20));'</cde> makes one.
         </p>
         <p>
-            Two containers: the pretend API, and one to run the client in. Compose reads
-            <cde>.env</cde> by itself and passes the token into each as an environment variable, so
-            it's never written in <cde>compose.yml</cde> either:
+            Two <term def="container">containers</term>: the pretend API, and one to run the client
+            in. Compose reads <cde>.env</cde> by itself and passes the token into each as an
+            <term def="environment-variable">environment variable</term>, so it's never written in
+            <cde>compose.yml</cde> either:
         </p>
         <code-block example="project-api-client/compose.yml" />
 
@@ -86,8 +88,8 @@
         <p>
             <cde>api/index.php</cde> stands in for someone else's service. It wants the token, and
             it misbehaves on purpose at a few addresses: <cde>/flaky</cde> is busy twice before it
-            answers, <cde>/slow</cde> takes ten seconds, and <cde>/broken</cde> sends HTML where
-            JSON should be.
+            answers, <cde>/slow</cde> takes ten seconds, and <cde>/broken</cde> sends
+            <term def="html">HTML</term> where <term def="json">JSON</term> should be.
         </p>
         <code-block example="project-api-client/api/index.php" />
 
@@ -96,18 +98,19 @@
         <code-block example="project-api-client/src/ApiClient.php" />
         <list>
             <li>
-                <strong>It's handed the token.</strong> The class never reads a file or the
-                environment. Whoever builds it decides where the token comes from, which makes it
-                easy to test and impossible to hard-code by accident.
+                <strong>It's handed the token.</strong> The <term def="class">class</term> never
+                reads a file or the environment. Whoever builds it decides where the token comes
+                from, which makes it easy to test and impossible to hard-code by accident.
             </li>
             <li>
                 <strong>The token goes in a header</strong>, <cde>Authorization: Bearer ...</cde>,
-                and only to HTTPS addresses, or to this machine's own containers.
+                and only to <term def="https">HTTPS</term> addresses, or to this machine's own
+                containers.
             </li>
             <li>
                 <strong><cde>#[\SensitiveParameter]</cde></strong> tells PHP to hide the token in
-                stack traces, which otherwise print every argument and are exactly the kind of thing
-                that ends up in a log.
+                stack traces, which otherwise print every <term def="argument">argument</term> and
+                are exactly the kind of thing that ends up in a log.
             </li>
             <li>
                 <strong>Timeouts.</strong> Without them, a slow API makes your code wait as long as
@@ -121,7 +124,8 @@
             <li>
                 <strong>The answer is checked.</strong>
                 <strong><xref to="/php/never-trust-input">Never trust input</xref>,</strong> and an
-                API's response is input. It has to be JSON, and an object, or it's an error.
+                API's <term def="response">response</term> is input. It has to be JSON, and an
+                <term def="object">object</term>, or it's an error.
             </li>
         </list>
 
@@ -145,8 +149,10 @@ docker compose run --rm client php bin/tasks.php</code-block>
 [ ] 2 Write the client
 [ ] 3 &lt;script&gt;alert(1)&lt;/script&gt;</code-block>
         <p>
-            In a terminal, that third title is harmless text. Put it in a web page, and it's the XSS
-            from <xref to="/php/projects/comments">Comments</xref>: data from an API gets escaped
+            In a <term def="terminal">terminal</term>, that third title is harmless text. Put it in
+            a web page, and it's the <term def="xss">XSS</term> from
+            <xref to="/php/projects/comments">Comments</xref>: data from an API gets
+            <term def="escaping">escaped</term>
             like any other. Then the misbehaving addresses:
         </p>
         <!-- prettier-ignore -->
@@ -196,13 +202,16 @@ docker compose run --rm client php bin/tasks.php /broken</code-block>
         <!-- prettier-ignore -->
         <code-block>api-1  | [Fri Nov 27 20:38:06 2026] 172.19.0.3:47076 [200]: GET /tasks?api_key=wnp_live_7d3f9a2c8e1b4f6a</code-block>
         <p>
-            Web servers log every URL, query string and all. So do proxies, CDNs and load balancers
+            <term def="web-server">Web servers</term> log every <term def="url">URL</term>,
+            <term def="query-string">query string</term> and all. So do proxies,
+            <term def="cdn">CDNs</term> and <term def="load-balancer">load balancers</term>
             along the way. A token in a URL is a token in all of their logs.
         </p>
         <heading h2 id="fix-it">Fix It</heading>
         <p>
             The real client fixes both. The token lives in <cde>.env</cde>, which never goes in git,
-            and travels in a header, which servers don't log by default. Search for it:
+            and travels in a <term def="header">header</term>, which
+            <term def="server">servers</term> don't log by default. Search for it:
         </p>
         <!-- prettier-ignore -->
         <code-block>grep -rn 'wnp_' src bin/tasks.php
@@ -241,13 +250,15 @@ docker compose logs api | grep -c "$(grep API_TOKEN .env | cut -d= -f2)"</code-b
             </li>
             <li>
                 <strong>A token in the browser is a public token.</strong> Anything in your
-                JavaScript can be read by anyone who opens developer tools. Calls that need a secret
-                go through your server, which keeps the secret and makes the call.
+                <term def="javascript">JavaScript</term> can be read by anyone who opens developer
+                tools. Calls that need a secret go through your server, which keeps the secret and
+                makes the call.
             </li>
             <li>
                 <strong>Debugging leaks secrets.</strong> <cde>var_dump($client)</cde>, curl's
                 verbose mode, a stack trace with arguments: each prints the token. Mark it
-                <cde>#[\SensitiveParameter]</cde>, and never log whole requests.
+                <cde>#[\SensitiveParameter]</cde>, and never log whole
+                <term def="request">requests</term>.
             </li>
             <li>
                 <strong><cde>.env</cde> files are a start, not the finish.</strong> On a server, the
@@ -262,10 +273,10 @@ docker compose logs api | grep -c "$(grep API_TOKEN .env | cut -d= -f2)"</code-b
         </list>
 
         <side-story title="Off the Disk">
-            One of my own apps kept its production secrets in <cde>.env</cde> files on the server's
-            disk. We moved them into a secrets manager, loaded into memory when the app starts, and
-            then rotated every one of them, because a secret that has sat in a file has to be
-            assumed copied.
+            One of my own apps kept its <term def="production">production</term> secrets in
+            <cde>.env</cde> files on the server's disk. We moved them into a secrets manager, loaded
+            into memory when the app starts, and then rotated every one of them, because a secret
+            that has sat in a file has to be assumed copied.
         </side-story>
 
         <tk

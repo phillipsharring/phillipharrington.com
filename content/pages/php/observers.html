@@ -21,10 +21,11 @@
 
         <!-- Intro -->
         <p>
-            Factories ended with a signup that keeps collecting jobs: send the welcome email, add to
-            the newsletter, write the audit log, tell the team. Each one is a reasonable thing to do
-            after a signup. None of them is the signup's business. The observer pattern lets the
-            signup say "this happened" and leave the rest to whoever is listening.
+            <term def="factory">Factories</term> ended with a signup that keeps collecting jobs:
+            send the welcome email, add to the newsletter, write the audit log, tell the team. Each
+            one is a reasonable thing to do after a signup. None of them is the signup's business.
+            The <term def="observer">observer</term> pattern lets the signup say "this happened" and
+            leave the rest to whoever is listening.
         </p>
 
         <!-- What is/are -->
@@ -37,15 +38,16 @@
 
         <heading h3 id="events">Events</heading>
         <p>
-            In most PHP code today, the news is an event: a small object that says what happened,
-            like <cde>UserSignedUp</cde>, with the details as properties. An event dispatcher keeps
+            In most PHP code today, the news is an <term def="event">event</term>: a small
+            <term def="object">object</term> that says what happened, like <cde>UserSignedUp</cde>,
+            with the details as <term def="property">properties</term>. An event dispatcher keeps
             the lists, one per kind of event, and passes each event to everything listening for it.
         </p>
 
         <side-story title="Changed and Update">
-            Smalltalk-80, the system MVC came from, built this in. Any object could have
-            "dependents." When a model changed, it sent itself <cde>changed:</cde>, and every
-            dependent, usually a view, got <cde>update:</cde> and redrew itself. That's how a
+            Smalltalk-80, the system <term def="mvc">MVC</term> came from, built this in. Any object
+            could have "dependents." When a model changed, it sent itself <cde>changed:</cde>, and
+            every dependent, usually a view, got <cde>update:</cde> and redrew itself. That's how a
             desktop MVC view kept up with its model: it was an observer.
         </side-story>
 
@@ -115,16 +117,17 @@
         <heading h2 id="in-php">In PHP</heading>
         <list>
             <li>
-                <cde>__invoke()</cde> makes an object callable, so a listener can be a small class
-                with its own dependencies, passed in through its constructor, and still be called
-                like a function.
+                <cde>__invoke()</cde> makes an object callable, so a listener can be a small
+                <term def="class">class</term> with its own
+                <term def="dependency">dependencies</term>, passed in through its constructor, and
+                still be called like a <term def="function">function</term>.
             </li>
             <li>
                 <cde>$event::class</cde> gives an object's class name, which is how the dispatcher
                 finds the right list.
             </li>
             <li>
-                PSR-14 is the standard interface for event dispatchers
+                PSR-14 is the standard <term def="interface">interface</term> for event dispatchers
                 (<cde>psr/event-dispatcher</cde>), and Symfony and Laravel both have one. Use theirs
                 in a real app; the idea is the one here.
             </li>
@@ -150,14 +153,15 @@
                 the signup, and catch it in the listener if not.
             </li>
             <li>
-                <strong>Slow listeners make slow requests.</strong> They run during the request.
-                Sending an email can take seconds; a listener that puts a job on a queue takes
-                milliseconds. The Queues project is about that.
+                <strong>Slow listeners make slow requests.</strong> They run during the
+                <term def="request">request</term>. Sending an email can take seconds; a listener
+                that puts a job on a <term def="queue">queue</term> takes milliseconds. The Queues
+                project is about that.
             </li>
             <li>
                 <strong>Events are for things that happened.</strong> Name them in the past tense
                 (<cde>UserSignedUp</cde>, <cde>OrderShipped</cde>), and don't use them to ask a
-                question and wait for an answer. That's a method call.
+                question and wait for an answer. That's a <term def="method">method</term> call.
             </li>
         </list>
 
@@ -165,8 +169,9 @@
             One of my apps sent a verification email the moment anyone signed up. Someone found that
             useful: they signed up strangers' addresses, over and over, and each one got an email
             from us they never asked for. The fix was to send nothing at signup, limit how much mail
-            the app would send, and put a bot check on the form. The listener that sends an email is
-            the one to look at hardest, because it's the one that reaches outside your app.
+            the app would send, and put a bot check on the <term def="form">form</term>. The
+            listener that sends an email is the one to look at hardest, because it's the one that
+            reaches outside your app.
         </side-story>
 
         <tk

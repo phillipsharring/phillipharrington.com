@@ -21,48 +21,54 @@
 
         <!-- Intro -->
         <p>
-            DNS gave the client an address, and it has opened a connection. Now the two of them need
-            a language. On the web, that's HTTP, the Hypertext Transfer Protocol: the Spanish from
-            the Client/Server lesson. It's simple on purpose. The client asks for something, the
-            server answers, and that's one exchange.
+            <term def="dns">DNS</term> gave the <term def="client">client</term> an address, and it
+            has opened a connection. Now the two of them need a language. On the web, that's
+            <term def="http">HTTP</term>, the Hypertext Transfer Protocol: the Spanish from the
+            Client/Server lesson. It's simple on purpose. The client asks for something, the
+            <term def="server">server</term> answers, and that's one exchange.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-http">What's HTTP?</heading>
         <p>
-            The rules for that one exchange: a request, then a response. Each request stands on its
-            own. The server doesn't remember you from one request to the next unless something
-            reminds it (that's what cookies are for, later). And in its classic form, it's plain
+            The rules for that one exchange: a <term def="request">request</term>, then a
+            <term def="response">response</term>. Each request stands on its own. The server doesn't
+            remember you from one request to the next unless something reminds it (that's what
+            <term def="cookie">cookies</term> are for, later). And in its classic form, it's plain
             text you could read, or even type by hand.
         </p>
 
         <side-story title="One Page of Rules">
-            The first version of HTTP, from 1991, had one method, <cde>GET</cde>, no headers and no
-            status codes. You asked for a page, you got the page, and the connection closed. Its
-            whole description fit on about a page.
+            The first version of HTTP, from 1991, had one <term def="http-method">method</term>,
+            <cde>GET</cde>, no <term def="header">headers</term> and no
+            <term def="status-code">status codes</term>. You asked for a page, you got the page, and
+            the connection closed. Its whole description fit on about a page.
         </side-story>
 
         <heading h2 id="whats-https">What's HTTPS?</heading>
         <p>
-            The same HTTP, sent through an encrypted connection. Nobody between you and the server
-            (the coffee shop Wi-Fi, your internet provider, anyone along the way) can read the
-            conversation or change it.
+            The same HTTP, sent through an <term def="encryption">encrypted</term> connection.
+            Nobody between you and the server (the coffee shop Wi-Fi, your internet provider, anyone
+            along the way) can read the conversation or change it.
         </p>
 
         <heading h2 id="whats-tls">What's TLS?</heading>
         <p>
-            Transport Layer Security, the encryption that puts the S in HTTPS. Its older version was
-            called SSL, and people still say "SSL" out of habit, but SSL itself has been broken and
-            retired for years. TLS does two jobs: it scrambles the conversation, and it proves the
-            server is who it says it is, with a certificate. A certificate is the server's ID card,
-            vouched for by a certificate authority your browser already trusts.
+            Transport Layer Security, the encryption that puts the S in
+            <term def="https">HTTPS</term>. Its older version was called SSL, and people still say
+            "SSL" out of habit, but SSL itself has been broken and retired for years.
+            <term def="tls">TLS</term> does two jobs: it scrambles the conversation, and it proves
+            the server is who it says it is, with a <term def="certificate">certificate</term>. A
+            certificate is the server's ID card, vouched for by a certificate authority your
+            <term def="browser">browser</term> already trusts.
         </p>
 
         <heading h3 id="the-padlock">What the Padlock Promises</heading>
         <p>
-            Two things: the connection is encrypted, and you're talking to the domain in the address
-            bar. That's all. It doesn't mean the site is honest. A scam site can have a perfectly
-            good certificate for its own scammy domain.
+            Two things: the connection is encrypted, and you're talking to the
+            <term def="domain-name">domain</term> in the address bar. That's all. It doesn't mean
+            the site is honest. A scam site can have a perfectly good certificate for its own scammy
+            domain.
         </p>
 
         <side-story title="The Padlock Went Away">
@@ -79,8 +85,9 @@
 Host: example.com
 Accept: text/html</code-block>
         <p>
-            A method (<cde>GET</cde>, "give me"), a path, the protocol version, then a few headers,
-            then a blank line to say "that's my request." The response comes back in the same shape:
+            A method (<cde>GET</cde>, "give me"), a <term def="path">path</term>, the
+            <term def="protocol">protocol</term> version, then a few headers, then a blank line to
+            say "that's my request." The response comes back in the same shape:
         </p>
         <!-- prettier-ignore -->
         <code-block>HTTP/1.1 200 OK
@@ -105,8 +112,9 @@ Content-Length: 20469
             of text, and sends many of them at once over one connection instead of one at a time.
             HTTP/3 does the same over a different kind of connection that copes better with flaky
             networks, like a phone on a train. The requests and responses mean exactly what they
-            meant in HTTP/1.1, and your PHP code sees no difference at all. Usually the CDN or web
-            server in front of your app speaks HTTP/2 or 3 with browsers, and you get it for free.
+            meant in HTTP/1.1, and your PHP code sees no difference at all. Usually the
+            <term def="cdn">CDN</term> or <term def="web-server">web server</term> in front of your
+            app speaks HTTP/2 or 3 with browsers, and you get it for free.
         </p>
 
         <side-story title="Free Certificates">
@@ -124,8 +132,8 @@ Content-Length: 20469
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php http.php</code-block>
         <p class="text-th-muted text-base">
-            Same as before: a throwaway PHP container, with your folder as <cde>/app</cde>, running
-            one file.
+            Same as before: a throwaway PHP <term def="container">container</term>, with your folder
+            as <cde>/app</cde>, running one file.
         </p>
         <p>
             The first line is the status line: <cde>HTTP/1.1 200 OK</cde>. Then the response
@@ -176,8 +184,8 @@ Content-Length: 20469
                 the status. Both have to happen before any of the page is sent.
             </li>
             <li>
-                <cde>file_get_contents()</cde> on a URL makes a simple request, and
-                <cde>http_get_last_response_headers()</cde> shows what came back.
+                <cde>file_get_contents()</cde> on a <term def="url">URL</term> makes a simple
+                request, and <cde>http_get_last_response_headers()</cde> shows what came back.
             </li>
         </list>
 
@@ -207,8 +215,9 @@ Content-Length: 20469
         <two-dollars title="curl -I">
             <p>
                 <cde>curl -I</cde> and a URL asks for just the status and headers, no page. It's the
-                fastest way to see what a server is actually saying: is it a redirect, and to where?
-                Is it cached? Is it even up?
+                fastest way to see what a server is actually saying: is it a
+                <term def="redirect">redirect</term>, and to where? Is it
+                <term def="cache">cached</term>? Is it even up?
             </p>
         </two-dollars>
 

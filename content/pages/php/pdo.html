@@ -22,27 +22,31 @@
         <!-- Intro -->
         <p>
             <xref to="/php/working-with-files">Working with Files</xref> ended at the limits of a
-            text file. A database is the next step: a separate server that stores your data, finds
-            any piece of it fast, and lets many requests read and write at once. PHP talks to it
+            text file. A <term def="database">database</term> is the next step: a separate
+            <term def="server">server</term> that stores your data, finds any piece of it fast, and
+            lets many <term def="request">requests</term> read and write at once. PHP talks to it
             with PDO. This lesson is about the connection and the one habit that matters from the
-            very first query: the query and the input travel separately, always.
+            very first <term def="query">query</term>: the query and the input travel separately,
+            always.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-database">What's a Database?</heading>
         <p>
-            For this course, MySQL: a server, like a web server, that PHP connects to over the
-            network. It keeps data in tables of rows and columns, and you ask it for things in a
-            language called SQL. <xref to="/php/sql">SQL</xref>, next, and the whole Database
-            section after it, are about that language and those tables. This lesson is just getting
-            PHP and MySQL talking.
+            For this course, MySQL: a server, like a <term def="web-server">web server</term>, that
+            PHP connects to over the network. It keeps data in <term def="table">tables</term> of
+            <term def="row">rows</term> and <term def="column">columns</term>, and you ask it for
+            things in a language called <term def="sql">SQL</term>. <xref to="/php/sql">SQL</xref>,
+            next, and the whole Database section after it, are about that language and those tables.
+            This lesson is just getting PHP and MySQL talking.
         </p>
 
         <heading h2 id="whats-pdo">What's PDO?</heading>
         <p>
-            PHP Data Objects: PHP's built-in way to talk to databases. The same functions work with
-            MySQL, PostgreSQL, SQLite and others, each through a driver. PHP's Docker image comes
-            with the SQLite one; MySQL's, <cde>pdo_mysql</cde>, takes one line to add.
+            PHP Data Objects: PHP's built-in way to talk to databases. The same
+            <term def="function">functions</term> work with MySQL, PostgreSQL, SQLite and others,
+            each through a driver. PHP's Docker image comes with the SQLite one; MySQL's,
+            <cde>pdo_mysql</cde>, takes one line to add.
         </p>
 
         <heading h3 id="the-connection">The Connection</heading>
@@ -53,11 +57,11 @@
         <!-- prettier-ignore -->
         <code-block>mysql:host=db;dbname=course;charset=utf8mb4</code-block>
         <p>
-            <cde>charset=utf8mb4</cde> makes the connection itself UTF-8, real UTF-8, emoji
-            included, as <xref to="/php/text-and-utf-8">Text and UTF-8</xref> said. Recent versions
-            default to it, older ones don't, so say it, and the connection is never the place text
-            gets mangled. The user and password come from the environment, never from the code, as
-            in
+            <cde>charset=utf8mb4</cde> makes the connection itself <term def="utf-8">UTF-8</term>,
+            real UTF-8, emoji included, as
+            <xref to="/php/text-and-utf-8">Text and UTF-8</xref> said. Recent versions default to
+            it, older ones don't, so say it, and the connection is never the place text gets
+            mangled. The user and password come from the environment, never from the code, as in
             <xref to="/php/configuration-and-the-environment"
                 >Configuration and the Environment</xref>.
         </p>
@@ -66,16 +70,17 @@
         <list>
             <li>
                 <cde>PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION</cde>: a failed query throws an
-                exception instead of quietly returning <cde>false</cde>. It's the default since PHP
-                8.0; say it anyway.
+                <term def="exception">exception</term> instead of quietly returning
+                <cde>false</cde>. It's the default since PHP 8.0; say it anyway.
             </li>
             <li>
                 <cde>PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC</cde>: each row comes back
-                as an array with the column names as keys.
+                as an <term def="array">array</term> with the column names as keys.
             </li>
             <li>
-                <cde>PDO::ATTR_EMULATE_PREPARES =&gt; false</cde>: prepared statements are done by
-                MySQL itself, not imitated by PHP.
+                <cde>PDO::ATTR_EMULATE_PREPARES =&gt; false</cde>:
+                <term def="prepared-statement">prepared statements</term> are done by MySQL itself,
+                not imitated by PHP.
             </li>
         </list>
 
@@ -95,10 +100,11 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
 
         <side-story title="The Functions That Went Away">
             PHP's first MySQL functions, <cde>mysql_connect()</cde> and <cde>mysql_query()</cde>,
-            took a query as one string, so the natural way to add a value was to glue it in. A
-            generation of tutorials did exactly that, and a generation of sites were open to SQL
-            injection. PDO arrived in PHP 5.1, in 2005, with prepared statements. The old functions
-            were deprecated in PHP 5.5 and removed in PHP 7.0.
+            took a query as one <term def="string">string</term>, so the natural way to add a value
+            was to glue it in. A generation of tutorials did exactly that, and a generation of sites
+            were open to <term def="sql-injection">SQL injection</term>. PDO arrived in PHP 5.1, in
+            2005, with prepared statements. The old functions were deprecated in PHP 5.5 and removed
+            in PHP 7.0.
         </side-story>
 
         <!-- How it works -->
@@ -106,7 +112,8 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 <cde>new PDO(...)</cde> connects to MySQL over the network and logs in. In Docker
-                Compose, the host is the database service's name, <cde>db</cde>.
+                Compose, the <term def="host">host</term> is the database service's name,
+                <cde>db</cde>.
             </li>
             <li>
                 <cde>prepare()</cde> sends the SQL, placeholders and all. MySQL reads it and works
@@ -129,9 +136,9 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            A small library you can search and add to, with MySQL and PHP in two containers. In a
-            folder, start with the database's first contents, <cde>init.sql</cde>, which MySQL runs
-            the first time it starts:
+            A small library you can search and add to, with MySQL and PHP in two
+            <term def="container">containers</term>. In a folder, start with the database's first
+            contents, <cde>init.sql</cde>, which MySQL runs the first time it starts:
         </p>
         <code-block example="pdo/init.sql" />
         <p>A <cde>Dockerfile</cde>, which is PHP's image plus the MySQL driver for PDO:</p>
@@ -141,7 +148,10 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             its environment. PHP waits until MySQL reports it's ready:
         </p>
         <code-block example="pdo/compose.yml" />
-        <p>The connection lives in one file, <cde>db.php</cde>, outside the web root:</p>
+        <p>
+            The connection lives in one file, <cde>db.php</cde>, outside the
+            <term def="web-root">web root</term>:
+        </p>
         <code-block example="pdo/db.php" />
         <p>And the page, <cde>public/index.php</cde>:</p>
         <code-block example="pdo/public/index.php" />
@@ -161,8 +171,8 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
         <p>
             Open <cde>http://localhost:8000</cde>. Four books. Search for "austen," then add a book
             of your own, with an accent or an apostrophe in it, like "O'Brien": it goes in, and
-            comes back out, exactly as typed. Then, from a second terminal, search the way an
-            attacker would:
+            comes back out, exactly as typed. Then, from a second
+            <term def="terminal">terminal</term>, search the way an attacker would:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl --get --data-urlencode "q=' OR '1'='1" http://localhost:8000/</code-block>
@@ -219,8 +229,9 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             </li>
             <li>
                 <strong>LIKE has its own wildcards.</strong> <cde>%</cde> and <cde>_</cde> in a
-                search mean "anything," so a search for <cde>%</cde> matches every row. Escape them,
-                as the example does with <cde>addcslashes()</cde>.
+                search mean "anything," so a search for <cde>%</cde> matches every row.
+                <term def="escaping">Escape</term> them, as the example does with
+                <cde>addcslashes()</cde>.
             </li>
             <li>
                 <strong>A named placeholder can't be used twice.</strong> With real prepared
@@ -229,8 +240,8 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             </li>
             <li>
                 <strong>What comes out of the database is input.</strong> It got in from somewhere.
-                Escape it on the way into HTML, every time, or the database delivers a stored attack
-                to every visitor: <xref to="/php/xss">XSS</xref>.
+                Escape it on the way into <term def="html">HTML</term>, every time, or the database
+                delivers a stored attack to every visitor: <xref to="/php/xss">XSS</xref>.
             </li>
             <li>
                 <strong>Connection errors can leak.</strong> A failed <cde>new PDO()</cde> throws an
@@ -245,8 +256,9 @@ $insert-&gt;execute(['title' =&gt; $title, 'author' =&gt; $author]);</code-block
             One of my apps had seed scripts: SQL that fills a fresh database with starting data,
             like <cde>init.sql</cde> here. One of them created an admin account,
             <cde>admin@example.com</cde>, with the password <cde>password</cde>. Handy on a laptop.
-            But the seeds ran on production deploys too, until they were stopped. Starting data is
-            code that runs against your real database, so check where it runs.
+            But the seeds ran on <term def="production">production</term> deploys too, until they
+            were stopped. Starting data is code that runs against your real database, so check where
+            it runs.
         </side-story>
 
         <tk

@@ -21,11 +21,15 @@
 
         <!-- Intro -->
         <p>
-            CRUD answered a browser, with forms, HTML and redirects. When the client is a program, a
-            phone app or JavaScript using <xref to="/php/fetch">fetch()</xref>, it wants
-            <xref to="/php/json">JSON</xref>, and it can use every HTTP method, not just the two
-            forms know. REST is the set of conventions most of those APIs follow, so that a
-            developer who has used one can guess how yours works.
+            <term def="crud">CRUD</term> answered a <term def="browser">browser</term>, with
+            <term def="form">forms</term>, <term def="html">HTML</term> and
+            <term def="redirect">redirects</term>. When the <term def="client">client</term> is a
+            program, a phone app or <term def="javascript">JavaScript</term> using
+            <xref to="/php/fetch">fetch()</xref>, it wants <xref to="/php/json">JSON</xref>, and it
+            can use every <term def="http-method">HTTP method</term>, not just the two forms know.
+            <term def="rest">REST</term> is the set of conventions most of those
+            <term def="api">APIs</term> follow, so that a developer who has used one can guess how
+            yours works.
         </p>
 
         <!-- What is/are -->
@@ -55,18 +59,21 @@
 
         <heading h3 id="stateless">Stateless</heading>
         <p>
-            Each request carries everything the server needs to answer it, including who's asking,
-            usually as a token in the <cde>Authorization</cde> header. The server doesn't remember
-            the last request. That's what lets an API run on many servers behind a load balancer,
-            from <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: any of them can
-            answer any request.
+            Each <term def="request">request</term> carries everything the
+            <term def="server">server</term> needs to answer it, including who's asking, usually as
+            a token in the <cde>Authorization</cde> <term def="header">header</term>. The server
+            doesn't remember the last request. That's what lets an API run on many servers behind a
+            <term def="load-balancer">load balancer</term>, from
+            <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: any of them can answer
+            any request.
         </p>
 
         <heading h3 id="safe-and-idempotent">Safe and Idempotent</heading>
         <p>
             <cde>GET</cde> is safe: it changes nothing. <cde>GET</cde>, <cde>PUT</cde> and
-            <cde>DELETE</cde> are idempotent: sending one twice leaves things the same as sending it
-            once. Replace note 3 with "Buy beans" twice, and it says "Buy beans." <cde>POST</cde>
+            <cde>DELETE</cde> are <term def="idempotent">idempotent</term>: sending one twice leaves
+            things the same as sending it once. Replace note 3 with "Buy beans" twice, and it says
+            "Buy beans." <cde>POST</cde>
             isn't: post twice, and you have two notes. Clients, proxies and browsers rely on this
             when they decide what's safe to retry.
         </p>
@@ -84,30 +91,33 @@
         <list>
             <li><cde>GET /notes</cde>: <cde>200</cde>, and the list.</li>
             <li>
-                <cde>POST /notes</cde>, with JSON: <cde>201</cde>, the new note, and
-                <cde>Location: /notes/3</cde>.
+                <cde>POST /notes</cde>, with <term def="json">JSON</term>: <cde>201</cde>, the new
+                note, and <cde>Location: /notes/3</cde>.
             </li>
             <li><cde>GET /notes/3</cde>: <cde>200</cde> and the note, or <cde>404</cde>.</li>
             <li><cde>PUT /notes/3</cde>, with JSON: <cde>200</cde> and the replaced note.</li>
-            <li><cde>DELETE /notes/3</cde>: <cde>204</cde>, and no body.</li>
+            <li>
+                <cde>DELETE /notes/3</cde>: <cde>204</cde>, and no <term def="body">body</term>.
+            </li>
         </list>
         <p>
             Anything else gets an honest refusal: <cde>405</cde> with an <cde>Allow</cde> header for
-            a method the URL doesn't take, <cde>415</cde> for a body that isn't JSON,
-            <cde>400</cde> for JSON that won't parse, <cde>422</cde> for JSON that parses but makes
-            no sense.
+            a method the <term def="url">URL</term> doesn't take, <cde>415</cde> for a body that
+            isn't JSON, <cde>400</cde> for JSON that won't parse, <cde>422</cde> for JSON that
+            parses but makes no sense.
         </p>
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
-            The notes again, as an API. To keep it to one container, they live in a JSON file in the
-            container's temp folder. In a folder, make <cde>src/NoteStore.php</cde>:
+            The notes again, as an API. To keep it to one <term def="container">container</term>,
+            they live in a JSON file in the container's temp folder. In a folder, make
+            <cde>src/NoteStore.php</cde>:
         </p>
         <code-block example="rest/src/NoteStore.php" />
         <p>
-            <cde>src/http.php</cde>, with <cde>send()</cde> and the function that reads and checks a
-            note from the request:
+            <cde>src/http.php</cde>, with <cde>send()</cde> and the
+            <term def="function">function</term> that reads and checks a note from the request:
         </p>
         <code-block example="rest/src/http.php" />
         <p>And the front door, <cde>public/index.php</cde>:</p>
@@ -115,7 +125,7 @@
         <p>Start it:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public public/index.php</code-block>
-        <p>From a second terminal, go through all four letters:</p>
+        <p>From a second <term def="terminal">terminal</term>, go through all four letters:</p>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/notes
 curl -i -H 'Content-Type: application/json' -d '{"body":"Buy beans"}' http://localhost:8000/notes
@@ -125,7 +135,8 @@ curl -i -X DELETE http://localhost:8000/notes/3
 curl -i http://localhost:8000/notes/3</code-block>
         <p class="text-th-muted text-base">
             The same curl flags as before: <cde>-X</cde> picks the method, <cde>-H</cde> adds a
-            header, <cde>-d</cde> sends the body, and <cde>-i</cde> shows the response's headers.
+            header, <cde>-d</cde> sends the body, and <cde>-i</cde> shows the
+            <term def="response">response</term>'s headers.
         </p>
         <p>
             <cde>200</cde>, <cde>201</cde> with a <cde>Location</cde>, <cde>200</cde>,
@@ -161,14 +172,15 @@ curl -i -X PATCH http://localhost:8000/notes/1</code-block>
                 <cde>$_POST</cde> is only filled in for form posts, never for JSON.
             </li>
             <li>
-                <cde>json_decode($raw, true, 8, JSON_THROW_ON_ERROR)</cde>: arrays instead of
-                objects, a depth limit, and an exception for bad JSON instead of a quiet
-                <cde>null</cde>.
+                <cde>json_decode($raw, true, 8, JSON_THROW_ON_ERROR)</cde>:
+                <term def="array">arrays</term> instead of <term def="object">objects</term>, a
+                depth limit, and an <term def="exception">exception</term> for bad JSON instead of a
+                quiet <cde>null</cde>.
             </li>
             <li>
                 <cde>json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)</cde> sends
-                "café" as UTF-8 rather than <cde>café</cde>. Both are valid JSON; one is readable.
-                See <xref to="/php/text-and-utf-8">Text and UTF-8</xref>.
+                "café" as <term def="utf-8">UTF-8</term> rather than <cde>café</cde>. Both are valid
+                JSON; one is readable. See <xref to="/php/text-and-utf-8">Text and UTF-8</xref>.
             </li>
             <li>
                 <cde>$_SERVER['CONTENT_TYPE']</cde> says what the client claims it sent. It's a
@@ -190,7 +202,7 @@ curl -i -X PATCH http://localhost:8000/notes/1</code-block>
             <li>
                 <strong>PUT replaces; PATCH changes part.</strong> A <cde>PUT</cde> without a field
                 means "this field is now empty." If you want "change only what I sent," that's
-                <cde>PATCH</cde>, and it's a separate route to write.
+                <cde>PATCH</cde>, and it's a separate <term def="route">route</term> to write.
             </li>
             <li>
                 <strong>This API has no login.</strong> Anyone can delete anything. A real one
@@ -200,7 +212,8 @@ curl -i -X PATCH http://localhost:8000/notes/1</code-block>
             <li>
                 <strong>Version it from the start.</strong> Once a phone app in the wild depends on
                 <cde>/notes</cde>, you can't change what it returns. Many APIs put the version in
-                the path, <cde>/v1/notes</cde>, so a <cde>/v2</cde> can live beside it.
+                the <term def="path">path</term>, <cde>/v1/notes</cde>, so a <cde>/v2</cde> can live
+                beside it.
             </li>
         </list>
 
@@ -215,8 +228,9 @@ curl -i -X PATCH http://localhost:8000/notes/1</code-block>
 
         <p>
             Every route in this API does some of the same things first: read the method, check the
-            content type, and in a real one, check the token. That shared work has its own pattern.
-            Next: middleware and pipelines.
+            <term def="content-type">content type</term>, and in a real one, check the token. That
+            shared work has its own pattern. Next: <term def="middleware">middleware</term> and
+            <term def="pipeline">pipelines</term>.
         </p>
 
         <!-- Next -->

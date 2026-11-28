@@ -22,17 +22,20 @@
         <!-- Intro -->
         <p>
             <xref to="/php/includes">Includes</xref> read a PHP file and ran it. Most files aren't
-            code: logs, exports, settings, uploads, a cache. PHP reads and writes them with a few
-            functions, and the functions are the easy part. The hard parts are where the file lives,
-            who else can read it, and what happens when a visitor gets to choose its name.
+            code: logs, exports, settings, uploads, a <term def="cache">cache</term>. PHP reads and
+            writes them with a few <term def="function">functions</term>, and the functions are the
+            easy part. The hard parts are where the file lives, who else can read it, and what
+            happens when a visitor gets to choose its name.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-file">What's a File, to PHP?</heading>
         <p>
-            A named row of bytes on disk, at a path. PHP reads them into strings and writes strings
-            out to them. It doesn't care whether the bytes are text, JSON or a photo. If they're
-            text, they should be UTF-8, like everything else (<xref to="/php/text-and-utf-8"
+            A named row of <term def="byte">bytes</term> on disk, at a <term def="path">path</term>.
+            PHP reads them into <term def="string">strings</term> and writes strings out to them. It
+            doesn't care whether the bytes are text, <term def="json">JSON</term> or a photo. If
+            they're text, they should be <term def="utf-8">UTF-8</term>, like everything else (<xref
+                to="/php/text-and-utf-8"
                 >Text and UTF-8</xref>).
         </p>
 
@@ -42,9 +45,13 @@
             <li>
                 <cde>file_put_contents($path, $data)</cde>: write a string to a file, replacing what
                 was there. Add <cde>FILE_APPEND</cde> to add to the end instead, and
-                <cde>LOCK_EX</cde> so two requests writing at once don't mix their lines.
+                <cde>LOCK_EX</cde> so two <term def="request">requests</term> writing at once don't
+                mix their lines.
             </li>
-            <li><cde>file($path)</cde>: the whole file, as an array of lines.</li>
+            <li>
+                <cde>file($path)</cde>: the whole file, as an <term def="array">array</term> of
+                lines.
+            </li>
         </list>
         <p>Each returns <cde>false</cde> when it fails, with a warning. Check for it.</p>
 
@@ -59,32 +66,36 @@
         <heading h3 id="permissions">Permissions</heading>
         <p>
             Every file has an owner, and settings for who can read and write it. PHP runs as some
-            user, often one called <cde>www-data</cde> on a server, and can only touch what that
-            user is allowed to. "Permission denied" means the file is there and PHP's user can't
-            have it.
+            user, often one called <cde>www-data</cde> on a <term def="server">server</term>, and
+            can only touch what that user is allowed to. "Permission denied" means the file is there
+            and PHP's user can't have it.
         </p>
 
         <side-story title="Left in /tmp">
-            One of my apps had a deploy script that wrote a copy of the production
-            <cde>.env</cde> to <cde>/tmp</cde> while it worked, and left it there. On that machine,
-            <cde>/tmp</cde> could be read by every user, so every secret the app had was sitting in
-            a file anyone logged in could open. The fix was a private temp file, readable only by
-            the script's own user, and deleted when the script ended, however it ended.
+            One of my apps had a deploy script that wrote a copy of the
+            <term def="production">production</term> <cde>.env</cde> to <cde>/tmp</cde> while it
+            worked, and left it there. On that machine, <cde>/tmp</cde> could be read by every user,
+            so every secret the app had was sitting in a file anyone logged in could open. The fix
+            was a private temp file, readable only by the script's own user, and deleted when the
+            script ended, however it ended.
         </side-story>
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                You build a path, from <cde>__DIR__</cde>, to a folder outside the web root that's
-                meant for the app's data.
+                You build a path, from <cde>__DIR__</cde>, to a folder outside the
+                <term def="web-root">web root</term> that's meant for the app's data.
             </li>
             <li>
                 If any part of the path came from outside, you check that it still points inside
                 that folder.
             </li>
             <li>PHP asks the operating system for the file, as PHP's user.</li>
-            <li>The operating system checks the permissions, and hands it over or refuses.</li>
+            <li>
+                The operating system checks the <term def="permissions">permissions</term>, and
+                hands it over or refuses.
+            </li>
             <li>
                 PHP reads or writes, then closes the file. With <cde>LOCK_EX</cde>, other writers
                 wait their turn.
@@ -92,10 +103,11 @@
         </ol>
         <nti>
             <p>
-                Step two is the one that matters. A file name from a form, a query string or a
-                command line is input, and <cde>../</cde> climbs out of any folder you put in front
-                of it. It's an ancient proverb: <strong>never trust input,</strong> least of all in
-                a path.
+                Step two is the one that matters. A file name from a <term def="form">form</term>, a
+                <term def="query-string">query string</term> or a
+                <term def="command-line">command line</term> is input, and <cde>../</cde> climbs out
+                of any folder you put in front of it. It's an ancient proverb:
+                <strong>never trust input,</strong> least of all in a path.
             </p>
         </nti>
 
@@ -221,8 +233,9 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php search.php /etc/passwd ro
 
         <p>
             A text file holds a list. When you need to find one line among millions, change one in
-            place, or have two people write at once, you want a database. Next: Working with a
-            Database: PDO and Prepared Statements.
+            place, or have two people write at once, you want a
+            <term def="database">database</term>. Next: Working with a Database: PDO and Prepared
+            Statements.
         </p>
 
         <!-- Next -->

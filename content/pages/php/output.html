@@ -30,16 +30,18 @@
         <heading h2 id="whats-output">What's Output?</heading>
         <p>
             Everything PHP sends: the text outside the tags, and whatever the code prints, in the
-            order it happens. On the web, it becomes the body of the response from Request and
-            Response. On the command line, it goes to your terminal. Same code, same output, just a
-            different place for it to land.
+            order it happens. On the web, it becomes the <term def="body">body</term> of the
+            <term def="response">response</term> from Request and Response. On the
+            <term def="command-line">command line</term>, it goes to your
+            <term def="terminal">terminal</term>. Same code, same output, just a different place for
+            it to land.
         </p>
 
         <heading h3 id="for-people">For People</heading>
         <list>
             <li>
-                <cde>echo</cde> prints one or more strings, separated by commas:
-                <cde>echo 'Hi, ', $name;</cde>. It's the one you'll use nearly all the time.
+                <cde>echo</cde> prints one or more <term def="string">strings</term>, separated by
+                commas: <cde>echo 'Hi, ', $name;</cde>. It's the one you'll use nearly all the time.
             </li>
             <li>
                 <cde>print</cde> is the same idea, for one thing at a time. Most code uses echo.
@@ -57,11 +59,13 @@
 
         <heading h3 id="for-you">For You</heading>
         <list>
-            <li><cde>print_r()</cde> shows what's in an array, readably.</li>
             <li>
-                <cde>var_dump()</cde> shows the type and value of anything: <cde>bool(false)</cde>,
-                <cde>string(3) "php"</cde>. When something is the wrong type, this is how you see
-                it.
+                <cde>print_r()</cde> shows what's in an <term def="array">array</term>, readably.
+            </li>
+            <li>
+                <cde>var_dump()</cde> shows the <term def="type">type</term> and value of anything:
+                <cde>bool(false)</cde>, <cde>string(3) "php"</cde>. When something is the wrong
+                type, this is how you see it.
             </li>
             <li><cde>var_export()</cde> writes a value as PHP code you could paste into a file.</li>
         </list>
@@ -76,15 +80,15 @@
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
-        <p>On the web, a response is headers first, then the body. So:</p>
+        <p>On the web, a response is <term def="header">headers</term> first, then the body. So:</p>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 Your code runs. While it hasn't printed anything, it can still set headers:
                 <cde>header()</cde>, <cde>http_response_code()</cde>, <cde>setcookie()</cde>.
             </li>
             <li>
-                The first byte of output, from an <cde>echo</cde> or from plain text outside the
-                tags, makes PHP send the headers, right then.
+                The first <term def="byte">byte</term> of output, from an <cde>echo</cde> or from
+                plain text outside the tags, makes PHP send the headers, right then.
             </li>
             <li>The body follows, as your code prints it.</li>
             <li>
@@ -94,7 +98,8 @@
         </ol>
         <p>
             PHP adds one header by itself: <cde>Content-Type: text/html; charset=UTF-8</cde>, unless
-            you send your own. The <cde>charset</cde> tells the browser how to read the bytes;
+            you send your own. The <cde>charset</cde> tells the
+            <term def="browser">browser</term> how to read the bytes;
             <xref to="/php/text-and-utf-8">Text and UTF-8</xref> has the whole story.
         </p>
 
@@ -111,10 +116,13 @@
         </p>
         <p>
             Now on the web, where output comes from somewhere. Make <cde>index.php</cde>, which
-            greets whoever is named in the query string:
+            greets whoever is named in the <term def="query-string">query string</term>:
         </p>
         <code-block example="output/index.php" />
-        <p>And <cde>too-late.php</cde>, which tries to redirect after it's printed:</p>
+        <p>
+            And <cde>too-late.php</cde>, which tries to <term def="redirect">redirect</term> after
+            it's printed:
+        </p>
         <code-block example="output/too-late.php" />
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
@@ -131,11 +139,12 @@ curl -i http://localhost:8000/too-late.php</code-block>
             >
         </breakdown>
         <p>
-            The first says hello to Alice. The second sends HTML in the name, and gets back
-            <cde>&amp;lt;b&amp;gt;Alice&amp;lt;/b&amp;gt;</cde>: escaped, so the browser shows the
-            tags instead of obeying them. <strong>Never trust input,</strong> and anything that came
-            from outside gets <cde>htmlspecialchars()</cde> on its way into a page. The third shows
-            no <cde>Location</cde> header, only the warning: "Cannot modify header information -
+            The first says hello to Alice. The second sends <term def="html">HTML</term> in the
+            name, and gets back <cde>&amp;lt;b&amp;gt;Alice&amp;lt;/b&amp;gt;</cde>:
+            <term def="escaping">escaped</term>, so the browser shows the tags instead of obeying
+            them. <strong>Never trust input,</strong> and anything that came from outside gets
+            <cde>htmlspecialchars()</cde> on its way into a page. The third shows no
+            <cde>Location</cde> header, only the warning: "Cannot modify header information -
             headers already sent."
         </p>
         <p class="text-th-muted text-base">
@@ -184,7 +193,8 @@ curl -i http://localhost:8000/too-late.php</code-block>
             <li>
                 <strong>A new line in HTML is just a space.</strong> <cde>"\n"</cde> breaks lines in
                 the terminal and in page source. In the browser, you need <cde>&lt;p&gt;</cde> or
-                <cde>&lt;br&gt;</cde>, or a <cde>text/plain</cde> content type.
+                <cde>&lt;br&gt;</cde>, or a <cde>text/plain</cde>
+                <term def="content-type">content type</term>.
             </li>
             <li>
                 <strong>Echo hides the type.</strong> <cde>false</cde> and <cde>null</cde> print as
@@ -207,8 +217,8 @@ curl -i http://localhost:8000/too-late.php</code-block>
         </two-dollars>
 
         <p>
-            Everything you printed in this lesson was held in something first: a variable. Next:
-            Variables, Types and strict_types.
+            Everything you printed in this lesson was held in something first: a
+            <term def="variable">variable</term>. Next: Variables, Types and strict_types.
         </p>
 
         <!-- Next -->

@@ -21,11 +21,13 @@
 
         <!-- Intro -->
         <p>
-            <xref to="/php/pdo">Working with a Database</xref> sent queries from PHP and got rows
-            back. The queries themselves were strings in another language: SQL. This section is
-            about that language, and about the database on the other end. PHP's job is small: hand
-            SQL to the database, safely, and do something with what comes back. Most of the real
-            work happens on the database's side.
+            <xref to="/php/pdo">Working with a Database</xref> sent
+            <term def="query">queries</term> from PHP and got <term def="row">rows</term> back. The
+            queries themselves were <term def="string">strings</term> in another language:
+            <term def="sql">SQL</term>. This section is about that language, and about the
+            <term def="database">database</term> on the other end. PHP's job is small: hand SQL to
+            the database, safely, and do something with what comes back. Most of the real work
+            happens on the database's side.
         </p>
 
         <!-- What is/are -->
@@ -43,10 +45,11 @@
 
         <heading h3 id="tables-rows-and-columns">Tables, Rows and Columns</heading>
         <p>
-            A database holds tables. A table is a grid: each column is one kind of fact, with a name
-            and a type, and each row is one thing. A <cde>books</cde> table might have the columns
-            <cde>id</cde>, <cde>title</cde>, <cde>author</cde> and <cde>year</cde>, and a row for
-            each book.
+            A database holds <term def="table">tables</term>. A table is a grid: each
+            <term def="column">column</term> is one kind of fact, with a name and a
+            <term def="type">type</term>, and each row is one thing. A <cde>books</cde> table might
+            have the columns <cde>id</cde>, <cde>title</cde>, <cde>author</cde> and <cde>year</cde>,
+            and a row for each book.
         </p>
 
         <heading h3 id="the-four-statements">The Four Statements</heading>
@@ -89,14 +92,15 @@ ORDER BY `year`;</code-block>
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                A client, like PHP or the <cde>mysql</cde> command, connects to the database server
+                A <term def="client">client</term>, like PHP or the <cde>mysql</cde> command,
+                connects to the database <term def="server">server</term>
                 and logs in.
             </li>
             <li>It sends a statement, as text.</li>
             <li>The server reads it, and checks that the user is allowed to do what it asks.</li>
             <li>
-                It plans how to do it: which table to read first, whether an index can help. The
-                Indexes lesson is about that part.
+                It plans how to do it: which table to read first, whether an
+                <term def="index">index</term> can help. The Indexes lesson is about that part.
             </li>
             <li>
                 It runs the plan and answers: rows for a <cde>SELECT</cde>, a count of the rows it
@@ -104,9 +108,9 @@ ORDER BY `year`;</code-block>
             </li>
         </ol>
         <p>
-            The database is a server, like the web server in Client/Server, and your PHP code is its
-            client. It usually runs on another machine, or in another container, and PHP talks to it
-            over the network.
+            The database is a server, like the <term def="web-server">web server</term> in
+            Client/Server, and your PHP code is its client. It usually runs on another machine, or
+            in another <term def="container">container</term>, and PHP talks to it over the network.
         </p>
 
         <!-- Try it -->
@@ -144,8 +148,9 @@ ORDER BY `year`;</code-block>
         </breakdown>
         <p>
             Then open the <cde>mysql</cde> command inside its container, logged in as the user from
-            <cde>compose.yml</cde>. It warns you about the password on the command line, which is
-            fair: fine for a pretend password on your own computer, never for a real one.
+            <cde>compose.yml</cde>. It warns you about the password on the
+            <term def="command-line">command line</term>, which is fair: fine for a pretend password
+            on your own computer, never for a real one.
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec db mysql -u app -papp-password course</code-block>
@@ -203,11 +208,11 @@ WHERE `title` = 'Beloved';</code-block>
         </breakdown>
         <p>
             Five books, oldest first, and <cde>Charlotte Brontë</cde> with her accent intact,
-            because every hop (the file, the connection, the table) is UTF-8.
-            <xref to="/php/text-and-utf-8">Text and UTF-8</xref> is why that matters, and Character
-            Sets and Collation is the database's side of it. Then try
-            <cde>books.php "1900 OR 1=1"</cde>: it refuses. The year came from the command line, and
-            <strong>never trust input</strong>, so it's checked before it goes anywhere near the
+            because every hop (the file, the connection, the table) is
+            <term def="utf-8">UTF-8</term>. <xref to="/php/text-and-utf-8">Text and UTF-8</xref> is
+            why that matters, and Character Sets and Collation is the database's side of it. Then
+            try <cde>books.php "1900 OR 1=1"</cde>: it refuses. The year came from the command line,
+            and <strong>never trust input</strong>, so it's checked before it goes anywhere near the
             query, and then sent separately from the SQL anyway.
         </p>
         <p>When you're done, stop it all and throw the data away:</p>
@@ -285,8 +290,9 @@ WHERE `title` = 'Beloved';</code-block>
             <p>
                 In the <cde>mysql</cde> command, end a query with <cde>\G</cde> instead of
                 <cde>;</cde>, and each row prints as a list of <cde>column: value</cde> lines
-                instead of one wide line. When a table has more columns than your terminal has room
-                for, it's the difference between reading the answer and squinting at it.
+                instead of one wide line. When a table has more columns than your
+                <term def="terminal">terminal</term> has room for, it's the difference between
+                reading the answer and squinting at it.
             </p>
         </two-dollars>
 

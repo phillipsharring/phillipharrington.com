@@ -21,10 +21,12 @@
 
         <!-- Intro -->
         <p>
-            The last lesson showed the shape of an HTTP exchange: a request goes out, a response
-            comes back, each with a first line, some headers, a blank line, and maybe a body. This
-            one goes through them line by line, because nearly everything a PHP app does is reading
-            the one and writing the other.
+            The last lesson showed the shape of an <term def="http">HTTP</term> exchange: a
+            <term def="request">request</term> goes out, a
+            <term def="response">response</term> comes back, each with a first line, some
+            <term def="header">headers</term>, a blank line, and maybe a
+            <term def="body">body</term>. This one goes through them line by line, because nearly
+            everything a PHP app does is reading the one and writing the other.
         </p>
 
         <!-- What is/are -->
@@ -37,15 +39,23 @@ Content-Length: 21
 
 name=Alice&amp;comment=Hi</code-block>
         <p>
-            The first line is the request line: a method, a path (with any query string), and the
-            protocol version. Then headers, a blank line, and the body, if there is one.
+            The first line is the request line: a <term def="http-method">method</term>, a
+            <term def="path">path</term> (with any <term def="query-string">query string</term>),
+            and the <term def="protocol">protocol</term> version. Then headers, a blank line, and
+            the body, if there is one.
         </p>
 
         <heading h3 id="methods">Methods</heading>
-        <p>The method is the verb: what the client wants done with the path.</p>
+        <p>
+            The method is the verb: what the <term def="client">client</term> wants done with the
+            path.
+        </p>
         <list>
             <li><strong>GET</strong>: give me this. Following a link is a GET.</li>
-            <li><strong>POST</strong>: here's something for you. Submitting a form is a POST.</li>
+            <li>
+                <strong>POST</strong>: here's something for you. Submitting a
+                <term def="form">form</term> is a POST.
+            </li>
             <li>
                 <strong>PUT</strong> and <strong>PATCH</strong>: replace this, or change part of it.
             </li>
@@ -56,17 +66,19 @@ name=Alice&amp;comment=Hi</code-block>
             </li>
         </list>
         <p>
-            The most important rule about methods: a GET must never change anything. Browsers,
-            search engines and email scanners follow links freely, assuming that's safe. Anything
-            that changes data, deleting, approving, buying, belongs behind a POST.
+            The most important rule about methods: a GET must never change anything.
+            <term def="browser">Browsers</term>, search engines and email scanners follow links
+            freely, assuming that's safe. Anything that changes data, deleting, approving, buying,
+            belongs behind a POST.
         </p>
 
         <heading h3 id="request-headers">Request Headers</heading>
         <p>Name, colon, value, one per line. Some you'll see on almost every request:</p>
         <list>
             <li>
-                <strong>Host</strong>: which site this is for. One server can host many sites, and
-                this is how it tells them apart. It's the only one HTTP/1.1 requires.
+                <strong>Host</strong>: which site this is for. One
+                <term def="server">server</term> can host many sites, and this is how it tells them
+                apart. It's the only one HTTP/1.1 requires.
             </li>
             <li><strong>User-Agent</strong>: which program is asking: browser, curl, PHP.</li>
             <li>
@@ -91,8 +103,9 @@ name=Alice&amp;comment=Hi</code-block>
         <heading h3 id="request-body">The Body</heading>
         <p>
             GETs usually don't have one. A POST from a form sends the fields as
-            <cde>name=value</cde> pairs, like a query string. A POST from JavaScript often sends
-            JSON instead. The <cde>Content-Type</cde> header says which.
+            <cde>name=value</cde> pairs, like a query string. A POST from
+            <term def="javascript">JavaScript</term> often sends
+            <term def="json">JSON</term> instead. The <cde>Content-Type</cde> header says which.
         </p>
 
         <heading h2 id="the-response">The Response</heading>
@@ -101,8 +114,9 @@ name=Alice&amp;comment=Hi</code-block>
 Location: /post#comments
 Content-Length: 0</code-block>
         <p>
-            The first line is the status line: the protocol version, a status code, and a short
-            reason. Then headers, a blank line, and the body.
+            The first line is the status line: the protocol version, a
+            <term def="status-code">status code</term>, and a short reason. Then headers, a blank
+            line, and the body.
         </p>
 
         <heading h3 id="status-codes">Status Codes</heading>
@@ -181,8 +195,9 @@ Content-Length: 0</code-block>
         </ol>
         <p>
             Why the detour? If the server answered the POST with the page directly, reloading it
-            would send the POST again, and you'd post your comment twice. After the redirect,
-            reloading just repeats the harmless GET. It's called Post/Redirect/Get.
+            would send the POST again, and you'd post your comment twice. After the
+            <term def="redirect">redirect</term>, reloading just repeats the harmless GET. It's
+            called Post/Redirect/Get.
         </p>
 
         <!-- Try it -->
@@ -198,7 +213,8 @@ Content-Length: 0</code-block>
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p>
             Open <cde>http://localhost:8000/hello</cde> in a browser: the method, the path, and
-            every header your browser sent. Then, from a second terminal, send a POST with a body:
+            every header your browser sent. Then, from a second
+            <term def="terminal">terminal</term>, send a POST with a body:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -d 'name=Alice&amp;comment=Hi' http://localhost:8000/comments</code-block>
@@ -263,9 +279,10 @@ Content-Length: 0</code-block>
                 it, the rest of the code keeps running.
             </li>
             <li>
-                <strong>Something in the middle can rewrite your errors.</strong> A CDN can be set
-                to swap any 404 for its own error page, body, headers and all. I had one doing that
-                to an API's 403s, so the app that called it got an HTML page where it expected an
+                <strong>Something in the middle can rewrite your errors.</strong> A
+                <term def="cdn">CDN</term> can be set to swap any 404 for its own error page, body,
+                headers and all. I had one doing that to an <term def="api">API</term>'s 403s, so
+                the app that called it got an <term def="html">HTML</term> page where it expected an
                 explanation. Know what sits between your code and the browser.
             </li>
         </list>
@@ -282,7 +299,7 @@ Content-Length: 0</code-block>
 
         <p>
             One of those headers, <cde>Content-Type</cde>, decides what the browser does with
-            everything after the blank line. Next: content types.
+            everything after the blank line. Next: <term def="content-type">content types</term>.
         </p>
 
         <!-- Next -->

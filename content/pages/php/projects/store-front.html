@@ -22,21 +22,23 @@
         <!-- Intro -->
         <p>
             The newsletter told people about things. Now build the shop window they arrive at: a
-            list of products from the database, filtered by category, sorted by name or price, with
-            a page for each one. This and the next three projects build an online shop in order:
-            store front, shopping cart, checkout, and taking a payment.
+            list of products from the <term def="database">database</term>, filtered by category,
+            sorted by name or price, with a page for each one. This and the next three projects
+            build an online shop in order: store front, shopping cart, checkout, and taking a
+            payment.
         </p>
         <p>
             Nothing here is new on its own. What matters is getting two habits right before money is
-            involved: prices stored as whole cents, and every choice in the URL checked against a
-            list of your own.
+            involved: prices stored as whole cents, and every choice in the
+            <term def="url">URL</term> checked against a list of your own.
         </p>
 
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <xref to="/php/types-of-types">Types of Types</xref>: why floats are not for money
+                <xref to="/php/types-of-types">Types of Types</xref>: why
+                <term def="float">floats</term> are not for money
             </li>
             <li>
                 <xref to="/php/relating-tables">Relating Tables: Keys and Foreign Keys</xref>:
@@ -47,10 +49,13 @@
                 <cde>?category=mugs&amp;sort=price-low</cde>
             </li>
             <li>
-                <xref to="/php/sql-injection">SQL Injection</xref>: the part of a query a
-                placeholder can't protect
+                <xref to="/php/sql-injection">SQL Injection</xref>: the part of a
+                <term def="query">query</term> a placeholder can't protect
             </li>
-            <li><xref to="/php/projects/blog">Blog</xref>: a page per row, at a clean address</li>
+            <li>
+                <xref to="/php/projects/blog">Blog</xref>: a page per <term def="row">row</term>, at
+                a clean address
+            </li>
         </list>
 
         <!-- Build it -->
@@ -58,16 +63,17 @@
 
         <heading h3 id="step-1-the-products">Step 1: The Products</heading>
         <p>
-            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones from
+            The <term def="container">containers</term>, <cde>Dockerfile</cde> and
+            <cde>src/db.php</cde> are the ones from
             <xref to="/php/projects/translation">Translation</xref>, with the database called
-            <cde>store</cde>. The tables:
+            <cde>store</cde>. The <term def="table">tables</term>:
         </p>
         <code-block example="project-store-front/init.sql" />
         <p>
-            <cde>price_cents</cde> is an integer. A float can't hold most decimal fractions exactly,
-            and in PHP <cde>0.1 + 0.2 === 0.3</cde> is <cde>false</cde>. That's fine for a
-            temperature and wrong for money, where every cent has to add up. Whole cents in an
-            integer add up exactly, always.
+            <cde>price_cents</cde> is an <term def="integer">integer</term>. A float can't hold most
+            decimal fractions exactly, and in PHP <cde>0.1 + 0.2 === 0.3</cde> is <cde>false</cde>.
+            That's fine for a temperature and wrong for money, where every cent has to add up. Whole
+            cents in an integer add up exactly, always.
         </p>
         <p>
             <cde>active</cde> hides a product without deleting it. Old orders still point at old
@@ -85,20 +91,23 @@
         <code-block example="project-store-front/src/catalog.php" />
         <p>
             The category goes into the query as a placeholder, like everything else. The sort can't:
-            <cde>ORDER BY</cde> takes a column, and placeholders only stand for values. So the
-            visitor picks a key, like <cde>price-low</cde>, and the SQL comes from <cde>SORTS</cde>,
-            written by you. Whatever they send, only your own SQL reaches the database.
+            <cde>ORDER BY</cde> takes a <term def="column">column</term>, and placeholders only
+            stand for values. So the visitor picks a key, like <cde>price-low</cde>, and the
+            <term def="sql">SQL</term> comes from <cde>SORTS</cde>, written by you. Whatever they
+            send, only your own SQL reaches the database.
         </p>
 
         <heading h3 id="step-4-the-pages">Step 4: The Pages</heading>
         <code-block example="project-store-front/public/index.php" />
         <p>
             <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> Both
-            choices in the query string are checked against lists before they're used: the category
-            against the categories in the database, the sort against the keys of <cde>SORTS</cde>.
-            Anything else, including an array where a string should be, quietly becomes the default.
-            The links are built with <cde>http_build_query()</cde>, which encodes each value, and
-            then escaped for the page.
+            choices in the <term def="query-string">query string</term> are checked against lists
+            before they're used: the category against the categories in the database, the sort
+            against the keys of <cde>SORTS</cde>. Anything else, including an
+            <term def="array">array</term> where a <term def="string">string</term> should be,
+            quietly becomes the default. The links are built with <cde>http_build_query()</cde>,
+            which <term def="encoding">encodes</term> each value, and then
+            <term def="escaping">escaped</term> for the page.
         </p>
 
         <heading h3 id="step-5-run-it">Step 5: Run It</heading>

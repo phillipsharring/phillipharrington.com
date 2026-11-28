@@ -21,10 +21,11 @@
 
         <!-- Intro -->
         <p>
-            The server's access log says a request came in. PHP's error log says something broke.
-            Neither says what your app was doing: who searched for what, which page threw, what it
-            was in the middle of. That's your own log, and it's the first thing you'll open when
-            someone says "it didn't work."
+            The <term def="server">server's</term> <term def="access-log">access log</term> says a
+            <term def="request">request</term> came in. PHP's
+            <term def="error-log">error log</term> says something broke. Neither says what your app
+            was doing: who searched for what, which page threw, what it was in the middle of. That's
+            your own log, and it's the first thing you'll open when someone says "it didn't work."
         </p>
         <p>
             You'll build a small app that writes every event to <cde>logs/app.log</cde> with
@@ -81,13 +82,14 @@
             </li>
             <li>
                 <strong>A request id.</strong> Sixteen random hex characters, made fresh for each
-                request. A processor adds it to every line, and the <cde>X-Request-Id</cde> header
+                request. A processor adds it to every line, and the <cde>X-Request-Id</cde>
+                <term def="header">header</term>
                 sends it back, so one request's lines can be picked out of thousands.
             </li>
             <li>
                 <strong>An exception handler.</strong> <cde>set_exception_handler()</cde> runs when
-                an exception goes uncaught. It logs the details and shows the visitor a 500 with the
-                id, and nothing about your code.
+                an <term def="exception">exception</term> goes uncaught. It logs the details and
+                shows the visitor a 500 with the id, and nothing about your code.
             </li>
         </list>
 
@@ -108,7 +110,10 @@
         <heading h3 id="run-it">Run It</heading>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
-        <p>In a second terminal, watch the log, and in a third, make some requests:</p>
+        <p>
+            In a second <term def="terminal">terminal</term>, watch the log, and in a third, make
+            some requests:
+        </p>
         <!-- prettier-ignore -->
         <code-block>tail -f logs/app.log</code-block>
         <!-- prettier-ignore -->
@@ -121,10 +126,12 @@ curl -i http://localhost:8000/boom</code-block>
 [2026-11-27T19:55:15.784126+00:00] app.INFO: Search {"q":"café"} {"request_id":"6635c799a37a7ac5"}
 [2026-11-27T19:55:15.794508+00:00] app.ERROR: Uncaught exception {"exception":"[object] (RuntimeException(code: 0): The /boom page always fails, on purpose. at /app/public/index.php:26)"} {"request_id":"7ebd291ca018709a"}</code-block>
         <p>
-            The search arrived as <cde>caf%C3%A9</cde>, the URL encoding of the UTF-8 bytes, and the
-            log has <cde>café</cde>, because PHP decoded it and Monolog writes UTF-8. The
-            <cde>/boom</cde> request got "Something went wrong" and an id; the log has the class,
-            the message, the file and the line, under the same id.
+            The search arrived as <cde>caf%C3%A9</cde>, the <term def="url">URL</term>
+            <term def="encoding">encoding</term> of the <term def="utf-8">UTF-8</term>
+            <term def="byte">bytes</term>, and the log has <cde>café</cde>, because PHP decoded it
+            and Monolog writes UTF-8. The <cde>/boom</cde> request got "Something went wrong" and an
+            id; the log has the <term def="class">class</term>, the message, the file and the line,
+            under the same id.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -140,14 +147,15 @@ curl -i http://localhost:8000/boom</code-block>
                 <cde>file_put_contents()</cde>, and a visitor can send
                 <cde>?q=x%0A[2026-01-01T00:00:00] app.CRITICAL: ...</cde> and add a fake line of
                 their own. Monolog's line format turns newlines into spaces, and in the context it
-                encodes the value as JSON, so the newline is written as <cde>\n</cde>, harmless and
-                labeled. Try it, and look at the log.
+                encodes the value as <term def="json">JSON</term>, so the newline is written as
+                <cde>\n</cde>, harmless and labeled. Try it, and look at the log.
             </li>
             <li>
-                <strong>Never log secrets.</strong> Passwords, session ids, API keys, card numbers,
-                whole request bodies. Logs get copied, shipped to other services and read by people
-                who shouldn't see any of those. Log that a login failed, and for which address,
-                never what was typed.
+                <strong>Never log secrets.</strong> Passwords,
+                <term def="session">session</term> ids, <term def="api-key">API keys</term>, card
+                numbers, whole request <term def="body">bodies</term>. Logs get copied, shipped to
+                other services and read by people who shouldn't see any of those. Log that a login
+                failed, and for which address, never what was typed.
             </li>
             <li>
                 <strong>Logs fill disks.</strong> A busy site writes a lot, forever. Rotate them:
@@ -180,7 +188,7 @@ curl -i http://localhost:8000/boom</code-block>
 
         <p>
             The log tells you about the server's side. The next project is about something the
-            browser keeps for you. Next: cookies.
+            <term def="browser">browser</term> keeps for you. Next: cookies.
         </p>
 
         <!-- Next -->

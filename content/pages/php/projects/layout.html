@@ -27,9 +27,9 @@
             page is just its own content, dropped into the middle.
         </p>
         <p>
-            You'll build a <cde>render()</cde> function that runs a template and hands back what it
-            printed, a layout that wraps every page, and one entry point that picks the page, or a
-            404 that looks like the rest of the site.
+            You'll build a <cde>render()</cde> <term def="function">function</term> that runs a
+            template and hands back what it printed, a layout that wraps every page, and one entry
+            point that picks the page, or a 404 that looks like the rest of the site.
         </p>
 
         <!-- What you'll use -->
@@ -45,7 +45,7 @@
             </li>
             <li>
                 <xref to="/php/single-point-of-entry">Single Point of Entry</xref>: one
-                <cde>index.php</cde> answering every path.
+                <cde>index.php</cde> answering every <term def="path">path</term>.
             </li>
             <li>
                 <xref to="/php/separating-concerns">Separating Concerns</xref>: pages that hold
@@ -71,12 +71,13 @@
         </p>
         <code-block example="project-layout/src/functions.php" />
         <p>
-            It does three things. <cde>extract()</cde> turns the array's keys into variables, so a
-            template can say <cde>$title</cde> instead of <cde>$vars['title']</cde>.
-            <cde>ob_start()</cde> starts catching output, the template runs, and
-            <cde>ob_get_clean()</cde> hands back everything it printed, as a string, without sending
-            any of it. Because the template runs inside a function, nothing leaks in from the page
-            that called it: it gets the variables you passed, and none of the caller's.
+            It does three things. <cde>extract()</cde> turns the <term def="array">array</term>'s
+            keys into <term def="variable">variables</term>, so a template can say
+            <cde>$title</cde> instead of <cde>$vars['title']</cde>. <cde>ob_start()</cde> starts
+            catching output, the template runs, and <cde>ob_get_clean()</cde> hands back everything
+            it printed, as a <term def="string">string</term>, without sending any of it. Because
+            the template runs inside a function, nothing leaks in from the page that called it: it
+            gets the variables you passed, and none of the caller's.
         </p>
 
         <heading h3 id="the-layout">The Layout</heading>
@@ -86,8 +87,9 @@
         </p>
         <code-block example="project-layout/templates/layout.php" />
         <p>
-            Everything is escaped with <cde>e()</cde> except <cde>$content</cde>. That isn't a slip.
-            <cde>$content</cde> is HTML that another template already made, escaping its own output
+            Everything is <term def="escaping">escaped</term> with <cde>e()</cde> except
+            <cde>$content</cde>. That isn't a slip. <cde>$content</cde> is
+            <term def="html">HTML</term> that another template already made, escaping its own output
             as it went, and escaping it again would print the tags as text. The rule is "escape each
             piece once, where it's made," not "escape everything twice."
         </p>
@@ -103,14 +105,16 @@
         <heading h3 id="the-entry-point">The Entry Point</heading>
         <p>
             <cde>public/index.php</cde> is the only PHP file in <cde>public</cde>. PHP's built-in
-            server hands it every path that isn't a real file, so it decides what each one means:
+            <term def="server">server</term> hands it every path that isn't a real file, so it
+            decides what each one means:
         </p>
         <code-block example="project-layout/public/index.php" />
         <p>
             It renders the page's template first, then renders the layout with that as
             <cde>$content</cde>. <strong>Never trust input:</strong> the path comes from the
-            request, so it's only ever used to look something up in <cde>$routes</cde>. The template
-            names come from your array, not from the URL.
+            <term def="request">request</term>, so it's only ever used to look something up in
+            <cde>$routes</cde>. The template names come from your array, not from the
+            <term def="url">URL</term>.
         </p>
 
         <heading h3 id="run-it">Run It</heading>
@@ -155,8 +159,8 @@
             <li>
                 <strong>Headers come before content, still.</strong> Because the page renders into a
                 string first, nothing is sent until the final <cde>echo</cde>. That's a bonus: a
-                template deep in the page can't trigger "headers already sent," and you can still
-                change the status after rendering.
+                template deep in the page can't trigger "<term def="header">headers</term> already
+                sent," and you can still change the status after rendering.
             </li>
         </list>
 
@@ -171,10 +175,10 @@
         <!-- $2 tip -->
         <two-dollars title="A title is part of the content">
             <p>
-                Let each route carry its own page title, as <cde>$routes</cde> does here, and have
-                the layout put it in <cde>&lt;title&gt;</cde>. Browser tabs, bookmarks and search
-                results all show it, and a site where every tab says the same thing is hard to find
-                your way around.
+                Let each <term def="route">route</term> carry its own page title, as
+                <cde>$routes</cde> does here, and have the layout put it in
+                <cde>&lt;title&gt;</cde>. Browser tabs, bookmarks and search results all show it,
+                and a site where every tab says the same thing is hard to find your way around.
             </p>
         </two-dollars>
 

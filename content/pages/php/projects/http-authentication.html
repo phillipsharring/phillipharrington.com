@@ -21,9 +21,11 @@
 
         <!-- Intro -->
         <p>
-            The last few projects built a login the long way: a form, a session, a password hash, a
-            page to change it. HTTP has a login of its own, built into every browser, with no form
-            and no session at all. It's called Basic authentication. It's plain, it's ugly, and it's
+            The last few projects built a login the long way: a <term def="form">form</term>, a
+            <term def="session">session</term>, a password <term def="hash">hash</term>, a page to
+            change it. <term def="http">HTTP</term> has a login of its own, built into every
+            <term def="browser">browser</term>, with no form and no session at all. It's called
+            Basic <term def="authentication">authentication</term>. It's plain, it's ugly, and it's
             exactly right for a staff page, a staging site, or a tool only you will use.
         </p>
         <p>
@@ -36,7 +38,7 @@
         <list>
             <li>
                 <xref to="/php/request-and-response">Request and Response</xref>: the 401 status and
-                the headers both ways
+                the <term def="header">headers</term> both ways
             </li>
             <li>
                 <xref to="/php/document-root">Document Root</xref>: the password list lives outside
@@ -70,7 +72,10 @@
                 PHP decodes it into <cde>$_SERVER['PHP_AUTH_USER']</cde> and
                 <cde>$_SERVER['PHP_AUTH_PW']</cde>, and your code checks them.
             </li>
-            <li>The browser remembers the pair and sends it with every request to that site.</li>
+            <li>
+                The browser remembers the pair and sends it with every
+                <term def="request">request</term> to that site.
+            </li>
         </ol>
 
         <heading h3 id="step-1-the-users">Step 1: The Users</heading>
@@ -89,23 +94,24 @@
 
         <heading h3 id="step-2-the-check">Step 2: The Check</heading>
         <p>
-            <cde>auth.php</cde> holds one function. It reads the name and password PHP decoded, and
-            either returns the name or answers 401 and stops.
+            <cde>auth.php</cde> holds one <term def="function">function</term>. It reads the name
+            and password PHP decoded, and either returns the name or answers 401 and stops.
         </p>
         <code-block example="project-http-authentication/auth.php" />
         <p>
             <strong><xref to="/php/never-trust-input">Never trust input</xref>.</strong> The
-            <cde>Authorization</cde> header is whatever the client sent, so the name might be empty,
-            absurdly long, or made of anything. It only ever gets used as an array key and checked
-            against a hash, so none of that matters here. Notice the dummy hash: an unknown name
-            still costs one <cde>password_verify()</cde>, so a wrong name and a wrong password take
-            the same time, and the timing can't tell anyone which names exist.
+            <cde>Authorization</cde> header is whatever the <term def="client">client</term> sent,
+            so the name might be empty, absurdly long, or made of anything. It only ever gets used
+            as an <term def="array">array</term> key and checked against a hash, so none of that
+            matters here. Notice the dummy hash: an unknown name still costs one
+            <cde>password_verify()</cde>, so a wrong name and a wrong password take the same time,
+            and the timing can't tell anyone which names exist.
         </p>
 
         <heading h3 id="step-3-the-page">Step 3: The Page</heading>
         <p>Then <cde>public/index.php</cde>, the page behind the door:</p>
         <code-block example="project-http-authentication/public/index.php" />
-        <p>Start it, with <cde>public</cde> as the web root:</p>
+        <p>Start it, with <cde>public</cde> as the <term def="web-root">web root</term>:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
         <p>
@@ -141,9 +147,9 @@ curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-blo
             >
         </breakdown>
         <p>
-            There's the password. Base64 is a way to write bytes as plain letters, not a lock.
-            Anyone who sees the request sees the password, on every request, which is why Basic
-            authentication only ever goes over HTTPS.
+            There's the password. Base64 is a way to write <term def="byte">bytes</term> as plain
+            letters, not a lock. Anyone who sees the request sees the password, on every request,
+            which is why Basic authentication only ever goes over <term def="https">HTTPS</term>.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -152,7 +158,8 @@ curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-blo
         <side-story title="Older Than Most of the Web">
             Basic authentication was already in the HTTP/1.0 specification, RFC 1945, published in
             1996. It has barely changed since. Its current spec, RFC 7617, mostly adds a way to say
-            the password is UTF-8: the <cde>charset="UTF-8"</cde> in the example's header.
+            the password is <term def="utf-8">UTF-8</term>: the <cde>charset="UTF-8"</cde> in the
+            example's header.
         </side-story>
 
         <!-- Gotchas -->
@@ -173,11 +180,11 @@ curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-blo
                 <xref to="/php/rate-limiting">Rate Limiting</xref>.
             </li>
             <li>
-                <strong>Some setups hide the header from PHP.</strong> PHP's built-in server passes
-                it along. Apache running PHP as CGI or FastCGI normally keeps
-                <cde>Authorization</cde> to itself, and <cde>PHP_AUTH_USER</cde> is just missing.
-                The fix lives in the server's settings (<cde>CGIPassAuth On</cde>, in Apache), not
-                in your code.
+                <strong>Some setups hide the header from PHP.</strong> PHP's built-in
+                <term def="server">server</term> passes it along. Apache running PHP as CGI or
+                <term def="fastcgi">FastCGI</term> normally keeps <cde>Authorization</cde> to
+                itself, and <cde>PHP_AUTH_USER</cde> is just missing. The fix lives in the server's
+                settings (<cde>CGIPassAuth On</cde>, in Apache), not in your code.
             </li>
             <li>
                 <strong>Your web server can do this without PHP.</strong> nginx and Apache both
@@ -192,7 +199,8 @@ curl -v -u 'editor:correct horse battery staple' http://localhost:8000</code-blo
                 Put Basic authentication in front of every staging and preview site, even the ones
                 nobody knows about. Search engines find them anyway, and an unlocked copy of your
                 site with test data and debug output turned on is the one you don't want indexed.
-                One password in the web server's config, and it's done.
+                One password in the <term def="web-server">web server's</term> config, and it's
+                done.
             </p>
         </two-dollars>
 

@@ -22,14 +22,16 @@
         <!-- Intro -->
         <p>
             A page that remembers you: type your name once, and from then on it says "Welcome back,
-            Alice." The name lives in a cookie, in your browser, and comes back with every request.
-            It takes about ten lines to build, and the ten-line version has two problems, one in how
-            the cookie is set and one in how it's read.
+            Alice." The name lives in a <term def="cookie">cookie</term>, in your
+            <term def="browser">browser</term>, and comes back with every
+            <term def="request">request</term>. It takes about ten lines to build, and the ten-line
+            version has two problems, one in how the cookie is set and one in how it's read.
         </p>
         <p>
-            You'll build it naive, attack it with a planted cookie and a line of JavaScript, then
-            fix it the way every cookie on a real site should be set: through one function that
-            never forgets the flags.
+            You'll build it naive, attack it with a planted cookie and a line of
+            <term def="javascript">JavaScript</term>, then fix it the way every cookie on a real
+            site should be set: through one <term def="function">function</term> that never forgets
+            the flags.
         </p>
 
         <!-- What you'll use -->
@@ -61,9 +63,9 @@
         </p>
         <code-block example="project-cookies/public/naive.php" />
         <p>
-            When the form is posted, it sets the cookie and redirects with a <cde>303</cde>, so a
-            reload doesn't post again. On every other visit, it reads the cookie and says hello. Run
-            it:
+            When the <term def="form">form</term> is posted, it sets the cookie and
+            <term def="redirect">redirects</term> with a <cde>303</cde>, so a reload doesn't post
+            again. On every other visit, it reads the cookie and says hello. Run it:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
@@ -81,12 +83,13 @@
         <!-- prettier-ignore -->
         <code-block>curl -si -d 'name=Alice' http://localhost:8000/naive.php</code-block>
         <p>
-            The header is <cde>Set-Cookie: name=Alice</cde>, and nothing else. No
-            <cde>HttpOnly</cde>, so any JavaScript in the page can read it. No <cde>SameSite</cde>,
-            so you're relying on each browser's default for whether other sites can make it send the
-            cookie. No <cde>Secure</cde>, so on a live site it would also go over plain HTTP,
-            readable and changeable by anyone in between. And no expiry, so it's a session cookie,
-            gone whenever the browser decides the session is over.
+            The <term def="header">header</term> is <cde>Set-Cookie: name=Alice</cde>, and nothing
+            else. No <cde>HttpOnly</cde>, so any JavaScript in the page can read it. No
+            <cde>SameSite</cde>, so you're relying on each browser's default for whether other sites
+            can make it send the cookie. No <cde>Secure</cde>, so on a live site it would also go
+            over plain <term def="http">HTTP</term>, readable and changeable by anyone in between.
+            And no expiry, so it's a <term def="session">session</term> cookie, gone whenever the
+            browser decides the session is over.
         </p>
         <p>
             See the first one for yourself. On the naive page, open your browser's developer tools,
@@ -105,8 +108,9 @@
                 Now the second problem, and you can probably finish this sentence for me.
                 <strong>Never trust input</strong>, and a cookie is input: it's whatever the browser
                 sends, and anything that can write to the browser's cookies can put anything there.
-                A page on a sibling subdomain can set a cookie for the whole domain, and so can
-                anyone in the middle of a plain HTTP request. Plant one:
+                A page on a sibling <term def="subdomain">subdomain</term> can set a cookie for the
+                whole <term def="domain-name">domain</term>, and so can anyone in the middle of a
+                plain HTTP request. Plant one:
             </p>
         </nti>
         <!-- prettier-ignore -->
@@ -136,9 +140,9 @@
                 rather than trusting each browser's default.
             </li>
             <li>
-                <strong><cde>secure</cde></strong>, whenever the request came over HTTPS: the browser will only send it back over
-                HTTPS. On <cde>http://localhost</cde> it's left off, so the cookie still works while
-                you develop.
+                <strong><cde>secure</cde></strong>, whenever the request came over <term def="https">HTTPS</term>: the browser will
+                only send it back over HTTPS. On <cde>http://localhost</cde> it's left off, so the
+                cookie still works while you develop.
             </li>
             <li>
                 <strong><cde>expires</cde></strong>: a real lifetime, so "remember me" means 30 days, not "until the browser feels
@@ -147,15 +151,16 @@
         </list>
         <p>
             <cde>cookie_text()</cde> is the reading half. It treats the cookie like any other input:
-            it has to be a string, valid UTF-8, and short enough. Anything else counts as no cookie
-            at all.
+            it has to be a <term def="string">string</term>, valid <term def="utf-8">UTF-8</term>,
+            and short enough. Anything else counts as no cookie at all.
         </p>
         <p>Then the page, <cde>public/index.php</cde>:</p>
         <code-block example="project-cookies/public/index.php" />
         <p>
             It checks the name before it goes into a cookie, reads it back through
-            <cde>cookie_text()</cde>, and escapes it with <cde>htmlspecialchars()</cde> on the way
-            out, every time. There's a Forget me button too, which deletes the cookie.
+            <cde>cookie_text()</cde>, and <term def="escaping">escapes</term> it with
+            <cde>htmlspecialchars()</cde> on the way out, every time. There's a Forget me button
+            too, which deletes the cookie.
         </p>
         <p>Run the same attacks against the fixed page:</p>
         <!-- prettier-ignore -->
@@ -193,18 +198,19 @@ curl -b 'name=&lt;script&gt;alert(document.cookie)&lt;/script&gt;' http://localh
                 JavaScript reads is fine without it. Anything that identifies a person never is.
             </li>
             <li>
-                <strong>Secure has to know about HTTPS.</strong> Behind a CDN or proxy, PHP may only
-                ever see plain HTTP, so <cde>is_https()</cde> says no forever. Have the proxy tell
-                you, with <cde>X-Forwarded-Proto</cde>, and trust that header only from your own
-                proxy, as in <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
+                <strong>Secure has to know about HTTPS.</strong> Behind a
+                <term def="cdn">CDN</term> or proxy, PHP may only ever see plain HTTP, so
+                <cde>is_https()</cde> says no forever. Have the proxy tell you, with
+                <cde>X-Forwarded-Proto</cde>, and trust that header only from your own proxy, as in
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>.
             </li>
         </list>
 
         <side-story title="Months Without Secure">
             One of my apps sent its login cookies without the Secure flag for months. The code set
             it whenever the request was HTTPS, which looked right. But the app sat behind a CDN that
-            handled HTTPS and talked to the server over plain HTTP, so PHP never saw
-            <cde>$_SERVER['HTTPS']</cde> set, and never added the flag.
+            handled HTTPS and talked to the <term def="server">server</term> over plain HTTP, so PHP
+            never saw <cde>$_SERVER['HTTPS']</cde> set, and never added the flag.
         </side-story>
 
         <tk

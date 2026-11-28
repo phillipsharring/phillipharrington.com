@@ -23,13 +23,14 @@
         <p>
             An affiliate program pays people for sending you customers. A blogger links to your
             product with their own code in the link, and if someone follows it and buys, the blogger
-            gets a cut. You'll build the pieces: the link, the cookie that remembers who sent a
-            visitor, and the commission worked out when an order arrives.
+            gets a cut. You'll build the pieces: the link, the <term def="cookie">cookie</term> that
+            remembers who sent a visitor, and the commission worked out when an order arrives.
         </p>
         <p>
-            Money is changing hands based on a code in a URL and a cookie in a browser, both of
-            which anyone can edit. So the work is mostly in the checks: which codes count, who can
-            earn on which orders, and how the cents are rounded.
+            Money is changing hands based on a code in a <term def="url">URL</term> and a cookie in
+            a <term def="browser">browser</term>, both of which anyone can edit. So the work is
+            mostly in the checks: which codes count, who can earn on which orders, and how the cents
+            are rounded.
         </p>
 
         <!-- What you'll use -->
@@ -42,8 +43,8 @@
                 of memory
             </li>
             <li>
-                <xref to="/php/projects/redirecting">Redirecting</xref>: a redirect that can't be
-                pointed elsewhere
+                <xref to="/php/projects/redirecting">Redirecting</xref>: a
+                <term def="redirect">redirect</term> that can't be pointed elsewhere
             </li>
             <li><xref to="/php/projects/store-front">Store Front</xref>: money in whole cents</li>
             <li>
@@ -57,9 +58,11 @@
 
         <heading h3 id="step-1-the-tables">Step 1: The Tables</heading>
         <p>
-            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones from
-            <xref to="/php/projects/translation">Translation</xref>, with the database called
-            <cde>shop</cde>. Four tables: the affiliates, their clicks, orders, and commissions:
+            The <term def="container">containers</term>, <cde>Dockerfile</cde> and
+            <cde>src/db.php</cde> are the usual ones from
+            <xref to="/php/projects/translation">Translation</xref>, with the
+            <term def="database">database</term> called <cde>shop</cde>. Four
+            <term def="table">tables</term>: the affiliates, their clicks, orders, and commissions:
         </p>
         <code-block example="project-affiliate-program/init.sql" />
         <p>
@@ -83,7 +86,8 @@
             </li>
             <li>
                 <strong><cde>recordOrder()</cde></strong> writes the order and its commission in one
-                transaction, and pays nothing when the buyer is the affiliate.
+                <term def="transaction">transaction</term>, and pays nothing when the buyer is the
+                affiliate.
             </li>
         </list>
 
@@ -91,14 +95,16 @@
         <code-block example="project-affiliate-program/public/index.php" />
         <p>
             Someone follows <cde>/?ref=ALICE10</cde>. If the code is real, the click is counted and
-            a cookie remembers it for 30 days: <cde>HttpOnly</cde>, so the page's JavaScript can't
-            read it, and <cde>SameSite=Lax</cde>, which still sends it when someone follows a link
-            from another site. Either way, the visitor is redirected to the plain page.
+            a cookie remembers it for 30 days: <cde>HttpOnly</cde>, so the page's
+            <term def="javascript">JavaScript</term> can't read it, and <cde>SameSite=Lax</cde>,
+            which still sends it when someone follows a link from another site. Either way, the
+            visitor is redirected to the plain page.
         </p>
         <p>
             That redirect always goes to <cde>/</cde>, a fixed address. Redirect code that sends
-            people to an address from the query string, like <cde>?next=</cde>, is an open redirect,
-            and a link through your site to someone else's is exactly what a phishing email wants.
+            people to an address from the <term def="query-string">query string</term>, like
+            <cde>?next=</cde>, is an open redirect, and a link through your site to someone else's
+            is exactly what a phishing email wants.
         </p>
 
         <heading h3 id="step-4-the-order">Step 4: The Order</heading>
@@ -124,7 +130,8 @@
         <p>
             Open <cde>http://localhost:8000/?ref=ALICE10</cde>. The address changes to
             <cde>http://localhost:8000/</cde>, and your browser's developer tools show a
-            <cde>ref</cde> cookie. Buy the widget, then, from a second terminal:
+            <cde>ref</cde> cookie. Buy the widget, then, from a second
+            <term def="terminal">terminal</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec app php bin/report.php</code-block>
@@ -187,15 +194,16 @@ curl -H 'Cookie: ref=ALICE10' -d email=alice@example.com http://localhost:8000/b
         <two-dollars title="Multiply first, divide once">
             <p>
                 <cde>intdiv($total * $bps, 10000)</cde>, not <cde>$total * ($bps / 10000)</cde>.
-                Dividing first makes a float, and the rounding happens wherever it happens. Do all
-                the multiplying in whole numbers, divide once at the end, and the rounding is one
-                decision you can point to.
+                Dividing first makes a <term def="float">float</term>, and the rounding happens
+                wherever it happens. Do all the multiplying in whole numbers, divide once at the
+                end, and the rounding is one decision you can point to.
             </p>
         </two-dollars>
 
         <p>
-            Affiliates will want their numbers without asking you to run a report. Next: a REST API,
-            where another program asks your server for data, and has to prove who it is.
+            Affiliates will want their numbers without asking you to run a report. Next: a
+            <term def="rest">REST</term> <term def="api">API</term>, where another program asks your
+            <term def="server">server</term> for data, and has to prove who it is.
         </p>
 
         <!-- Next -->

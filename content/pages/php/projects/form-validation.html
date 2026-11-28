@@ -22,15 +22,16 @@
         <!-- Intro -->
         <p>
             The Contact Form checked three fields by hand, and the checking was most of the page.
-            Every form you write from now on needs the same checks: is it there, is it text, is it
-            too long, is it an email address, is it one of the choices. Write them once, in a class,
-            and every form gets them right.
+            Every <term def="form">form</term> you write from now on needs the same checks: is it
+            there, is it text, is it too long, is it an email address, is it one of the choices.
+            Write them once, in a <term def="class">class</term>, and every form gets them right.
         </p>
         <p>
             You'll build a small <cde>Validator</cde>, a registration form that uses it and shows
             each error beside its field, and a set of PHPUnit tests that prove the validator does
-            what it says. Validation is exactly the kind of code that should have tests: small,
-            fiddly, and the only thing standing between your database and whatever people send.
+            what it says. <term def="validation">Validation</term> is exactly the kind of code that
+            should have tests: small, fiddly, and the only thing standing between your
+            <term def="database">database</term> and whatever people send.
         </p>
 
         <!-- What you'll use -->
@@ -46,7 +47,7 @@
             </li>
             <li>
                 <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: counting characters, not
-                bytes.
+                <term def="byte">bytes</term>.
             </li>
             <li><xref to="/php/testing">Testing</xref>: PHPUnit.</li>
             <li>
@@ -61,12 +62,14 @@
         <heading h3 id="the-setup">The Setup</heading>
         <p>
             A new project folder, with a <cde>.gitignore</cde> and a <cde>composer.json</cde> that
-            autoloads your code from <cde>src</cde> and your tests from <cde>tests</cde>:
+            <term def="autoloading">autoloads</term> your code from <cde>src</cde> and your tests
+            from <cde>tests</cde>:
         </p>
         <code-block example="project-form-validation/.gitignore" />
         <p>
-            Then add PHPUnit as a development dependency. <cde>--dev</cde> means it's for working on
-            the project, not for running it, so a live server can skip it:
+            Then add PHPUnit as a development <term def="dependency">dependency</term>.
+            <cde>--dev</cde> means it's for working on the project, not for running it, so a live
+            <term def="server">server</term> can skip it:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require --dev phpunit/phpunit</code-block>
@@ -86,20 +89,22 @@
         <p>How it works:</p>
         <list>
             <li>
-                <strong>It's given the data.</strong> The constructor takes an array, usually
-                <cde>$_POST</cde>. It never reaches for <cde>$_POST</cde> itself, which is what
-                makes it easy to test: hand it any array you like.
+                <strong>It's given the data.</strong> The constructor takes an
+                <term def="array">array</term>, usually <cde>$_POST</cde>. It never reaches for
+                <cde>$_POST</cde> itself, which is what makes it easy to test: hand it any array you
+                like.
             </li>
             <li>
                 <strong>Each method checks one field and returns it clean,</strong> trimmed and
                 typed, or <cde>null</cde> if it failed. <cde>int()</cde> returns an actual
-                <cde>int</cde>, so the rest of your code never sees the string <cde>"42"</cde>.
+                <cde>int</cde>, so the rest of your code never sees the
+                <term def="string">string</term> <cde>"42"</cde>.
             </li>
             <li>
                 <strong>Everything starts with <cde>text()</cde>.</strong> Before anything else, the
                 value has to be a string (not missing, not an array from <cde>name[]=</cde>), valid
-                UTF-8, and no longer than the limit, counted with <cde>mb_strlen()</cde> in
-                characters, so "Zoë" is three, not four.
+                <term def="utf-8">UTF-8</term>, and no longer than the limit, counted with
+                <cde>mb_strlen()</cde> in characters, so "Zoë" is three, not four.
             </li>
             <li>
                 <strong>Errors are filed by field,</strong> so the form can show each one where it
@@ -115,7 +120,8 @@
         <p>
             <cde>tests/ValidatorTest.php</cde> says what the validator promises, one promise per
             test, including the hostile cases: an array instead of text, a byte sequence that isn't
-            UTF-8, a number with letters after it, a hex number, an email address with a header
+            UTF-8, a number with letters after it, a hex number, an email address with a
+            <term def="header">header</term>
             tucked in after a newline:
         </p>
         <code-block example="project-form-validation/tests/ValidatorTest.php" />
@@ -140,10 +146,11 @@
         <p>
             Each field gets its error beside it, and <cde>aria-invalid</cde> and
             <cde>aria-describedby</cde> tie the error to the field, so a screen reader says what's
-            wrong when someone lands on it. What they typed goes back into the form, escaped, so a
-            mistake doesn't mean starting over. The form has <cde>novalidate</cde> so you can see
-            the server's checks at work; take it off and add <cde>required</cde> to bring back the
-            browser's as a courtesy.
+            wrong when someone lands on it. What they typed goes back into the form,
+            <term def="escaping">escaped</term>, so a mistake doesn't mean starting over. The form
+            has <cde>novalidate</cde> so you can see the server's checks at work; take it off and
+            add <cde>required</cde> to bring back the <term def="browser">browser's</term> as a
+            courtesy.
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
@@ -168,7 +175,8 @@
             <li>
                 <strong>Validate, then escape. They're different jobs.</strong> Validation decides
                 whether to accept a value. Escaping makes a value safe in one particular place:
-                HTML, SQL, a URL. A perfectly valid name can still be
+                <term def="html">HTML</term>, <term def="sql">SQL</term>, a
+                <term def="url">URL</term>. A perfectly valid name can still be
                 <cde>&lt;b&gt;Al&lt;/b&gt;</cde>, and it still gets escaped on the way out.
             </li>
             <li>
@@ -179,7 +187,8 @@
             <li>
                 <strong>Be careful how strict you are about names.</strong> People's names have
                 apostrophes, hyphens, spaces, accents, one word or five, and letters from every
-                alphabet. Limit the length and the encoding, and accept the rest.
+                alphabet. Limit the length and the <term def="encoding">encoding</term>, and accept
+                the rest.
             </li>
             <li>
                 <strong>Email validation only checks the shape.</strong>

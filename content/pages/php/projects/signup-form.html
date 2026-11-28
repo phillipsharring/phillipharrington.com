@@ -21,16 +21,16 @@
 
         <!-- Intro -->
         <p>
-            Something Database-y ended with a stolen table of password hashes. Sooner or later,
-            somebody's table gets stolen; the question is what the thief can do with it. If the
-            hashes were made the right way, not much. If they were made the way a lot of tutorials
-            still show, the thief has the passwords, and because people reuse them, their email and
-            their bank too.
+            Something Database-y ended with a stolen <term def="table">table</term> of password
+            <term def="hash">hashes</term>. Sooner or later, somebody's table gets stolen; the
+            question is what the thief can do with it. If the hashes were made the right way, not
+            much. If they were made the way a lot of tutorials still show, the thief has the
+            passwords, and because people reuse them, their email and their bank too.
         </p>
         <p>
-            You'll build a signup form that stores passwords the naive way, crack them in a blink,
-            then fix it with the one function PHP gives you for this, and the few checks a signup
-            form actually needs.
+            You'll build a signup <term def="form">form</term> that stores passwords the naive way,
+            crack them in a blink, then fix it with the one <term def="function">function</term> PHP
+            gives you for this, and the few checks a signup form actually needs.
         </p>
 
         <!-- What you'll use -->
@@ -42,16 +42,16 @@
             </li>
             <li>
                 <xref to="/php/inserting-data">Inserting Data</xref> and
-                <xref to="/php/indexes">Indexes</xref>: a <cde>UNIQUE</cde> index as the final word
-                on duplicates.
+                <xref to="/php/indexes">Indexes</xref>: a <cde>UNIQUE</cde>
+                <term def="index">index</term> as the final word on duplicates.
             </li>
             <li>
-                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: characters versus bytes,
-                again.
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: characters versus
+                <term def="byte">bytes</term>, again.
             </li>
             <li>
                 <xref to="/php/projects/something-database-y">Something Database-y</xref>: the same
-                setup, and prepared statements.
+                setup, and <term def="prepared-statement">prepared statements</term>.
             </li>
         </list>
 
@@ -61,7 +61,8 @@
         <heading h3 id="the-setup">The Setup</heading>
         <p>
             A new project folder with the same <cde>Dockerfile</cde>, <cde>src/db.php</cde> and
-            <cde>compose.yml</cde> as Something Database-y, with the database called <cde>app</cde>:
+            <cde>compose.yml</cde> as Something Database-y, with the
+            <term def="database">database</term> called <cde>app</cde>:
         </p>
         <code-block example="project-signup-form/compose.yml" />
         <code-block example="project-signup-form/src/db.php" />
@@ -72,9 +73,9 @@
         <p>Build the naive signup as <cde>public/naive.php</cde>:</p>
         <code-block example="project-signup-form/public/naive.php" />
         <p>
-            It uses a prepared statement, so the SQL is safe. And it doesn't store the password, it
-            stores <cde>md5()</cde> of it, a jumble of 32 characters that can't be turned back into
-            the password. That looks like enough. Start it:
+            It uses a prepared statement, so the <term def="sql">SQL</term> is safe. And it doesn't
+            store the password, it stores <cde>md5()</cde> of it, a jumble of 32 characters that
+            can't be turned back into the password. That looks like enough. Start it:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose up --build</code-block>
@@ -147,9 +148,9 @@ password_hash:  6 guesses a second</code-block>
                 for every guess.
             </li>
             <li>
-                <strong>It salts every hash.</strong> Each one gets its own random salt, stored
-                inside the hash, so two people with the same password get different hashes, and a
-                table of precomputed hashes is useless.
+                <strong>It salts every hash.</strong> Each one gets its own random
+                <term def="salt">salt</term>, stored inside the hash, so two people with the same
+                password get different hashes, and a table of precomputed hashes is useless.
             </li>
             <li>
                 <strong>A length rule, not a recipe.</strong> At least 12 characters, and nothing
@@ -171,8 +172,9 @@ password_hash:  6 guesses a second</code-block>
                 <strong>The database decides about duplicates.</strong> Checking "is this address
                 taken?" with a <cde>SELECT</cde> first leaves a gap: two signups at the same moment
                 both see "no." The <cde>UNIQUE</cde> index can't be raced, so the code just tries
-                the <cde>INSERT</cde> and catches MySQL's error 1062. The collation makes
-                <cde>CAROL@example.com</cde> the same address as <cde>carol@example.com</cde>.
+                the <cde>INSERT</cde> and catches MySQL's error 1062. The
+                <term def="collation">collation</term> makes <cde>CAROL@example.com</cde> the same
+                address as <cde>carol@example.com</cde>.
             </li>
         </list>
         <p>
@@ -212,7 +214,8 @@ dave@example.com     $2y$12$...</code-block>
                 <strong>A signup form tells strangers who has an account.</strong> "That address
                 already has an account" is a way to test addresses. The careful alternative is to
                 always say "check your email," and send a message either way, but sending mail at
-                signup has its own problem, below. Decide which you'd rather have, and rate limit
+                signup has its own problem, below. Decide which you'd rather have, and
+                <term def="rate-limiting">rate limit</term>
                 the form either way.
             </li>
             <li>
@@ -224,9 +227,9 @@ dave@example.com     $2y$12$...</code-block>
         <side-story title="The Inbox Bomb">
             One of my apps sent a verification email the moment anyone signed up. Someone noticed,
             and used the signup form to bury strangers' inboxes: sign up with their address, over
-            and over, and our server sent each one an email every time. The fix was to send no email
-            at signup at all, to put rate limits on every kind of mail the app sends, and to add a
-            bot check.
+            and over, and our <term def="server">server</term> sent each one an email every time.
+            The fix was to send no email at signup at all, to put rate limits on every kind of mail
+            the app sends, and to add a bot check.
         </side-story>
 
         <tk
@@ -240,8 +243,8 @@ dave@example.com     $2y$12$...</code-block>
                 <cde>autocomplete="new-password"</cde> on a signup's password field tells password
                 managers to offer a long random one and save it, and
                 <cde>autocomplete="current-password"</cde> on a sign-in tells them to fill it in.
-                Two attributes, and the people who use password managers end up with much better
-                passwords than any rule could get out of them.
+                Two <term def="attribute">attributes</term>, and the people who use password
+                managers end up with much better passwords than any rule could get out of them.
             </p>
         </two-dollars>
 

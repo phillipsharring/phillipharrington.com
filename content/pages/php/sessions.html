@@ -23,18 +23,20 @@
 
         <!-- Intro -->
         <p>
-            HTTP forgets you the moment it answers. Every request arrives alone, with no memory of
-            the one before. <xref to="/php/cookies">Cookies</xref> gave the browser a way to
-            remember a little. Sessions put the memory on the server instead, where the visitor
-            can't read it or change it, and hand the browser only a ticket.
+            <term def="http">HTTP</term> forgets you the moment it answers. Every
+            <term def="request">request</term> arrives alone, with no memory of the one before.
+            <xref to="/php/cookies">Cookies</xref> gave the <term def="browser">browser</term> a way
+            to remember a little. <term def="session">Sessions</term> put the memory on the
+            <term def="server">server</term> instead, where the visitor can't read it or change it,
+            and hand the browser only a ticket.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-a-session">What's a Session?</heading>
         <p>
-            Two things. A cookie, usually called <cde>PHPSESSID</cde>, holding a long random id. And
-            a file on the server, named after that id, holding whatever you saved for that visitor.
-            The cookie is the ticket. The file is the coat.
+            Two things. A <term def="cookie">cookie</term>, usually called <cde>PHPSESSID</cde>,
+            holding a long random id. And a file on the server, named after that id, holding
+            whatever you saved for that visitor. The cookie is the ticket. The file is the coat.
         </p>
         <p>
             The id is all the browser ever has. What's in the session, a user id, a cart, a message
@@ -47,11 +49,12 @@
             <li>Your code calls <cde>session_start()</cde>.</li>
             <li>
                 PHP looks for the session cookie in the request. If there isn't one, it makes a new
-                random id and sends it back in a <cde>Set-Cookie</cde> header.
+                random id and sends it back in a <cde>Set-Cookie</cde>
+                <term def="header">header</term>.
             </li>
             <li>
                 It opens the file for that id, reads it, and puts what's in it into
-                <cde>$_SESSION</cde>, an ordinary array.
+                <cde>$_SESSION</cde>, an ordinary <term def="array">array</term>.
             </li>
             <li>Your code reads and changes <cde>$_SESSION</cde>.</li>
             <li>When the script ends, PHP writes <cde>$_SESSION</cde> back to the file.</li>
@@ -68,7 +71,7 @@
         <code-block example="sessions/index.php" />
         <p>
             Start it with a name this time, <cde>--name sessions</cde>, so you can look inside the
-            container in a minute:
+            <term def="container">container</term> in a minute:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it --name sessions -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
@@ -81,7 +84,8 @@
         </breakdown>
         <p>
             Open <cde>http://localhost:8000</cde> and reload a few times: the count goes up. From a
-            second terminal, do it with curl, keeping the cookie in a jar file between requests:
+            second <term def="terminal">terminal</term>, do it with curl, keeping the cookie in a
+            jar file between requests:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -c jar.txt -b jar.txt http://localhost:8000
@@ -173,15 +177,18 @@ curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
                 tab they have open. Call <cde>session_write_close()</cde> when you're done writing.
             </li>
             <li>
-                <strong>Files live on one server.</strong> Behind a load balancer, from
+                <strong>Files live on one server.</strong> Behind a
+                <term def="load-balancer">load balancer</term>, from
                 <xref to="/php/whats-in-the-middle">What's in the Middle</xref>, the next request
                 may land on a server that has never heard of you. Busy sites keep sessions in a
-                database or a cache like Redis instead.
+                <term def="database">database</term> or a <term def="cache">cache</term> like Redis
+                instead.
             </li>
             <li>
                 <strong>Sessions expire.</strong> By default PHP treats a session as garbage after
                 1,440 seconds, 24 minutes, without a visit, and cleans it up when it gets around to
-                it. Someone who walks away from a long form can come back to nothing.
+                it. Someone who walks away from a long <term def="form">form</term> can come back to
+                nothing.
             </li>
         </list>
 
@@ -196,9 +203,10 @@ curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
         <!-- $2 tip -->
         <two-dollars title="Keep the id, not the record">
             <p>
-                Put the user's id in the session, not their whole row from the database. Look the
-                rest up on each request. When they change their name, or you lock their account, the
-                next page knows, instead of trusting a copy from an hour ago.
+                Put the user's id in the session, not their whole <term def="row">row</term> from
+                the database. Look the rest up on each request. When they change their name, or you
+                lock their account, the next page knows, instead of trusting a copy from an hour
+                ago.
             </p>
         </two-dollars>
 

@@ -23,18 +23,23 @@
 
         <!-- Intro -->
         <p>
-            In JavaScript, the data came with the page. Often a page needs more after it's loaded:
-            search results as you type, the next set of comments, a check that a username is free.
-            JavaScript can make its own request, get the answer, and change just part of the page,
-            while the rest stays where it is. On the server, that request is a request like any
-            other.
+            In <term def="javascript">JavaScript</term>, the data came with the page. Often a page
+            needs more after it's loaded: search results as you type, the next set of comments, a
+            check that a username is free. JavaScript can make its own
+            <term def="request">request</term>, get the answer, and change just part of the page,
+            while the rest stays where it is. On the <term def="server">server</term>, that request
+            is a request like any other.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-fetch">What's fetch()?</heading>
         <p>
-            The browser's JavaScript function for making an HTTP request. You give it a URL, and
-            optionally a method, headers and a body, and it gives you back the response:
+            The <term def="browser">browser</term>'s JavaScript
+            <term def="function">function</term> for making an <term def="http">HTTP</term> request.
+            You give it a <term def="url">URL</term>, and optionally a
+            <term def="http-method">method</term>, <term def="header">headers</term> and a
+            <term def="body">body</term>, and it gives you back the
+            <term def="response">response</term>:
         </p>
         <!-- prettier-ignore -->
         <code-block>const response = await fetch('/search.php?q=blue');
@@ -49,8 +54,8 @@ const body = await response.json();</code-block>
         <p>
             The name for the idea: a page that talks to the server in the background and updates
             itself. It stood for Asynchronous JavaScript and XML, from when the answers were usually
-            XML. Now they're almost always JSON, and the tool is <cde>fetch()</cde>, but people
-            still say AJAX.
+            XML. Now they're almost always <term def="json">JSON</term>, and the tool is
+            <cde>fetch()</cde>, but people still say <term def="ajax">AJAX</term>.
         </p>
 
         <side-story title="Outlook on the Web">
@@ -67,7 +72,8 @@ const body = await response.json();</code-block>
             <li>Something happens on the page: the visitor types a letter.</li>
             <li>JavaScript calls <cde>fetch()</cde> with a URL on your server.</li>
             <li>
-                The browser sends the request, with your site's cookies, as it would for a page.
+                The browser sends the request, with your site's <term def="cookie">cookies</term>,
+                as it would for a page.
             </li>
             <li>
                 PHP answers, usually with JSON and <cde>Content-Type: application/json</cde>,
@@ -77,11 +83,13 @@ const body = await response.json();</code-block>
         </ol>
         <nti>
             <p>
-                From PHP's side, nothing is new. It's a request, with a method, a query string,
-                maybe a body. Your JavaScript made it, but nothing proves that: anyone can call the
-                same URL with curl and send whatever they like. Stop me if you've heard this one:
+                From PHP's side, nothing is new. It's a request, with a method, a
+                <term def="query-string">query string</term>, maybe a body. Your JavaScript made it,
+                but nothing proves that: anyone can call the same URL with curl and send whatever
+                they like. Stop me if you've heard this one:
                 <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong> even
-                from your own scripts. An endpoint checks everything a form handler checks.
+                from your own scripts. An <term def="endpoint">endpoint</term> checks everything a
+                <term def="form">form</term> handler checks.
             </p>
         </nti>
 
@@ -92,7 +100,10 @@ const body = await response.json();</code-block>
             <cde>public</cde> folder, and in it, the endpoint, <cde>search.php</cde>:
         </p>
         <code-block example="fetch/public/search.php" />
-        <p>The page, <cde>public/index.html</cde>. Plain HTML: no PHP needed.</p>
+        <p>
+            The page, <cde>public/index.html</cde>. Plain <term def="html">HTML</term>: no PHP
+            needed.
+        </p>
         <code-block example="fetch/public/index.html" />
         <p>And the script, <cde>public/search.js</cde>:</p>
         <code-block example="fetch/public/search.js" />
@@ -155,12 +166,13 @@ const body = await response.json();</code-block>
                 <strong>A PHP error in the middle breaks the JSON.</strong> A warning printed into
                 the response turns it into text that isn't JSON, and
                 <cde>response.json()</cde> throws. Keep <cde>display_errors</cde> off, and read the
-                error log instead.
+                <term def="error-log">error log</term> instead.
             </li>
             <li>
                 <strong>Another site's URL is a different matter.</strong> <cde>fetch()</cde> to
-                your own site just works. To another origin, the browser asks that server's
-                permission first. That's CORS, two lessons from now.
+                your own site just works. To another <term def="origin">origin</term>, the browser
+                asks that server's permission first. That's <term def="cors">CORS</term>, two
+                lessons from now.
             </li>
         </list>
 
@@ -169,8 +181,8 @@ const body = await response.json();</code-block>
             <p>
                 In the developer tools' Network tab, right-click any request and choose Copy, then
                 Copy as cURL. You get a curl command with the same URL, headers, cookies and body.
-                Paste it into a terminal, and you can replay the request, change it, and see what
-                the server does, without the page in the way.
+                Paste it into a <term def="terminal">terminal</term>, and you can replay the
+                request, change it, and see what the server does, without the page in the way.
             </p>
         </two-dollars>
 

@@ -21,27 +21,28 @@
 
         <!-- Intro -->
         <p>
-            The blog talks; comments let readers answer. A comment form is the most public input on
-            any site: no login, no account, anyone at all. Two things go wrong with it, and both go
-            wrong fast. Someone posts a script, and it runs in every reader's browser. And bots find
-            the form, and post advertisements into it all day.
+            The blog talks; comments let readers answer. A comment <term def="form">form</term> is
+            the most public input on any site: no login, no account, anyone at all. Two things go
+            wrong with it, and both go wrong fast. Someone posts a script, and it runs in every
+            reader's <term def="browser">browser</term>. And bots find the form, and post
+            advertisements into it all day.
         </p>
         <p>
             You'll build comments on a post, then the naive version, and attack it both ways. The
-            fix for the first is one function used everywhere. The fix for the second is a few small
-            checks stacked up, because no single one stops every bot.
+            fix for the first is one <term def="function">function</term> used everywhere. The fix
+            for the second is a few small checks stacked up, because no single one stops every bot.
         </p>
 
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <xref to="/php/xss">XSS and Escaping Output</xref>: escape on the way out, every
-                time
+                <xref to="/php/xss">XSS and Escaping Output</xref>:
+                <term def="escaping">escape</term> on the way out, every time
             </li>
             <li>
                 <xref to="/php/never-trust-input">Never Trust Input</xref>: every field, checked on
-                the server
+                the <term def="server">server</term>
             </li>
             <li>
                 <xref to="/php/rate-limiting">Rate Limiting</xref>: so many per address per minute
@@ -55,8 +56,8 @@
                 the visitor's
             </li>
             <li>
-                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: refusing bytes that aren't
-                text
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: refusing
+                <term def="byte">bytes</term> that aren't text
             </li>
         </list>
 
@@ -65,14 +66,17 @@
 
         <heading h3 id="step-1-the-tables">Step 1: The Tables</heading>
         <p>
-            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the ones from
-            <xref to="/php/projects/translation">Translation</xref>, with a database called
-            <cde>comments</cde> and a secret for signing form tokens:
+            The <term def="container">containers</term>, <cde>Dockerfile</cde> and
+            <cde>src/db.php</cde> are the ones from
+            <xref to="/php/projects/translation">Translation</xref>, with a
+            <term def="database">database</term> called <cde>comments</cde> and a secret for signing
+            form tokens:
         </p>
         <code-block example="project-comments/compose.yml" />
         <p>
-            One post, and a table for its comments. Each comment keeps the address it came from, for
-            the rate limit, and whether a person has approved it:
+            One post, and a <term def="table">table</term> for its comments. Each comment keeps the
+            address it came from, for the <term def="rate-limiting">rate limit</term>, and whether a
+            person has approved it:
         </p>
         <code-block example="project-comments/init.sql" />
 
@@ -104,13 +108,14 @@
         <p>
             <cde>public/index.php</cde> shows the post, its approved comments, and the form. Every
             name and comment goes through <cde>htmlspecialchars()</cde> on the way out, and
-            <cde>nl2br()</cde> after, so line breaks survive and nothing else becomes HTML:
+            <cde>nl2br()</cde> after, so line breaks survive and nothing else becomes
+            <term def="html">HTML</term>:
         </p>
         <code-block example="project-comments/public/index.php" />
         <p>
-            The note at the top comes from a list of our own messages, picked by a word in the URL.
-            The URL never supplies the text itself, or anyone could send a link that puts their
-            words on your page.
+            The note at the top comes from a list of our own messages, picked by a word in the
+            <term def="url">URL</term>. The URL never supplies the text itself, or anyone could send
+            a link that puts their words on your page.
         </p>
 
         <heading h3 id="step-4-taking-a-comment">Step 4: Taking a Comment</heading>
@@ -150,11 +155,12 @@
         <p>
             Open <cde>http://localhost:8000/naive.php</cde> in a browser, and an alert pops up. The
             script ran, in your page, with everything your page can reach. On a site with a login,
-            <cde>document.cookie</cde> holds the session, unless the cookie is HttpOnly. It'll pop
-            up for every reader, on every visit, until someone deletes the comment. An alert is the
-            polite version. The same spot could send each reader's cookies to another server,
-            rewrite the page, or submit forms as them. This is stored XSS: the attack is saved in
-            your database and served by your own site.
+            <cde>document.cookie</cde> holds the <term def="session">session</term>, unless the
+            <term def="cookie">cookie</term> is HttpOnly. It'll pop up for every reader, on every
+            visit, until someone deletes the comment. An alert is the polite version. The same spot
+            could send each reader's cookies to another server, rewrite the page, or submit forms as
+            them. This is stored <term def="xss">XSS</term>: the attack is saved in your database
+            and served by your own site.
         </p>
         <p>Second attack: be a bot.</p>
         <!-- prettier-ignore -->
@@ -205,9 +211,10 @@ done</code-block>
         <list>
             <li>
                 <strong>Escape in the right place for the context.</strong>
-                <cde>htmlspecialchars()</cde> is right between tags and inside quoted attributes.
-                Inside a <cde>&lt;script&gt;</cde> block, a URL, or CSS, it isn't enough; each has
-                its own escaping. The XSS lesson has the list.
+                <cde>htmlspecialchars()</cde> is right between tags and inside quoted
+                <term def="attribute">attributes</term>. Inside a <cde>&lt;script&gt;</cde> block, a
+                URL, or <term def="css">CSS</term>, it isn't enough; each has its own escaping. The
+                XSS lesson has the list.
             </li>
             <li>
                 <strong>Making links clickable invites spam.</strong> If you turn URLs in comments

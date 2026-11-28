@@ -26,17 +26,19 @@
             Say you have several reports. Each one has its own numbers, but they're all laid out the
             same way: a title, a line under it, a column of labels and values. Copy the layout code
             into every report, and the day you change it, you change it everywhere, and miss one.
-            One class can be built on another, sharing its code. An abstract class is one built to
-            be built on, and nothing else.
+            One <term def="class">class</term> can be built on another, sharing its code. An
+            <term def="abstract-class">abstract class</term> is one built to be built on, and
+            nothing else.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-extends">What's <cde>extends</cde>?</heading>
         <p>
             <cde>class SalesReport extends Report</cde> makes <cde>SalesReport</cde> a child of
-            <cde>Report</cde>. The child gets every public and protected method and property of the
-            parent, and can add its own, or replace the parent's with its own version (override
-            them). A <cde>SalesReport</cde> is a <cde>Report</cde>: anywhere that wants a
+            <cde>Report</cde>. The child gets every public and protected
+            <term def="method">method</term> and <term def="property">property</term> of the parent,
+            and can add its own, or replace the parent's with its own version (override them). A
+            <cde>SalesReport</cde> is a <cde>Report</cde>: anywhere that wants a
             <cde>Report</cde> will take one.
         </p>
         <p>
@@ -65,8 +67,8 @@
                 before any of your code runs.
             </li>
             <li>
-                <cde>new SalesReport()</cde> makes an object with the parent's methods and the
-                child's together.
+                <cde>new SalesReport()</cde> makes an <term def="object">object</term> with the
+                parent's methods and the child's together.
             </li>
             <li>
                 <cde>$report-&gt;render()</cde> runs the parent's <cde>render()</cde>. Inside it,
@@ -160,7 +162,8 @@
             </li>
             <li>
                 <strong>One parent only.</strong> A class that wants to be two things at once can't
-                extend both. That's a job for interfaces, the next lesson.
+                extend both. That's a job for <term def="interface">interfaces</term>, the next
+                lesson.
             </li>
             <li>
                 <strong>Protected isn't private.</strong> Anyone can extend your class and reach
@@ -172,9 +175,9 @@
             In 1987, Barbara Liskov gave a talk called "Data Abstraction and Hierarchy" that set out
             what became the Liskov substitution principle: a child should work anywhere its parent
             does, without surprising the code using it. A report that throws away its title or
-            prints to a file instead of returning a string breaks the rule, even if PHP accepts it.
-            Liskov, one of the first women in the United States to earn a PhD in computer science,
-            won the Turing Award in 2008.
+            prints to a file instead of returning a <term def="string">string</term> breaks the
+            rule, even if PHP accepts it. Liskov, one of the first women in the United States to
+            earn a PhD in computer science, won the Turing Award in 2008.
         </side-story>
 
         <!-- $2 tip -->

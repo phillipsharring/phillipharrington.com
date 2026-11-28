@@ -23,8 +23,9 @@
         <p>
             The log viewer only ever needed English. Most sites eventually need more. You'll build a
             small shop page that speaks English, French, Polish and Japanese: it picks a language
-            from what the browser asks for, lets the visitor change it, pulls product names from the
-            database in that language, and counts things the way each language counts.
+            from what the <term def="browser">browser</term> asks for, lets the visitor change it,
+            pulls product names from the <term def="database">database</term> in that language, and
+            counts things the way each language counts.
         </p>
         <p>
             Translating the words is the easy part. The work is everything around them: text that
@@ -36,8 +37,8 @@
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
             <li>
-                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: bytes, characters, and where
-                text gets mangled
+                <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: <term def="byte">bytes</term>,
+                characters, and where text gets mangled
             </li>
             <li>
                 <xref to="/php/character-sets-and-collation">Character Sets and Collation</xref>:
@@ -45,14 +46,19 @@
             </li>
             <li>
                 <xref to="/php/request-and-response">Request and Response</xref>: the
-                <cde>Accept-Language</cde>, <cde>Content-Language</cde> and <cde>Vary</cde> headers
+                <cde>Accept-Language</cde>, <cde>Content-Language</cde> and <cde>Vary</cde>
+                <term def="header">headers</term>
             </li>
             <li><xref to="/php/cookies">Cookies</xref>: remembering the choice</li>
             <li>
                 <xref to="/php/pdo">Working with a Database: PDO and Prepared Statements</xref> and
-                <xref to="/php/selecting-data">Selecting Data</xref>: the fallback join
+                <xref to="/php/selecting-data">Selecting Data</xref>: the fallback
+                <term def="join">join</term>
             </li>
-            <li><xref to="/php/html">HTML</xref>: the <cde>lang</cde> attribute</li>
+            <li>
+                <xref to="/php/html">HTML</xref>: the <cde>lang</cde>
+                <term def="attribute">attribute</term>
+            </li>
         </list>
 
         <!-- Build it -->
@@ -62,13 +68,14 @@
         <p>
             Text crosses four boundaries on its way to the screen: from the file you typed it in,
             into the database, out of the database into PHP, and from PHP to the browser. Every one
-            has to agree it's UTF-8, or <cde>Thé</cde> arrives as <cde>ThÃ©</cde> and
-            <cde>緑茶</cde> as question marks.
+            has to agree it's <term def="utf-8">UTF-8</term>, or <cde>Thé</cde> arrives as
+            <cde>ThÃ©</cde> and <cde>緑茶</cde> as question marks.
         </p>
         <p>
-            Start with the database. The tables say <cde>utf8mb4</cde>, MySQL's real UTF-8, and the
-            file starts with <cde>SET NAMES utf8mb4</cde> so the connection that loads it reads it
-            correctly. Translated names get a table of their own, one row per product per language:
+            Start with the database. The <term def="table">tables</term> say <cde>utf8mb4</cde>,
+            MySQL's real UTF-8, and the file starts with <cde>SET NAMES utf8mb4</cde> so the
+            connection that loads it reads it correctly. Translated names get a table of their own,
+            one <term def="row">row</term> per product per language:
         </p>
         <code-block example="project-translation/init.sql" />
         <p>
@@ -81,8 +88,8 @@
         </p>
         <code-block example="project-translation/src/db.php" />
         <p>
-            The usual two containers: <cde>compose.yml</cde>, and a <cde>Dockerfile</cde> that adds
-            PHP's MySQL driver.
+            The usual two <term def="container">containers</term>: <cde>compose.yml</cde>, and a
+            <cde>Dockerfile</cde> that adds PHP's MySQL driver.
         </p>
         <code-block example="project-translation/compose.yml" />
         <code-block example="project-translation/Dockerfile" />
@@ -119,8 +126,8 @@
             a language tag, sorts by weight, and takes the first one on our list, counting
             <cde>fr-CA</cde> as <cde>fr</cde>.
             <strong><xref to="/php/never-trust-input">Never trust input</xref>:</strong> a header is
-            whatever the client typed, so the only languages that can come out are the four we put
-            in.
+            whatever the <term def="client">client</term> typed, so the only languages that can come
+            out are the four we put in.
         </p>
 
         <heading h3 id="step-4-plural-rules">Step 4: Plural Rules</heading>
@@ -130,7 +137,8 @@
             for whole numbers: 1 is one form, numbers ending in 2, 3 or 4 are another (except 12, 13
             and 14), and the rest are a third. Japanese doesn't change at all. The category names,
             <cde>one</cde>, <cde>few</cde>, <cde>many</cde> and <cde>other</cde>, come from CLDR,
-            the Unicode project that collects these rules for hundreds of languages.
+            the <term def="unicode">Unicode</term> project that collects these rules for hundreds of
+            languages.
         </p>
         <p><cde>plurals.php</cde> prints the same message for a few numbers in each language:</p>
         <code-block example="project-translation/plurals.php" />
@@ -152,19 +160,20 @@ ja: 商品0点 | 商品1点 | 商品2点 | 商品5点 | 商品12点 | 商品22�
         <list>
             <li>
                 <strong>The language</strong> comes from a <cde>?lang=</cde> link first, then the
-                cookie that link sets, then <cde>Accept-Language</cde>, then English. A visitor's
-                own choice beats their browser's guess. All three are input, and all three are
-                checked against the list.
+                <term def="cookie">cookie</term> that link sets, then <cde>Accept-Language</cde>,
+                then English. A visitor's own choice beats their browser's guess. All three are
+                input, and all three are checked against the list.
             </li>
             <li>
-                <strong>Product names</strong> come from one query: join the English row always, the
-                visitor's language if there is one, and <cde>COALESCE()</cde> takes the first that
-                isn't <cde>NULL</cde>.
+                <strong>Product names</strong> come from one <term def="query">query</term>: join
+                the English row always, the visitor's language if there is one, and
+                <cde>COALESCE()</cde> takes the first that isn't <cde>NULL</cde>.
             </li>
             <li>
                 <strong>The headers</strong> say UTF-8 (the last boundary), name the language with
                 <cde>Content-Language</cde>, and send <cde>Vary: Accept-Language, Cookie</cde>,
-                which tells every cache in the middle that this URL has more than one answer.
+                which tells every <term def="cache">cache</term> in the middle that this
+                <term def="url">URL</term> has more than one answer.
             </li>
             <li>
                 <strong>The HTML</strong> says <cde>&lt;html lang="fr"&gt;</cde>, so screen readers
@@ -179,8 +188,8 @@ ja: 商品0点 | 商品1点 | 商品2点 | 商品5点 | 商品12点 | 商品22�
         <code-block>docker compose up</code-block>
         <p>
             Open <cde>http://localhost:8000</cde> and switch languages with the links at the bottom.
-            Reload, and the choice sticks. Then, from a second terminal, be a few different
-            browsers:
+            Reload, and the choice sticks. Then, from a second <term def="terminal">terminal</term>,
+            be a few different browsers:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -H 'Accept-Language: fr-CA,fr;q=0.9,en;q=0.5' http://localhost:8000
@@ -188,8 +197,8 @@ curl -H 'Accept-Language: en;q=0.2, pl;q=0.8' http://localhost:8000
 curl -H 'Accept-Language: ja' http://localhost:8000
 curl -H 'Accept-Language: de' http://localhost:8000</code-block>
         <p class="text-th-muted text-base">
-            <cde>-H</cde>, as before, adds a header to the request: here, the languages a browser
-            would ask for.
+            <cde>-H</cde>, as before, adds a header to the <term def="request">request</term>: here,
+            the languages a browser would ask for.
         </p>
         <p>
             French, with <cde>Thé vert</cde> straight from the database. Polish, because 0.8 beats
@@ -215,7 +224,8 @@ curl -H 'Accept-Language: de' http://localhost:8000</code-block>
             <li>
                 <strong>One boundary not in UTF-8 breaks them all.</strong> A table in
                 <cde>latin1</cde>, a connection without <cde>charset=utf8mb4</cde>, a page without a
-                charset: any one is enough. When text arrives garbled, check each boundary in order.
+                <term def="character-set">charset</term>: any one is enough. When text arrives
+                garbled, check each boundary in order.
             </li>
             <li>
                 <strong>Don't pick the language from the address.</strong> Guessing from where a
@@ -258,9 +268,9 @@ curl -H 'Accept-Language: de' http://localhost:8000</code-block>
         </two-dollars>
 
         <p>
-            Product names in a table, edited by someone who isn't a programmer: that's a content
-            management system. Next: build one, with image uploads, and everything uploads bring
-            with them.
+            Product names in a table, edited by someone who isn't a programmer: that's a
+            <term def="cms">content management system</term>. Next: build one, with image uploads,
+            and everything uploads bring with them.
         </p>
 
         <!-- Next -->

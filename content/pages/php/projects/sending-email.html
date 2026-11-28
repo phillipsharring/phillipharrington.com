@@ -22,14 +22,15 @@
         <!-- Intro -->
         <p>
             Sooner or later your site has to send an email: a receipt, a password reset, a message
-            from the contact form. The hard part isn't the code. It's testing it without sending
-            real mail to real people while you get it wrong.
+            from the contact <term def="form">form</term>. The hard part isn't the code. It's
+            testing it without sending real mail to real people while you get it wrong.
         </p>
         <p>
-            So this project starts with a mail catcher, Mailpit, in a container. It speaks SMTP like
-            a real mail server, keeps everything you send it, and delivers none of it. Then you'll
-            send it a proper email from PHP with Symfony Mailer: a plain text part, an HTML part,
-            and a subject with an accent in it.
+            So this project starts with a mail catcher, Mailpit, in a
+            <term def="container">container</term>. It speaks <term def="smtp">SMTP</term> like a
+            real mail <term def="server">server</term>, keeps everything you send it, and delivers
+            none of it. Then you'll send it a proper email from PHP with Symfony Mailer: a plain
+            text part, an <term def="html">HTML</term> part, and a subject with an accent in it.
         </p>
 
         <!-- What you'll use -->
@@ -64,18 +65,20 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require symfony/mailer</code-block>
         <p>
-            PHP has a built-in <cde>mail()</cde> function, but it hands the message to a
-            <cde>sendmail</cde> program on the server, which containers don't have, and it leaves
-            you writing headers by hand. A mailer library talks SMTP itself, builds the headers
-            correctly, and encodes everything for the trip.
+            PHP has a built-in <cde>mail()</cde> <term def="function">function</term>, but it hands
+            the message to a <cde>sendmail</cde> program on the server, which containers don't have,
+            and it leaves you writing <term def="header">headers</term> by hand. A mailer library
+            talks SMTP itself, builds the headers correctly, and
+            <term def="encoding">encodes</term> everything for the trip.
         </p>
 
         <heading h3 id="start-mailpit">Start the Mail Catcher</heading>
         <p><cde>compose.yml</cde> runs Mailpit, and a PHP container that knows where to find it:</p>
         <code-block example="project-sending-email/compose.yml" />
         <p>
-            The PHP side reaches Mailpit at the name <cde>mailpit</cde>, on port 1025, its SMTP
-            port. You reach its web page at <cde>http://localhost:8025</cde>. Start it:
+            The PHP side reaches Mailpit at the name <cde>mailpit</cde>, on
+            <term def="port">port</term> 1025, its SMTP port. You reach its web page at
+            <cde>http://localhost:8025</cde>. Start it:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose up -d mailpit</code-block>
@@ -87,8 +90,9 @@
             <li>
                 <strong>The address is checked first.</strong> <cde>filter_var()</cde> with
                 <cde>FILTER_VALIDATE_EMAIL</cde> refuses anything that isn't one address.
-                <strong>Never trust input</strong>, even on the command line: this same code will
-                take its address from a form one day.
+                <strong>Never trust input</strong>, even on the
+                <term def="command-line">command line</term>: this same code will take its address
+                from a form one day.
             </li>
             <li>
                 <strong>The mail server comes from the environment.</strong> Mailpit here; a real
@@ -116,9 +120,10 @@ Content-Type: multipart/alternative; boundary=yAK7a8_b
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable</code-block>
         <p>
-            Email headers come from a time of plain ASCII, so the mailer encoded the
-            <cde>é</cde> in the subject as its UTF-8 bytes, <cde>C3 A9</cde>, and labeled it
-            <cde>utf-8</cde>. Every mail program decodes that back to "café." The body is labeled
+            Email headers come from a time of plain <term def="ascii">ASCII</term>, so the mailer
+            encoded the <cde>é</cde> in the subject as its <term def="utf-8">UTF-8</term>
+            <term def="byte">bytes</term>, <cde>C3 A9</cde>, and labeled it <cde>utf-8</cde>. Every
+            mail program decodes that back to "café." The <term def="body">body</term> is labeled
             <cde>charset=utf-8</cde> too. Leave the labels off, and someone's inbox shows
             <cde>cafÃ©</cde>.
         </p>
@@ -153,13 +158,15 @@ Content-Transfer-Encoding: quoted-printable</code-block>
                 <strong>Header injection.</strong> Headers are lines, so a newline in anything that
                 ends up in a header starts a new one. Glue a form's email field into a
                 <cde>mail()</cde> header by hand, and someone can add a <cde>Bcc:</cde> with a
-                thousand addresses, and your server sends their spam. Validate every address, and
-                let a library build the headers.
+                thousand addresses, and your server sends their spam.
+                <term def="validation">Validate</term> every address, and let a library build the
+                headers.
             </li>
             <li>
                 <strong>Send from your own domain.</strong> Mail services check that a message
                 claiming to be from <cde>example.com</cde> really came from a server
-                <cde>example.com</cde> allows, using DNS records called SPF, DKIM and DMARC. Put a
+                <cde>example.com</cde> allows, using
+                <term def="dns-record">DNS records</term> called SPF, DKIM and DMARC. Put a
                 visitor's address in <cde>From</cde>, and the mail lands in spam or bounces. Use
                 your own address in <cde>From</cde>, and theirs in <cde>Reply-To</cde>.
             </li>
@@ -180,10 +187,10 @@ Content-Transfer-Encoding: quoted-printable</code-block>
         <!-- $2 tip -->
         <two-dollars title="Check your HTML against real mail programs">
             <p>
-                Mail programs support far less HTML and CSS than browsers, and each supports a
-                different part of it. Open a message in Mailpit and look at its HTML Check tab: it
-                lists what in your message won't work in which mail programs, before a customer
-                finds out for you.
+                Mail programs support far less HTML and <term def="css">CSS</term> than
+                <term def="browser">browsers</term>, and each supports a different part of it. Open
+                a message in Mailpit and look at its HTML Check tab: it lists what in your message
+                won't work in which mail programs, before a customer finds out for you.
             </p>
         </two-dollars>
 

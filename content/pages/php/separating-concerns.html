@@ -34,52 +34,55 @@
         </p>
         <list>
             <li>
-                <strong>Reading</strong>: where the data comes from. A file, a database, an API.
-                Changes when the storage changes.
+                <strong>Reading</strong>: where the data comes from. A file, a
+                <term def="database">database</term>, an <term def="api">API</term>. Changes when
+                the storage changes.
             </li>
             <li>
                 <strong>Deciding</strong>: the rules. Which posts are published, what a shirt costs,
                 who's allowed in. Changes when the business does.
             </li>
             <li>
-                <strong>Showing</strong>: the HTML, or JSON, that goes back. Changes when the design
-                does.
+                <strong>Showing</strong>: the <term def="html">HTML</term>, or
+                <term def="json">JSON</term>, that goes back. Changes when the design does.
             </li>
         </list>
         <p>
-            Separating them means each lives in its own function, file or class, and talks to the
-            others through plain values. The rules don't know there's a database. The template
-            doesn't know there are rules.
+            Separating them means each lives in its own <term def="function">function</term>, file
+            or <term def="class">class</term>, and talks to the others through plain values. The
+            rules don't know there's a database. The template doesn't know there are rules.
         </p>
 
         <side-story title="Where the Phrase Comes From">
-            Edsger Dijkstra used "the separation of concerns" in a 1974 essay, "On the role of
-            scientific thought." His point was about thinking, not code: you can only study one
-            aspect of a problem well at a time, so you deliberately set the others aside while you
-            do. Code that's separated lets the reader do the same.
+            Edsger Dijkstra used "the
+            <term def="separation-of-concerns">separation of concerns</term>" in a 1974 essay, "On
+            the role of scientific thought." His point was about thinking, not code: you can only
+            study one aspect of a problem well at a time, so you deliberately set the others aside
+            while you do. Code that's separated lets the reader do the same.
         </side-story>
 
         <!-- How it works -->
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                The entry point reads: it asks a function for the data, and gets back plain arrays
-                or objects.
+                The entry point reads: it asks a function for the data, and gets back plain
+                <term def="array">arrays</term> or <term def="object">objects</term>.
             </li>
             <li>It decides: it hands that data to the rules, and gets back what to show.</li>
             <li>It shows: it hands the result to a template, which only prints.</li>
         </ol>
         <p>
             The entry point becomes a few lines of glue. Each concern can be read without the others
-            in your head, swapped without touching the others, and tested with no server, no file
-            and no HTML.
+            in your head, swapped without touching the others, and tested with no
+            <term def="server">server</term>, no file and no HTML.
         </p>
 
         <!-- Try it -->
         <heading h2 id="try-it">Try It</heading>
         <p>
             A café's recent-posts page. In a folder, make <cde>posts.json</cde>, with a draft, a
-            post from the future, a title in UTF-8 and one that's trying something:
+            post from the future, a title in <term def="utf-8">UTF-8</term> and one that's trying
+            something:
         </p>
         <code-block example="separating-concerns/posts.json" />
         <p>
@@ -89,15 +92,18 @@
         <code-block example="separating-concerns/before/index.php" />
         <p>
             It works. But to change the sort, you edit the template. To test the draft rule, you
-            need the file and a browser. Now separate it. Make an <cde>after</cde> folder, and in it
-            <cde>src/data.php</cde>, which reads:
+            need the file and a <term def="browser">browser</term>. Now separate it. Make an
+            <cde>after</cde> folder, and in it <cde>src/data.php</cde>, which reads:
         </p>
         <code-block example="separating-concerns/after/src/data.php" />
         <p><cde>src/rules.php</cde>, which decides:</p>
         <code-block example="separating-concerns/after/src/rules.php" />
         <p><cde>views/posts.php</cde>, which shows:</p>
         <code-block example="separating-concerns/after/views/posts.php" />
-        <p>And <cde>public/index.php</cde>, the only file in the web root, which joins them up:</p>
+        <p>
+            And <cde>public/index.php</cde>, the only file in the
+            <term def="web-root">web root</term>, which joins them up:
+        </p>
         <code-block example="separating-concerns/after/public/index.php" />
         <p>Serve each in turn:</p>
         <!-- prettier-ignore -->
@@ -158,8 +164,9 @@ docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0
             </li>
             <li>
                 <strong>Escaping belongs to showing.</strong> Don't store titles pre-escaped, or
-                escape them in the rules. The template knows it's writing HTML, so the template
-                escapes, every time; see <xref to="/php/xss">XSS and Escaping Output</xref>.
+                <term def="escaping">escape</term> them in the rules. The template knows it's
+                writing HTML, so the template escapes, every time; see
+                <xref to="/php/xss">XSS and Escaping Output</xref>.
             </li>
             <li>
                 <strong>More files isn't the goal.</strong> A twenty-line page doesn't need three
@@ -180,7 +187,7 @@ docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0
 
         <p>
             Showing has a more famous name, and so does the glue. They're two thirds of a pattern
-            from the late 1970s. Next: MVC.
+            from the late 1970s. Next: <term def="mvc">MVC</term>.
         </p>
 
         <!-- Next -->

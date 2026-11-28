@@ -21,15 +21,15 @@
 
         <!-- Intro -->
         <p>
-            Sessions ended with "the session can remember who the visitor is." This project does
-            that: a members' page that strangers can't see. A stranger who asks for it is sent to
-            sign in, then straight back to the page they wanted. A member sees it. And everyone gets
-            the same vague answer when a sign-in fails.
+            Sessions ended with "the <term def="session">session</term> can remember who the visitor
+            is." This project does that: a members' page that strangers can't see. A stranger who
+            asks for it is sent to sign in, then straight back to the page they wanted. A member
+            sees it. And everyone gets the same vague answer when a sign-in fails.
         </p>
         <p>
             For now there's one member, in a settings file, so the project can be about the guard
-            and not the database. The Signup Form and Login Form projects put members in MySQL and
-            add the defenses a real sign-in needs.
+            and not the <term def="database">database</term>. The Signup Form and Login Form
+            projects put members in MySQL and add the defenses a real sign-in needs.
         </p>
 
         <!-- What you'll use -->
@@ -52,8 +52,8 @@
                     >Expressive HTTP Response Codes, and When Not to Be</xref>: one answer for every failed sign-in.
             </li>
             <li>
-                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: keeping caches away
-                from private pages.
+                <xref to="/php/whats-in-the-middle">What's in the Middle</xref>: keeping
+                <term def="cache">caches</term> away from private pages.
             </li>
         </list>
 
@@ -62,8 +62,9 @@
 
         <heading h3 id="the-member">The Member</heading>
         <p>
-            <cde>src/users.php</cde> returns the one member's address and password hash. Never a
-            password: a hash made by <cde>password_hash()</cde>, as the comment says:
+            <cde>src/users.php</cde> returns the one member's address and password
+            <term def="hash">hash</term>. Never a password: a hash made by
+            <cde>password_hash()</cde>, as the comment says:
         </p>
         <code-block example="project-protected-page/src/users.php" />
 
@@ -73,9 +74,10 @@
         <list>
             <li>
                 <strong><cde>require_login()</cde> is the guard.</strong> If nobody is signed in, it
-                redirects to the sign-in page, with the page they wanted in <cde>?next=</cde>, and
-                <cde>redirect()</cde> ends the script, so nothing below it runs. If someone is, it
-                marks the response <cde>private, no-store</cde> and hands back who it is.
+                <term def="redirect">redirects</term> to the sign-in page, with the page they wanted
+                in <cde>?next=</cde>, and <cde>redirect()</cde> ends the script, so nothing below it
+                runs. If someone is, it marks the <term def="response">response</term>
+                <cde>private, no-store</cde> and hands back who it is.
             </li>
             <li>
                 <strong><cde>sign_in()</cde> changes the session id</strong> with
@@ -84,8 +86,9 @@
                 Form project attacks a sign-in that skips this.
             </li>
             <li>
-                <strong><cde>sign_out()</cde> clears all of it</strong>: the data, the cookie and
-                the file on the server, as in the Sessions project.
+                <strong><cde>sign_out()</cde> clears all of it</strong>: the data, the
+                <term def="cookie">cookie</term> and the file on the
+                <term def="server">server</term>, as in the Sessions project.
             </li>
         </list>
 
@@ -94,7 +97,7 @@
         <code-block example="project-protected-page/public/index.php" />
         <p>
             The members' page, <cde>public/members.php</cde>. The guard is the first thing after the
-            session starts, before a single byte of the page:
+            session starts, before a single <term def="byte">byte</term> of the page:
         </p>
         <code-block example="project-protected-page/public/members.php" />
         <p>The sign-in page, <cde>public/login.php</cde>:</p>
@@ -103,8 +106,8 @@
             <strong>Never trust input:</strong> the address, the password and <cde>next</cde> all
             came from the visitor. Each one is checked for type, and <cde>next</cde> goes through
             <cde>local_path()</cde>, so the sign-in page can't be made into an open redirect. A
-            wrong password and an unknown address get the same words, so the form can't be used to
-            find out who's a member.
+            wrong password and an unknown address get the same words, so the
+            <term def="form">form</term> can't be used to find out who's a member.
         </p>
         <p>And signing out, <cde>public/logout.php</cde>, which only answers a POST:</p>
         <code-block example="project-protected-page/public/logout.php" />
@@ -116,13 +119,14 @@
             Open <cde>http://localhost:8000/members.php</cde>. You're sent to sign in, with
             <cde>next=%2Fmembers.php</cde> in the address. Sign in as
             <cde>alice@example.com</cde> with <cde>correct horse battery staple</cde>, and you're
-            back on the members' page. Sign out, and it's closed again. From the terminal, a
-            stranger's view:
+            back on the members' page. Sign out, and it's closed again. From the
+            <term def="terminal">terminal</term>, a stranger's view:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/members.php</code-block>
         <p class="text-th-muted text-base">
-            As always, <cde>-i</cde> shows the response's headers along with its body.
+            As always, <cde>-i</cde> shows the response's <term def="header">headers</term> along
+            with its <term def="body">body</term>.
         </p>
         <p>
             A <cde>303</cde> to the sign-in page, and an empty body. Nothing of the page left the
@@ -137,8 +141,8 @@
         </p>
         <code-block example="project-protected-page/public/forgot-exit.php" />
         <p>
-            Open it in the browser, and you're sent to the sign-in page, as you should be. Then ask
-            the way a script would, without following redirects:
+            Open it in the <term def="browser">browser</term>, and you're sent to the sign-in page,
+            as you should be. Then ask the way a script would, without following redirects:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/forgot-exit.php</code-block>
@@ -158,12 +162,14 @@
             <li>
                 <strong>A redirect without <cde>exit</cde> hands out the page anyway.</strong> The
                 guard that forgot, above, looks fine in a browser and gives everything away to curl.
-                Make every redirect go through a function that ends the script.
+                Make every redirect go through a <term def="function">function</term> that ends the
+                script.
             </li>
             <li>
                 <strong>Every protected page needs the guard.</strong> It's one line, which makes it
                 one line to forget on the page you add next month. Once a site has more than a few
-                of these, put the check in one place that every request goes through, as in
+                of these, put the check in one place that every
+                <term def="request">request</term> goes through, as in
                 <xref to="/php/middleware">Middleware and Pipelines</xref>.
             </li>
             <li>

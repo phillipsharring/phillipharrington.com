@@ -23,10 +23,11 @@
 
         <!-- Intro -->
         <p>
-            JSON is how programs talk to programs. When the data is for a person, it usually goes
-            into a spreadsheet, and the format for that is CSV. Sooner or later someone asks for an
-            export of the orders, or hands you a file of products to import. Both are easy in PHP,
-            as long as you let PHP do the quoting, and check every row that comes in.
+            <term def="json">JSON</term> is how programs talk to programs. When the data is for a
+            person, it usually goes into a spreadsheet, and the format for that is
+            <term def="csv">CSV</term>. Sooner or later someone asks for an export of the orders, or
+            hands you a file of products to import. Both are easy in PHP, as long as you let PHP do
+            the quoting, and check every row that comes in.
         </p>
 
         <!-- What is/are -->
@@ -50,7 +51,7 @@ TS-03,"The ""Classic"" tee",2000</code-block>
             That's most of the standard, RFC 4180, which was written in 2005 to describe what
             programs were already doing. Many programs still do it a little differently: semicolons
             instead of commas in countries that write decimals with a comma, different line endings,
-            different character sets.
+            different <term def="character-set">character sets</term>.
         </p>
 
         <side-story title="Older Than the PC">
@@ -66,7 +67,8 @@ TS-03,"The ""Classic"" tee",2000</code-block>
             <li>Check they're the columns you expect, in the order you expect.</li>
             <li>
                 Read the rest one row at a time with <cde>fgetcsv()</cde>, which handles the quotes
-                and gives you an array of strings.
+                and gives you an <term def="array">array</term> of
+                <term def="string">strings</term>.
             </li>
             <li>Check each row: the right number of fields, and each field valid.</li>
             <li>Use the good rows, and report the bad ones by line number.</li>
@@ -74,7 +76,8 @@ TS-03,"The ""Classic"" tee",2000</code-block>
         <p>
             Writing one is the same in reverse: <cde>fputcsv()</cde> for each row, which adds
             whatever quotes a field needs. For a download, write to <cde>php://output</cde> with the
-            headers from <xref to="/php/sending-a-file">Sending a File</xref>.
+            <term def="header">headers</term> from
+            <xref to="/php/sending-a-file">Sending a File</xref>.
         </p>
         <nti>
             <p>
@@ -102,19 +105,20 @@ TS-03,"The ""Classic"" tee",2000</code-block>
         <p>
             Four shirts, with the comma and the quotes back where they belong, and two lines
             skipped, each with its line number and the reason. The copy in the examples repo also
-            starts with an invisible byte order mark, the way Excel saves UTF-8, and the import
-            skips it.
+            starts with an invisible <term def="byte">byte</term> order mark, the way Excel saves
+            <term def="utf-8">UTF-8</term>, and the import skips it.
         </p>
         <p>Now writing. Make a <cde>public</cde> folder, and in it, <cde>export.php</cde>:</p>
         <code-block example="csv/public/export.php" />
-        <p>Start the server and ask for it:</p>
+        <p>Start the <term def="server">server</term> and ask for it:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/export.php</code-block>
         <p>
-            The quotes are there only where a field needs them. Open the same URL in a browser, and
-            it downloads as <cde>shirts.csv</cde>, because of <cde>Content-Disposition</cde>.
+            The quotes are there only where a field needs them. Open the same
+            <term def="url">URL</term> in a <term def="browser">browser</term>, and it downloads as
+            <cde>shirts.csv</cde>, because of <cde>Content-Disposition</cde>.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -130,9 +134,9 @@ TS-03,"The ""Classic"" tee",2000</code-block>
             <li><cde>fputcsv($file, $fields, escape: '')</cde> writes one, quoted as needed.</li>
             <li><cde>str_getcsv($line, escape: '')</cde> parses a single line you already have.</li>
             <li>
-                <cde>escape: ''</cde> on all three turns off PHP's own backslash escaping, which
-                isn't part of the standard. PHP 8.4 warns when you leave it out, because the default
-                is going to change.
+                <cde>escape: ''</cde> on all three turns off PHP's own backslash
+                <term def="escaping">escaping</term>, which isn't part of the standard. PHP 8.4
+                warns when you leave it out, because the default is going to change.
             </li>
             <li>
                 <cde>array_combine($header, $fields)</cde> turns a row into an array keyed by column
@@ -188,8 +192,9 @@ TS-03,"The ""Classic"" tee",2000</code-block>
         </two-dollars>
 
         <p>
-            The last technology in this section goes back to the start: HTML, sent in pieces, with
-            hardly any JavaScript. Next: HTMX.
+            The last technology in this section goes back to the start:
+            <term def="html">HTML</term>, sent in pieces, with hardly any
+            <term def="javascript">JavaScript</term>. Next: HTMX.
         </p>
 
         <!-- Next -->

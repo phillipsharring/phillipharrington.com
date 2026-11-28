@@ -23,19 +23,22 @@
 
         <!-- Intro -->
         <p>
-            HTML is what the page is, and CSS is how it looks. JavaScript is what it does once it's
-            in the browser: open a menu, check a field as you type, fetch new data without loading a
-            new page. It's a whole language, and this course won't teach all of it. What a PHP
-            developer needs is where it runs, what it can be trusted with, and how to hand it data.
+            <term def="html">HTML</term> is what the page is, and <term def="css">CSS</term> is how
+            it looks. <term def="javascript">JavaScript</term> is what it does once it's in the
+            <term def="browser">browser</term>: open a menu, check a field as you type, fetch new
+            data without loading a new page. It's a whole language, and this course won't teach all
+            of it. What a PHP developer needs is where it runs, what it can be trusted with, and how
+            to hand it data.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-javascript">What's JavaScript?</heading>
         <p>
-            A programming language built into every browser. PHP runs on your server, once per
-            request, and is finished before the page arrives. JavaScript runs on the visitor's
-            computer, after the page arrives, for as long as the page is open. It can change
-            anything on the page, react to clicks and typing, and make requests of its own.
+            A programming language built into every browser. PHP runs on your
+            <term def="server">server</term>, once per <term def="request">request</term>, and is
+            finished before the page arrives. JavaScript runs on the visitor's computer, after the
+            page arrives, for as long as the page is open. It can change anything on the page, react
+            to clicks and typing, and make requests of its own.
         </p>
         <p>
             It runs on the visitor's computer, so the visitor controls it. They can read every line,
@@ -45,17 +48,17 @@
 
         <heading h3 id="the-dom">The DOM</heading>
         <p>
-            The tree of elements the browser built from the HTML, from the
-            <xref to="/php/html">HTML</xref> lesson. JavaScript sees the page as that tree:
+            The tree of <term def="element">elements</term> the browser built from the HTML, from
+            the <xref to="/php/html">HTML</xref> lesson. JavaScript sees the page as that tree:
             <cde>document.getElementById('size')</cde> finds an element, and changing it changes the
             page on the spot.
         </p>
 
         <heading h3 id="events">Events</heading>
         <p>
-            Things that happen: a click, a key, a form being sent, the page finishing loading.
-            <cde>element.addEventListener('change', ...)</cde> says what to run when one happens.
-            Most of the JavaScript on a page is waiting for one.
+            Things that happen: a click, a key, a <term def="form">form</term> being sent, the page
+            finishing loading. <cde>element.addEventListener('change', ...)</cde> says what to run
+            when one happens. Most of the JavaScript on a page is waiting for one.
         </p>
 
         <side-story title="Ten Days in May">
@@ -78,14 +81,15 @@
                 whole page has been read, so the elements it looks for exist.
             </li>
             <li>
-                The script runs, finds the elements it needs, and sets up what to do when events
+                The script runs, finds the elements it needs, and sets up what to do when
+                <term def="event">events</term>
                 happen.
             </li>
             <li>The visitor does something, and the matching code runs and changes the page.</li>
         </ol>
         <p>
             A script often needs data from PHP: a name, a list, a setting. The safe way is to print
-            it into the page as JSON, inside a
+            it into the page as <term def="json">JSON</term>, inside a
             <cde>&lt;script type="application/json"&gt;</cde> tag, which the browser stores but
             doesn't run, and have the script read and parse it. The danger is the data itself. If a
             value contains <cde>&lt;/script&gt;</cde>, it closes the tag early, and whatever follows
@@ -120,10 +124,10 @@
         <p>
             In the data, every <cde>&lt;</cde> and <cde>&gt;</cde> has become
             <cde>&#92;u003C</cde> and <cde>&#92;u003E</cde>: still the same characters to JavaScript
-            once it's parsed, but nothing the HTML reader can mistake for a tag. Open the same URL
-            in the browser, pick a size, and the sentence shows the name as text, tags and all.
-            That's <cde>textContent</cde>. Had the script used <cde>innerHTML</cde>, the browser
-            would have read the name as HTML.
+            once it's parsed, but nothing the HTML reader can mistake for a tag. Open the same
+            <term def="url">URL</term> in the browser, pick a size, and the sentence shows the name
+            as text, tags and all. That's <cde>textContent</cde>. Had the script used
+            <cde>innerHTML</cde>, the browser would have read the name as HTML.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -140,7 +144,8 @@
                 <xref to="/php/json">JSON</xref> lesson is the rest of it.
             </li>
             <li>
-                <cde>data-</cde> attributes are the other safe way, for a value or two:
+                <cde>data-</cde> <term def="attribute">attributes</term> are the other safe way, for
+                a value or two:
                 <cde>&lt;div data-name="&lt;?= htmlspecialchars($name) ?&gt;"&gt;</cde>, read in
                 JavaScript as <cde>element.dataset.name</cde>.
             </li>
@@ -160,13 +165,15 @@
                 nobody else. The server checks everything again.
             </li>
             <li>
-                <strong>Everything in JavaScript is public.</strong> An API key in a script is
-                readable by anyone who opens the developer tools. Keys stay on the server, and the
-                browser asks your server, which uses them.
+                <strong>Everything in JavaScript is public.</strong> An
+                <term def="api-key">API key</term> in a script is readable by anyone who opens the
+                developer tools. Keys stay on the server, and the browser asks your server, which
+                uses them.
             </li>
             <li>
                 <strong><cde>innerHTML</cde> runs HTML.</strong> Use <cde>textContent</cde> for
-                anything from outside. If you must build HTML, escape it the way you would in PHP.
+                anything from outside. If you must build HTML, <term def="escaping">escape</term> it
+                the way you would in PHP.
             </li>
             <li>
                 <strong>A script that runs too early finds nothing.</strong> Without
@@ -190,7 +197,7 @@
 
         <p>
             JavaScript can also ask the server for more, while the page stays where it is. Next:
-            fetch() and AJAX.
+            fetch() and <term def="ajax">AJAX</term>.
         </p>
 
         <!-- Next -->

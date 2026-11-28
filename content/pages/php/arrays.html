@@ -21,17 +21,20 @@
 
         <!-- Intro -->
         <p>
-            Strings and numbers are one value each. Most of what a web app handles comes in groups:
-            the items in a cart, the fields of a form, the rows from a database. PHP has one type
-            for all of it, the array, and it does double duty as a list and as a set of named
-            values. You'll use it in nearly every file you write.
+            <term def="string">Strings</term> and numbers are one value each. Most of what a web app
+            handles comes in groups: the items in a cart, the fields of a
+            <term def="form">form</term>, the <term def="row">rows</term> from a
+            <term def="database">database</term>. PHP has one <term def="type">type</term> for all
+            of it, the <term def="array">array</term>, and it does double duty as a list and as a
+            set of named values. You'll use it in nearly every file you write.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="whats-an-array">What's an Array?</heading>
         <p>
-            An ordered collection of values, each stored under a key. The key is an int or a string.
-            The value can be anything, another array included.
+            An ordered collection of values, each stored under a key. The key is an
+            <term def="integer">int</term> or a string. The value can be anything, another array
+            included.
         </p>
 
         <heading h3 id="lists">Lists</heading>
@@ -71,7 +74,7 @@
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
                 <strong>Make one</strong>, with <cde>[]</cde>, or get one from PHP:
-                <cde>$_GET</cde>, <cde>explode()</cde>, a database query.
+                <cde>$_GET</cde>, <cde>explode()</cde>, a database <term def="query">query</term>.
             </li>
             <li>
                 <strong>Check what's there</strong> before you read it: <cde>isset()</cde>,
@@ -89,9 +92,10 @@
             <li><strong>Sort it</strong>, or count it, or join it into a string.</li>
         </ol>
         <p>
-            Assigning an array to another variable, or passing it to a function, makes a copy.
-            Change the copy, and the original stays as it was. (PHP is clever about this and only
-            really copies when one of them changes.)
+            Assigning an array to another <term def="variable">variable</term>, or passing it to a
+            <term def="function">function</term>, makes a copy. Change the copy, and the original
+            stays as it was. (PHP is clever about this and only really copies when one of them
+            changes.)
         </p>
 
         <!-- Try it -->
@@ -105,17 +109,18 @@
             because its value is <cde>null</cde>; <cde>array_key_exists()</cde> says it is. The key
             <cde>'7'</cde> turned into the int <cde>7</cde>, and <cde>'07'</cde> stayed a string.
             <cde>array_filter()</cde> kept the original keys. And the plain sort put
-            <cde>alice</cde> last, because capital letters come before lowercase ones in the byte
+            <cde>alice</cde> last, because capital letters come before lowercase ones in the
+            <term def="byte">byte</term>
             order.
         </p>
         <p>
-            Now the array you didn't ask for. Make <cde>query.php</cde>, which shows what a query
-            string turns into:
+            Now the array you didn't ask for. Make <cde>query.php</cde>, which shows what a
+            <term def="query-string">query string</term> turns into:
         </p>
         <code-block example="arrays/query.php" />
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
-        <p>From a second terminal:</p>
+        <p>From a second <term def="terminal">terminal</term>:</p>
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/query.php?tag=php'
 curl -g 'http://localhost:8000/query.php?tag[]=php&amp;tag[]=web&amp;size[shirt]=large'</code-block>
@@ -127,9 +132,10 @@ curl -g 'http://localhost:8000/query.php?tag[]=php&amp;tag[]=web&amp;size[shirt]
             >
         </breakdown>
         <p>
-            The second request made <cde>$_GET['tag']</cde> a list and <cde>$_GET['size']</cde> a
-            named-key array, just by putting brackets in the names. (<cde>-g</cde> tells curl to
-            leave the brackets alone.) Any visitor can do that to any field.
+            The second <term def="request">request</term> made <cde>$_GET['tag']</cde> a list and
+            <cde>$_GET['size']</cde> a named-key array, just by putting brackets in the names. (<cde
+                >-g</cde>
+            tells curl to leave the brackets alone.) Any visitor can do that to any field.
             <strong>Never trust input:</strong> code that expects a string has to check it got one,
             as <cde>query.php</cde> does, and refuse the rest.
         </p>
@@ -200,9 +206,9 @@ curl -g 'http://localhost:8000/query.php?tag[]=php&amp;tag[]=web&amp;size[shirt]
             <p>
                 <cde>array_column($rows, 'name', 'id')</cde> turns a list of database rows into
                 <cde>[id =&gt; name]</cde>, ready for a <cde>select</cde> menu. Pass
-                <cde>null</cde> as the middle argument, <cde>array_column($rows, null, 'id')</cde>,
-                and you get every whole row, keyed by its id, so finding one is
-                <cde>$byId[42]</cde> instead of a loop.
+                <cde>null</cde> as the middle <term def="argument">argument</term>,
+                <cde>array_column($rows, null, 'id')</cde>, and you get every whole row, keyed by
+                its id, so finding one is <cde>$byId[42]</cde> instead of a loop.
             </p>
         </two-dollars>
 

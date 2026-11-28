@@ -21,10 +21,12 @@
 
         <!-- Intro -->
         <p>
-            Caching ended with a script you ran in a terminal. Every <cde>docker run ... php</cde>
-            in this course has been PHP on the command line, with no web server anywhere. A lot of
-            real PHP runs this way: imports, reports, cleanups, queue workers, anything that happens
-            without a visitor waiting for a page.
+            Caching ended with a script you ran in a <term def="terminal">terminal</term>. Every
+            <cde>docker run ... php</cde> in this course has been PHP on the
+            <term def="command-line">command line</term>, with no
+            <term def="web-server">web server</term> anywhere. A lot of real PHP runs this way:
+            imports, reports, cleanups, <term def="queue">queue</term> workers, anything that
+            happens without a visitor waiting for a page.
         </p>
         <p>
             You'll build a small tool that prints the most common words in some text. It's a normal
@@ -40,13 +42,14 @@
             <li><xref to="/php/working-with-files">Working with Files</xref>: reading a stream</li>
             <li>
                 <xref to="/php/text-and-utf-8">Text and UTF-8</xref>: <cde>mb_strtolower()</cde> and
-                Unicode in a regular expression
+                <term def="unicode">Unicode</term> in a regular expression
             </li>
             <li>
                 <xref to="/php/functions">Functions</xref> and <xref to="/php/arrays">Arrays</xref>
             </li>
             <li>
-                <xref to="/php/never-trust-input">Never Trust Input</xref>: arguments are input too
+                <xref to="/php/never-trust-input">Never Trust Input</xref>:
+                <term def="argument">arguments</term> are input too
             </li>
         </list>
 
@@ -62,8 +65,9 @@
         <code-block example="project-php-on-the-command-line/src/words.php" />
         <p>
             <cde>\p{L}</cde> is any letter in any language and <cde>\p{N}</cde> any digit, and the
-            <cde>u</cde> at the end tells PCRE the text is UTF-8. Without it, <cde>é</cde> is two
-            bytes that aren't letters, and <cde>café</cde> splits in half.
+            <cde>u</cde> at the end tells PCRE the text is <term def="utf-8">UTF-8</term>. Without
+            it, <cde>é</cde> is two <term def="byte">bytes</term> that aren't letters, and
+            <cde>café</cde> splits in half.
         </p>
 
         <heading h3 id="step-2-the-command">Step 2: The Command</heading>
@@ -77,7 +81,7 @@
             <li>
                 <strong><cde>getopt()</cde></strong> reads the options, and its third argument says
                 where they stop, so everything after is a file name. <cde>$argv</cde> is the whole
-                command line as an array.
+                command line as an <term def="array">array</term>.
             </li>
             <li>
                 <strong><cde>STDIN</cde>, <cde>STDOUT</cde> and <cde>STDERR</cde></strong> are
@@ -174,19 +178,19 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php bin/top-words.php --top=l
                 after it, the script won't even compile.
             </li>
             <li>
-                <strong>Exit codes are how scripts talk to scripts.</strong> Cron, deploy tools and
-                CI all check them. A script that prints "failed" and exits 0 has succeeded, as far
-                as they know.
+                <strong>Exit codes are how scripts talk to scripts.</strong>
+                <term def="cron">Cron</term>, deploy tools and CI all check them. A script that
+                prints "failed" and exits 0 has succeeded, as far as they know.
             </li>
         </list>
 
         <!-- $2 tip -->
         <two-dollars title="Write a --dry-run first">
             <p>
-                Any command-line script that changes things, deletes rows, sends mail or moves
-                files, should take a <cde>--dry-run</cde> that prints what it would do and does
-                nothing. Write that path first. You'll use it every time you run the script against
-                real data for the first time.
+                Any command-line script that changes things, deletes <term def="row">rows</term>,
+                sends mail or moves files, should take a <cde>--dry-run</cde> that prints what it
+                would do and does nothing. Write that path first. You'll use it every time you run
+                the script against real data for the first time.
             </p>
         </two-dollars>
 

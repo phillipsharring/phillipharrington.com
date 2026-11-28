@@ -21,22 +21,27 @@
 
         <!-- Intro -->
         <p>
-            Every project so far has answered browsers. An API answers programs: a phone app, a
-            script, someone else's server. There's no page and no form, just requests and JSON.
-            You'll build one for a to-do list: list your tasks, add one, change one, delete one.
+            Every project so far has answered <term def="browser">browsers</term>. An
+            <term def="api">API</term> answers programs: a phone app, a script, someone else's
+            <term def="server">server</term>. There's no page and no <term def="form">form</term>,
+            just <term def="request">requests</term> and <term def="json">JSON</term>. You'll build
+            one for a to-do list: list your tasks, add one, change one, delete one.
         </p>
         <p>
             Two things make an API good or bad, and they're this project's two lessons. Who is
-            calling, proved on every request, and limited to their own data. And the status code,
-            which is how a program on the other end knows what happened without reading your error
-            message. You'll build the naive version first, read someone else's tasks with it, and
-            then fix both.
+            calling, proved on every request, and limited to their own data. And the
+            <term def="status-code">status code</term>, which is how a program on the other end
+            knows what happened without reading your error message. You'll build the naive version
+            first, read someone else's tasks with it, and then fix both.
         </p>
 
         <!-- What you'll use -->
         <heading h2 id="what-youll-use">What You'll Use</heading>
         <list>
-            <li><xref to="/php/rest">REST</xref>: resources, and methods that act on them</li>
+            <li>
+                <xref to="/php/rest">REST</xref>: resources, and
+                <term def="http-method">methods</term> that act on them
+            </li>
             <li><xref to="/php/json">JSON</xref>: in and out</li>
             <li>
                 <xref to="/php/request-and-response">Request and Response</xref> and
@@ -59,15 +64,16 @@
         <heading h3 id="step-1-the-tables">Step 1: The Tables</heading>
         <p>
             The usual <cde>Dockerfile</cde> and <cde>src/db.php</cde>. In <cde>compose.yml</cde>,
-            the built-in server gets a router script, so every request, whatever its path, goes to
-            <cde>public/index.php</cde>:
+            the built-in server gets a <term def="route">router</term> script, so every request,
+            whatever its <term def="path">path</term>, goes to <cde>public/index.php</cde>:
         </p>
         <code-block example="project-rest-api/compose.yml" />
         <code-block example="project-rest-api/init.sql" />
         <p>
-            A token is a long random string that a program sends instead of a password. Like a
-            password, only its hash is stored. Unlike a password, it was made by a machine and has
-            plenty of randomness, so a fast hash like SHA-256 is enough, and it lets the database
+            A token is a long random <term def="string">string</term> that a program sends instead
+            of a password. Like a password, only its <term def="hash">hash</term> is stored. Unlike
+            a password, it was made by a machine and has plenty of randomness, so a fast hash like
+            SHA-256 is enough, and it lets the <term def="database">database</term>
             find the token by its hash in one lookup. Each token belongs to a user, and has its own
             permission: Ann has one that can change things and one that can only read.
         </p>
@@ -77,18 +83,19 @@
         <list>
             <li>
                 <strong><cde>respond()</cde> and <cde>fail()</cde></strong> send JSON with a status,
-                and every error has the same shape, <cde>{"error": "..."}</cde>, so clients can
-                handle them all one way.
+                and every error has the same shape, <cde>{"error": "..."}</cde>, so
+                <term def="client">clients</term> can handle them all one way.
             </li>
             <li>
                 <strong><cde>authenticate()</cde></strong> reads
                 <cde>Authorization: Bearer ...</cde>, hashes the token, and looks it up. No token,
                 or one we don't know, is <cde>401 Unauthorized</cde>, with a
-                <cde>WWW-Authenticate</cde> header saying what kind of credentials to send.
+                <cde>WWW-Authenticate</cde> <term def="header">header</term> saying what kind of
+                credentials to send.
             </li>
             <li>
-                <strong><cde>readJson()</cde></strong> refuses a body that isn't labeled JSON,
-                <cde>415</cde>, or isn't valid JSON, <cde>400</cde>.
+                <strong><cde>readJson()</cde></strong> refuses a <term def="body">body</term> that
+                isn't labeled JSON, <cde>415</cde>, or isn't valid JSON, <cde>400</cde>.
                 <strong><xref to="/php/never-trust-input">Never trust input</xref></strong>: a body is whatever the caller sent, and the label on it is too.
             </li>
         </list>
@@ -131,7 +138,7 @@
         <heading h3 id="step-5-run-it">Step 5: Run It</heading>
         <!-- prettier-ignore -->
         <code-block>docker compose up</code-block>
-        <p>From a second terminal, without a token, then with Ann's:</p>
+        <p>From a second <term def="terminal">terminal</term>, without a token, then with Ann's:</p>
         <!-- prettier-ignore -->
         <code-block>curl -i http://localhost:8000/api/tasks
 curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:8000/api/tasks</code-block>
@@ -177,9 +184,9 @@ curl -i -H "$T" -X DELETE http://localhost:8000/api/tasks/4</code-block>
         <code-block>curl 'http://localhost:8000/naive.php?user_id=2'</code-block>
         <p>
             <cde>Bo's private plans</cde>, to anyone who changes a 1 to a 2. No password, no token,
-            no trick: the URL said user 2, so it was user 2. Count up from 1 and you have every
-            user's tasks. This hole has a name, insecure direct object reference, and it's one of
-            the most common ways APIs leak data.
+            no trick: the <term def="url">URL</term> said user 2, so it was user 2. Count up from 1
+            and you have every user's tasks. This hole has a name, insecure direct object reference,
+            and it's one of the most common ways APIs leak data.
         </p>
         <p>The other mistake is quieter:</p>
         <!-- prettier-ignore -->
@@ -193,8 +200,9 @@ curl -i -H "$T" -X DELETE http://localhost:8000/api/tasks/4</code-block>
         <p>
             The real API fixes both. <strong>Never trust input</strong> about identity: the user
             comes from a token that only that user has, checked against a hash on every request, and
-            every query is limited to that user's rows. And the status code tells the truth, so a
-            client can check one number:
+            every <term def="query">query</term> is limited to that user's
+            <term def="row">rows</term>. And the status code tells the truth, so a client can check
+            one number:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:8000/api/tasks/3
@@ -205,12 +213,12 @@ curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:800
         </p>
 
         <side-story title="A Dissertation, Not a Product">
-            REST comes from Roy Fielding's 2000 doctoral dissertation at the University of
-            California, Irvine. Fielding had worked on the HTTP specifications, and the dissertation
-            described the style of architecture the web already used: resources with addresses, a
-            few standard methods, and requests that each carry everything needed to answer them.
-            "REST API" came to mean JSON over HTTP more loosely than he described, but the idea of
-            resources and methods is his.
+            <term def="rest">REST</term> comes from Roy Fielding's 2000 doctoral dissertation at the
+            University of California, Irvine. Fielding had worked on the
+            <term def="http">HTTP</term> specifications, and the dissertation described the style of
+            architecture the web already used: resources with addresses, a few standard methods, and
+            requests that each carry everything needed to answer them. "REST API" came to mean JSON
+            over HTTP more loosely than he described, but the idea of resources and methods is his.
         </side-story>
 
         <!-- Gotchas -->
@@ -222,14 +230,16 @@ curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:800
                 a 401 is a reason to log in again, a 403 isn't.
             </li>
             <li>
-                <strong>Tokens only belong in headers.</strong> A token in a query string ends up in
-                server logs, browser history and proxy logs. The API Client project shows it
-                happening.
+                <strong>Tokens only belong in headers.</strong> A token in a
+                <term def="query-string">query string</term> ends up in server logs, browser history
+                and proxy logs. The API Client project shows it happening.
             </li>
             <li>
-                <strong>Never return more than you meant to.</strong> Build each response from a
-                list of fields, like <cde>present()</cde> does, never by sending the whole row. A
-                column added next year, like a password hash, would go out with it.
+                <strong>Never return more than you meant to.</strong> Build each
+                <term def="response">response</term> from a list of fields, like
+                <cde>present()</cde> does, never by sending the whole row. A
+                <term def="column">column</term> added next year, like a password hash, would go out
+                with it.
             </li>
             <li>
                 <strong>An API without limits is an invitation.</strong> Nothing here stops a client
@@ -238,9 +248,10 @@ curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:800
                 <xref to="/php/rate-limiting">Rate Limiting</xref> lesson.
             </li>
             <li>
-                <strong>Browsers are a different client.</strong> An API called from JavaScript on
-                another site needs CORS headers, and a token kept in the browser can be read by any
-                script on the page. That's the <xref to="/php/cors">CORS</xref> lesson.
+                <strong>Browsers are a different client.</strong> An API called from
+                <term def="javascript">JavaScript</term> on another site needs
+                <term def="cors">CORS</term> headers, and a token kept in the browser can be read by
+                any script on the page. That's the <xref to="/php/cors">CORS</xref> lesson.
             </li>
         </list>
 

@@ -23,8 +23,9 @@
         <p>
             <xref to="/php/passwords">Passwords</xref> got someone logged in. From then on, the
             password doesn't matter. <xref to="/php/sessions">Sessions</xref> showed how PHP
-            remembers them: a random id in a cookie, and a file on the server. Whoever has that id
-            is logged in. So the session cookie is the login, and it's worth as much as the
+            remembers them: a random id in a <term def="cookie">cookie</term>, and a file on the
+            <term def="server">server</term>. Whoever has that id is logged in. So the
+            <term def="session">session</term> cookie is the login, and it's worth as much as the
             password. PHP's defaults don't protect it. This lesson does.
         </p>
 
@@ -39,15 +40,17 @@
 
         <heading h3 id="secure">Secure</heading>
         <p>
-            Only send the cookie over HTTPS. Without it, the browser also sends it with any plain
-            <cde>http://</cde> request to your site, and anyone on the same network, like a café's
-            Wi-Fi, can read it off the wire. See <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
+            Only send the cookie over <term def="https">HTTPS</term>. Without it, the
+            <term def="browser">browser</term> also sends it with any plain <cde>http://</cde>
+            <term def="request">request</term> to your site, and anyone on the same network, like a
+            café's Wi-Fi, can read it off the wire. See
+            <xref to="/php/http">HTTP, HTTPS and TLS</xref>.
         </p>
 
         <heading h3 id="httponly">HttpOnly</heading>
         <p>
-            JavaScript in the page can't read the cookie. The browser still sends it with every
-            request; only <cde>document.cookie</cde> leaves it out. If an
+            <term def="javascript">JavaScript</term> in the page can't read the cookie. The browser
+            still sends it with every request; only <cde>document.cookie</cde> leaves it out. If an
             <xref to="/php/xss">XSS</xref> hole ever lets a script onto your page, that script can't
             simply send your visitors' session ids somewhere else.
         </p>
@@ -55,10 +58,11 @@
         <heading h3 id="samesite">SameSite</heading>
         <p>
             Whether the cookie goes with requests that another site starts. <cde>Lax</cde> sends it
-            when someone follows a link to your site, but not with a form another site POSTs to
-            yours, which is most of <xref to="/php/csrf">CSRF</xref>. <cde>Strict</cde> never sends
-            it from another site, even on a link, so people arriving from a link look logged out.
-            <cde>None</cde> always sends it, and requires <cde>Secure</cde>.
+            when someone follows a link to your site, but not with a
+            <term def="form">form</term> another site POSTs to yours, which is most of
+            <xref to="/php/csrf">CSRF</xref>. <cde>Strict</cde> never sends it from another site,
+            even on a link, so people arriving from a link look logged out. <cde>None</cde> always
+            sends it, and requires <cde>Secure</cde>.
         </p>
 
         <heading h3 id="whats-session-fixation">What's Session Fixation?</heading>
@@ -66,16 +70,18 @@
             An attack on the id itself. Instead of stealing your session id, the attacker picks one,
             gets your browser to use it, and waits for you to log in. If your site keeps the same id
             across the login, the attacker's copy is now logged in as you. The way in can be a
-            cookie set from a sibling subdomain, an XSS hole, or a link, on old sites that accepted
-            the id in the URL.
+            cookie set from a sibling <term def="subdomain">subdomain</term>, an
+            <term def="xss">XSS</term> hole, or a link, on old sites that accepted the id in the
+            <term def="url">URL</term>.
         </p>
 
         <side-story title="Firesheep">
             In 2010, Eric Butler released Firesheep, a Firefox add-on. On an open Wi-Fi network, it
             listened for other people's session cookies from sites like Facebook and Twitter, which
-            used HTTPS for the login page and plain HTTP after it. One click, and you were logged in
-            as the person at the next table. Nothing about the attack was new. Making it one click
-            was, and within a few years the big sites had moved to HTTPS for everything.
+            used HTTPS for the login page and plain <term def="http">HTTP</term> after it. One
+            click, and you were logged in as the person at the next table. Nothing about the attack
+            was new. Making it one click was, and within a few years the big sites had moved to
+            HTTPS for everything.
         </side-story>
 
         <!-- How it works -->
@@ -95,7 +101,8 @@
                 data, new id, old one deleted. Then it records who they are.
             </li>
             <li>
-                The response carries the new id in a <cde>Set-Cookie</cde>, with all three flags.
+                The <term def="response">response</term> carries the new id in a
+                <cde>Set-Cookie</cde>, with all three flags.
             </li>
             <li>
                 When they log out, your code empties the session, destroys it, and tells the browser
@@ -112,7 +119,7 @@
         <p>
             A members page with one pretend member, Alice. In a folder, make <cde>login.php</cde>,
             the login check both versions share. Her password is "correct horse battery staple,"
-            stored as a hash:
+            stored as a <term def="hash">hash</term>:
         </p>
         <code-block example="sessions-and-cookie-flags/login.php" />
         <p>
@@ -123,8 +130,9 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
         <p class="text-th-muted text-base">
-            Same as before: <cde>-p 8000:8000</cde> connects port 8000 on your computer to the
-            container's, and <cde>curl -I</cde> asks for only the headers.
+            Same as before: <cde>-p 8000:8000</cde> connects <term def="port">port</term> 8000 on
+            your computer to the <term def="container">container</term>'s, and
+            <cde>curl -I</cde> asks for only the <term def="header">headers</term>.
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -I http://localhost:8000/naive.php</code-block>
@@ -176,7 +184,8 @@
             <li>
                 <strong>Don't decide Secure from the request.</strong> Code like
                 <cde>'secure' =&gt; isset($_SERVER['HTTPS'])</cde> looks right, and goes wrong the
-                day there's a CDN or proxy in front, because the last hop to PHP is plain HTTP. See
+                day there's a <term def="cdn">CDN</term> or proxy in front, because the last hop to
+                PHP is plain HTTP. See
                 <xref to="/php/whats-in-the-middle">What's in the Middle</xref>. Turn it on in
                 configuration, and leave it on.
             </li>
@@ -217,9 +226,10 @@
         <!-- Break it -->
         <heading h2 id="break-it">Break It</heading>
         <p>
-            Session fixation, against your own copy. You'll play both parts with curl, using the
-            <cde>-b</cde> flag to send a cookie. First, the attacker picks an id and gets the
-            victim's browser to use it. Then the victim logs in with it, as usual:
+            <term def="session-fixation">Session fixation</term>, against your own copy. You'll play
+            both parts with curl, using the <cde>-b</cde> flag to send a cookie. First, the attacker
+            picks an id and gets the victim's browser to use it. Then the victim logs in with it, as
+            usual:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -b 'PHPSESSID=attacker-picked-1' --data-urlencode 'email=alice@example.com' \
@@ -271,8 +281,8 @@ curl -b 'PHPSESSID=attacker-picked-2' http://localhost:8000/</code-block>
 
         <p>
             Your login now holds up once someone's in. Getting in is still a form anyone can submit
-            as many times as they like, with a new guess at the password each time. Next: rate
-            limiting.
+            as many times as they like, with a new guess at the password each time. Next:
+            <term def="rate-limiting">rate limiting</term>.
         </p>
 
         <!-- Next -->

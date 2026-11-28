@@ -21,17 +21,18 @@
 
         <!-- Intro -->
         <p>
-            Sooner or later, someone asks for the orders, or the customers, "in Excel." A CSV file
-            is the answer: plain text, one row per line, commas between the values, and every
-            spreadsheet opens it. You'll build an export of a contacts table that downloads with a
-            sensible name, streams rows straight from the database, and survives commas, quotes and
-            every alphabet.
+            Sooner or later, someone asks for the orders, or the customers, "in Excel." A
+            <term def="csv">CSV</term> file is the answer: plain text, one
+            <term def="row">row</term> per line, commas between the values, and every spreadsheet
+            opens it. You'll build an export of a contacts <term def="table">table</term> that
+            downloads with a sensible name, streams rows straight from the
+            <term def="database">database</term>, and survives commas, quotes and every alphabet.
         </p>
         <p>
             It also has to survive the people who filled in the table. A spreadsheet doesn't only
-            show text; it runs formulas, and a name typed into your signup form can be one. You'll
-            export that name the naive way, see it come out as a working formula, and then make
-            every cell safe.
+            show text; it runs formulas, and a name typed into your signup
+            <term def="form">form</term> can be one. You'll export that name the naive way, see it
+            come out as a working formula, and then make every cell safe.
         </p>
 
         <!-- What you'll use -->
@@ -61,7 +62,8 @@
 
         <heading h3 id="step-1-the-contacts">Step 1: The Contacts</heading>
         <p>
-            The containers, <cde>Dockerfile</cde> and <cde>src/db.php</cde> are the usual ones from
+            The <term def="container">containers</term>, <cde>Dockerfile</cde> and
+            <cde>src/db.php</cde> are the usual ones from
             <xref to="/php/projects/translation">Translation</xref>, with the database called
             <cde>crm</cde>. Copy <cde>auth.php</cde> and <cde>users.php</cde> from
             <xref to="/php/projects/http-authentication">HTTP Authentication</xref>. Then some
@@ -91,10 +93,11 @@
         <code-block example="project-exporting-data/public/export.php" />
         <list>
             <li>
-                <strong><cde>Content-Disposition: attachment</cde></strong> tells the browser to
-                save the response instead of showing it, and <cde>filename</cde> names the file. The
-                name is built only from things we made: a fixed word and dates we formatted
-                ourselves.
+                <strong><cde>Content-Disposition: attachment</cde></strong> tells the
+                <term def="browser">browser</term> to save the
+                <term def="response">response</term> instead of showing it, and
+                <cde>filename</cde> names the file. The name is built only from things we made: a
+                fixed word and dates we formatted ourselves.
             </li>
             <li>
                 <strong>The <cde>?since=</cde> date</strong> is input, so it must be a real date in
@@ -102,9 +105,10 @@
                 doesn't survive the trip.
             </li>
             <li>
-                <strong>The byte order mark</strong>, three bytes at the very start, is how Excel
-                knows the file is UTF-8. Without it, Excel on Windows often guesses an older
-                encoding, and <cde>Zoë</cde> opens as <cde>ZoÃ«</cde>.
+                <strong>The byte order mark</strong>, three <term def="byte">bytes</term> at the
+                very start, is how Excel knows the file is <term def="utf-8">UTF-8</term>. Without
+                it, Excel on Windows often guesses an older <term def="encoding">encoding</term>,
+                and <cde>Zoë</cde> opens as <cde>ZoÃ«</cde>.
             </li>
             <li>
                 <strong>The rows stream.</strong> With buffering off, PDO hands over each row as
@@ -119,7 +123,7 @@
         <p>
             Open <cde>http://localhost:8000/export.php</cde>, log in as <cde>editor</cde>, and the
             browser saves <cde>contacts-</cde> plus today's date. Or with curl, where
-            <cde>-OJ</cde> saves under the name the server sent:
+            <cde>-OJ</cde> saves under the name the <term def="server">server</term> sent:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -u 'editor:correct horse battery staple' -OJ http://localhost:8000/export.php
@@ -133,9 +137,9 @@ curl -u 'editor:correct horse battery staple' -OJ 'http://localhost:8000/export.
             >
         </breakdown>
         <p>
-            Open the file in any spreadsheet. Every row has five columns, <cde>Acme, Inc.</cde> is
-            one cell, the accents and the Japanese name are intact, and the strange name is just
-            text.
+            Open the file in any spreadsheet. Every row has five <term def="column">columns</term>,
+            <cde>Acme, Inc.</cde> is one cell, the accents and the Japanese name are intact, and the
+            strange name is just text.
         </p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
@@ -208,8 +212,9 @@ Zoë Łukasiewicz,zoe@example.com,Café "Kraków",13.99
             </li>
             <li>
                 <strong>Never build the file name from input as-is.</strong> A quote or a line break
-                in a <cde>Content-Disposition</cde> filename can break the header. Build it from
-                values you formatted yourself, or strip it to letters, digits and hyphens.
+                in a <cde>Content-Disposition</cde> filename can break the
+                <term def="header">header</term>. Build it from values you formatted yourself, or
+                strip it to letters, digits and hyphens.
             </li>
             <li>
                 <strong>Output before the headers ruins the download.</strong> A stray space or

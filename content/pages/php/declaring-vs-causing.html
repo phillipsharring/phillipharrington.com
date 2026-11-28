@@ -23,27 +23,37 @@
         <p>
             Magic Numbers split its code in two: <cde>rules.php</cde> only declared things, and
             <cde>after.php</cde> only did things. That's a rule of its own, and one of the first in
-            PSR-1: a file should either declare symbols or cause side effects, and not both. It
-            sounds fussy. It's the reason you can <cde>require</cde> a file without wondering what
-            it will do to you.
+            PSR-1: a file should either declare symbols or cause
+            <term def="side-effect">side effects</term>, and not both. It sounds fussy. It's the
+            reason you can <cde>require</cde> a file without wondering what it will do to you.
         </p>
 
         <!-- What is/are -->
         <heading h2 id="declaring-a-symbol">What's Declaring a Symbol?</heading>
         <p>
-            Giving something a name, for later: a function, a class, an interface, an enum, a
-            constant. Declaring doesn't run anything. Loading a file that only declares changes
-            nothing until someone calls what's in it.
+            Giving something a name, for later: a <term def="function">function</term>, a
+            <term def="class">class</term>, an <term def="interface">interface</term>, an
+            <term def="enum">enum</term>, a <term def="constant">constant</term>. Declaring doesn't
+            run anything. Loading a file that only declares changes nothing until someone calls
+            what's in it.
         </p>
 
         <heading h2 id="causing-a-change">What's Causing a Change?</heading>
         <p>Anything that makes a difference the moment the line runs. These are side effects:</p>
         <list>
-            <li>output: <cde>echo</cde>, HTML outside <cde>&lt;?php</cde>, <cde>header()</cde></li>
+            <li>
+                output: <cde>echo</cde>, <term def="html">HTML</term> outside <cde>&lt;?php</cde>,
+                <cde>header()</cde>
+            </li>
             <li>settings: <cde>ini_set()</cde>, <cde>date_default_timezone_set()</cde></li>
-            <li>files, logs and databases: writing, connecting, querying</li>
-            <li><cde>session_start()</cde>, setting a cookie, sending an email</li>
-            <li>changing a global variable</li>
+            <li>
+                files, logs and <term def="database">databases</term>: writing, connecting, querying
+            </li>
+            <li>
+                <cde>session_start()</cde>, setting a <term def="cookie">cookie</term>, sending an
+                email
+            </li>
+            <li>changing a global <term def="variable">variable</term></li>
         </list>
 
         <side-story title="Why PSRs Shout">
@@ -62,17 +72,20 @@
             </li>
             <li>
                 A few files cause: the entry points, like <cde>public/index.php</cde> or a
-                command-line script. They set things up, then call what was declared.
+                <term def="command-line">command-line</term> script. They set things up, then call
+                what was declared.
             </li>
             <li>
-                An entry point requires (or autoloads) the declaring files it needs. Requiring them
-                is always safe, from anywhere, any time, in any order.
+                An entry point requires (or <term def="autoloading">autoloads</term>) the declaring
+                files it needs. Requiring them is always safe, from anywhere, any time, in any
+                order.
             </li>
         </ol>
         <p>
             The payoff is that a declaring file can be used by something its author never pictured:
             a test, a command-line job, another page. If loading it also printed a nav bar or
-            started a session, every one of those would get the nav bar too.
+            started a <term def="session">session</term>, every one of those would get the nav bar
+            too.
         </p>
 
         <!-- Try it -->
@@ -91,10 +104,10 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php before/slugs.php</code-block>
         <p>
-            The slugs come out, under a nav bar nobody asked for. And there's a new file,
-            <cde>before/visits.log</cde>: your command-line job counted itself as a visit. Run it
-            again, and the log grows. Now split the file. Make an <cde>after</cde> folder, with
-            <cde>text.php</cde>, which only declares:
+            The <term def="slug">slugs</term> come out, under a nav bar nobody asked for. And
+            there's a new file, <cde>before/visits.log</cde>: your command-line job counted itself
+            as a visit. Run it again, and the log grows. Now split the file. Make an
+            <cde>after</cde> folder, with <cde>text.php</cde>, which only declares:
         </p>
         <code-block example="declaring-vs-causing/after/text.php" />
         <p><cde>page.php</cde>, which does the page's doing:</p>
@@ -141,8 +154,8 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/page.php</code-bloc
             <li>
                 <strong>Whitespace outside <cde>&lt;?php</cde> is output.</strong> A blank line
                 before the opening tag, or after a closing <cde>?&gt;</cde>, gets sent, and then
-                <cde>header()</cde> fails with "headers already sent." It's why PSR-12 says to leave
-                the closing tag off.
+                <cde>header()</cde> fails with "<term def="header">headers</term> already sent."
+                It's why PSR-12 says to leave the closing tag off.
             </li>
             <li>
                 <strong>A constructor that connects is a side effect too.</strong> A class whose
@@ -167,9 +180,10 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/page.php</code-bloc
         </two-dollars>
 
         <p>
-            <cde>slugify()</cde> trusts its argument completely. So far that's fine, but code that
-            gets used from places its author never pictured needs to be careful about what it's
-            handed. Next: defensive programming.
+            <cde>slugify()</cde> trusts its <term def="argument">argument</term> completely. So far
+            that's fine, but code that gets used from places its author never pictured needs to be
+            careful about what it's handed. Next:
+            <term def="defensive-programming">defensive programming</term>.
         </p>
 
         <!-- Next -->

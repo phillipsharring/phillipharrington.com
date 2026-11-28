@@ -25,19 +25,21 @@
 
         <!-- Intro -->
         <p>
-            So far, data has lived in variables and arrays, and the code that works on it has lived
-            in <xref to="/php/functions">functions</xref>, and nothing kept the two together. Any
-            code anywhere could reach into a cart array and set a price to minus ten dollars. A
-            class puts the data and the code that's allowed to change it in one place, and keeps
-            everything else out.
+            So far, data has lived in <term def="variable">variables</term> and
+            <term def="array">arrays</term>, and the code that works on it has lived in
+            <xref to="/php/functions">functions</xref>, and nothing kept the two together. Any code
+            anywhere could reach into a cart array and set a price to minus ten dollars. A
+            <term def="class">class</term> puts the data and the code that's allowed to change it in
+            one place, and keeps everything else out.
         </p>
 
         <side-story title="Two Hard Things">
             The line on the stickers on <xref to="/php/caching">Caching</xref> and
             <xref to="/php/naming-things">Naming Things</xref> is usually credited to Phil Karlton:
-            "There are only two hard things in computer science: cache invalidation and naming
-            things." Someone, usually said to be Leon Bambrick, finished it properly: "...and
-            off-by-one errors." Hence this sticker.
+            "There are only two hard things in computer science:
+            <term def="cache-invalidation">cache invalidation</term> and naming things." Someone,
+            usually said to be Leon Bambrick, finished it properly: "...and off-by-one errors."
+            Hence this sticker.
         </side-story>
 
         <!-- What is/are -->
@@ -50,13 +52,13 @@
         <heading h3 id="properties-and-methods">Properties and Methods</heading>
         <list>
             <li>
-                <strong>Properties</strong> are the variables that belong to each object: a cart's
-                items, its currency.
+                <strong>Properties</strong> are the variables that belong to each
+                <term def="object">object</term>: a cart's items, its currency.
             </li>
             <li>
-                <strong>Methods</strong> are the functions that belong to the class: add an item,
-                work out the total. Inside a method, <cde>$this</cde> is the object it was called
-                on.
+                <strong>Methods</strong> are the <term def="function">functions</term> that belong
+                to the class: add an item, work out the total. Inside a
+                <term def="method">method</term>, <cde>$this</cde> is the object it was called on.
             </li>
             <li>
                 <strong>The constructor</strong> is a method named <cde>__construct</cde>. It runs
@@ -66,10 +68,11 @@
 
         <heading h3 id="visibility">Public and Private</heading>
         <p>
-            Each property and method says who may use it. <cde>public</cde>: anyone.
-            <cde>private</cde>: only the class's own methods. <cde>protected</cde>: the class and
-            classes built on it, which is the next lesson. Make properties private, and the only way
-            to change a cart is through its methods, which can check what they're given.
+            Each <term def="property">property</term> and method says who may use it.
+            <cde>public</cde>: anyone. <cde>private</cde>: only the class's own methods.
+            <cde>protected</cde>: the class and classes built on it, which is the next lesson. Make
+            properties private, and the only way to change a cart is through its methods, which can
+            check what they're given.
         </p>
 
         <heading h2 id="whats-an-object">What's an Object?</heading>
@@ -110,12 +113,13 @@
         <heading h2 id="try-it">Try It</heading>
         <p>
             The class goes in a file of its own, named after it. Make <cde>Cart.php</cde>. Prices
-            are whole cents, in an int, as in <xref to="/php/types-of-types">Types of Types</xref>:
+            are whole cents, in an <term def="integer">int</term>, as in
+            <xref to="/php/types-of-types">Types of Types</xref>:
         </p>
         <code-block example="classes-and-objects/Cart.php" />
         <p>
-            If <cde>add()</cde> is given a quantity under one, it throws an exception, which stops
-            the program with a message.
+            If <cde>add()</cde> is given a quantity under one, it throws an
+            <term def="exception">exception</term>, which stops the program with a message.
             <xref to="/php/exceptions">Exceptions and Try/Catch</xref> covers what else you can do
             with one. Now <cde>shop.php</cde>, which uses the class:
         </p>
@@ -151,8 +155,8 @@
                 <cde>StudlyCaps</cde>, by convention.
             </li>
             <li>
-                <cde>private array $items = [];</cde> declares a property, with a type and a
-                default.
+                <cde>private array $items = [];</cde> declares a property, with a
+                <term def="type">type</term> and a default.
             </li>
             <li>
                 <cde>public function total(): int</cde> declares a method: a function with a
@@ -206,7 +210,7 @@
 
         <p>
             Classes can be built on other classes, including ones that are only half finished on
-            purpose. Next: abstract classes.
+            purpose. Next: <term def="abstract-class">abstract classes</term>.
         </p>
 
         <!-- Next -->

