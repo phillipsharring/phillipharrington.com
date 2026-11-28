@@ -38,7 +38,7 @@
             The smallest middle there is: one server in front of your app that takes every request,
             passes it along, and passes the answer back. It's usually a
             <term def="web-server">web server</term>, like nginx or Apache, sitting in front of PHP.
-            It handles the jobs your code shouldn't have to: <term def="https">HTTPS</term>, sending
+            It does the jobs your code shouldn't have to: <term def="https">HTTPS</term>, sending
             static files like images and stylesheets, and holding on to slow connections so your app
             doesn't.
         </p>
@@ -69,8 +69,7 @@
         <side-story title="The Slashdot Effect">
             In the early 2000s, a link from the tech news site Slashdot could send more visitors to
             a small site in an hour than it normally saw in a year, and the site would fall over.
-            People called it being "slashdotted." <term def="cache">Caching</term>, and later CDNs,
-            are a big part of why a sudden crowd mostly doesn't knock sites over anymore.
+            People called it being "slashdotted." <term def="cache">Caching, and later CDNs, are why a sudden crowd rarely knocks a site over now.
         </side-story>
 
         <!-- How it works -->
@@ -153,8 +152,7 @@
 curl http://localhost:8000</code-block>
         <p>
             Directly, PHP sees your address, and no <cde>X-Forwarded-For</cde>. Through the proxy,
-            PHP sees the proxy's address, and your address arrives in the header instead. Then add
-            <cde>-I</cde> to the second one, and the proxy's mark is there in the answer:
+            PHP sees the proxy's address, and your address arrives in the header instead. Add <cde>-I</cde> to the second one, and the proxy's mark shows in the answer:
             <cde>X-Passed-Through: proxy</cde>.
         </p>
         <p>Now lie to it:</p>
@@ -173,10 +171,10 @@ curl http://localhost:8000</code-block>
                 what you sent; it added what it saw to the end. Everything before the last entry
                 came from the client, which means from anyone. As you may recall,
                 <strong><xref to="/php/never-trust-input">never trust input</xref>,</strong> and
-                that includes headers. Trust only the entry your own proxy added: the last one, or
-                the last few if you run several layers. <cde>Ctrl+C</cde> stops both.
+                that includes headers. Trust only the entry your own proxy added: the last one, or the last few if you run several layers.
             </p>
         </nti>
+        <p><cde>Ctrl+C</cde> stops both.</p>
         <p class="text-th-muted text-base">
             New to Docker or the terminal? <xref to="/php/tools">Tools</xref> has the setup.
         </p>
