@@ -29,6 +29,15 @@
         <!-- prettier-ignore -->
         <code-block>https://www.example.com:8080/blog/post?sort=new&amp;page=2#comments</code-block>
 
+        <side-story title="The Part Nobody Should Use">
+            There's one more part, almost never seen: a user name and password before the host, as
+            in <cde>https://user:pass@www.example.com/</cde>. It puts a password in plain sight, and
+            it's an old phishing trick: <cde>https://www.example.com@evil.example/</cde> looks like
+            example.com, but everything before the <cde>@</cde> is the "user name," and the browser
+            goes to evil.example. Browsers warn about it or strip it now. Know it when you see it,
+            and never build one.
+        </side-story>
+
         <!-- What is/are -->
         <heading h2 id="the-parts">The Parts</heading>
 
@@ -56,10 +65,12 @@
         <heading h3 id="path">Path: <cde>/blog/post</cde></heading>
         <p>
             Which thing on that server. It looks like folders and a file, and sometimes it is, but
-            each server decides what a path means. On this site, <cde>/about</cde> is a file with no
-            extension. In a PHP app, every path usually goes to one script that decides what to
-            show.
+            each server decides what a path means. In a PHP app, every path usually goes to one
+            script that decides what to show.
         </p>
+        <soaking>
+            <p>On this site, <cde>/about</cde> is a file with no extension.</p>
+        </soaking>
 
         <heading h3 id="query">Query String: <cde>?sort=new&amp;page=2</cde></heading>
         <p>
@@ -70,9 +81,9 @@
 
         <heading h3 id="fragment">Fragment: <cde>#comments</cde></heading>
         <p>
-            A spot on the page, after a <cde>#</cde>. The browser scrolls to the element with that
-            id. And it never sends the fragment to the server: it's the one part of a URL that stays
-            in your browser.
+            After a <cde>#</cde>, the name of a spot on the page. If the page has an element with
+            that id, the browser can scroll to it. And it never sends the fragment to the server:
+            it's the one part of a URL that stays in your browser.
         </p>
 
         <side-story title="Those Two Slashes">
@@ -159,8 +170,8 @@
         <list>
             <li>
                 <strong>The server never sees the fragment.</strong> Anything after the
-                <cde>#</cde> stays with the page: the browser scrolls to it, and JavaScript in the
-                page can read it, but PHP never sees it.
+                <cde>#</cde> stays with the page: the browser can scroll to it, and JavaScript in
+                the page can read it, but PHP never sees it.
             </li>
             <li>
                 <strong>Build query strings, don't glue them.</strong> A value with an
