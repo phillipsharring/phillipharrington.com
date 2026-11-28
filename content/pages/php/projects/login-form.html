@@ -128,10 +128,10 @@ Got in.</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -b 'PHPSESSID=attacker-chosen-1' --data-urlencode 'password=correct horse battery staple' -d 'email=alice@example.com' http://localhost:8000/naive-login.php</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             Same as before: <cde>-b</cde> sends a cookie with the
             <term def="request">request</term>, here one the attacker made up.
-        </p>
+        </code-note>
         <p>
             The naive page starts its session with PHP's defaults, so it accepted
             <cde>attacker-chosen-1</cde>, an id it never made, and signed Alice in under it. Now the

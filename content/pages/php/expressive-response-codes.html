@@ -163,7 +163,7 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 before.php</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code="before.php"
                 >At the end of <cde>php -S</cde>, the router script: every request goes to it,
@@ -185,10 +185,10 @@ curl -i -d 'email=alice@example.com&amp;password=x' http://localhost:8000/login<
         <!-- prettier-ignore -->
         <code-block>curl -s -o /dev/null -w '%{time_total}\n' -d 'email=nobody@example.com&amp;password=x' http://localhost:8000/login
 curl -s -o /dev/null -w '%{time_total}\n' -d 'email=alice@example.com&amp;password=x' http://localhost:8000/login</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             All seen before: <cde>-s</cde> keeps curl quiet, <cde>-o /dev/null</cde> throws the page
             away, and <cde>-w '%{time_total}\n'</cde> prints how long it took.
-        </p>
+        </code-note>
         <p>
             The stranger's answer comes back in a few milliseconds. Alice's takes a fraction of a
             second, because only a real account gets its password checked, and

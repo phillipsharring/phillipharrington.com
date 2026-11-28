@@ -184,7 +184,7 @@ docker compose run --rm client php bin/tasks.php /broken</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>grep -rn 'wnp_' .</code-block>
-        <p>What's new:</p>
+        <code-note>What's new:</code-note>
         <breakdown>
             <part code="-r">Search every file in every folder, not just one file.</part>
             <part code="-n">Show the line number of each match.</part>
@@ -216,7 +216,7 @@ docker compose run --rm client php bin/tasks.php /broken</code-block>
         <!-- prettier-ignore -->
         <code-block>grep -rn 'wnp_' src bin/tasks.php
 docker compose logs api | grep -c "$(grep API_TOKEN .env | cut -d= -f2)"</code-block>
-        <p>Only the new parts:</p>
+        <code-note>Only the new parts:</code-note>
         <breakdown>
             <part code="cut -d= -f2"
                 >Split each line at the <cde>=</cde> and keep the second piece: the token, without

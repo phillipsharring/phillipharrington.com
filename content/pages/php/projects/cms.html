@@ -185,10 +185,10 @@
         <code-block>printf '&lt;?php echo "ran: " . (6 * 7);' &gt; shell.php
 curl -F 'image=@shell.php' http://localhost:8000/upload-naive.php
 curl http://localhost:8000/uploads/shell.php</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             From <xref to="/php/file-uploads">File Uploads</xref>:
             <cde>-F 'image=@shell.php'</cde> sends the file as the form's <cde>image</cde> field.
-        </p>
+        </code-note>
         <p>
             The last line prints <cde>ran: 42</cde>. That multiplication happened on your server.
             Anything PHP can do, the uploader can now do: read <cde>.env</cde>, query the database,
@@ -204,7 +204,7 @@ curl http://localhost:8000/uploads/shell.php</code-block>
 cat dot.png shell.php &gt; sneaky.php
 curl -F 'image=@sneaky.php' http://localhost:8000/upload-naive.php
 curl -s http://localhost:8000/uploads/sneaky.php | tail -c 20</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="cat dot.png shell.php"
                 >Print the two files one after the other. Given more than one file,

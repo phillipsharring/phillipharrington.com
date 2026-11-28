@@ -151,7 +151,7 @@ curl -i -H 'Authorization: Bearer wnp_ann_3f1c9a7e5b2d4f60' http://localhost:800
 curl -i -H "$T" -H 'Content-Type: application/json' -d '{"title": "Try the API"}' http://localhost:8000/api/tasks
 curl -i -H "$T" -H 'Content-Type: application/json' -X PATCH -d '{"done": true}' http://localhost:8000/api/tasks/4
 curl -i -H "$T" -X DELETE http://localhost:8000/api/tasks/4</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="T='...'"
                 >Save the header in a terminal variable named <cde>T</cde>, so you type the token

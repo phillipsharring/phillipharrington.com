@@ -130,7 +130,7 @@ Content-Transfer-Encoding: quoted-printable</code-block>
         <p>Now try to sneak a header in with the address, the way a form field could:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose run --rm php php send.php $'alice@example.com\nBcc: everyone@example.com'</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="\n"
                 >In quotes with a dollar sign in front, this becomes a real line break, so the

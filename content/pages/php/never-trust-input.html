@@ -162,7 +162,7 @@
         <code-block>curl -A 'Definitely a real browser' -e 'https://example.com/trust-me' \
     -b 'admin=yes' -H 'X-Forwarded-For: 1.2.3.4' -d 'price=1' \
     'http://localhost:8000/show.php?id[]=7&amp;id[]=8'</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-e 'https://example.com/trust-me'"
                 >The referer: the page the request claims it came from. Any address will do.</part

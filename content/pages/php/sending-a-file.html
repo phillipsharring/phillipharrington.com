@@ -122,9 +122,9 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -d memory_limit=16M -S 0.0.0.0:8000 -t public</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             As in Errors and the Error Log: PHP's <cde>-d</cde> sets one setting for this run.
-        </p>
+        </code-note>
         <p>
             Open <cde>http://localhost:8000/download.php?file=report</cde> in a browser: it saves
             <cde>sales-report.csv</cde>, though the file on disk is <cde>report.csv</cde>. Then,
@@ -140,7 +140,7 @@
         <!-- prettier-ignore -->
         <code-block>curl -o everyone.csv 'http://localhost:8000/download.php?file=big'
 curl 'http://localhost:8000/all-at-once.php' | tail -c 300</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-o everyone.csv"
                 >Save the response to <cde>everyone.csv</cde> instead of printing it.</part

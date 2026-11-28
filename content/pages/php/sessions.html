@@ -75,7 +75,7 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it --name sessions -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code="--name sessions"
                 >Give the container a name, so other commands can point at it. Without one, Docker
@@ -90,7 +90,7 @@
         <!-- prettier-ignore -->
         <code-block>curl -c jar.txt -b jar.txt http://localhost:8000
 curl -c jar.txt -b jar.txt http://localhost:8000</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-c jar.txt"
                 >Save any cookies the server sets into <cde>jar.txt</cde>, a file curl keeps them

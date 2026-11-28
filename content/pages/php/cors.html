@@ -143,7 +143,7 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t api
 docker run --rm -it -p 8001:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t site</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code="-p 8001:8000"
                 >Port 8001 on your computer, connected to port 8000 in this container. Each

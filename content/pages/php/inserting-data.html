@@ -121,11 +121,11 @@ ON DUPLICATE KEY UPDATE `name` = `new`.`name`;</code-block>
         <code-block>docker compose up -d --wait db
 docker compose run --rm php php subscribe.php alice@example.com Alice
 docker compose run --rm php php subscribe.php bo@example.com Bo</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             Same as before: <cde>docker compose run --rm php</cde> starts a fresh PHP
             <term def="container">container</term> that can reach the database, and everything after
             it is the command.
-        </p>
+        </code-note>
         <p>
             Subscribers #1 and #2. Now Alice signs up again, with her full name, and then once more,
             the same way:

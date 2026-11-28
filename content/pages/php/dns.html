@@ -154,7 +154,7 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php example.com</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code="example.com"
                 >Anything after the file name is handed to the script as an argument. PHP keeps them
@@ -245,7 +245,7 @@
             Operations people have a haiku about outages: "It's not DNS. There's no way it's DNS. It
             was DNS." When everything is broken at once, DNS is the first thing to check. At one
             job, the office's DNS went down and the business side went wild. Cassandra, the older
-            engineer who sat next to me, muttered "it's the DNS guys," and nobody listened. So she
+            engineer who sat next to me, muttered "it's the DNS guys," and nobody listened. She
             switched her computer to a public resolver and went on working while the panic carried
             on around her.
         </side-story>

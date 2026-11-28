@@ -126,11 +126,11 @@
         <p>Start everything, and wait until the database is ready:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose up -d --build --wait</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             All three you've seen: <cde>-d</cde> runs it in the background,
             <cde>--build</cde> builds the images first, and <cde>--wait</cde> holds on until
             everything is ready.
-        </p>
+        </code-note>
         <p>Look up a member:</p>
         <!-- prettier-ignore -->
         <code-block>curl --get --data-urlencode 'email=alice@example.com' http://localhost:8000/naive.php</code-block>

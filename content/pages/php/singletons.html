@@ -144,11 +144,11 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/tests.php
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php after/app.php</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             The familiar run line: <cde>--rm</cde> cleans up the
             <term def="container">container</term> after, and the <term def="path">path</term> after
             <cde>php</cde> is relative to your folder, here inside <cde>after</cde>.
-        </p>
+        </code-note>
         <p>
             Both tests pass, in any order. And the app still sends two emails through one mailer.
             You got the "only one" without the "from anywhere."

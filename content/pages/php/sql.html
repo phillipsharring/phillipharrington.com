@@ -135,7 +135,7 @@ ORDER BY `year`;</code-block>
         <p>Start the database, in the background, and wait until it's ready:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose up -d --wait db</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-d"
                 >Detached: start in the background and give you your terminal back.</part
@@ -198,7 +198,7 @@ WHERE `title` = 'Beloved';</code-block>
         <p>Run it in the PHP container:</p>
         <!-- prettier-ignore -->
         <code-block>docker compose run --rm php php books.php 1900</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="run --rm php"
                 >Start a fresh container for the <cde>php</cde> service, with everything

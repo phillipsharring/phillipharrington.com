@@ -167,7 +167,7 @@
         <code-block>for i in $(seq 1 20); do
     curl -s -o /dev/null -d name=Bot -d "body=Buy now $i http://spam.example" http://localhost:8000/naive.php
 done</code-block>
-        <p>Only the new parts:</p>
+        <code-note>Only the new parts:</code-note>
         <breakdown>
             <part code="$(seq 1 20)"
                 ><cde>seq 1 20</cde> counts from 1 to 20, and <cde>$(...)</cde> drops its output

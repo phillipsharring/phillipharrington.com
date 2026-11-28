@@ -127,7 +127,7 @@ docker compose run --rm php php sell.php 2</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose exec db mysql --safe-updates -u app -papp-password course</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code="--safe-updates"
                 >Refuse any <cde>UPDATE</cde> or <cde>DELETE</cde> that doesn't say which rows, with

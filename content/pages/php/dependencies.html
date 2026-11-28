@@ -110,7 +110,7 @@
         <p>Now ask Composer for Guzzle 7.4.0:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require guzzlehttp/guzzle:7.4.0</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code=":7.4.0"
                 >After the package name, the version you want. This asks for exactly 7.4.0 and
@@ -126,7 +126,7 @@
         <!-- prettier-ignore -->
         <code-block>docker run --rm -e COMPOSER_NO_SECURITY_BLOCKING=1 -v "$PWD":/app -w /app composer:2 composer require guzzlehttp/guzzle:7.4.0
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-e COMPOSER_NO_SECURITY_BLOCKING=1"
                 >Set an environment variable in the container, as in PHP Files. Composer reads this
@@ -144,7 +144,7 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer outdated --direct
 docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</code-block>
-        <p>What's new:</p>
+        <code-note>What's new:</code-note>
         <breakdown>
             <part code="composer outdated"
                 >List installed packages that have newer versions out.</part
@@ -230,7 +230,7 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer audit</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="composer audit"
                 >Check every installed package against the published security advisories, and list
@@ -271,7 +271,7 @@ docker run --rm -v "$PWD":/app -w /app composer:2 composer why guzzlehttp/psr7</
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require "guzzlehttp/guzzle:^7.4" --with-all-dependencies
 docker run --rm -v "$PWD":/app -w /app composer:2 composer audit
 docker run --rm -v "$PWD":/app -w /app php:8.4-cli php version.php</code-block>
-        <p>Only the new parts:</p>
+        <code-note>Only the new parts:</code-note>
         <breakdown>
             <part code='"guzzlehttp/guzzle:^7.4"'
                 >The <cde>^</cde> means "7.4 or any newer 7.x." It's in quotes because some shells

@@ -129,7 +129,7 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app composer:2 composer require stripe/stripe-php</code-block>
-        <p>Only the new parts:</p>
+        <code-note>Only the new parts:</code-note>
         <breakdown>
             <part code="composer require"
                 >Add a library to the project: download it, and write it into
@@ -161,7 +161,7 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -i -X POST http://localhost:8000/checkout.php</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-X POST"
                 >Use this method. curl sends GET unless it has data to send, so this asks for a POST
@@ -260,7 +260,7 @@
 docker compose logs shop</code-block>
         <!-- prettier-ignore -->
         <code-block>shop-1  | [Fri Nov 27 20:11:18 2026] New order: {"card_number":"4242424242424242","card_expiry":"12\/34","card_cvc":"123"}</code-block>
-        <p>What's new:</p>
+        <code-note>What's new:</code-note>
         <breakdown>
             <part code="docker compose logs"
                 >Print what a service has written to its output so far: here, the server's
@@ -292,7 +292,7 @@ docker compose logs shop</code-block>
 docker compose up -d
 curl -X POST http://localhost:8000/checkout.php
 docker compose logs shop | grep -c 4242</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code="grep -c"
                 >Count the matching lines instead of printing them. <cde>0</cde> means none.</part

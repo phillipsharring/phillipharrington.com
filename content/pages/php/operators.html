@@ -170,11 +170,11 @@ docker run --rm -v "$PWD":/app -w /app php:8.4-cli php compare.php</code-block>
         <code-block example="operators/code.php" />
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             The <term def="web-server">web server</term> again: <cde>-it</cde> keeps it in your
             <term def="terminal">terminal</term>, so <cde>Ctrl+C</cde>
             stops it.
-        </p>
+        </code-note>
         <p>From a second terminal, guess wrong, then guess <cde>0</cde>:</p>
         <!-- prettier-ignore -->
         <code-block>curl 'http://localhost:8000/code.php?code=123456'

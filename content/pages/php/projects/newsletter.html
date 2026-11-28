@@ -158,10 +158,10 @@
         <!-- prettier-ignore -->
         <code-block>docker compose exec app php bin/send.php issues/2026-11.txt --dry-run
 docker compose exec app php bin/send.php issues/2026-11.txt</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             Same as before: <cde>exec app</cde> runs the command inside the <cde>app</cde>
             container that's already running.
-        </p>
+        </code-note>
         <p>
             In Mailpit, open the issue and look at its headers: <cde>List-Unsubscribe</cde> is
             there. Follow the link at the bottom, press Unsubscribe, and send again. Nobody gets it.

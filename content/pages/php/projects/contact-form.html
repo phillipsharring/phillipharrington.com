@@ -107,7 +107,7 @@
         <code-block>for i in 1 2 3 4 5; do
   curl -s -o /dev/null -d 'name=Prize&amp;email=victim@example.com&amp;copy=on&amp;message=You won! https://spam.example' http://localhost:8000/naive.php
 done</code-block>
-        <p>Only the new parts:</p>
+        <code-note>Only the new parts:</code-note>
         <breakdown>
             <part code="for i in 1 2 3 4 5; do"
                 >A loop. The terminal runs everything up to <cde>done</cde> once for each number,
@@ -198,7 +198,7 @@ Stack trace:
         <code-block>for i in 1 2 3 4 5; do
   curl -s -o /dev/null -w '%{http_code}\n' -d 'name=Prize&amp;email=victim@example.com&amp;copy=on&amp;message=You won!' http://localhost:8000/
 done</code-block>
-        <p>What's new:</p>
+        <code-note>What's new:</code-note>
         <breakdown>
             <part code="-w '%{http_code}\n'"
                 >After each request, print only the status code, then a new line.</part

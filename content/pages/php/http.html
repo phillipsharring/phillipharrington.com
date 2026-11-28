@@ -23,8 +23,8 @@
         <p>
             <term def="dns">DNS</term> gave the <term def="client">client</term> an address, and it
             has opened a connection. Now the two of them need a language. On the web, that's
-            <term def="http">HTTP</term>, the Hypertext Transfer Protocol: the Spanish from the
-            Client/Server lesson. It's simple on purpose. The client asks for something, the
+            <term def="http">HTTP</term>, the Hypertext Transfer Protocol: the music from
+            Client/Server. It's simple on purpose. The client asks for something, the
             <term def="server">server</term> answers, and that's one exchange.
         </p>
 
@@ -63,7 +63,7 @@
             <term def="browser">browser</term> already trusts.
         </p>
 
-        <heading h3 id="the-padlock">What the Padlock Promises</heading>
+        <heading h3 id="the-padlock">What the Padlock Means</heading>
         <p>
             Two things: the connection is encrypted, and you're talking to the
             <term def="domain-name">domain</term> in the address bar. That's all. It doesn't mean
@@ -73,8 +73,9 @@
 
         <side-story title="The Padlock Went Away">
             So many people read the padlock as "this site is safe" that in 2023 Chrome replaced it
-            with a neutral settings icon. Encryption had become normal, and the padlock had started
-            promising something it never meant.
+            with a neutral settings icon. By then nearly every site was encrypted, scams included,
+            so the padlock told you almost nothing, and people kept reading it as a seal of
+            approval.
         </side-story>
 
         <!-- How it works -->
@@ -83,7 +84,9 @@
         <!-- prettier-ignore -->
         <code-block>GET /hello HTTP/1.1
 Host: example.com
-Accept: text/html</code-block>
+Accept: text/html
+
+</code-block>
         <p>
             A method (<cde>GET</cde>, "give me"), a <term def="path">path</term>, the
             <term def="protocol">protocol</term> version, then a few headers, then a blank line to
@@ -108,11 +111,11 @@ Content-Length: 20469
 
         <heading h3 id="http-2-and-3">HTTP/2 and HTTP/3</heading>
         <p>
-            Same conversation, faster wire. HTTP/2 packs requests and responses into binary instead
-            of text, and sends many of them at once over one connection instead of one at a time.
-            HTTP/3 does the same over a different kind of connection that copes better with flaky
-            networks, like a phone on a train. The requests and responses mean exactly what they
-            meant in HTTP/1.1, and your PHP code sees no difference at all. Usually the
+            HTTP/2 packs requests and responses into binary instead of text, and sends many of them
+            at once over one connection instead of one at a time. HTTP/3 does the same over a
+            different kind of connection that copes better with flaky networks, like a phone on a
+            train. The requests and responses mean exactly what they meant in HTTP/1.1, and your PHP
+            code sees no difference at all. Usually the
             <term def="cdn">CDN</term> or <term def="web-server">web server</term> in front of your
             app speaks HTTP/2 or 3 with browsers, and you get it for free.
         </p>
@@ -131,10 +134,10 @@ Content-Length: 20469
         <p>Run it:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php http.php</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             Same as before: a throwaway PHP <term def="container">container</term>, with your folder
             as <cde>/app</cde>, running one file.
-        </p>
+        </code-note>
         <p>
             The first line is the status line: <cde>HTTP/1.1 200 OK</cde>. Then the response
             headers: the type of the content, when it was last changed, and a few that show a CDN
@@ -143,7 +146,7 @@ Content-Length: 20469
         <p>Now ask with curl, and add <cde>-v</cde>, for verbose:</p>
         <!-- prettier-ignore -->
         <code-block>curl -v https://example.com/ -o /dev/null</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-v"
                 >Verbose: show everything curl does along the way, not just the page.</part
@@ -156,11 +159,7 @@ Content-Length: 20469
         <p>
             The lines starting with <cde>*</cde> are the TLS handshake: the TLS version, the
             certificate's name and who issued it, when it expires. The lines starting with
-            <cde>&gt;</cde> are the request curl sent, and <cde>&lt;</cde> the response. (<cde
-                >-o /dev/null</cde>
-            throws the page away so it doesn't fill your screen. On Windows, write
-            <cde>-o NUL</cde>, and type <cde>curl.exe</cde> if plain <cde>curl</cde> does something
-            odd.)
+            <cde>&gt;</cde> are the request curl sent, and <cde>&lt;</cde> the response.
         </p>
         <p>
             Look closely and the two clients didn't speak the same version: PHP said

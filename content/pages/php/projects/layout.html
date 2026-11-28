@@ -120,9 +120,9 @@
         <heading h3 id="run-it">Run It</heading>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -it -p 8000:8000 -v "$PWD":/app -w /app php:8.4-cli php -S 0.0.0.0:8000 -t public</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             Same server as before: <cde>-t public</cde> serves only the <cde>public</cde> folder.
-        </p>
+        </code-note>
         <p>
             Open <cde>http://localhost:8000</cde> and <cde>/about</cde>: the same page around
             different content. Then a path that doesn't exist:

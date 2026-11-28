@@ -126,10 +126,10 @@
         <code-block example="classes-and-objects/shop.php" />
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php shop.php</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             Same as ever: <cde>-v "$PWD":/app</cde> shares your folder, and <cde>php shop.php</cde>
             runs the file in it.
-        </p>
+        </code-note>
         <p>
             Two carts, each with its own total. Then the hat: added through
             <cde>$alsoMine</cde>, it lands in <cde>$mine</cde>, because they're the same cart. The

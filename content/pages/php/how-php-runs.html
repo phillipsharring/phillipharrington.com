@@ -142,16 +142,14 @@
         <!-- prettier-ignore -->
         <code-block>curl -I http://localhost:8000/
 curl -I http://localhost:8000/style.css</code-block>
-        <p class="text-th-muted text-base">
-            As in Content Types: <cde>-I</cde> asks for the headers only.
-        </p>
+        <code-note> As in Content Types: <cde>-I</cde> asks for the headers only. </code-note>
         <p>
             The page has <cde>X-Powered-By: PHP/8.4</cde> and more, because PHP made it. The
             stylesheet doesn't: nginx sent it alone. Last, look at the processes:
         </p>
         <!-- prettier-ignore -->
         <code-block>docker compose top php</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="top php"
                 >List the programs running inside the <cde>php</cde> container, like a task

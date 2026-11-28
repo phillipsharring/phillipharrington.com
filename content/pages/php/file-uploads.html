@@ -205,7 +205,7 @@
         <p>Upload it:</p>
         <!-- prettier-ignore -->
         <code-block>curl -F 'photo=@attack/proof.php' http://localhost:8000/naive.php</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-F"
                 >Send a form the way a file upload form does (<cde>multipart/form-data</cde>), as a
@@ -241,7 +241,7 @@ It can read your project: README.md, attack, public, storage</code-block>
         <!-- prettier-ignore -->
         <code-block>curl -F 'photo=@attack/proof.php' http://localhost:8000/
 curl -F 'photo=@attack/proof.php;type=image/png;filename=cat.png' http://localhost:8000/</code-block>
-        <p>Only the new parts:</p>
+        <code-note>Only the new parts:</code-note>
         <breakdown>
             <part code=";type=image/png"
                 >Claim a content type for the file. curl sends whatever you say.</part
@@ -259,7 +259,7 @@ curl -F 'photo=@attack/proof.php;type=image/png;filename=cat.png' http://localho
         <!-- prettier-ignore -->
         <code-block>printf 'GIF89a&lt;?php echo "This GIF just ran as PHP."; ?&gt;\n' &gt; attack/polyglot.gif
 curl -F 'photo=@attack/polyglot.gif' http://localhost:8000/</code-block>
-        <p>What's new:</p>
+        <code-note>What's new:</code-note>
         <breakdown>
             <part code="printf '...\n'"
                 >Print the text in the quotes. The <cde>\n</cde> at the end becomes a new

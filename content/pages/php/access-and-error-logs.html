@@ -149,17 +149,17 @@
         <!-- prettier-ignore -->
         <code-block>mkdir logs
 docker compose up</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="mkdir logs">Make a folder called <cde>logs</cde>.</part>
         </breakdown>
         <p>In a second <term def="terminal">terminal</term>, follow the access log:</p>
         <!-- prettier-ignore -->
         <code-block>tail -f logs/access.log</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             From <xref to="/php/tools#reading-logs">Tools</xref>: <cde>tail -f</cde> prints new
             lines as they're written, until <cde>Ctrl+C</cde>.
-        </p>
+        </code-note>
         <p>And in a third, make some requests:</p>
         <!-- prettier-ignore -->
         <code-block>curl http://localhost:8000/
@@ -179,7 +179,7 @@ curl http://localhost:8000/broken</code-block>
         </p>
         <!-- prettier-ignore -->
         <code-block>curl -A 'Not a browser' http://localhost:8000/</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="-A 'Not a browser'"
                 >Set the <cde>User-Agent</cde> header: what the client says it is. Anything you
@@ -194,7 +194,7 @@ curl http://localhost:8000/broken</code-block>
         <!-- prettier-ignore -->
         <code-block>docker compose stop php
 curl http://localhost:8000/</code-block>
-        <p>Only the new part:</p>
+        <code-note>Only the new part:</code-note>
         <breakdown>
             <part code="stop php"
                 >Stop one container, the one called <cde>php</cde> in <cde>compose.yml</cde>, and

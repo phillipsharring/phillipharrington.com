@@ -143,10 +143,10 @@
         <code-block>curl -i -H 'Content-Type: application/json' -d '{"size":"large","qty":2}' http://localhost:8000/order.php
 curl -i -H 'Content-Type: application/json' -d '{"size":"large","qty":"2"}' http://localhost:8000/order.php
 curl -i -H 'Content-Type: application/json' -d 'size=large' http://localhost:8000/order.php</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             Nothing new: <cde>-H</cde> adds a <term def="header">header</term>, here the one that
             says "this is JSON," and <cde>-d</cde> sends the body.
-        </p>
+        </code-note>
         <p>
             The first is a 201, with the order. The second is valid JSON with the quantity as a
             string, <cde>"2"</cde>, not a number, and it's refused with a 422. The third isn't JSON
@@ -220,7 +220,7 @@ curl -i -H 'Content-Type: application/json' -d 'size=large' http://localhost:800
             </p>
             <!-- prettier-ignore -->
             <code-block>curl -s 'http://localhost:8000/order.php' | docker run --rm -i ghcr.io/jqlang/jq .</code-block>
-            <p>New here:</p>
+            <code-note>New here:</code-note>
             <breakdown>
                 <part code="-i"
                     >Keep the container's input open, so what comes down the pipe reaches it. No

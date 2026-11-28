@@ -164,7 +164,7 @@ FROM `migrations`;</code-block>
         <!-- prettier-ignore -->
         <code-block>cp later/2026_11_27_1000_drop_phone_from_users.sql migrations/
 docker compose run --rm php php migrate.php</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="migrations/"
                 >When the last thing given to <cde>cp</cde> is a folder, the copy goes into it,
@@ -181,7 +181,7 @@ docker compose run --rm php php migrate.php</code-block>
         <!-- prettier-ignore -->
         <code-block>rm migrations/2026_11_27_1000_drop_phone_from_users.sql
 docker compose down -v</code-block>
-        <p>New here:</p>
+        <code-note>New here:</code-note>
         <breakdown>
             <part code="rm"
                 >Remove a file. There's no trash can; it's gone, so read the name before you press

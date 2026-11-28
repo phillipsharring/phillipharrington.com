@@ -159,7 +159,7 @@ docker compose run --rm app php bin/prune.php</code-block>
         <!-- prettier-ignore -->
         <code-block>docker compose --profile cron up -d
 tail -f var/prune.log</code-block>
-        <p>Only the new parts:</p>
+        <code-note>Only the new parts:</code-note>
         <breakdown>
             <part code="--profile cron"
                 >Also start the services in <cde>compose.yml</cde> marked with the

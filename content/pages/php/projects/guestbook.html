@@ -93,11 +93,11 @@
         <p>Sign it again, with a message that's a script:</p>
         <!-- prettier-ignore -->
         <code-block>curl --data-urlencode "message=&lt;script&gt;alert('Hacked')&lt;/script&gt;" -d 'name=Mallory' http://localhost:8000/naive.php</code-block>
-        <p class="text-th-muted text-base">
+        <code-note>
             A reminder: <cde>--data-urlencode</cde> posts a field like <cde>-d</cde> does, but
             <term def="encoding">encodes</term> the characters that would otherwise break the form
             data.
-        </p>
+        </code-note>
         <p>
             Reload the page in your browser. An alert box says "Hacked." Reload again: it says it
             again. The script is stored, and the page prints it into its own HTML, so it runs for

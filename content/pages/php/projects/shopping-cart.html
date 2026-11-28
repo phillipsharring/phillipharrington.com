@@ -143,7 +143,7 @@
         <code-block>curl -s -c jar http://localhost:8000 | grep -o 'name="csrf" value="[a-f0-9]*"' | head -1
 curl -b jar -d csrf=PASTE_TOKEN -d action=add -d product=1 -d price_cents=1 http://localhost:8000/cart.php
 curl -b jar http://localhost:8000/cart.php</code-block>
-        <p>What's new:</p>
+        <code-note>What's new:</code-note>
         <breakdown>
             <part code="grep -o '...'"
                 >Print only the part of each line that matches, not the whole line: here, the hidden
