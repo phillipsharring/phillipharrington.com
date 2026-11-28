@@ -145,6 +145,14 @@
         <p>Run it the usual way:</p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php url.php</code-block>
+        <screenshot
+            img="php/anatomy-of-a-url/parse-url"
+            wide
+            w="1506"
+            h="499"
+            alt="Terminal: php url.php prints the parts of the example URL: scheme https, host www.example.com, port 8080, path /blog/post, query sort=new&amp;page=2, fragment comments."
+            caption="parse_url(), taking the URL apart."
+        />
         <p>
             Every part, labeled. Give it a URL of your own to pick apart, in quotes, after
             <cde>url.php</cde>.
@@ -160,6 +168,14 @@
         <p>And open a URL with every part in it:</p>
         <!-- prettier-ignore -->
         <code-block>http://localhost:8000/anything/you/like?name=you&amp;page=2#here</code-block>
+        <screenshot
+            img="php/anatomy-of-a-url/server-sees"
+            wide
+            w="2450"
+            h="290"
+            alt="The browser at localhost:8000/anything/you/like?name=you&amp;page=2#here; the page shows the path and query, and $_GET, but nothing about #here."
+            caption="The address bar has #here. The server never heard of it."
+        />
         <p>
             The server shows you the path and the query string, and <cde>$_GET</cde> with the query
             already split into names and values. The <cde>#here</cde> isn't anywhere. The browser

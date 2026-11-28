@@ -171,6 +171,13 @@
             the server." And back in the terminal, the server has logged a line for your request:
             one side of the conversation, written down.
         </p>
+        <screenshot
+            img="php/client-server/browser-hello"
+            w="760"
+            h="220"
+            alt="The browser at localhost:8000 showing: Hello from the server"
+            caption="The server, answering the browser."
+        />
 
         <side-story title="No Place Like Home">
             Underneath the name, <cde>localhost</cde> is the address 127.0.0.1, which every computer
@@ -188,6 +195,14 @@
                 >The address to ask: your own computer, port 8000.</part
             >
         </breakdown>
+        <screenshot
+            img="php/client-server/curl-hello"
+            wide
+            w="1056"
+            h="146"
+            alt="Terminal: curl http://localhost:8000 prints Hello from the server"
+            caption="The same server, answering curl."
+        />
         <p>
             Same server, same answer, different client. Then go back to the first terminal, stop the
             server with <cde>Ctrl+C</cde>, and reload the browser. It can't connect, because nobody

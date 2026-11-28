@@ -226,9 +226,17 @@ Content-Length: 0</code-block>
             every header your browser sent. (Any path works, because PHP's built-in server sends a
             path that isn't a file to <cde>index.php</cde>. Only the built-in server does that on
             its own; nginx, Apache and the rest have to be told to, which is
-            <xref to="/php/single-point-of-entry">Single Point of Entry</xref>.) Then, from a second
-            <term def="terminal">terminal</term>, send a POST with a body:
+            <xref to="/php/single-point-of-entry">Single Point of Entry</xref>.)
         </p>
+        <screenshot
+            img="php/request-and-response/browser-get"
+            wide
+            w="1990"
+            h="1388"
+            alt="The browser at localhost:8000/hello showing GET /hello and every header Chrome sent, including Cookie: visits=42."
+            caption="Every header your browser sent. Spot the cookie from the last lesson."
+        />
+        <p>Then, from a second terminal, send a POST with a body:</p>
         <!-- prettier-ignore -->
         <code-block>curl -d 'name=Alice&amp;comment=Hi' http://localhost:8000/comments</code-block>
         <code-note>New here:</code-note>
@@ -239,6 +247,14 @@ Content-Length: 0</code-block>
                 <cde>&amp;</cde> as a command of its own.</part
             >
         </breakdown>
+        <screenshot
+            img="php/request-and-response/curl-post"
+            wide
+            w="2046"
+            h="511"
+            alt="Terminal: curl -d posts name=Alice&amp;comment=Hi to /comments; the server shows POST /comments, the headers, and the body."
+            caption="A POST, with its body at the bottom."
+        />
         <p>
             Now it's a POST, with a <cde>Content-Type</cde>, a <cde>Content-Length</cde>, and the
             body at the bottom. Last, look at the response instead. <cde>-i</cde> shows the status
@@ -251,6 +267,14 @@ Content-Length: 0</code-block>
                 >Include the response's status line and headers in the output, above the body.</part
             >
         </breakdown>
+        <screenshot
+            img="php/request-and-response/curl-teapot"
+            wide
+            w="2046"
+            h="654"
+            alt="Terminal: curl -i /teapot shows HTTP/1.1 418 Unknown Status Code and the response headers."
+            caption="The teapot, as PHP's own server sees it."
+        />
         <p>
             <cde>418</cde>, and PHP's built-in server calls it "Unknown Status Code." It never got
             the joke.

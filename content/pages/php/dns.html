@@ -167,6 +167,14 @@
                 you give it.</part
             >
         </breakdown>
+        <screenshot
+            img="php/dns/example-com"
+            wide
+            w="2046"
+            h="514"
+            alt="Terminal: php dns.php example.com prints one address from gethostbyname, two A records with their TTLs, and one MX record with priority 0 and an empty target."
+            caption="example.com: two addresses, and a null MX."
+        />
         <p>
             The first line is one address: <cde>gethostbyname()</cde> asks the question the way a
             browser would and takes the first answer. Then <cde>dns_get_record()</cde> shows the
@@ -181,6 +189,14 @@
         </p>
         <!-- prettier-ignore -->
         <code-block>docker run --rm -v "$PWD":/app -w /app php:8.4-cli php dns.php gmail.com</code-block>
+        <screenshot
+            img="php/dns/gmail-com"
+            wide
+            w="2046"
+            h="799"
+            alt="Terminal: php dns.php gmail.com prints four A records and five MX records with priorities 10, 20, 5, 40 and 30."
+            caption="gmail.com: five mail servers, in no particular order. The priority decides."
+        />
         <p>
             Five MX records, each with a priority number (<cde>pri</cde>). Senders try the lowest
             number first, and work up the list if it doesn't answer. Then ask a different client,

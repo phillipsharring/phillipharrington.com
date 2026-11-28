@@ -135,6 +135,14 @@
             Same as before: a throwaway PHP <term def="container">container</term>, with your folder
             as <cde>/app</cde>, running one file.
         </code-note>
+        <screenshot
+            img="php/http/php-client"
+            wide
+            w="2046"
+            h="884"
+            alt="Terminal: php http.php prints the response headers from example.com, starting with HTTP/1.1 200 OK, and 577 bytes of page."
+            caption="PHP as the client: the status line, the headers, the size of the page."
+        />
         <p>
             The first line is the status line: <cde>HTTP/1.1 200 OK</cde>. Then the response
             headers: the type of the content, when it was last changed, and a few that show a CDN
@@ -153,6 +161,14 @@
                 that throws away whatever goes into it.</part
             >
         </breakdown>
+        <screenshot
+            img="php/http/curl-v"
+            wide
+            w="2046"
+            h="1154"
+            alt="Terminal: the end of curl -v output, with request lines starting with &gt; and response lines starting with &lt;, over HTTP/2."
+            caption="The end of curl -v: &gt; is what curl sent, &lt; is what came back."
+        />
         <p>
             The lines starting with <cde>*</cde> are the TLS handshake: the TLS version, the
             certificate's name and who issued it, when it expires. The lines starting with
