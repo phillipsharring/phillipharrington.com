@@ -138,8 +138,11 @@ window.onReady(() => {
             applyTheme(next);
         });
 
-        // React to system preference changes when in "system" mode
-        window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change', () => {
+        // React to system preference changes when in "system" mode. Keep the
+        // query in a variable that lives as long as the page: Safari can throw
+        // away a query nothing refers to, and its listener with it.
+        window.themeQuery = window.matchMedia('(prefers-color-scheme:dark)');
+        window.themeQuery.addEventListener('change', () => {
             if (getStoredPref() === 'system') {
                 applyTheme('system');
             }
